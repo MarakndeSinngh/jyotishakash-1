@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Section } from '../../types/cms';
-import { motion, useAnimation } from 'framer-motion';
+import { motion } from 'framer-motion';
 import SmartImage from './SmartImage';
-import { FounderImage } from '../common/FounderImage';
 import { WHATSAPP_LINK, SOCIAL_LINKS } from '../../constants/contacts';
 import { BrandRegistry } from '../../config/brandRegistry';
 import { useAcademy } from '../../context/AcademyContext';
@@ -15,24 +14,72 @@ import {
   Globe, 
   Youtube, 
   Facebook, 
-  Film, 
   ExternalLink, 
   BookOpen, 
   Users, 
-  TrendingUp,
-  MapPin,
-  Compass,
-  Zap,
-  ChevronRight
+  ChevronRight,
+  ArrowRight,
+  ShieldCheck,
+  Compass
 } from 'lucide-react';
 
 interface HeroSectionProps {
-  section: Section;
+  section?: Section;
 }
 
-const HeroSection: React.FC<HeroSectionProps> = ({ section }) => {
+interface MentorShowcaseItem {
+  id: string;
+  slug: string;
+  name: string;
+  title: string;
+  roleBadge: string;
+  image: string;
+  fallbackImage: string;
+  accentColor: string;
+}
+
+const MENTORS_SHOWCASE: MentorShowcaseItem[] = [
+  {
+    id: 'raajeev',
+    slug: 'raajeev',
+    name: 'Raajeev Singh Chauhann',
+    title: 'Founder & Astro-Numerologist',
+    roleBadge: 'Founder',
+    image: '/assets/teachers/Raajeev.webp',
+    fallbackImage: '/gemstone-assets/rajeev-singh.jpg',
+    accentColor: 'from-amber-500/20 to-yellow-500/10'
+  },
+  {
+    id: 'shaunak',
+    slug: 'shaunak',
+    name: 'Dr. Shaunak S. Pathak',
+    title: 'Astro Vastu Expert',
+    roleBadge: 'Astro-Vastu',
+    image: '/assets/teachers/shaunak.webp',
+    fallbackImage: '/gemstone-assets/blue-sapphire.jpg',
+    accentColor: 'from-purple-500/20 to-indigo-500/10'
+  },
+  {
+    id: 'sannjoy',
+    slug: 'sannjoy',
+    name: 'Sannjoy Biswass',
+    title: 'Master Numerologist',
+    roleBadge: 'Lo Shu Grid',
+    image: '/assets/teachers/sannjoy.webp',
+    fallbackImage: '/assets/sannjoy/profile.png',
+    accentColor: 'from-emerald-500/20 to-teal-500/10'
+  }
+];
+
+const FLOATING_STATS = [
+  { value: '100K+', label: 'Students', sublabel: 'Empowered Globally' },
+  { value: '10+', label: 'Countries', sublabel: 'International Alumni' },
+  { value: '4.9★', label: 'Rating', sublabel: 'Student Satisfaction' }
+];
+
+const HeroSection: React.FC<HeroSectionProps> = () => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const { activeAcademy } = useAcademy();
+  const { switchAcademy } = useAcademy();
   const { t } = useLanguage();
 
   useEffect(() => {
@@ -47,37 +94,21 @@ const HeroSection: React.FC<HeroSectionProps> = ({ section }) => {
   }, []);
 
   const trustLinks = [
-    { name: "Main Website", icon: Globe, url: activeAcademy?.socialLinks?.youtube || BrandRegistry.websites.main.url, label: activeAcademy?.shortName || "Academy" },
-    { name: "Facebook Page", icon: Facebook, url: activeAcademy?.socialLinks?.facebook || SOCIAL_LINKS.facebook, label: `${activeAcademy?.instructorName} Facebook` },
-    { name: "YouTube Channel", icon: Youtube, url: activeAcademy?.socialLinks?.youtube || SOCIAL_LINKS.youtube.main, label: `${activeAcademy?.instructorName} YouTube` },
-    { name: "Student Reviews", icon: Star, url: BrandRegistry.assets.videoLinks?.studentReviewsPlaylist || "https://youtube.com", label: "5.0 ★ Student Reviews" },
+    { name: "Main Website", icon: Globe, url: BrandRegistry.websites.main.url, label: "LEO Family Ecosystem" },
+    { name: "Facebook Page", icon: Facebook, url: SOCIAL_LINKS.facebook, label: "Official Facebook" },
+    { name: "YouTube Channel", icon: Youtube, url: SOCIAL_LINKS.youtube.main, label: "Official YouTube Channel" },
+    { name: "Student Reviews", icon: Star, url: BrandRegistry.assets.videoLinks?.studentReviewsPlaylist || "https://youtube.com", label: "4.9★ Verified Reviews" },
   ];
 
-  const stats = activeAcademy?.stats && activeAcademy.stats.length > 0 ? activeAcademy.stats.map(s => ({
-    value: s.value,
-    label: s.label,
-    desc: s.desc,
-    icon: Award
-  })) : [
-    { value: "20+", label: "Years Experience", desc: "Scientific practice", icon: Award },
-    { value: "Thousands", label: "Consultations", desc: "Global clients", icon: Zap },
-    { value: "Thousands", label: "Students", desc: "Empowered globally", icon: Users },
-    { value: "Multiple", label: "Online Courses", desc: "Astro, Numerology & Vastu", icon: BookOpen },
-    { value: "International", label: "Community", desc: "Spanning across continents", icon: Globe },
-  ];
-
-  const badges = [
-    "Practical Guidance",
-    "Personalized Consultation",
-    "Scientific Approach",
-    "Ancient Wisdom"
-  ];
-
-  const whatsappUrl = activeAcademy?.contactDetails?.whatsapp || WHATSAPP_LINK;
-  const roles = activeAcademy?.instructorTitle ? activeAcademy.instructorTitle.split(/&|,|•/).map(r => r.trim()).filter(Boolean) : ["Mentor", "Numerologist"];
+  const handleExploreAcademies = () => {
+    const el = document.getElementById('mentors') || document.getElementById('comparison') || document.getElementById('featured-courses');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   return (
-    <section className="relative min-h-screen flex flex-col justify-between overflow-hidden bg-background text-text-primary pt-24 md:pt-28 pb-12 z-10 transition-colors duration-300">
+    <section className="relative min-h-[90vh] flex flex-col justify-between overflow-hidden bg-background text-text-primary pt-24 md:pt-32 pb-12 z-10 transition-colors duration-300">
       
       {/* 🌌 COSMIC BACKGROUND ENGINE */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
@@ -104,7 +135,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ section }) => {
 
         {/* Ambient Dark Stars */}
         <div className="absolute inset-0 opacity-40">
-          {[...Array(60)].map((_, i) => (
+          {[...Array(50)].map((_, i) => (
             <motion.div
               key={i}
               className="absolute w-[2px] h-[2px] bg-white rounded-full"
@@ -128,7 +159,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ section }) => {
 
         {/* Floating Golden Particles */}
         <div className="absolute inset-0 opacity-50">
-          {[...Array(25)].map((_, i) => (
+          {[...Array(20)].map((_, i) => (
             <motion.div
               key={i}
               className="absolute rounded-full"
@@ -155,10 +186,10 @@ const HeroSection: React.FC<HeroSectionProps> = ({ section }) => {
           ))}
         </div>
 
-        {/* ⚛️ FLOATING SACRED GEOMETRY (Interactive Background Elements) */}
+        {/* ⚛️ FLOATING SACRED GEOMETRY */}
         <motion.div 
           style={{ x: mousePosition.x * 0.5, y: mousePosition.y * 0.5 }}
-          className="absolute right-[5%] top-[15%] w-[400px] h-[400px] opacity-10 pointer-events-none"
+          className="absolute right-[5%] top-[10%] w-[400px] h-[400px] opacity-10 pointer-events-none"
         >
           <svg viewBox="0 0 100 100" className="w-full h-full text-amber-500 animate-[spin_100s_linear_infinite]">
             <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" strokeWidth="0.2" />
@@ -172,193 +203,187 @@ const HeroSection: React.FC<HeroSectionProps> = ({ section }) => {
                 <line key={i} x1="50" y1="50" x2={x2} y2={y2} stroke="currentColor" strokeWidth="0.15" />
               );
             })}
-            {[...Array(6)].map((_, i) => {
-              const angle = (i * 60 * Math.PI) / 180;
-              const cx = 50 + 15 * Math.cos(angle);
-              const cy = 50 + 15 * Math.sin(angle);
-              return (
-                <circle key={i} cx={cx} cy={cy} r="15" fill="none" stroke="currentColor" strokeWidth="0.1" />
-              );
-            })}
-          </svg>
-        </motion.div>
-
-        <motion.div 
-          style={{ x: mousePosition.x * -0.3, y: mousePosition.y * -0.3 }}
-          className="absolute left-[2%] bottom-[20%] w-[300px] h-[300px] opacity-[0.08] pointer-events-none"
-        >
-          <svg viewBox="0 0 100 100" className="w-full h-full text-emerald-400 animate-[spin_80s_linear_infinite_reverse]">
-            <polygon points="50,5 95,25 95,75 50,95 5,75 5,25" fill="none" stroke="currentColor" strokeWidth="0.25" />
-            <polygon points="50,95 95,75 95,25 50,5 5,25 5,75" fill="none" stroke="currentColor" strokeWidth="0.15" />
-            <polygon points="50,15 80,32 80,68 50,85 20,68 20,32" fill="none" stroke="currentColor" strokeWidth="0.2" />
-            <circle cx="50" cy="50" r="25" fill="none" stroke="currentColor" strokeWidth="0.1" />
           </svg>
         </motion.div>
       </div>
 
-      <div className="container mx-auto px-6 relative z-10 flex-grow flex flex-col justify-center">
+      <div className="container mx-auto px-6 relative z-10 flex-grow flex flex-col justify-center max-w-7xl">
         
-        {/* 🔥 MAIN SPLIT GRID */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center my-auto">
+        {/* 🔥 MAIN GRID */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-10 items-center my-auto">
           
-          {/* ==================== LEFT SIDE: COGNITIVE COPY & CTAS ==================== */}
-          <div className="lg:col-span-7 flex flex-col text-left space-y-8">
+          {/* ==================== LEFT SIDE: LEO FAMILY BRAND COPY & CTAS ==================== */}
+          <div className="lg:col-span-5 flex flex-col text-left space-y-7">
             
-            {/* Position / Spiritual Tagline */}
+            {/* Tagline / Eyebrow */}
             <motion.div
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
-              className="inline-flex items-center gap-3 bg-surface/40 border border-primary/20 px-4 py-2 rounded-full w-fit backdrop-blur-md"
+              className="inline-flex items-center gap-2.5 bg-surface/50 border border-primary/30 px-4 py-2 rounded-full w-fit backdrop-blur-md shadow-sm"
             >
               <div className="relative">
                 <Sparkles className="w-4 h-4 text-primary animate-pulse" />
                 <div className="absolute inset-0 bg-primary/30 blur-[4px] rounded-full animate-ping opacity-75" />
               </div>
-              <span className="text-[10px] md:text-xs font-cinzel font-bold tracking-[0.25em] text-primary uppercase">
-                {t('hero.tagline', 'Ancient Wisdom Powered by Modern Intelligence')}
+              <span className="text-[10px] sm:text-xs font-cinzel font-bold tracking-[0.25em] text-primary uppercase">
+                India's Leading Spiritual Ecosystem
               </span>
             </motion.div>
 
-            {/* High Impact Headline */}
+            {/* HERO TITLE & SUBTITLE */}
             <div className="space-y-4">
               <motion.h1
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 1, delay: 0.2 }}
-                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold font-cinzel tracking-tight leading-[1.2] text-text-primary"
+                transition={{ duration: 0.9, delay: 0.1 }}
+                className="text-4xl sm:text-5xl lg:text-6xl font-extrabold font-cinzel tracking-tight leading-[1.1] text-text-primary"
               >
-                {t('hero.title', 'Unlock the Hidden Blueprint of Your Life')}
+                LEO FAMILY ACADEMY
               </motion.h1>
 
-              {/* High-value Premium Subtitle */}
+              {/* Subtitle */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.9, delay: 0.25 }}
+                className="space-y-1 font-cinzel font-bold text-lg sm:text-xl text-amber-400"
+              >
+                <p>One Platform.</p>
+                <p>Three Master Mentors.</p>
+                <p className="text-primary">Unlimited Spiritual Growth.</p>
+              </motion.div>
+
+              {/* Description */}
               <motion.p
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 1, delay: 0.4 }}
-                className="text-text-secondary text-base md:text-lg lg:text-xl font-light leading-relaxed max-w-2xl font-sans"
+                transition={{ duration: 0.9, delay: 0.35 }}
+                className="text-text-secondary text-sm sm:text-base font-light leading-relaxed max-w-xl font-sans"
               >
-                {t('hero.subtitle', 'Experience authentic Numerology, Astrology, Vastu, Name Correction, Spiritual Guidance and AI-powered analysis designed to help you make better life decisions.')}
+                Discover authentic Numerology, Astrology, Vastu, Gemstones, Spiritual Science and AI-powered learning from India's leading experts.
               </motion.p>
             </div>
 
-            {/* CTAs with Luxury Feel */}
+            {/* CTAs */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, delay: 0.6 }}
-              className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 pt-2"
+              transition={{ duration: 0.9, delay: 0.45 }}
+              className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 pt-2"
             >
               <a
-                href={whatsappUrl}
+                href={WHATSAPP_LINK}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group relative px-8 py-5 bg-primary text-background font-extrabold uppercase tracking-[0.15em] text-xs md:text-sm rounded-xl text-center shadow-lg transition-all hover:-translate-y-0.5 cursor-pointer hover:brightness-110"
-                style={{ boxShadow: '0 10px 30px rgba(var(--primary-rgb), 0.3)' }}
+                className="group relative px-7 py-4 bg-primary text-background font-extrabold uppercase tracking-[0.15em] text-xs rounded-xl text-center shadow-lg transition-all hover:-translate-y-0.5 cursor-pointer hover:brightness-110 flex items-center justify-center gap-2"
+                style={{ boxShadow: '0 10px 25px rgba(212, 175, 55, 0.3)' }}
               >
-                <div className="absolute inset-0 w-full h-full bg-white/20 transform -skew-x-12 translate-x-full group-hover:translate-x-[-100%] transition-transform duration-1000 ease-out" />
-                {t('hero.ctaText', 'Book Personal Consultation')}
+                <span>Book Personal Consultation</span>
+                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
               </a>
 
               <button
-                onClick={() => {
-                  const el = document.getElementById('services') || document.querySelector('[class*="services"]');
-                  if (el) el.scrollIntoView({ behavior: 'smooth' });
-                }}
-                className="group px-8 py-5 bg-card hover:bg-surface border border-border/40 hover:border-primary/40 text-text-primary font-bold uppercase tracking-[0.15em] text-xs md:text-sm rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer"
+                onClick={handleExploreAcademies}
+                className="group px-7 py-4 bg-card hover:bg-surface border border-primary/30 hover:border-primary text-text-primary font-bold uppercase tracking-[0.15em] text-xs rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md"
               >
-                <span>{t('hero.secondaryCtaText', 'Explore Courses')}</span>
-                <ChevronRight className="w-4 h-4 text-primary group-hover:translate-x-1 transition-transform" />
+                <Compass className="w-4 h-4 text-primary" />
+                <span>Explore Academies</span>
               </button>
             </motion.div>
 
-            {/* Below CTA: Trust elements */}
+            {/* FLOATING STATISTICS BADGES */}
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 1, delay: 0.8 }}
-              className="space-y-4 pt-2"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.9, delay: 0.55 }}
+              className="grid grid-cols-3 gap-3 pt-4 border-t border-border/20 max-w-xl"
             >
-              <div className="flex items-center gap-2 text-primary font-sans text-sm font-semibold">
-                <div className="flex gap-0.5">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 fill-primary text-primary" />
-                  ))}
+              {FLOATING_STATS.map((stat, idx) => (
+                <div
+                  key={idx}
+                  className="bg-card/90 border border-amber-400/25 rounded-2xl p-3 text-center backdrop-blur-md hover:border-amber-400/50 transition-colors shadow-md"
+                >
+                  <span className="text-xl sm:text-2xl font-extrabold font-cinzel text-amber-400 block leading-tight">
+                    {stat.value}
+                  </span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-text-primary font-cinzel block mt-0.5">
+                    {stat.label}
+                  </span>
+                  <span className="text-[9px] text-text-secondary font-sans block hidden sm:block">
+                    {stat.sublabel}
+                  </span>
                 </div>
-                <span className="text-text-secondary">Trusted by Thousands of Students</span>
-              </div>
-
-              {/* Bullet checklist */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-xl">
-                {badges.map((badge, i) => (
-                  <div key={i} className="flex items-center gap-2.5 text-text-secondary text-xs md:text-sm">
-                    <CheckCircle2 className="w-4 h-4 text-success shrink-0" />
-                    <span>{badge}</span>
-                  </div>
-                ))}
-              </div>
+              ))}
             </motion.div>
 
           </div>
 
-          {/* ==================== RIGHT SIDE: PREMIUM FOUNDER CARD ==================== */}
-          <div className="lg:col-span-5 flex justify-center lg:justify-end items-center">
+          {/* ==================== RIGHT SIDE: PREMIUM 3-MENTOR SHOWCASE ==================== */}
+          <div className="lg:col-span-7">
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 30 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              transition={{ duration: 1, delay: 0.4 }}
-              className="relative w-full max-w-[380px] sm:max-w-[420px] group"
+              transition={{ duration: 1, delay: 0.3 }}
+              className="space-y-4"
             >
-              {/* Glowing Background Ring Animation */}
-              <div className="absolute -inset-1.5 bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-700 rounded-[2.5rem] opacity-30 group-hover:opacity-60 blur-xl transition duration-1000 group-hover:duration-200 animate-tilt pointer-events-none" />
-              
-              {/* Luxury Frame Container */}
-              <div className="relative bg-card border border-border/40 rounded-[2.5rem] p-5 backdrop-blur-2xl overflow-hidden flex flex-col justify-between shadow-2xl">
-                
-                {/* Image frame utilizing central FounderImage component for Maharaja glow & custom framings */}
-                <div className="relative aspect-[4/5] w-full flex justify-center items-center">
-                  <FounderImage 
-                    size="xl" 
-                    variant="portrait" 
-                    animation="shine" 
-                    priority={true} 
-                    showGlow={true}
-                    showFrame={true}
-                    className="w-full h-full"
-                  />
-                  
-                  {/* Absolute positioning badge for "Founder" */}
-                  <div className="absolute top-6 left-1/2 -translate-x-1/2 bg-amber-950/80 border border-amber-400/30 px-4 py-1.5 rounded-full backdrop-blur-md z-30">
-                    <p className="text-[9px] uppercase tracking-[0.25em] text-amber-300 font-bold font-cinzel text-center">
-                      {activeAcademy?.shortName || activeAcademy?.name || "Instructor Academy"}
+              {/* Showcase Header Badge */}
+              <div className="flex items-center justify-between pb-2">
+                <span className="text-[10px] font-extrabold uppercase tracking-[0.25em] text-primary bg-primary/10 border border-primary/20 px-3 py-1 rounded-full">
+                  Three Master Mentors
+                </span>
+                <span className="text-[10px] text-text-secondary font-cinzel uppercase tracking-widest hidden sm:inline">
+                  Select an Academy
+                </span>
+              </div>
+
+              {/* 3 Mentors Side By Side */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-5">
+                {MENTORS_SHOWCASE.map((mentor, index) => (
+                  <motion.div
+                    key={mentor.id}
+                    whileHover={{ y: -8 }}
+                    transition={{ duration: 0.3 }}
+                    className="group relative bg-card/90 border border-amber-400/35 hover:border-amber-400 rounded-[2rem] p-5 backdrop-blur-md flex flex-col justify-between items-center text-center shadow-xl hover:shadow-[0_0_30px_rgba(212,175,55,0.3)] transition-all duration-300"
+                  >
+                    {/* Glowing Accent Ring Behind Photo */}
+                    <div className="absolute top-4 w-28 h-28 rounded-full bg-gradient-to-tr from-amber-500/20 via-primary/30 to-amber-300/10 blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+
+                    {/* Mentor Photo Container */}
+                    <div className="relative w-28 h-28 sm:w-32 sm:h-32 rounded-full p-1 bg-gradient-to-tr from-primary via-amber-300 to-amber-600 shadow-md overflow-hidden mb-3 group-hover:scale-105 transition-transform duration-300">
+                      <SmartImage
+                        src={mentor.image}
+                        alt={mentor.name}
+                        className="w-full h-full object-cover rounded-full"
+                      />
+                    </div>
+
+                    {/* Role Badge */}
+                    <span className="text-[9px] font-bold uppercase tracking-widest text-amber-400 bg-amber-400/10 border border-amber-400/30 px-2.5 py-0.5 rounded-full mb-2">
+                      {mentor.roleBadge}
+                    </span>
+
+                    {/* Name */}
+                    <h3 className="text-sm sm:text-base font-bold font-cinzel text-text-primary group-hover:text-primary transition-colors leading-tight mb-1">
+                      {mentor.name}
+                    </h3>
+
+                    {/* Title */}
+                    <p className="text-[11px] font-semibold text-text-secondary font-sans leading-snug mb-4 min-h-[32px]">
+                      {mentor.title}
                     </p>
-                  </div>
-                </div>
 
-                {/* Founder Professional Copy */}
-                <div className="pt-6 pb-2 text-center relative z-10">
-                  <h3 className="text-2xl font-bold font-cinzel text-text-primary tracking-wide">
-                    {activeAcademy?.instructorName || "Instructor"}
-                  </h3>
-                  
-                  {/* Professional Accreditations */}
-                  <div className="flex flex-wrap justify-center gap-1.5 mt-3 mb-4">
-                    {roles.map((role, rIdx) => (
-                      <span 
-                        key={rIdx} 
-                        className="bg-primary/5 border border-primary/10 px-2.5 py-0.5 rounded-full text-[10px] text-text-primary tracking-wider hover:border-primary/45 transition-colors"
-                      >
-                        {role}
-                      </span>
-                    ))}
-                  </div>
+                    {/* View Academy Button */}
+                    <button
+                      onClick={() => switchAcademy(mentor.slug)}
+                      className="w-full py-2.5 bg-primary/10 hover:bg-primary text-primary hover:text-background border border-primary/30 font-bold uppercase tracking-wider text-[10px] rounded-xl transition-all duration-300 flex items-center justify-center gap-1.5 cursor-pointer shadow-sm group-hover:bg-primary group-hover:text-background"
+                    >
+                      <span>View Academy</span>
+                      <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
+                    </button>
 
-                  {/* In-app Quote block */}
-                  <p className="text-text-secondary text-sm font-sans italic tracking-wide max-w-xs mx-auto border-t border-border/20 pt-3">
-                    "{t('hero.quote', 'Your journey begins with understanding yourself.')}"
-                  </p>
-                </div>
-
+                  </motion.div>
+                ))}
               </div>
 
             </motion.div>
@@ -368,9 +393,9 @@ const HeroSection: React.FC<HeroSectionProps> = ({ section }) => {
 
       </div>
 
-      {/* ==================== BOTTOM OF HERO: SCROLLING TRUST BAR ==================== */}
-      <div className="relative w-full border-t border-b border-border/20 bg-card/60 backdrop-blur-md py-6 mt-16 z-10 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-6 mb-3 flex items-center justify-between">
+      {/* ==================== BOTTOM TRUST BAR ==================== */}
+      <div className="relative w-full border-t border-b border-border/20 bg-card/60 backdrop-blur-md py-4 mt-12 z-10 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-6 mb-2 flex items-center justify-between">
           <p className="text-[10px] uppercase font-cinzel font-bold tracking-[0.3em] text-primary">
             CONNECT WITH OUR COMMUNITY
           </p>
@@ -390,13 +415,13 @@ const HeroSection: React.FC<HeroSectionProps> = ({ section }) => {
                   href={link.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-3 bg-card hover:bg-surface border border-border/40 hover:border-primary/45 px-5 py-3 rounded-xl transition-all duration-300 group shadow-md cursor-pointer"
+                  className="inline-flex items-center gap-3 bg-card hover:bg-surface border border-border/40 hover:border-primary/45 px-5 py-2.5 rounded-xl transition-all duration-300 group shadow-md cursor-pointer"
                 >
-                  <div className="w-8 h-8 rounded-lg bg-background flex items-center justify-center text-primary border border-border/20 group-hover:scale-110 transition-transform">
-                    <IconComp className="w-4 h-4" />
+                  <div className="w-7 h-7 rounded-lg bg-background flex items-center justify-center text-primary border border-border/20 group-hover:scale-110 transition-transform">
+                    <IconComp className="w-3.5 h-3.5" />
                   </div>
                   <div className="flex flex-col text-left">
-                    <span className="text-[10px] uppercase tracking-widest text-text-primary font-bold leading-tight transition-colors">
+                    <span className="text-[10px] uppercase tracking-widest text-text-primary font-bold leading-tight">
                       {link.name}
                     </span>
                     <span className="text-[9px] text-text-secondary font-sans group-hover:text-primary transition-colors">
@@ -411,43 +436,6 @@ const HeroSection: React.FC<HeroSectionProps> = ({ section }) => {
         </div>
       </div>
 
-      {/* ==================== BELOW HERO: ANIMATED STATISTICS ==================== */}
-      <div className="relative w-full bg-transparent pt-12 pb-4 z-10 border-t border-border/20">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-            {stats.map((stat, i) => {
-              const StatIcon = stat.icon;
-              return (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6, delay: i * 0.1 }}
-                  className="bg-card hover:bg-surface border border-border/20 hover:border-primary/30 p-5 rounded-2xl backdrop-blur-md transition-all duration-300 group flex flex-col items-center text-center justify-between shadow-lg"
-                >
-                  <div className="w-10 h-10 rounded-xl bg-primary/5 border border-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform mb-3">
-                    <StatIcon className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h4 className="text-2xl md:text-3xl font-extrabold text-primary font-cinzel tracking-tight leading-none">
-                      {stat.value}
-                    </h4>
-                    <p className="text-xs font-bold text-text-primary tracking-widest uppercase mt-2 font-cinzel">
-                      {stat.label}
-                    </p>
-                    <p className="text-[10px] text-text-secondary font-sans mt-1 transition-colors">
-                      {stat.desc}
-                    </p>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-
-      {/* Styles for horizontal looping marquee */}
       <style>{`
         @keyframes marquee {
           0% { transform: translateX(0%); }
@@ -460,3 +448,4 @@ const HeroSection: React.FC<HeroSectionProps> = ({ section }) => {
 };
 
 export default HeroSection;
+

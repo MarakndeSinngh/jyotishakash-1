@@ -5,6 +5,7 @@ import { ThemeProvider } from './components/ThemeContext.tsx';
 import { VideoLightboxProvider } from './components/common/VideoLightbox.tsx';
 import { MediaProvider } from './media/MediaProvider.tsx';
 import { AcademyProvider } from './context/AcademyContext.tsx';
+import { CourseEngineProvider } from './context/CourseEngineContext.tsx';
 import { StudentProvider } from './context/StudentContext.tsx';
 import { LanguageProvider } from './context/LanguageContext.tsx';
 import App from './App.tsx';
@@ -16,13 +17,15 @@ createRoot(document.getElementById('root')!).render(
       <ThemeProvider>
         <LanguageProvider>
           <AcademyProvider>
-            <StudentProvider>
-              <VideoLightboxProvider>
-                <MediaProvider>
-                  <App />
-                </MediaProvider>
-              </VideoLightboxProvider>
-            </StudentProvider>
+            <CourseEngineProvider>
+              <StudentProvider>
+                <VideoLightboxProvider>
+                  <MediaProvider>
+                    <App />
+                  </MediaProvider>
+                </VideoLightboxProvider>
+              </StudentProvider>
+            </CourseEngineProvider>
           </AcademyProvider>
         </LanguageProvider>
       </ThemeProvider>

@@ -5,6 +5,12 @@ import HeroSection from './components/sections/HeroSection';
 import TrustCredibilitySection from './components/sections/TrustCredibilitySection';
 import ServicesSection from './components/sections/ServicesSection';
 import TestimonialsSection from './components/sections/TestimonialsSection';
+import MeetOurMentorsSection from './components/sections/MeetOurMentorsSection';
+import AcademyComparisonMatrix from './components/sections/AcademyComparisonMatrix';
+import FeaturedCoursesHomepage from './components/sections/FeaturedCoursesHomepage';
+import DynamicTestimonialsHomepage from './components/sections/DynamicTestimonialsHomepage';
+import SuccessMetricsSection from './components/sections/SuccessMetricsSection';
+import HomepageCTASection from './components/sections/HomepageCTASection';
 import AboutSection from './components/sections/AboutSection';
 import EcosystemSection from './components/sections/EcosystemSection';
 import GemstonesPage from './components/sections/GemstonesPage';
@@ -334,12 +340,31 @@ export default function App() {
                         <React.Fragment key={idx}>
                           <HeroSection section={section} />
                           <TrustCredibilitySection />
+                          {currentPath === '/' && (
+                            <>
+                              <MeetOurMentorsSection />
+                              <AcademyComparisonMatrix />
+                              <FeaturedCoursesHomepage />
+                            </>
+                          )}
                         </React.Fragment>
                       );
                     case 'services':
                       return <ServicesSection key={idx} section={section} services={services} />;
                     case 'testimonials':
-                      return <TestimonialsSection key={idx} section={section} testimonials={testimonials} />;
+                      return (
+                        <React.Fragment key={idx}>
+                          {currentPath === '/' ? (
+                            <>
+                              <DynamicTestimonialsHomepage />
+                              <SuccessMetricsSection />
+                              <HomepageCTASection />
+                            </>
+                          ) : (
+                            <TestimonialsSection section={section} testimonials={testimonials} />
+                          )}
+                        </React.Fragment>
+                      );
                     case 'about':
                       return <AboutSection key={idx} section={section} />;
                     case 'ecosystem':

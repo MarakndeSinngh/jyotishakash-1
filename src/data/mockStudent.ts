@@ -1,0 +1,138 @@
+import { StudentProfile, StudentCertificate, RecentActivity, UpcomingLiveSession } from '../types/student';
+import { Enrollment } from '../types/enrollment';
+
+export const INITIAL_STUDENT_PROFILE: StudentProfile = {
+  id: 'STD-2026-8842',
+  fullName: 'Aarav Sharma',
+  email: 'aarav.sharma@example.com',
+  mobile: '+91 98765 43210',
+  country: 'India',
+  state: 'Maharashtra',
+  language: 'English',
+  preferredAcademy: 'sannjoy',
+  enrolledCourses: ['snj-c1', 'shk-c1'],
+  completedCourses: ['snj-c1'],
+  certificates: [
+    {
+      id: 'CERT-SNJ-001',
+      certificateNumber: 'LEO-SNJ-2026-891',
+      courseId: 'snj-c1',
+      courseTitle: 'Complete Numerology Masterclass',
+      academyId: 'sannjoy',
+      academyName: 'Sannjoy Dash Academy',
+      instructorName: 'Sannjoy Dash',
+      issueDate: '2026-06-15',
+      verificationUrl: 'https://leo-family.org/verify/LEO-SNJ-2026-891',
+    },
+  ],
+  progress: {
+    'snj-c1': {
+      courseId: 'snj-c1',
+      academyId: 'sannjoy',
+      progressPercentage: 100,
+      totalLessons: 12,
+      completedLessonsCount: 12,
+      completedLessonIds: ['l1', 'l2', 'l3', 'l4', 'l5', 'l6', 'l7', 'l8', 'l9', 'l10', 'l11', 'l12'],
+      lastAccessedAt: '2026-06-15T10:30:00Z',
+      completedAt: '2026-06-15T10:30:00Z',
+      lastLessonTitle: 'Module 12: Professional Consultation Masterclass',
+    },
+    'shk-c1': {
+      courseId: 'shk-c1',
+      academyId: 'shaunak',
+      progressPercentage: 45,
+      totalLessons: 10,
+      completedLessonsCount: 4,
+      completedLessonIds: ['m1', 'm2', 'm3', 'm4'],
+      lastAccessedAt: '2026-07-28T14:20:00Z',
+      lastLessonTitle: 'Lesson 4: Planetary Remedies & Gemstone Selection',
+    },
+  },
+  avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400',
+  enrollmentDate: '2026-01-10T08:00:00Z',
+  membershipType: 'pro',
+};
+
+export const INITIAL_ENROLLMENTS: Enrollment[] = [
+  {
+    id: 'ENR-001',
+    studentId: 'STD-2026-8842',
+    courseId: 'snj-c1',
+    academyId: 'sannjoy',
+    purchaseStatus: 'completed',
+    enrollmentDate: '2026-02-01T09:00:00Z',
+    progress: 100,
+    completionStatus: 'completed',
+    certificateStatus: 'issued',
+    lastAccessedAt: '2026-06-15T10:30:00Z',
+    completedLessons: ['l1', 'l2', 'l3', 'l4', 'l5', 'l6', 'l7', 'l8', 'l9', 'l10', 'l11', 'l12'],
+  },
+  {
+    id: 'ENR-002',
+    studentId: 'STD-2026-8842',
+    courseId: 'shk-c1',
+    academyId: 'shaunak',
+    purchaseStatus: 'enrolled',
+    enrollmentDate: '2026-05-12T14:00:00Z',
+    progress: 45,
+    completionStatus: 'in_progress',
+    certificateStatus: 'none',
+    lastAccessedAt: '2026-07-28T14:20:00Z',
+    completedLessons: ['m1', 'm2', 'm3', 'm4'],
+  },
+];
+
+export const INITIAL_RECENT_ACTIVITIES: RecentActivity[] = [
+  {
+    id: 'ACT-001',
+    timestamp: '2026-07-28T14:20:00Z',
+    type: 'lesson_completed',
+    title: 'Completed Lesson 4',
+    description: 'Finished "Planetary Remedies & Gemstone Selection" in Astro-Numerology',
+    courseId: 'shk-c1',
+    academyId: 'shaunak',
+  },
+  {
+    id: 'ACT-002',
+    timestamp: '2026-06-15T10:30:00Z',
+    type: 'certificate_earned',
+    title: 'Earned Masterclass Certificate',
+    description: 'Successfully passed assessment for Complete Numerology Masterclass',
+    courseId: 'snj-c1',
+    academyId: 'sannjoy',
+  },
+  {
+    id: 'ACT-003',
+    timestamp: '2026-05-12T14:00:00Z',
+    type: 'course_enrolled',
+    title: 'Enrolled in Astro-Numerology',
+    description: 'Joined Shaunak Chakraborty Academy Pro Course',
+    courseId: 'shk-c1',
+    academyId: 'shaunak',
+  },
+];
+
+export const INITIAL_UPCOMING_LIVE_SESSIONS: UpcomingLiveSession[] = [
+  {
+    id: 'LIVE-001',
+    title: 'Live Q&A & Name Correction Workshop',
+    academyId: 'sannjoy',
+    academyName: 'Sannjoy Dash Academy',
+    instructorName: 'Sannjoy Dash',
+    scheduledAt: '2026-08-10T14:00:00Z',
+    durationMinutes: 90,
+    isRegistered: true,
+    topic: 'Advanced Name Correction Strategies for Business Success',
+  },
+  {
+    id: 'LIVE-002',
+    title: 'Transit Analysis & Remedies Masterclass',
+    academyId: 'shaunak',
+    academyName: 'Shaunak Chakraborty Academy',
+    instructorName: 'Shaunak Chakraborty',
+    scheduledAt: '2026-08-18T16:00:00Z',
+    durationMinutes: 120,
+    isRegistered: false,
+    topic: '2026 Planetary Movements & Personal Horoscope Impacts',
+  },
+];

@@ -1,0 +1,469 @@
+@import "tailwindcss";
+
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@300;400;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Playfair Display", serif;
+  --font-cinzel: "Cinzel", serif;
+
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --color-accent: var(--accent);
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-card: var(--card);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-border: var(--border);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-error: var(--error);
+  
+  /* Fallbacks for backwards compatibility */
+  --color-gold-bright: var(--gold-bright);
+  --color-paper: var(--background);
+  --color-gold: var(--primary);
+}
+
+:root {
+  --primary: #F3CD5C;
+  --primary-rgb: 243, 205, 92;
+  --secondary: #D4AF37;
+  --accent: #34D399;
+  --background: #0C0A09;
+  --surface: #1C1917;
+  --card: #262220;
+  --text-primary: #F5F5F4;
+  --text-secondary: #A8A29E;
+  --border: #3F3A36;
+  --success: #34D399;
+  --warning: #FBBF24;
+  --error: #F87171;
+  --gold-bright: #FBBF24;
+}
+
+/* 1. Leo Gold Theme presets */
+.theme-leo-gold.light, .theme-leo-gold:not(.dark) {
+  --primary: #D4AF37;
+  --primary-rgb: 212, 175, 55;
+  --secondary: #AA7C11;
+  --accent: #10B981;
+  --background: #FAF9F6;
+  --surface: #FFFDF9;
+  --card: #FFFFFF;
+  --text-primary: #1C1917;
+  --text-secondary: #57534E;
+  --border: #E7E5E4;
+  --success: #10B981;
+  --warning: #F59E0B;
+  --error: #EF4444;
+  --gold-bright: #D4AF37;
+}
+
+.theme-leo-gold.dark {
+  --primary: #F3CD5C;
+  --primary-rgb: 243, 205, 92;
+  --secondary: #D4AF37;
+  --accent: #34D399;
+  --background: #0C0A09;
+  --surface: #1C1917;
+  --card: #262220;
+  --text-primary: #F5F5F4;
+  --text-secondary: #A8A29E;
+  --border: #3F3A36;
+  --success: #34D399;
+  --warning: #FBBF24;
+  --error: #F87171;
+  --gold-bright: #FBBF24;
+}
+
+/* 2. Cosmic Purple Theme presets */
+.theme-cosmic-purple.light, .theme-cosmic-purple:not(.dark) {
+  --primary: #8B5CF6;
+  --primary-rgb: 139, 92, 246;
+  --secondary: #D8B4FE;
+  --accent: #F59E0B;
+  --background: #FAF5FF;
+  --surface: #FFFDF9;
+  --card: #FFFFFF;
+  --text-primary: #2E1065;
+  --text-secondary: #5B21B6;
+  --border: #F3E8FF;
+  --success: #10B981;
+  --warning: #F59E0B;
+  --error: #EF4444;
+  --gold-bright: #8B5CF6;
+}
+
+.theme-cosmic-purple.dark {
+  --primary: #A78BFA;
+  --primary-rgb: 167, 139, 250;
+  --secondary: #C084FC;
+  --accent: #FBBF24;
+  --background: #05050C;
+  --surface: #0B0B1E;
+  --card: #12122A;
+  --text-primary: #F5F3FF;
+  --text-secondary: #D8B4FE;
+  --border: #24244D;
+  --success: #34D399;
+  --warning: #FBBF24;
+  --error: #F87171;
+  --gold-bright: #C084FC;
+}
+
+/* 3. Emerald Wisdom Theme presets */
+.theme-emerald-wisdom.light, .theme-emerald-wisdom:not(.dark) {
+  --primary: #10B981;
+  --primary-rgb: 16, 185, 129;
+  --secondary: #34D399;
+  --accent: #F59E0B;
+  --background: #F0FDF4;
+  --surface: #FFFDF9;
+  --card: #FFFFFF;
+  --text-primary: #064E3B;
+  --text-secondary: #047857;
+  --border: #DCFCE7;
+  --success: #10B981;
+  --warning: #F59E0B;
+  --error: #EF4444;
+  --gold-bright: #10B981;
+}
+
+.theme-emerald-wisdom.dark {
+  --primary: #34D399;
+  --primary-rgb: 52, 211, 153;
+  --secondary: #6EE7B7;
+  --accent: #FBBF24;
+  --background: #051C15;
+  --surface: #092D23;
+  --card: #0E3D30;
+  --text-primary: #ECFDF5;
+  --text-secondary: #A7F3D0;
+  --border: #114D3E;
+  --success: #34D399;
+  --warning: #FBBF24;
+  --error: #F87171;
+  --gold-bright: #6EE7B7;
+}
+
+/* 4. Royal Blue Theme presets */
+.theme-royal-blue.light, .theme-royal-blue:not(.dark) {
+  --primary: #3B82F6;
+  --primary-rgb: 59, 130, 246;
+  --secondary: #93C5FD;
+  --accent: #F59E0B;
+  --background: #EFF6FF;
+  --surface: #FFFDF9;
+  --card: #FFFFFF;
+  --text-primary: #1E3A8A;
+  --text-secondary: #1D4ED8;
+  --border: #DBEAFE;
+  --success: #10B981;
+  --warning: #F59E0B;
+  --error: #EF4444;
+  --gold-bright: #3B82F6;
+}
+
+.theme-royal-blue.dark {
+  --primary: #60A5FA;
+  --primary-rgb: 96, 165, 250;
+  --secondary: #3B82F6;
+  --accent: #FBBF24;
+  --background: #090D16;
+  --surface: #111827;
+  --card: #1E293B;
+  --text-primary: #ECFEFF;
+  --text-secondary: #93C5FD;
+  --border: #2D3748;
+  --success: #34D399;
+  --warning: #FBBF24;
+  --error: #F87171;
+  --gold-bright: #93C5FD;
+}
+
+/* 5. Light Luxury Theme presets */
+.theme-light-luxury.light, .theme-light-luxury:not(.dark) {
+  --primary: #C5A880;
+  --primary-rgb: 197, 168, 128;
+  --secondary: #E5D5C0;
+  --accent: #4B5563;
+  --background: #FAF8F5;
+  --surface: #FFFDFB;
+  --card: #FFFFFF;
+  --text-primary: #2D2924;
+  --text-secondary: #6B6259;
+  --border: #F0ECE3;
+  --success: #10B981;
+  --warning: #F59E0B;
+  --error: #EF4444;
+  --gold-bright: #C5A880;
+}
+
+.theme-light-luxury.dark {
+  --primary: #E5D5C0;
+  --primary-rgb: 229, 213, 192;
+  --secondary: #C5A880;
+  --accent: #D1D5DB;
+  --background: #181614;
+  --surface: #24211E;
+  --card: #2D2A26;
+  --text-primary: #F5F0EA;
+  --text-secondary: #C0B7AD;
+  --border: #3E3A35;
+  --success: #34D399;
+  --warning: #FBBF24;
+  --error: #F87171;
+  --gold-bright: #C5A880;
+}
+
+/* ✅ BASE CLEAN (NO BACKGROUND OVERRIDE) */
+@layer base {
+  body {
+    @apply text-text-primary bg-background font-sans antialiased selection:bg-accent/30 selection:text-white transition-colors duration-300;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-cinzel text-text-primary tracking-wider leading-tight;
+  }
+
+  p {
+    @apply leading-relaxed text-text-secondary;
+  }
+}
+
+/* ✅ KEEP YOUR UI STYLES (SAFE & THEMED) */
+@layer utilities {
+
+  .cinematic-card {
+    @apply border border-border/20 relative overflow-hidden transition-all duration-500 rounded-3xl p-6;
+    backdrop-filter: blur(12px);
+    background: var(--card);
+
+    box-shadow: 
+      0 40px 80px -20px rgba(0, 0, 0, 0.1),
+      0 20px 40px -30px rgba(0, 0, 0, 0.05);
+  }
+
+  .cinematic-card:hover {
+    @apply border-primary/30;
+    box-shadow: 
+      0 60px 100px -30px rgba(var(--primary-rgb), 0.15),
+      0 30px 60px -40px rgba(0, 0, 0, 0.1);
+  }
+
+  .gold-glow-text {
+    @apply text-transparent bg-clip-text bg-gradient-to-b from-primary via-primary/90 to-primary drop-shadow-[0_2px_4px_rgba(0,0,0,0.1)];
+  }
+
+  .text-shadow-premium {
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  }
+
+  .text-shadow-gold {
+    text-shadow: 0 0 20px rgba(var(--primary-rgb), 0.2);
+  }
+
+  .btn-premium {
+    @apply rounded-full px-12 py-5 font-bold uppercase tracking-[0.2em] text-base transition-all duration-300 flex items-center justify-center text-center text-background bg-primary hover:scale-105 hover:brightness-110 shadow-lg cursor-pointer;
+    box-shadow: 0 10px 30px rgba(var(--primary-rgb), 0.3);
+  }
+
+  .btn-premium:hover {
+    box-shadow: 0 15px 40px rgba(var(--primary-rgb), 0.4);
+  }
+}
+
+/* 6. Maharaja Gold Theme presets */
+.theme-maharaja-gold.light, .theme-maharaja-gold:not(.dark) {
+  --primary: #A86E25;
+  --primary-rgb: 168, 110, 37;
+  --secondary: #C29B47;
+  --accent: #E9C269;
+  --background: #FAF6F0;
+  --surface: #F2E9DC;
+  --card: #FFFFFF;
+  --text-primary: #2B1704;
+  --text-secondary: #5A4027;
+  --border: #E5D4BE;
+  --success: #3FBF6F;
+  --warning: #D9A441;
+  --error: #C84C4C;
+  --gold-bright: #E9C269;
+}
+
+.theme-maharaja-gold.dark {
+  --primary: #A86E25;
+  --primary-rgb: 168, 110, 37;
+  --secondary: #C29B47;
+  --accent: #E9C269;
+  --background: #1C0F02;
+  --surface: #2B1704;
+  --card: #3B2207;
+  --text-primary: #F6F1E9;
+  --text-secondary: #D4C4B7;
+  --border: rgba(194, 155, 71, 0.35);
+  --success: #3FBF6F;
+  --warning: #D9A441;
+  --error: #C84C4C;
+  --gold-bright: #E9C269;
+}
+
+/* Custom Scrollbar for Maharaja Gold */
+.theme-maharaja-gold::-webkit-scrollbar {
+  width: 10px;
+}
+.theme-maharaja-gold::-webkit-scrollbar-track {
+  background: #1C0F02;
+}
+.theme-maharaja-gold::-webkit-scrollbar-thumb {
+  background: #A86E25;
+  border-radius: 5px;
+}
+.theme-maharaja-gold::-webkit-scrollbar-thumb:hover {
+  background: #C29B47;
+}
+
+/* Custom Text Selection for Maharaja Gold */
+.theme-maharaja-gold::selection {
+  background-color: #C29B47 !important;
+  color: #1C0F02 !important;
+}
+.theme-maharaja-gold *::selection {
+  background-color: #C29B47 !important;
+  color: #1C0F02 !important;
+}
+
+/* Maharaja Gold Premium Button Customizations */
+.theme-maharaja-gold .btn-premium {
+  background: linear-gradient(135deg, #A86E25 0%, #C29B47 100%) !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 10px 30px rgba(168, 110, 37, 0.4) !important;
+  border: 1px solid rgba(233, 194, 105, 0.3) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.theme-maharaja-gold .btn-premium::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -50%;
+  width: 200%;
+  height: 100%;
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.15), transparent);
+  transform: skewX(-25deg);
+  transition: 0.75s;
+}
+
+.theme-maharaja-gold .btn-premium:hover::after {
+  left: 125%;
+}
+
+.theme-maharaja-gold .btn-premium:hover {
+  box-shadow: 0 15px 40px rgba(194, 155, 71, 0.6) !important;
+}
+
+/* Secondary Button fills with bronze gradient on hover */
+.theme-maharaja-gold button:not(.btn-premium):not([aria-label]):hover,
+.theme-maharaja-gold .btn-secondary:hover {
+  background: linear-gradient(135deg, #7C5110 0%, #A86E25 100%) !important;
+  color: #FFFFFF !important;
+  border-color: #C29B47 !important;
+}
+
+/* Maharaja Gold Glassmorphism Cards */
+.theme-maharaja-gold.dark .cinematic-card {
+  background: rgba(59, 34, 7, 0.55) !important;
+  backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(194, 155, 71, 0.35) !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4) !important;
+}
+.theme-maharaja-gold.dark .cinematic-card:hover {
+  border-color: rgba(194, 155, 71, 0.8) !important;
+  box-shadow: 0 30px 60px rgba(168, 110, 37, 0.3) !important;
+}
+
+/* Input elements styling for Maharaja Gold dark mode */
+.theme-maharaja-gold.dark input,
+.theme-maharaja-gold.dark textarea,
+.theme-maharaja-gold.dark select {
+  background-color: #1C0F02 !important;
+  border-color: rgba(194, 155, 71, 0.4) !important;
+  color: #F6F1E9 !important;
+}
+.theme-maharaja-gold.dark input::placeholder,
+.theme-maharaja-gold.dark textarea::placeholder {
+  color: #D4C4B7 !important;
+  opacity: 0.65;
+}
+.theme-maharaja-gold.dark input:focus,
+.theme-maharaja-gold.dark textarea:focus,
+.theme-maharaja-gold.dark select:focus {
+  outline: none !important;
+  border-color: #E9C269 !important;
+  box-shadow: 0 0 0 2px rgba(233, 194, 105, 0.35) !important;
+}
+
+/* Header & Navbar styling for Maharaja Gold dark mode */
+.theme-maharaja-gold.dark header,
+.theme-maharaja-gold.dark nav {
+  background-color: rgba(28, 15, 2, 0.85) !important;
+  backdrop-filter: blur(16px) !important;
+  border-bottom: 1px solid rgba(194, 155, 71, 0.25) !important;
+}
+
+/* Footer styling for Maharaja Gold dark mode */
+.theme-maharaja-gold.dark footer {
+  background-color: #1C0F02 !important;
+  border-top: 1px solid rgba(233, 194, 105, 0.15) !important;
+}
+.theme-maharaja-gold.dark footer h3,
+.theme-maharaja-gold.dark footer h4 {
+  color: #E9C269 !important;
+}
+.theme-maharaja-gold.dark footer p,
+.theme-maharaja-gold.dark footer span,
+.theme-maharaja-gold.dark footer a {
+  color: #D4C4B7 !important;
+}
+.theme-maharaja-gold.dark footer a:hover {
+  color: #E9C269 !important;
+}
+
+/* Icon / SVG fills for Maharaja Gold */
+.theme-maharaja-gold .lucide,
+.theme-maharaja-gold svg {
+  color: #D4C4B7;
+  transition: color 0.3s ease, stroke 0.3s ease;
+}
+.theme-maharaja-gold .lucide:hover,
+.theme-maharaja-gold svg:hover {
+  color: #E9C269;
+}
+.theme-maharaja-gold .text-primary .lucide,
+.theme-maharaja-gold .text-primary svg {
+  color: #A86E25;
+}
+.theme-maharaja-gold .text-primary:hover .lucide,
+.theme-maharaja-gold .text-primary:hover svg {
+  color: #C29B47;
+}
+
+/* Specific Timeline / Testimonial elements */
+.theme-maharaja-gold .quote-icon {
+  color: #C29B47 !important;
+}
+.theme-maharaja-gold .timeline-node {
+  background-color: #E9C269 !important;
+  box-shadow: 0 0 15px #E9C269 !important;
+}
+.theme-maharaja-gold .timeline-line {
+  background-color: #A86E25 !important;
+}
+.theme-maharaja-gold .course-badge {
+  background: linear-gradient(135deg, #A86E25 0%, #C29B47 100%) !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 2px 10px rgba(168, 110, 37, 0.3) !important;
+}

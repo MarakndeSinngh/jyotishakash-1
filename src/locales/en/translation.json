@@ -1,0 +1,72 @@
+{
+  "hero": {
+    "tagline": "Ancient Wisdom Powered by Modern Intelligence",
+    "title": "Unlock the Hidden Blueprint of Your Life",
+    "subtitle": "Experience authentic Numerology, Astrology, Vastu, Name Correction, Spiritual Guidance and AI-powered analysis designed to help you make better life decisions.",
+    "ctaText": "Book Personal Consultation",
+    "secondaryCtaText": "Explore Courses",
+    "quote": "Your journey begins with understanding yourself."
+  },
+  "about": {
+    "badge": "Meet the Visionary",
+    "title": "Meet the Visionary",
+    "subtitle": "Every great institution begins with a vision. Discover the journey, philosophy, and mission of our dedicated instructors—making ancient wisdom practical, accessible, and relevant for today's world."
+  },
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "services": "Services",
+    "academy": "Academies",
+    "mediaCenter": "Media Center",
+    "spiritualAI": "Spiritual AI",
+    "calculator": "Calculator",
+    "media": "Media",
+    "shorts": "Shorts",
+    "contact": "Contact",
+    "consultNow": "Consult Now",
+    "selectAcademy": "Select Instructor Academy",
+    "viewAllAcademies": "View All Academies →"
+  },
+  "btn": {
+    "bookConsultation": "Book Personal Consultation",
+    "exploreCourses": "Explore Courses",
+    "learnMore": "Learn More",
+    "enrollNow": "Enroll Now",
+    "viewDetails": "View Details",
+    "submit": "Submit",
+    "search": "Search",
+    "close": "Close",
+    "cancel": "Cancel",
+    "register": "Register",
+    "download": "Download"
+  },
+  "common": {
+    "interfaceLanguage": "Interface Language",
+    "teachingLanguage": "Teaching Language",
+    "selectLanguage": "Select Language",
+    "searchCourses": "Search Courses...",
+    "studentReviews": "Student Reviews",
+    "instructor": "Instructor",
+    "duration": "Duration",
+    "format": "Format",
+    "certificate": "Certificate",
+    "dashboard": "Dashboard",
+    "myCourses": "My Courses",
+    "progress": "Progress",
+    "overview": "Overview",
+    "lessons": "Lessons",
+    "assignments": "Assignments",
+    "settings": "Settings",
+    "profile": "Profile",
+    "logout": "Logout",
+    "allLevels": "All Levels",
+    "beginner": "Beginner",
+    "intermediate": "Intermediate",
+    "advanced": "Advanced",
+    "freeResources": "Free Resources",
+    "faq": "Frequently Asked Questions",
+    "testimonials": "What Our Students Say",
+    "quickContact": "Quick Contact",
+    "copyright": "All Rights Reserved"
+  }
+}

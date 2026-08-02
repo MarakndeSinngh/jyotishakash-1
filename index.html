@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en" prefix="og: http://ogp.me/ns#">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+    <script>
+      (function() {
+        try {
+          var savedTheme = localStorage.getItem('leo-family-theme') || 'maharaja-gold';
+          var savedMode = localStorage.getItem('leo-family-mode') || 'light';
+          var root = document.documentElement;
+          root.classList.add('theme-' + savedTheme);
+          root.classList.add(savedMode);
+        } catch (e) {
+          document.documentElement.classList.add('theme-maharaja-gold');
+          document.documentElement.classList.add('light');
+        }
+      })();
+    </script>
+    <link rel="icon" type="image/jpeg" href="/gemstone-assets/logo.jpg" />
+    <title>Leo Family Occult - Master Your Destiny Through Numbers</title>
+    <meta name="description" content="Discover your planetary alignment with Leo Family Occult. Personalized numerology, gemstone selection, and elite consultations to transform your life frequency." />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Leo Family Occult - Master Your Destiny Through Numbers" />
+    <meta property="og:description" content="Personalized numerology, gemstone selection, and elite consultations to transform your life frequency." />
+    <meta property="og:image" content="https://ais-pre-hwrk4p3bgl7o6y4htydjvt-633550351805.asia-southeast1.run.app/gemstone-assets/logo.jpg" />
+    <meta property="og:image:secure_url" content="https://ais-pre-hwrk4p3bgl7o6y4htydjvt-633550351805.asia-southeast1.run.app/gemstone-assets/logo.jpg" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Leo Family Occult Logo" />
+    <meta property="og:site_name" content="Leo Family Occult" />
+
+    <!-- Schema.org for Google+ / WhatsApp -->
+    <meta itemprop="name" content="Leo Family Occult - Master Your Destiny Through Numbers" />
+    <meta itemprop="description" content="Personalized numerology, gemstone selection, and elite consultations to transform your life frequency." />
+    <meta itemprop="image" content="https://ais-pre-hwrk4p3bgl7o6y4htydjvt-633550351805.asia-southeast1.run.app/gemstone-assets/logo.jpg" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:title" content="Leo Family Occult - Master Your Destiny Through Numbers" />
+    <meta property="twitter:description" content="Personalized numerology, gemstone selection, and elite consultations to transform your life frequency." />
+    <meta property="twitter:image" content="https://ais-pre-hwrk4p3bgl7o6y4htydjvt-633550351805.asia-southeast1.run.app/gemstone-assets/logo.jpg" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+

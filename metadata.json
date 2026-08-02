@@ -1,0 +1,8 @@
+{
+  "name": "Remix Leo Family All Teachers",
+  "description": "A modular, CMS-powered Astrology and Numerology platform with a dynamic section-based engine.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

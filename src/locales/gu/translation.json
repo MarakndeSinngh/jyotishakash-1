@@ -1,0 +1,72 @@
+{
+  "hero": {
+    "tagline": "આધુનિક બુદ્ધિમત્તા દ્વારા સંચાલિત પ્રાચીન જ્ઞાન",
+    "title": "તમારા જીવનની છુપી બ્લુપ્રિન્ટને અનલોક કરો",
+    "subtitle": "પ્રમાણભૂત અંકશાસ્ત્ર, જ્યોતિષ, વાસ્તુ, નામ સુધારણા અને AI પૃથ્થકરણનો અનુભવ કરો.",
+    "ctaText": "વ્યક્તિગત સલાહ બુક કરો",
+    "secondaryCtaText": "કોર્સ જુઓ",
+    "quote": "તમારી યાત્રા તમારી જાતને સમજવાથી શરૂ થાય છે."
+  },
+  "about": {
+    "badge": "માર્ગદર્શક વિશે જાણો",
+    "title": "માર્ગદર્શક વિશે જાણો",
+    "subtitle": "દરેક મહાન સંસ્થાની શરૂઆત એક દ્રષ્ટિથી થાય છે. આપણા સમર્પિત શિક્ષકોની યાત્રા વિશે જાણો."
+  },
+  "nav": {
+    "home": "હોમ",
+    "about": "અમારા વિશે",
+    "services": "સેવાઓ",
+    "academy": "એકેડેમી",
+    "mediaCenter": "મીડિયા સેન્ટર",
+    "spiritualAI": "આધ્યાત્મિક એઆઈ",
+    "calculator": "કેલ્ક્યુલેટર",
+    "media": "મીડિયા",
+    "shorts": "શોર્ટ્સ",
+    "contact": "સંપર્ક",
+    "consultNow": "સલાહ લો",
+    "selectAcademy": "શિક્ષક એકેડેમી પસંદ કરો",
+    "viewAllAcademies": "બધી એકેડેમી જુઓ →"
+  },
+  "btn": {
+    "bookConsultation": "વ્યક્તિગત સલાહ બુક કરો",
+    "exploreCourses": "કોર્સ જુઓ",
+    "learnMore": "વધુ જાણો",
+    "enrollNow": "હવે એન્ચોલ કરો",
+    "viewDetails": "વિગતો જુઓ",
+    "submit": "સબમિટ કરો",
+    "search": "શોધો",
+    "close": "બંધ કરો",
+    "cancel": "રદ કરો",
+    "register": "રજીસ્ટર કરો",
+    "download": "ડાઉનલોડ કરો"
+  },
+  "common": {
+    "interfaceLanguage": "ઇન્ટરફેસ ભાષા",
+    "teachingLanguage": "શિક્ષણ ભાષા",
+    "selectLanguage": "ભાષા પસંદ કરો",
+    "searchCourses": "કોર્સ શોધો...",
+    "studentReviews": "વિદ્યાર્થી સમીક્ષાઓ",
+    "instructor": "શિક્ષક",
+    "duration": "સમયગાળો",
+    "format": "ફોર્મેટ",
+    "certificate": "પ્રમાણપત્ર",
+    "dashboard": "ડેશબોર્ડ",
+    "myCourses": "મારા કોર્સ",
+    "progress": "પ્રગતિ",
+    "overview": "ઝાંખી",
+    "lessons": "પાઠ",
+    "assignments": "અસાઇનમેન્ટ",
+    "settings": "સેટિંગ્સ",
+    "profile": "પ્રોફાઈલ",
+    "logout": "લોગ આઉટ",
+    "allLevels": "તમામ સ્તરો",
+    "beginner": "શરૂઆતી",
+    "intermediate": "મધ્યવર્તી",
+    "advanced": "અદ્યતન",
+    "freeResources": "મફત સંસાધનો",
+    "faq": "વારંવાર પૂછાતા પ્રશ્નો",
+    "testimonials": "અમારા વિદ્યાર્થીઓનો અનુભવ",
+    "quickContact": "ઝડપી સંપર્ક",
+    "copyright": "તમામ હક અનામત"
+  }
+}

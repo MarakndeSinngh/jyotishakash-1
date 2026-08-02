@@ -15,6 +15,7 @@ import AcademySection from './components/sections/AcademySection';
 import AISpiritualSection from './components/sections/AISpiritualSection';
 import MediaCenterPage from './components/sections/MediaCenterPage';
 import ShortsPage from './components/sections/ShortsPage';
+import AcademyLandingPage from './components/sections/AcademyLandingPage';
 import ErrorBoundary from './components/ErrorBoundary';
 import ThemeSelector from './components/ThemeSelector';
 import { MediaPlayer } from './media/MediaPlayer';
@@ -82,7 +83,7 @@ export default function App() {
   const loadContent = async () => {
     setLoading(true);
     try {
-      if (currentPath === '/media' || currentPath === '/shorts') {
+      if (currentPath === '/media' || currentPath === '/shorts' || currentPath.startsWith('/academy/')) {
         setPage(null);
         setSections([]);
         setLoading(false);
@@ -311,7 +312,7 @@ export default function App() {
 
         {/* MAIN CONTENT */}
         <main className={`relative z-10 ${
-          currentPath === '/' || currentPath === '/gemstones' || currentPath === '/numerology' || currentPath === '/academy' || currentPath === '/ai' || currentPath === '/ecosystem' || currentPath === '/contact' || currentPath === '/media' || currentPath === '/shorts'
+          currentPath === '/' || currentPath === '/gemstones' || currentPath === '/numerology' || currentPath === '/academy' || currentPath.startsWith('/academy/') || currentPath === '/ai' || currentPath === '/ecosystem' || currentPath === '/contact' || currentPath === '/media' || currentPath === '/shorts'
             ? 'pt-0'
             : 'pt-24'
         }`}>
@@ -320,6 +321,8 @@ export default function App() {
               <MediaCenterPage key="media-center" />
             ) : currentPath === '/shorts' ? (
               <ShortsPage key="shorts-page" navigate={navigate} />
+            ) : currentPath.startsWith('/academy/') ? (
+              <AcademyLandingPage key="academy-landing" navigate={navigate} />
             ) : (
               sections
                 .filter(s => s.isActive)

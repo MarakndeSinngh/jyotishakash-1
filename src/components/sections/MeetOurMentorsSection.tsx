@@ -245,7 +245,7 @@ export default function MeetOurMentorsSection() {
                     className="w-full sm:w-auto px-8 py-3.5 bg-primary hover:bg-amber-400 text-background font-extrabold uppercase tracking-[0.15em] text-xs rounded-xl shadow-lg hover:shadow-amber-400/40 transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer group-hover:scale-[1.02]"
                   >
                     <Crown className="w-4 h-4 text-background" />
-                    <span>Meet the Founder</span>
+                    <span>{FOUNDER.name} Programs</span>
                     <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
                   </button>
                 </div>
@@ -356,7 +356,7 @@ export default function MeetOurMentorsSection() {
                     onClick={() => handleSelectAcademy(facultyMember.slug)}
                     className="w-full py-3.5 bg-card hover:bg-primary border border-primary/30 text-text-primary hover:text-background font-bold uppercase tracking-[0.15em] text-xs rounded-xl shadow-md transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer"
                   >
-                    <span>View Programs</span>
+                    <span>{facultyMember.name} Programs</span>
                     <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
                   </button>
                 </div>

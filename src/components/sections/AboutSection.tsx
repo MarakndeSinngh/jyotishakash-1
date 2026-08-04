@@ -824,7 +824,7 @@ export default function AboutSection({ section }: AboutSectionProps) {
                     onClick={() => switchAcademy(faculty.slug)}
                     className="w-full py-3 rounded-xl bg-primary/10 hover:bg-primary hover:text-white text-primary text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 cursor-pointer"
                   >
-                    <span>View Faculty Masterclasses</span>
+                    <span>{faculty.name} Programs</span>
                     <ChevronRight className="w-4 h-4" />
                   </button>
                 </div>

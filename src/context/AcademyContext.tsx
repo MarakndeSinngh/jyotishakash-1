@@ -54,6 +54,9 @@ export const AcademyProvider: React.FC<{ children: ReactNode }> = ({ children })
     const newPath = `/academy/${cleanSlug}`;
     if (window.location.pathname !== newPath) {
       window.history.pushState({}, '', newPath);
+      window.dispatchEvent(new PopStateEvent('popstate'));
+    } else {
+      window.dispatchEvent(new PopStateEvent('popstate'));
     }
     window.scrollTo(0, 0);
   };

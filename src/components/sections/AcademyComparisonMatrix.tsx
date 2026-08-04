@@ -137,7 +137,7 @@ export default function AcademyComparisonMatrix() {
                       onClick={() => switchAcademy('raajeev')}
                       className="mt-3 px-4 py-2 bg-primary/10 hover:bg-primary text-primary hover:text-background border border-primary/30 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer"
                     >
-                      Explore Academy
+                      Raajeev Singh Chauhann Programs
                     </button>
                   </div>
                 </th>
@@ -150,7 +150,7 @@ export default function AcademyComparisonMatrix() {
                       onClick={() => switchAcademy('shaunak')}
                       className="mt-3 px-4 py-2 bg-purple-500/10 hover:bg-purple-500 text-purple-400 hover:text-white border border-purple-500/30 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer"
                     >
-                      Explore Programs
+                      Shaunak S. Patthak Programs
                     </button>
                   </div>
                 </th>
@@ -163,7 +163,7 @@ export default function AcademyComparisonMatrix() {
                       onClick={() => switchAcademy('sannjoy')}
                       className="mt-3 px-4 py-2 bg-emerald-500/10 hover:bg-emerald-500 text-emerald-400 hover:text-white border border-emerald-500/30 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer"
                     >
-                      Explore Programs
+                      Sannjoy Biswass Programs
                     </button>
                   </div>
                 </th>

@@ -204,7 +204,7 @@ export default function FeaturedCoursesHomepage() {
                         onClick={() => switchAcademy(course.academySlug)}
                         className="py-3 bg-background hover:bg-card border border-border/20 text-text-secondary hover:text-text-primary font-bold uppercase tracking-wider text-[10px] rounded-xl transition-all flex items-center justify-center gap-1 cursor-pointer"
                       >
-                        <span>View Academy</span>
+                        <span>View Programs</span>
                         <ArrowUpRight className="w-3.5 h-3.5" />
                       </button>
                     </div>

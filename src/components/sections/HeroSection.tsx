@@ -287,7 +287,7 @@ const HeroSection: React.FC<HeroSectionProps> = () => {
                 className="group px-7 py-4 bg-card hover:bg-surface border border-primary/30 hover:border-primary text-text-primary font-bold uppercase tracking-[0.15em] text-xs rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md"
               >
                 <Compass className="w-4 h-4 text-primary" />
-                <span>Explore Academies</span>
+                <span>Explore Programs</span>
               </button>
             </motion.div>
 
@@ -377,7 +377,7 @@ const HeroSection: React.FC<HeroSectionProps> = () => {
                       onClick={() => switchAcademy(mentor.slug)}
                       className="w-full py-2.5 bg-primary/10 hover:bg-primary text-primary hover:text-background border border-primary/30 font-bold uppercase tracking-wider text-[10px] rounded-xl transition-all duration-300 flex items-center justify-center gap-1.5 cursor-pointer shadow-sm group-hover:bg-primary group-hover:text-background"
                     >
-                      <span>View Academy</span>
+                      <span>{mentor.name} Programs</span>
                       <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
                     </button>
 

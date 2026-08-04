@@ -71,7 +71,7 @@ export default function AcademyNotFound() {
 
               <div className="pt-6 mt-6 border-t border-border/10 flex items-center justify-between">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-text-secondary">
-                  Explore Academy
+                  Explore Programs
                 </span>
                 <div className="w-8 h-8 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-background transition-all">
                   <ArrowRight className="w-4 h-4" />

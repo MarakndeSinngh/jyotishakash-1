@@ -53,7 +53,7 @@ export default function HomepageCTASection() {
                 className="px-8 py-5 bg-card hover:bg-surface border border-primary/40 hover:border-primary text-text-primary font-bold uppercase tracking-[0.15em] text-xs sm:text-sm rounded-xl transition-all duration-300 hover:-translate-y-0.5 shadow-md flex items-center justify-center gap-2 cursor-pointer"
               >
                 <Compass className="w-4 h-4 text-primary" />
-                <span>Compare Academies</span>
+                <span>Compare Programs</span>
               </button>
 
               {/* Book Consultation Button */}

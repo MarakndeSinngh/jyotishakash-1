@@ -11,7 +11,7 @@ import SmartImage from './SmartImage';
 import { FounderImage } from '../common/FounderImage';
 import { SOCIAL_LINKS } from '../../constants/contacts';
 import { Assets } from '../../config/assets';
-import { useAcademy } from '../../context/AcademyContext';
+import { BRAND_INFO } from '../../config/brand';
 import { useLanguage } from '../../context/LanguageContext';
 
 const raajeevPhoto = Assets.founder.image;
@@ -139,7 +139,6 @@ const INSPIRATIONAL_QUOTES = [
 ];
 
 export default function AboutSection({ section }: AboutSectionProps) {
-  const { activeAcademy } = useAcademy();
   const { t } = useLanguage();
 
   // States
@@ -242,7 +241,7 @@ export default function AboutSection({ section }: AboutSectionProps) {
             transition={{ delay: 0.2 }}
             className="text-lg text-text-secondary leading-relaxed max-w-3xl mx-auto font-light"
           >
-            {t('about.subtitle', 'Every great institution begins with a vision. Discover the journey, philosophy, and mission of our dedicated instructors—making ancient wisdom practical, accessible, and relevant for today\'s world.')}
+            {t('about.subtitle', 'Every great institution begins with a vision. Discover the journey, philosophy, and mission of our founder, Raajeev Singh Chauhann—making ancient wisdom practical, accessible, and relevant for today\'s world.')}
           </motion.p>
         </div>
 
@@ -305,8 +304,8 @@ export default function AboutSection({ section }: AboutSectionProps) {
                   <Award className="w-5.5 h-5.5" />
                 </div>
                 <div>
-                  <p className="text-[9px] uppercase tracking-widest text-text-secondary font-black">MASTER LEVEL</p>
-                  <p className="text-sm font-bold text-text-primary">15+ Yrs Practice</p>
+                  <p className="text-[9px] uppercase tracking-widest text-text-secondary font-black">FOUNDER & VISIONARY</p>
+                  <p className="text-sm font-bold text-text-primary">20+ Yrs Experience</p>
                 </div>
               </div>
             </motion.div>
@@ -317,22 +316,22 @@ export default function AboutSection({ section }: AboutSectionProps) {
             <div className="space-y-4">
               <p className="text-sm font-black tracking-widest text-primary uppercase font-mono">Founding Visionary</p>
               <h2 className="text-3xl lg:text-5xl font-extrabold font-cinzel text-text-primary">
-                {activeAcademy?.instructorName || "Instructor"}
+                {BRAND_INFO.founder}
               </h2>
               <p className="text-lg text-text-secondary font-light max-w-xl">
-                {activeAcademy?.instructorBio || activeAcademy?.description || "A multifaceted mentor combining science and ancient wisdom to transform lives globally."}
+                Founder of LEO Family, celebrity Astro-Numerologist, Astrologer, Vastu Expert, and filmmaker. Raajeev Singh Chauhann has dedicated over two decades to decoding cosmic geometry, Chaldean numerical vibrations, and spatial energy alignment, transforming thousands of lives and top business brands globally.
               </p>
             </div>
 
             {/* Premium Badges Grid */}
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
               {[
-                { title: activeAcademy?.shortName || "Academy", label: "Enterprise" },
-                { title: activeAcademy?.instructorTitle || "Instructor", label: "Master" },
-                { title: "Language", label: activeAcademy?.language || "Global" },
-                { title: "Vedic Science", label: "Cosmic" },
-                { title: "Practical Solutions", label: "Empower" },
-                { title: "Courses", label: `${activeAcademy?.courses?.length || 5}+ Modules` }
+                { title: "LEO Family", label: "Enterprise" },
+                { title: "Founder & Visionary", label: "Master" },
+                { title: "Language", label: "English & Hindi" },
+                { title: "Vedic Science", label: "Astro-Numerology" },
+                { title: "Practical Solutions", label: "Name & Spatial Alignment" },
+                { title: "Curriculum", label: "12+ Certified Modules" }
               ].map((role, idx) => (
                 <motion.div
                   key={idx}
@@ -352,7 +351,7 @@ export default function AboutSection({ section }: AboutSectionProps) {
             <div className="flex gap-4 p-4.5 bg-primary/5 rounded-2xl border border-primary/10">
               <Info className="w-5 h-5 text-primary shrink-0 mt-0.5" />
               <p className="text-xs text-text-secondary leading-relaxed">
-                <strong>{activeAcademy?.instructorName}</strong> serves as the master instructor at <strong>{activeAcademy?.name}</strong>, offering structured curriculums, live webinars, and personal consultations in {activeAcademy?.language || "Bengali, English, and Hindi"}.
+                <strong>{BRAND_INFO.founder}</strong> serves as the Founder & Visionary of <strong>LEO Family</strong>, offering structured curriculums, live webinars, and personal consultations in English and Hindi.
               </p>
             </div>
           </div>
@@ -442,8 +441,8 @@ export default function AboutSection({ section }: AboutSectionProps) {
                     transition={{ duration: 2, ease: "easeInOut" }}
                   />
                 </svg>
-                <p className="text-[10px] font-black uppercase tracking-widest text-primary mt-1">{activeAcademy?.instructorName || "Instructor"}</p>
-                <p className="text-[8px] uppercase tracking-widest text-text-secondary">{activeAcademy?.shortName || activeAcademy?.name || "Academy"}</p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-primary mt-1">{BRAND_INFO.founder}</p>
+                <p className="text-[8px] uppercase tracking-widest text-text-secondary">Founder & Visionary, LEO Family</p>
               </div>
             </div>
           </motion.div>

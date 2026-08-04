@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Assets } from "../../config/assets";
-import { useAcademy } from "../../context/AcademyContext";
+import { BRAND_INFO } from "../../config/brand";
 
 export interface FounderImageProps {
   src?: string;
@@ -35,11 +35,10 @@ export const FounderImage: React.FC<FounderImageProps> = ({
   id,
 }) => {
   const [hasFailed, setHasFailed] = useState(false);
-  const { activeAcademy } = useAcademy();
 
-  // Central Source of Truth: Active Academy Assets or Assets Registry
-  const registryImage = srcProp || activeAcademy?.assets?.profileImage || activeAcademy?.assets?.founderPortrait || Assets.founder.image;
-  const imageAlt = altProp || activeAcademy?.instructorName || Assets.founder.alt;
+  // Central Source of Truth: Founder Assets Registry
+  const registryImage = srcProp || Assets.founder.image;
+  const imageAlt = altProp || BRAND_INFO.founder || Assets.founder.alt;
   const fallbackImage = "/assets/teachers/Raajeev.webp";
   const displaySrc = hasFailed ? fallbackImage : registryImage;
 

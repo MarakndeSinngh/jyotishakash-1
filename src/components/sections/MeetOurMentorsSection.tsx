@@ -34,29 +34,29 @@ const MENTORS: MentorData[] = [
     id: 'raajeev',
     slug: 'raajeev',
     name: 'Raajeev Singh Chauhann',
-    title: 'Founding Astro-Numerologist & Celebrity Consultant',
-    expertise: ['Chaldean Numerology', 'Mobile Frequency', 'Name & Signature Correction'],
+    title: 'Founding Astro-Numerologist< Astro Vastu Expert & Celebrity Consultant',
+    expertise: ['Chaldean Numerology', 'Vedic Astrology', 'Mobile Frequency', 'Name & Signature Correction'],
     languages: 'English & Hindi',
     experience: '20+ Years',
     students: '12,000+ Students',
     rating: '5.0 ★',
     image: '/assets/teachers/Raajeev.webp',
     fallbackImage: '/gemstone-assets/rajeev-singh.jpg',
-    description: 'Specializes in Chaldean numerical vibrations, mobile digits alignment, signature shifts, and corporate brand positioning.'
+    description: 'Specializes in Chaldean numerical vibrations, Vedic Astrology, mobile digits alignment, signature shifts, and corporate brand positioning.'
   },
   {
     id: 'shaunak',
     slug: 'shaunak',
-    name: 'Dr. Shaunak Maharaj',
-    title: 'Astro-Vastu Grandmaster & Vedic Scholar',
-    expertise: ['Vedic Astrology', 'Astro-Vastu Overlays', 'Planetary Dashas & Gemology'],
-    languages: 'English & Hinglish',
+    name: 'Shaunak S Patthak',
+    title: 'Certified Numerology Expert',
+    expertise: ['Numerology & Vedic Astrology', 'Planetary Dashas & Gemology'],
+    languages: 'English, Gujrati & Hinglish',
     experience: '22+ Years',
     students: '6,200+ Alumni',
     rating: '5.0 ★',
     image: '/assets/teachers/shaunak.webp',
     fallbackImage: '/gemstone-assets/blue-sapphire.jpg',
-    description: 'Expert in classical Brihat Parashara scriptures, Vimshottari Dasha calculations, and superimposing horoscopes onto 16 Vastu zones.'
+    description: 'Expert in Numerology, Dasha calculations, Numero Vastu and Name Numerology.'
   },
   {
     id: 'sannjoy',

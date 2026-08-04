@@ -70,8 +70,8 @@ export default function DynamicTestimonialsHomepage() {
         <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mb-16 max-w-3xl mx-auto">
           {[
             { id: 'all', label: 'All Reviews' },
-            { id: 'raajeev', label: 'Raajeev Academy' },
-            { id: 'shaunak', label: 'Dr. Shaunak Academy' },
+            { id: 'raajeev', label: 'Raajeev Singh Chauhann Academy' },
+            { id: 'shaunak', label: 'Shaunak S Patthak Academy' },
             { id: 'sannjoy', label: 'Sannjoy Biswass Academy' },
           ].map((tab) => {
             const isActive = selectedFilter === tab.id;

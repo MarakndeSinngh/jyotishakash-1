@@ -48,14 +48,14 @@ const COMPARISON_ROWS: ComparisonRow[] = [
     metric: 'Live Interaction',
     icon: Video,
     raajeev: 'Weekly Live Masterclasses & Q&A with Raajeev Sir',
-    shaunak: 'Dedicated Chart Reading Mentorship Circles with Dr. Shaunak',
+    shaunak: 'Dedicated Chart Reading Mentorship Circles with Shaunak Sir',
     sannjoy: 'Live Masterclasses & Direct Q&A in Native Bengali'
   },
   {
     metric: 'Certification',
     icon: Award,
     raajeev: 'Certified Occult Practitioner (Raajeev Singh Academy)',
-    shaunak: 'Certified Astro-Vastu Scholar (Dr. Shaunak Academy)',
+    shaunak: 'Certified Master Numerologist (Shaunak S Patthak Academy)',
     sannjoy: 'Certified Master Numerologist (Sannjoy Biswass Academy)'
   },
   {
@@ -142,8 +142,8 @@ export default function AcademyComparisonMatrix() {
                 </th>
                 <th className="p-6 text-center w-1/4 border-l border-border/20">
                   <div className="flex flex-col items-center">
-                    <span className="text-[10px] uppercase tracking-widest font-bold text-purple-400">Vedic & Astro-Vastu</span>
-                    <h4 className="text-lg font-bold font-cinzel text-text-primary mt-1">Dr. Shaunak Academy</h4>
+                    <span className="text-[10px] uppercase tracking-widest font-bold text-purple-400">Numerology Mastery</span>
+                    <h4 className="text-lg font-bold font-cinzel text-text-primary mt-1">Shaunak S Patthak Academy</h4>
                     <button
                       onClick={() => switchAcademy('shaunak')}
                       className="mt-3 px-4 py-2 bg-purple-500/10 hover:bg-purple-500 text-purple-400 hover:text-white border border-purple-500/30 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer"
@@ -209,7 +209,7 @@ export default function AcademyComparisonMatrix() {
             },
             {
               slug: 'shaunak',
-              name: 'Dr. Shaunak Academy',
+              name: 'Shaunak S Patthak Academy',
               focus: 'Classical Vedic Astrology & Astro-Vastu',
               color: 'border-purple-400/30',
               badgeColor: 'text-purple-400 bg-purple-400/10'

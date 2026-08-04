@@ -84,7 +84,7 @@ export default function FeaturedCoursesHomepage() {
           {[
             { id: 'all', label: 'All Academies' },
             { id: 'raajeev', label: 'Raajeev Singh Academy' },
-            { id: 'shaunak', label: 'Dr. Shaunak Academy' },
+            { id: 'shaunak', label: 'Shaunak S Patthak Academy' },
             { id: 'sannjoy', label: 'Sannjoy Biswass Academy' },
           ].map((tab) => {
             const isActive = selectedTab === tab.id;

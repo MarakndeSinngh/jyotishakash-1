@@ -5,9 +5,9 @@ export const shaunakAcademy: AcademyConfig = {
   slug: 'shaunak',
   name: 'Shaunak S Patthak Academy',
   shortName: 'Shaunak Academy',
-  instructorName: 'Shaunak S Patthak',
-  instructorTitle: 'Numerology Master & Scholar',
-  tagline: 'Precision Planetary Insights. Deep Vedic Astro Science',
+  instructorName: 'Shaunak S. Pathak',
+  instructorTitle: 'Numerology & Vastu Expert',
+  tagline: 'Senior Faculty • Gujrati Learning Mentor',
   description: 'Experience the powerful harmony of your Birth Chart, Dashas, Planetary Transits, and sacred guidance with Dr. Shaunak S Patthak.',
   language: 'English & Hinglish',
   branding: {

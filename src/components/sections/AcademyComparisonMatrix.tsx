@@ -130,8 +130,9 @@ export default function AcademyComparisonMatrix() {
                 </th>
                 <th className="p-6 text-center w-1/4 border-l border-border/20">
                   <div className="flex flex-col items-center">
-                    <span className="text-[10px] uppercase tracking-widest font-bold text-amber-400">Chaldean & Mobile</span>
-                    <h4 className="text-lg font-bold font-cinzel text-text-primary mt-1">Raajeev Singh Academy</h4>
+                    <span className="text-[10px] uppercase tracking-widest font-extrabold text-amber-400 bg-amber-400/10 px-3 py-1 rounded-full border border-amber-400/30">👑 Founder & Visionary</span>
+                    <h4 className="text-lg font-bold font-cinzel text-text-primary mt-2">Raajeev Singh Chauhann</h4>
+                    <span className="text-[10px] text-text-secondary font-medium">Founder of LEO Family</span>
                     <button
                       onClick={() => switchAcademy('raajeev')}
                       className="mt-3 px-4 py-2 bg-primary/10 hover:bg-primary text-primary hover:text-background border border-primary/30 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer"
@@ -142,8 +143,9 @@ export default function AcademyComparisonMatrix() {
                 </th>
                 <th className="p-6 text-center w-1/4 border-l border-border/20">
                   <div className="flex flex-col items-center">
-                    <span className="text-[10px] uppercase tracking-widest font-bold text-purple-400">Numerology Mastery</span>
-                    <h4 className="text-lg font-bold font-cinzel text-text-primary mt-1">Shaunak S Patthak Academy</h4>
+                    <span className="text-[10px] uppercase tracking-widest font-bold text-purple-400 bg-purple-400/10 px-3 py-1 rounded-full border border-purple-400/30">🎓 Senior Mentor</span>
+                    <h4 className="text-lg font-bold font-cinzel text-text-primary mt-2">Shaunak S. Pathak</h4>
+                    <span className="text-[10px] text-text-secondary font-medium">Senior Faculty • Gujrati Mentor</span>
                     <button
                       onClick={() => switchAcademy('shaunak')}
                       className="mt-3 px-4 py-2 bg-purple-500/10 hover:bg-purple-500 text-purple-400 hover:text-white border border-purple-500/30 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer"
@@ -154,8 +156,9 @@ export default function AcademyComparisonMatrix() {
                 </th>
                 <th className="p-6 text-center w-1/4 border-l border-border/20">
                   <div className="flex flex-col items-center">
-                    <span className="text-[10px] uppercase tracking-widest font-bold text-emerald-400">Lo Shu Grid & Bengali</span>
-                    <h4 className="text-lg font-bold font-cinzel text-text-primary mt-1">Sannjoy Biswass Academy</h4>
+                    <span className="text-[10px] uppercase tracking-widest font-bold text-emerald-400 bg-emerald-400/10 px-3 py-1 rounded-full border border-emerald-400/30">🎓 Senior Mentor</span>
+                    <h4 className="text-lg font-bold font-cinzel text-text-primary mt-2">Sannjoy Biswass</h4>
+                    <span className="text-[10px] text-text-secondary font-medium">Senior Faculty • Bengali Mentor</span>
                     <button
                       onClick={() => switchAcademy('sannjoy')}
                       className="mt-3 px-4 py-2 bg-emerald-500/10 hover:bg-emerald-500 text-emerald-400 hover:text-white border border-emerald-500/30 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer"
@@ -202,24 +205,24 @@ export default function AcademyComparisonMatrix() {
           {[
             {
               slug: 'raajeev',
-              name: 'Raajeev Singh Academy',
-              focus: 'Chaldean Numerology & Mobile Vibrations',
-              color: 'border-amber-400/30',
-              badgeColor: 'text-amber-400 bg-amber-400/10'
+              name: 'Raajeev Singh Chauhann',
+              focus: '👑 Founder & Visionary (LEO Family)',
+              color: 'border-amber-400/50',
+              badgeColor: 'text-amber-400 bg-amber-400/10 border border-amber-400/30'
             },
             {
               slug: 'shaunak',
-              name: 'Shaunak S Patthak Academy',
-              focus: 'Chaldean & Pythogorian Numerology Expert',
+              name: 'Shaunak S. Pathak',
+              focus: '🎓 Senior Mentor • Gujrati Mentor',
               color: 'border-purple-400/30',
-              badgeColor: 'text-purple-400 bg-purple-400/10'
+              badgeColor: 'text-purple-400 bg-purple-400/10 border border-purple-400/30'
             },
             {
               slug: 'sannjoy',
-              name: 'Sannjoy Biswass Academy',
-              focus: 'Bengali Numerology & Lo Shu Grid Expert',
+              name: 'Sannjoy Biswass',
+              focus: '🎓 Senior Mentor • Bengali Mentor',
               color: 'border-emerald-400/30',
-              badgeColor: 'text-emerald-400 bg-emerald-400/10'
+              badgeColor: 'text-emerald-400 bg-emerald-400/10 border border-emerald-400/30'
             }
           ].map((acad) => (
             <div

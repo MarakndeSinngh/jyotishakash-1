@@ -6,8 +6,8 @@ export const raajeevAcademy: AcademyConfig = {
   name: 'Raajeev Singh Occult Academy',
   shortName: 'Raajeev Academy',
   instructorName: 'Raajeev Singh Chauhann',
-  instructorTitle: 'Founding Astro-Numerologist & Celebrity Consultant',
-  tagline: 'Chaldean Science × Mobile Vibration × High-Impact Destiny Alignment',
+  instructorTitle: 'Founder & Visionary',
+  tagline: 'Founder of LEO Family • Celebrity Astrology, Numerology & Vastu Expert',
   description: 'Master Chaldean Numerology, mobile frequency alignment, business branding, and signature corrections directly with Raajeev Singh Chauhann.',
   language: 'English & Hindi',
   branding: {

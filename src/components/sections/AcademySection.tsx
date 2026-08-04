@@ -187,7 +187,10 @@ export default function AcademySection({ initialSlug }: AcademySectionProps) {
                     alt={academy.instructorName}
                     className="w-6 h-6 rounded-full object-cover border border-white/30"
                   />
-                  <span>{academy.shortName}</span>
+                  <span>
+                    {academy.slug === 'raajeev' ? '👑 ' : '🎓 '}
+                    {academy.shortName}
+                  </span>
                 </button>
               );
             })}

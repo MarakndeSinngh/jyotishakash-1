@@ -6,9 +6,9 @@ import { raajeevAcademy } from './raajeev';
 export * from './types';
 
 export const ACADEMIES_REGISTRY: Record<string, AcademyConfig> = {
-  sannjoy: sannjoyAcademy,
-  shaunak: shaunakAcademy,
   raajeev: raajeevAcademy,
+  shaunak: shaunakAcademy,
+  sannjoy: sannjoyAcademy,
 };
 
 export const DEFAULT_ACADEMY_SLUG = 'sannjoy';

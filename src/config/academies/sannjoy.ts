@@ -6,7 +6,7 @@ export const sannjoyAcademy: AcademyConfig = {
   name: 'Sannjoy Biswass Academy',
   shortName: 'Sannjoy Biswass Academy',
   instructorName: 'Sannjoy Biswass',
-  instructorTitle: 'Master Numerologist & Sacred Frequency Mentor',
+  instructorTitle: 'Numerologist & Vastu Expert',
   instructorBio: 'Sannjoy Biswass is a world-renowned Bengali Master Numerologist and Sacred Frequency Mentor. Over two decades, he has empowered thousands of students across West Bengal, Bangladesh, and globally with practical Chaldean numerology, Lo Shu grid balance, mobile number harmonics, and name spelling remedies.',
   tagline: 'সংখ্যা ও শক্তির সঠিক সামঞ্জস্যে জীবনের পরম উন্মোচন',
   description: 'সঞ্জয় বিশ্বাস অ্যাকাডেমিতে শিখুন বৈদিক ও চালডিয়ান সংখ্যাতত্ত্ব, মোবাইল নিউমেরোলজি, লো শু গ্রিড ও বিজনেস নেম টিউনিং সরাসরি বাংলা ভাষায়।',

@@ -13,6 +13,7 @@ import { SOCIAL_LINKS } from '../../constants/contacts';
 import { Assets } from '../../config/assets';
 import { BRAND_INFO } from '../../config/brand';
 import { ORGANIZATION_INFO } from '../../config/organization';
+import { FOUNDER_PROFILE } from '../../config/founder';
 import { useLanguage } from '../../context/LanguageContext';
 import { useAcademy } from '../../context/AcademyContext';
 
@@ -397,10 +398,10 @@ export default function AboutSection({ section }: AboutSectionProps) {
               <span>Founding Visionary</span>
             </motion.div>
             <h2 className="text-3xl lg:text-5xl font-extrabold font-cinzel text-text-primary">
-              Meet the Founder — Raajeev Singh Chauhann
+              Meet the Founder — {FOUNDER_PROFILE.name}
             </h2>
             <p className="text-base text-text-secondary font-light">
-              Founder & Visionary of LEO Family • Celebrity Astro-Numerologist • Vastu Expert • Filmmaker
+              {FOUNDER_PROFILE.tagline}
             </p>
           </div>
 
@@ -434,7 +435,7 @@ export default function AboutSection({ section }: AboutSectionProps) {
                   </div>
                   <div>
                     <p className="text-[9px] uppercase tracking-widest text-text-secondary font-black">FOUNDER & VISIONARY</p>
-                    <p className="text-sm font-bold text-text-primary">20+ Yrs Experience</p>
+                    <p className="text-sm font-bold text-text-primary">{FOUNDER_PROFILE.experienceYears}</p>
                   </div>
                 </div>
               </motion.div>
@@ -444,23 +445,16 @@ export default function AboutSection({ section }: AboutSectionProps) {
             <div className="lg:col-span-7 space-y-8">
               <div className="space-y-4">
                 <h3 className="text-2xl lg:text-4xl font-bold font-cinzel text-text-primary">
-                  {BRAND_INFO.founder}
+                  {FOUNDER_PROFILE.name}
                 </h3>
                 <p className="text-lg text-text-secondary font-light max-w-xl leading-relaxed">
-                  Founder of LEO Family, celebrity Astro-Numerologist, Astrologer, Vastu Expert, and filmmaker. Raajeev Singh Chauhann has dedicated over two decades to decoding cosmic geometry, Chaldean numerical vibrations, and spatial energy alignment, transforming thousands of lives and top business brands globally.
+                  {FOUNDER_PROFILE.bio}
                 </p>
               </div>
 
               {/* Roles Badges Grid */}
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                {[
-                  { title: "LEO Family", label: "Enterprise Founder" },
-                  { title: "Celebrity Advisor", label: "Astro-Numerology" },
-                  { title: "Languages", label: "English & Hindi" },
-                  { title: "Vedic Science", label: "Chaldean Matrix" },
-                  { title: "Spatial Harmony", label: "Vastu Architecture" },
-                  { title: "Indian Films", label: "Cinematic Media" }
-                ].map((role, idx) => (
+                {FOUNDER_PROFILE.roles.map((role, idx) => (
                   <motion.div
                     key={idx}
                     initial={{ opacity: 0, y: 10 }}
@@ -478,7 +472,7 @@ export default function AboutSection({ section }: AboutSectionProps) {
               <div className="flex gap-4 p-4.5 bg-primary/5 rounded-2xl border border-primary/10">
                 <Info className="w-5 h-5 text-primary shrink-0 mt-0.5" />
                 <p className="text-xs text-text-secondary leading-relaxed">
-                  <strong>{BRAND_INFO.founder}</strong> serves as the Founder & Visionary of <strong>LEO Family</strong>, establishing the core calculation standards, authorizing certified masterclass modules, and guiding personal consultations worldwide.
+                  <strong>{FOUNDER_PROFILE.name}</strong> serves as the Founder & Visionary of <strong>{FOUNDER_PROFILE.organization}</strong>, establishing the core calculation standards, authorizing certified masterclass modules, and guiding personal consultations worldwide.
                 </p>
               </div>
             </div>
@@ -521,10 +515,10 @@ export default function AboutSection({ section }: AboutSectionProps) {
 
               <div className="text-text-secondary text-base lg:text-lg leading-[1.8] font-light space-y-6 relative">
                 <p className="first-letter:text-5xl first-letter:font-bold first-letter:font-cinzel first-letter:text-primary first-letter:float-left first-letter:mr-3 first-letter:mt-1">
-                  "My mission has always been to make authentic spiritual knowledge understandable, practical, and beneficial for everyone. The sciences of Astro-Numerology and Vastu should not remain locked in complex manuals or traditional academic terms. They must translate directly to the physical success, prosperity, and peace of mind you experience daily."
+                  "{FOUNDER_PROFILE.philosophy}"
                 </p>
                 <p>
-                  "At LEO Family, we do not teach passive speculation. We train you in the actual code of cosmic values. Each calculation grid is a map to align your personal vibrational frequencies with auspicious periods of flow."
+                  "{FOUNDER_PROFILE.extendedPhilosophy}"
                 </p>
               </div>
 
@@ -543,8 +537,8 @@ export default function AboutSection({ section }: AboutSectionProps) {
                       transition={{ duration: 2, ease: "easeInOut" }}
                     />
                   </svg>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-primary mt-1">{BRAND_INFO.founder}</p>
-                  <p className="text-[8px] uppercase tracking-widest text-text-secondary">Founder & Visionary, LEO Family</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-primary mt-1">{FOUNDER_PROFILE.name}</p>
+                  <p className="text-[8px] uppercase tracking-widest text-text-secondary">{FOUNDER_PROFILE.title}, {FOUNDER_PROFILE.organization}</p>
                 </div>
               </div>
             </motion.div>

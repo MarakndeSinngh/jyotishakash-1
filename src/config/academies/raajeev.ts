@@ -190,4 +190,15 @@ export const raajeevAcademy: AcademyConfig = {
       image: '/gemstone-assets/ruby.jpg',
     },
   ],
+  contactDetails: {
+    phone: '+91 99537 13176',
+    whatsapp: 'https://wa.me/919953713176',
+    email: 'contact@raajeevsingh.com',
+    address: 'New Delhi & Mumbai, India',
+  },
+  socialLinks: {
+    youtube: 'https://youtube.com/@raajeevsinghchauhann',
+    facebook: 'https://facebook.com/raajeevsinghchauhann',
+    instagram: 'https://instagram.com/raajeevsinghchauhann',
+  },
 };

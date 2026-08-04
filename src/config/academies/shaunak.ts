@@ -191,4 +191,15 @@ export const shaunakAcademy: AcademyConfig = {
       image: '/gemstone-assets/cats-eye.jpg',
     },
   ],
+  contactDetails: {
+    phone: '+91 99537 13176',
+    whatsapp: 'https://wa.me/919953713176',
+    email: 'support@shaunakpatthak.com',
+    address: 'Ahmedabad, Gujarat & Delhi, India',
+  },
+  socialLinks: {
+    youtube: 'https://youtube.com/@shaunakpatthak',
+    facebook: 'https://facebook.com/shaunakpatthak',
+    instagram: 'https://instagram.com/shaunakpatthak',
+  },
 };

@@ -87,32 +87,11 @@ export default function AcademyLandingPage({ navigate }: AcademyLandingPageProps
             <span>{t('nav.allAcademies', 'All Academies')}</span>
           </button>
 
-          {/* Quick Switcher dropdown for other academies */}
+          {/* Current Faculty Programs Indicator */}
           <div className="flex items-center gap-2">
-            <span className="text-[10px] uppercase font-bold text-text-secondary tracking-widest hidden sm:inline">
-              Academy:
+            <span className="text-[10px] uppercase font-extrabold tracking-widest text-primary bg-primary/10 border border-primary/20 px-3 py-1 rounded-full">
+              {activeAcademy.instructorName} Programs
             </span>
-            <div className="flex flex-wrap gap-1.5">
-              {allAcademies.map((ac) => {
-                const isActive = ac.slug === activeAcademy.slug;
-                return (
-                  <button
-                    key={ac.id}
-                    onClick={() => {
-                      switchAcademy(ac.slug);
-                      handleNav(`/academy/${ac.slug}`);
-                    }}
-                    className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer ${
-                      isActive
-                        ? 'bg-primary text-background font-extrabold shadow-md'
-                        : 'bg-card hover:bg-surface text-text-secondary hover:text-text-primary border border-border/20'
-                    }`}
-                  >
-                    {ac.shortName}
-                  </button>
-                );
-              })}
-            </div>
           </div>
 
         </div>
@@ -679,6 +658,51 @@ export default function AcademyLandingPage({ navigate }: AcademyLandingPageProps
         </motion.div>
       </section>
 
+
+      {/* ==================================================
+          SECTION 8.5: EXPLORE OTHER EXPERTS
+          ================================================== */}
+      <section className="relative z-10 py-12 px-6 max-w-5xl mx-auto border-t border-border/10 my-12">
+        <div className="text-center mb-8">
+          <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-text-secondary block mb-1">
+            LEO Family Mentors
+          </span>
+          <h3 className="text-lg sm:text-xl font-bold font-cinzel text-text-primary">
+            Explore Other Experts
+          </h3>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto">
+          {allAcademies
+            .filter((ac) => ac.slug !== activeAcademy.slug)
+            .map((otherFaculty) => (
+              <div
+                key={otherFaculty.id}
+                className="bg-card/60 border border-border/15 p-4 rounded-xl flex items-center justify-between gap-3 hover:border-primary/30 transition-all shadow-md"
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <img
+                    src={otherFaculty.assets.profileImage}
+                    alt={otherFaculty.instructorName}
+                    className="w-10 h-10 rounded-full object-cover border border-primary/30 shrink-0"
+                  />
+                  <div className="text-left min-w-0">
+                    <h4 className="text-xs font-bold font-cinzel text-text-primary truncate">{otherFaculty.instructorName}</h4>
+                    <p className="text-[10px] text-text-secondary truncate">{otherFaculty.instructorTitle}</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => {
+                    switchAcademy(otherFaculty.slug);
+                    handleNav(`/academy/${otherFaculty.slug}`);
+                  }}
+                  className="px-3 py-1.5 bg-primary/10 hover:bg-primary text-primary hover:text-background border border-primary/20 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap shrink-0"
+                >
+                  View Programs
+                </button>
+              </div>
+            ))}
+        </div>
+      </section>
 
       {/* ==================================================
           SECTION 9: ACADEMY FOOTER

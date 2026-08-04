@@ -46,7 +46,7 @@ const MENTORS_SHOWCASE: MentorShowcaseItem[] = [
     title: 'Founder & Visionary',
     roleBadge: '👑 Founder',
     image: '/assets/teachers/Raajeev.webp',
-    fallbackImage: '/gemstone-assets/rajeev-singh.jpg',
+    fallbackImage: '/assets/teachers/Raajeev.webp',
     accentColor: 'from-amber-500/20 to-yellow-500/10'
   },
   {

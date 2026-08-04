@@ -11,15 +11,15 @@ export interface AssetDetails {
 
 export const Assets = {
   founder: {
-    image: "/assets/Raajeev.png",
+    image: "/assets/teachers/Raajeev.webp",
     alt: "Raajeev Singh Chauhann, Founder of LEO Family",
     width: 800,
     height: 1000,
     priority: true,
-    thumbnail: "/assets/Raajeev.png",
-    avatar: "/assets/Raajeev.png",
-    seoImage: "/assets/Raajeev.png",
-    openGraphImage: "/assets/Raajeev.png"
+    thumbnail: "/assets/teachers/Raajeev.webp",
+    avatar: "/assets/teachers/Raajeev.webp",
+    seoImage: "/assets/teachers/Raajeev.webp",
+    openGraphImage: "/assets/teachers/Raajeev.webp"
   },
   logo: {
     light: "/gemstone-assets/logo.jpg",

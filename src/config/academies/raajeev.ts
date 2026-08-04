@@ -19,16 +19,16 @@ export const raajeevAcademy: AcademyConfig = {
   },
   assets: {
     heroImage: '/gemstone-assets/background.png',
-    profileImage: '/gemstone-assets/rajeev-singh.jpg',
-    founderPortrait: '/gemstone-assets/rajeev-singh.jpg',
+    profileImage: '/assets/teachers/Raajeev.webp',
+    founderPortrait: '/assets/teachers/Raajeev.webp',
     background: '/gemstone-assets/background.png',
-    ogImage: '/gemstone-assets/logo.jpg',
+    ogImage: '/assets/teachers/Raajeev.webp',
   },
   seo: {
     title: 'Raajeev Singh Chauhann Programs | LEO Family',
     description: 'Discover authentic Numerology, Astrology, Vastu, Gemstones, Name Science and AI-powered spiritual guidance from the experts at LEO Family.',
     keywords: ['Raajeev Singh Chauhann', 'Chaldean Numerology', 'Mobile Numerology', 'Name Correction', 'Astro Numerology'],
-    ogImage: '/gemstone-assets/logo.jpg',
+    ogImage: '/assets/teachers/Raajeev.webp',
   },
   stats: [
     { value: '20+', label: 'Years Experience', desc: 'Astro-Numerology & Media' },

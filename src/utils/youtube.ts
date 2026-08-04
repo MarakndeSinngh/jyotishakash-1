@@ -122,7 +122,7 @@ export async function fetchYoutubeArtwork(url: string, id: string, type: 'playli
   // Fallback map in case the network fails or oEmbed is blocked
   const fallbackMap: Record<string, string> = {
     'channel:@leofamilyoccultgyan': BrandRegistry.assets?.logos?.symbol || '/gemstone-assets/logo.jpg',
-    'channel:@raajeevsinghchauhann': BrandRegistry.assets?.founderPhotos?.portrait || '/assets/Raajeev.png',
+    'channel:@raajeevsinghchauhann': BrandRegistry.assets?.founderPhotos?.portrait || '/assets/teachers/Raajeev.webp',
     'channel:@leofamilyindianfilms': BrandRegistry.assets?.logos?.symbol || '/gemstone-assets/logo.jpg',
     'playlist:PLOFld0SYjqbZ-wCREGBGP4d96TDm7ZbDf': 'https://i.ytimg.com/vi/RcmLxAECJAc/maxresdefault.jpg',
   };

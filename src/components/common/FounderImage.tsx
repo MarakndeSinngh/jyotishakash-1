@@ -40,7 +40,7 @@ export const FounderImage: React.FC<FounderImageProps> = ({
   // Central Source of Truth: Active Academy Assets or Assets Registry
   const registryImage = srcProp || activeAcademy?.assets?.profileImage || activeAcademy?.assets?.founderPortrait || Assets.founder.image;
   const imageAlt = altProp || activeAcademy?.instructorName || Assets.founder.alt;
-  const fallbackImage = "/gemstone-assets/logo.jpg";
+  const fallbackImage = "/assets/teachers/Raajeev.webp";
   const displaySrc = hasFailed ? fallbackImage : registryImage;
 
   // Modern size styling mapping to prevent CLS (Cumulative Layout Shift)

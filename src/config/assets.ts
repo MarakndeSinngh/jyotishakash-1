@@ -21,6 +21,24 @@ export const Assets = {
     seoImage: "/assets/teachers/Raajeev.webp",
     openGraphImage: "/assets/teachers/Raajeev.webp"
   },
+  teachers: {
+    shaunak: {
+      image: "/assets/teachers/shaunak.webp",
+      alt: "Shaunak S. Patthak, Senior Faculty",
+      avatar: "/assets/teachers/shaunak.webp",
+      portrait: "/assets/teachers/shaunak.webp",
+      seoImage: "/assets/teachers/shaunak.webp",
+      openGraphImage: "/assets/teachers/shaunak.webp"
+    },
+    sannjoy: {
+      image: "/assets/teachers/sannjoy.webp",
+      alt: "Sannjoy Biswass, Senior Faculty",
+      avatar: "/assets/teachers/sannjoy.webp",
+      portrait: "/assets/teachers/sannjoy.webp",
+      seoImage: "/assets/teachers/sannjoy.webp",
+      openGraphImage: "/assets/teachers/sannjoy.webp"
+    }
+  },
   logo: {
     light: "/gemstone-assets/logo.jpg",
     dark: "/gemstone-assets/logo.jpg",

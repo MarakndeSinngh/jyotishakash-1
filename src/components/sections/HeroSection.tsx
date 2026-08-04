@@ -56,7 +56,7 @@ const MENTORS_SHOWCASE: MentorShowcaseItem[] = [
     title: 'Astro-Vastu Grandmaster',
     roleBadge: '🎓 Senior Faculty',
     image: '/assets/teachers/shaunak.webp',
-    fallbackImage: '/gemstone-assets/blue-sapphire.jpg',
+    fallbackImage: '/assets/teachers/shaunak.webp',
     accentColor: 'from-purple-500/20 to-indigo-500/10'
   },
   {

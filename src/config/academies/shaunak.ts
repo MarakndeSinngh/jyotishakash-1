@@ -1,4 +1,5 @@
 import { AcademyConfig } from './types';
+import { Assets } from '../assets';
 
 export const shaunakAcademy: AcademyConfig = {
   id: 'shaunak',
@@ -19,16 +20,16 @@ export const shaunakAcademy: AcademyConfig = {
   },
   assets: {
     heroImage: 'https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?auto=format&fit=crop&w=1200&q=80',
-    profileImage: '/gemstone-assets/cats-eye.jpg',
-    founderPortrait: '/gemstone-assets/blue-sapphire.jpg',
+    profileImage: Assets.teachers.shaunak.image,
+    founderPortrait: Assets.teachers.shaunak.image,
     background: '/gemstone-assets/background.png',
-    ogImage: '/gemstone-assets/blue-sapphire.jpg',
+    ogImage: Assets.teachers.shaunak.image,
   },
   seo: {
     title: 'Shaunak S. Patthak Programs | LEO Family',
     description: 'Discover authentic Numerology, Astrology, Vastu, Gemstones, Name Science and AI-powered spiritual guidance from the experts at LEO Family.',
     keywords: ['Shaunak S. Patthak', 'Numerology', 'Vedic Astrology', 'Dasha Calculations', 'Planetary Remedies'],
-    ogImage: '/gemstone-assets/blue-sapphire.jpg',
+    ogImage: Assets.teachers.shaunak.image,
   },
   stats: [
     { value: '10+', label: 'Years Experience', desc: 'Numerology Research & Mobile, Name Analysis' },

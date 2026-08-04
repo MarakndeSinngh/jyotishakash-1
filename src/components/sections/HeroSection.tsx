@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Assets } from '../../config/assets';
 import { Section } from '../../types/cms';
 import { motion } from 'framer-motion';
 import SmartImage from './SmartImage';
@@ -45,8 +46,8 @@ const MENTORS_SHOWCASE: MentorShowcaseItem[] = [
     name: 'Raajeev Singh Chauhann',
     title: 'Founder & Visionary',
     roleBadge: '👑 Founder',
-    image: '/assets/teachers/Raajeev.webp',
-    fallbackImage: '/assets/teachers/Raajeev.webp',
+    image: Assets.founder.image,
+    fallbackImage: Assets.founder.image,
     accentColor: 'from-amber-500/20 to-yellow-500/10'
   },
   {
@@ -55,8 +56,8 @@ const MENTORS_SHOWCASE: MentorShowcaseItem[] = [
     name: 'Shaunak S. Patthak',
     title: 'Astro-Vastu Grandmaster',
     roleBadge: '🎓 Senior Faculty',
-    image: '/assets/teachers/shaunak.webp',
-    fallbackImage: '/assets/teachers/shaunak.webp',
+    image: Assets.teachers.shaunak.image,
+    fallbackImage: Assets.teachers.shaunak.image,
     accentColor: 'from-purple-500/20 to-indigo-500/10'
   },
   {
@@ -65,8 +66,8 @@ const MENTORS_SHOWCASE: MentorShowcaseItem[] = [
     name: 'Sannjoy Biswass',
     title: 'Master Numerologist',
     roleBadge: '🎓 Senior Faculty',
-    image: '/assets/teachers/sannjoy.webp',
-    fallbackImage: '/assets/sannjoy/profile.png',
+    image: Assets.teachers.sannjoy.image,
+    fallbackImage: Assets.teachers.sannjoy.image,
     accentColor: 'from-emerald-500/20 to-teal-500/10'
   }
 ];

@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { Assets } from '../../config/assets';
 import { 
   Crown, 
   GraduationCap, 
@@ -62,7 +63,7 @@ const FOUNDER: FounderData = {
   experience: '20+ Years',
   students: '12,000+ Seekers',
   rating: '5.0 ★',
-  image: '/assets/teachers/Raajeev.webp',
+  image: Assets.founder.image,
   description: 'Founder and Visionary of LEO Family. Pioneer in Chaldean numerical vibrations, Vedic Astrology, signature realignment, and corporate spellings.'
 };
 
@@ -79,7 +80,7 @@ const FACULTY: FacultyData[] = [
     experience: '22+ Years',
     students: '6,200+ Alumni',
     rating: '5.0 ★',
-    image: '/assets/teachers/shaunak.webp',
+    image: Assets.teachers.shaunak.image,
     description: 'Lead Faculty member specializing in Astro-Vastu, planetary Dashas, and deep numerical matrix transformations.'
   },
   {
@@ -94,7 +95,7 @@ const FACULTY: FacultyData[] = [
     experience: '20+ Years',
     students: '7,500+ Students',
     rating: '4.9 ★',
-    image: '/assets/teachers/sannjoy.webp',
+    image: Assets.teachers.sannjoy.image,
     description: 'Master Numerologist and Regional Faculty leading authentic Lo Shu grid balancing and Bengali language masterclasses.'
   }
 ];

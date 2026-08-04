@@ -5,17 +5,19 @@ import {
   BookOpen, Award, Film, Users, Star, MessageCircle, Sparkles, Zap, 
   ChevronRight, Globe, CheckCircle2, ChevronLeft, MapPin, Play, 
   Calendar, ExternalLink, RefreshCw, Layers, Heart, Compass, Eye, Info,
-  ShieldCheck
+  ShieldCheck, Crown, GraduationCap
 } from 'lucide-react';
 import SmartImage from './SmartImage';
 import { FounderImage } from '../common/FounderImage';
 import { SOCIAL_LINKS } from '../../constants/contacts';
 import { Assets } from '../../config/assets';
 import { BRAND_INFO } from '../../config/brand';
+import { ORGANIZATION_INFO } from '../../config/organization';
 import { useLanguage } from '../../context/LanguageContext';
+import { useAcademy } from '../../context/AcademyContext';
 
 const raajeevPhoto = Assets.founder.image;
-const WHATSAPP_WEBINAR_LINK = "https://chat.whatsapp.com/FplsKSBYPbI5DLFWKSKP5o";
+const WHATSAPP_CONSULTATION_LINK = "https://wa.me/919930117696";
 
 interface AboutSectionProps {
   section: Section;
@@ -86,6 +88,58 @@ const CORE_VALUES = [
 ];
 
 // ==========================================
+// FACULTY DATA
+// ==========================================
+interface FacultyMember {
+  id: string;
+  slug: string;
+  name: string;
+  roleBadge: string;
+  title: string;
+  subtitle: string;
+  experience: string;
+  students: string;
+  rating: string;
+  languages: string;
+  image: string;
+  expertise: string[];
+  description: string;
+}
+
+const FACULTY_MEMBERS: FacultyMember[] = [
+  {
+    id: 'shaunak',
+    slug: 'shaunak',
+    name: 'Shaunak S. Patthak',
+    roleBadge: '🎓 Senior Faculty',
+    title: 'Senior Faculty',
+    subtitle: 'Astro-Vastu Grandmaster • Lead Faculty',
+    experience: '22+ Years',
+    students: '6,200+ Alumni',
+    rating: '5.0 ★',
+    languages: 'English, Gujarati & Hindi',
+    image: Assets.teachers.shaunak.image,
+    expertise: ['Numerology & Vedic Astrology', 'Planetary Dashas & Gemology', 'Astro-Vastu Calculations'],
+    description: 'Lead Faculty member specializing in Astro-Vastu, planetary Dashas, and deep numerical matrix transformations.'
+  },
+  {
+    id: 'sannjoy',
+    slug: 'sannjoy',
+    name: 'Sannjoy Biswass',
+    roleBadge: '🎓 Senior Faculty',
+    title: 'Senior Faculty',
+    subtitle: 'Master Numerologist • Regional Faculty',
+    experience: '20+ Years',
+    students: '7,500+ Students',
+    rating: '4.9 ★',
+    languages: 'Bengali (বাংলা) & English',
+    image: Assets.teachers.sannjoy.image,
+    expertise: ['Lo Shu Grid Science', 'Bengali Numerology', 'Mobile & Spatial Harmony'],
+    description: 'Master Numerologist and Regional Faculty leading authentic Lo Shu grid balancing and Bengali language masterclasses.'
+  }
+];
+
+// ==========================================
 // AREAS OF EXPERTISE
 // ==========================================
 interface ExpertiseItem {
@@ -108,27 +162,6 @@ const EXPERTISE_ITEMS: ExpertiseItem[] = [
 ];
 
 // ==========================================
-// MEDIA & APPEARANCES
-// ==========================================
-const MEDIA_GALLERY = [
-  { title: "Bollywood Exclusive Interview", category: "Interviews", desc: "Raajeev discussing astro-remedies with prominent industry actors.", type: "video", date: "Jan 2026", duration: "12 Min" },
-  { title: "Global Numerology Summit Dubai", category: "Seminars", desc: "Keynote presentation detailing structural vibrations of names.", type: "image", date: "Nov 2025" },
-  { title: "The Cosmic Alignment Podcast", category: "Podcasts", desc: "An in-depth episode explaining mobile numerology trends.", type: "audio", date: "Sep 2025", duration: "45 Min" },
-  { title: "National TV Special Feature", category: "Television", desc: "Live remedial calculations for national television viewers.", type: "video", date: "May 2025" },
-  { title: "Elite Corporate Masterclass", category: "Workshops", desc: "Vastu planning for premium modern corporate headquarters.", type: "image", date: "Mar 2025" },
-  { title: "Leading Digital Press Feature", category: "Digital Features", desc: "In-depth editorial covering the digital expansion of LEO Family.", type: "image", date: "Dec 2024" }
-];
-
-// ==========================================
-// BOOKS & PUBLICATIONS
-// ==========================================
-const PUBLICATIONS = [
-  { title: "The Master of Destiny", category: "Book", desc: "The comprehensive textbook detailing practical Astro-Numerology formulas.", pages: "320 Pages", status: "Available Now" },
-  { title: "Sacred Spatial Alchemy", category: "Study Guide", desc: "An illustrated, step-by-step workbook for residential and office Vastu.", pages: "180 Pages", status: "Exclusive Alumni Release" },
-  { title: "Planetary Hours & Daily Vibrations", category: "Research Paper", desc: "A scientific study on matching personal name spelling to current Saturn transits.", pages: "45 Pages", status: "Free Digital Download" }
-];
-
-// ==========================================
 // DAILY INSPIRATIONS
 // ==========================================
 const INSPIRATIONAL_QUOTES = [
@@ -140,13 +173,13 @@ const INSPIRATIONAL_QUOTES = [
 
 export default function AboutSection({ section }: AboutSectionProps) {
   const { t } = useLanguage();
+  const { switchAcademy } = useAcademy();
 
   // States
   const [activeMilestone, setActiveMilestone] = useState<number>(MILESTONES[0].id);
   const [activeExpertise, setActiveExpertise] = useState<string>(EXPERTISE_ITEMS[0].id);
   const [showExpertiseModal, setShowExpertiseModal] = useState<boolean>(false);
   const [activeQuoteIdx, setActiveQuoteIdx] = useState<number>(0);
-  const [mediaFilter, setMediaFilter] = useState<string>("All");
   const [hoveredNode, setHoveredNode] = useState<EcosystemNode | null>(null);
 
   // Ink Reveal scroll targets and transforms
@@ -203,7 +236,7 @@ export default function AboutSection({ section }: AboutSectionProps) {
   }, []);
 
   return (
-    <section className="py-20 lg:py-32 relative overflow-hidden" id="meet-founder-experience">
+    <section className="py-20 lg:py-32 relative overflow-hidden" id="about-leo-family">
       {/* Background Spiritual Accents */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 blur-[150px] rounded-full -translate-y-1/2 translate-x-1/3 pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-secondary/5 blur-[150px] rounded-full translate-y-1/3 -translate-x-1/3 pointer-events-none" />
@@ -211,711 +244,81 @@ export default function AboutSection({ section }: AboutSectionProps) {
       <div className="container mx-auto px-6 relative z-10 space-y-24 lg:space-y-36">
 
         {/* ==========================================
-            SECTION HEADER
+            FLOW STEP 1: ABOUT LEO FAMILY
             ========================================== */}
-        <div className="text-center max-w-4xl mx-auto space-y-6">
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-[0.2em]"
-          >
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>{t('about.badge', 'Meet the Visionary')}</span>
-          </motion.div>
-          
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
-            className="text-4xl lg:text-6xl font-extrabold font-cinzel tracking-tight text-text-primary"
-          >
-            {t('about.title', 'Meet the Visionary')}
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
-            className="text-lg text-text-secondary leading-relaxed max-w-3xl mx-auto font-light"
-          >
-            {t('about.subtitle', 'Every great institution begins with a vision. Discover the journey, philosophy, and mission of our founder, Raajeev Singh Chauhann—making ancient wisdom practical, accessible, and relevant for today\'s world.')}
-          </motion.p>
-        </div>
-
-
-        {/* ==========================================
-            PART 1 — FOUNDER SHOWCASE (Split-Screen)
-            ========================================== */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-          
-          {/* LEFT SIDE - Portrait Showcase */}
-          <div className="lg:col-span-5 flex justify-center">
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
+        <div className="space-y-12">
+          <div className="text-center max-w-4xl mx-auto space-y-6">
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-              className="relative w-full max-w-[420px] aspect-[4/5] group"
+              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-[0.2em]"
             >
-              {/* Outer Golden Aura */}
-              <div className="absolute -inset-1.5 bg-gradient-to-tr from-primary via-secondary to-accent rounded-[2.5rem] opacity-35 blur-md group-hover:opacity-70 transition-opacity duration-700 -z-10" />
-              
-              {/* Floating Dust Particles */}
-              <div className="absolute inset-0 pointer-events-none z-10 overflow-hidden rounded-[2.5rem]">
-                {[...Array(6)].map((_, i) => (
-                  <motion.div 
-                    key={i}
-                    className="absolute w-1 h-1 bg-accent rounded-full opacity-60 shadow-[0_0_8px_rgba(233,194,105,0.8)]"
-                    style={{
-                      left: `${15 + i * 15}%`,
-                      top: `${80 - i * 10}%`
-                    }}
-                    animate={{
-                      y: [0, -40, 0],
-                      opacity: [0.3, 0.8, 0.3],
-                    }}
-                    transition={{
-                      duration: 4 + i,
-                      repeat: Infinity,
-                      ease: "easeInOut"
-                    }}
-                  />
-                ))}
-              </div>
-
-              {/* Luxury Frame Container */}
-              <div className="relative w-full h-full flex justify-center items-center">
-                <FounderImage 
-                  size="xl" 
-                  variant="portrait" 
-                  animation="shine" 
-                  showGlow={true}
-                  showFrame={true}
-                  className="w-full h-full"
-                />
-              </div>
-
-              {/* Decorative badges overlay */}
-              <div className="absolute -bottom-5 -right-5 md:-right-8 bg-card border border-border/40 p-4.5 rounded-2xl shadow-2xl flex items-center gap-3.5 z-20">
-                <div className="w-11 h-11 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
-                  <Award className="w-5.5 h-5.5" />
-                </div>
-                <div>
-                  <p className="text-[9px] uppercase tracking-widest text-text-secondary font-black">FOUNDER & VISIONARY</p>
-                  <p className="text-sm font-bold text-text-primary">20+ Yrs Experience</p>
-                </div>
-              </div>
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>{t('about.badge', 'Spiritual & Educational Collective')}</span>
             </motion.div>
-          </div>
-
-          {/* RIGHT SIDE - Founder Credentials & Roles */}
-          <div className="lg:col-span-7 space-y-8">
-            <div className="space-y-4">
-              <p className="text-sm font-black tracking-widest text-primary uppercase font-mono">Founding Visionary</p>
-              <h2 className="text-3xl lg:text-5xl font-extrabold font-cinzel text-text-primary">
-                {BRAND_INFO.founder}
-              </h2>
-              <p className="text-lg text-text-secondary font-light max-w-xl">
-                Founder of LEO Family, celebrity Astro-Numerologist, Astrologer, Vastu Expert, and filmmaker. Raajeev Singh Chauhann has dedicated over two decades to decoding cosmic geometry, Chaldean numerical vibrations, and spatial energy alignment, transforming thousands of lives and top business brands globally.
-              </p>
-            </div>
-
-            {/* Premium Badges Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-              {[
-                { title: "LEO Family", label: "Enterprise" },
-                { title: "Founder & Visionary", label: "Master" },
-                { title: "Language", label: "English & Hindi" },
-                { title: "Vedic Science", label: "Astro-Numerology" },
-                { title: "Practical Solutions", label: "Name & Spatial Alignment" },
-                { title: "Curriculum", label: "12+ Certified Modules" }
-              ].map((role, idx) => (
-                <motion.div
-                  key={idx}
-                  initial={{ opacity: 0, y: 10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: idx * 0.05 }}
-                  className="p-3 bg-card border border-border/10 rounded-xl flex flex-col justify-center hover:border-primary/30 hover:shadow-md transition-all group"
-                >
-                  <span className="text-[11px] font-bold text-text-primary group-hover:text-primary transition-colors">{role.title}</span>
-                  <span className="text-[8px] tracking-widest uppercase text-text-secondary mt-0.5">{role.label}</span>
-                </motion.div>
-              ))}
-            </div>
-
-            {/* Additional info block */}
-            <div className="flex gap-4 p-4.5 bg-primary/5 rounded-2xl border border-primary/10">
-              <Info className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-              <p className="text-xs text-text-secondary leading-relaxed">
-                <strong>{BRAND_INFO.founder}</strong> serves as the Founder & Visionary of <strong>LEO Family</strong>, offering structured curriculums, live webinars, and personal consultations in English and Hindi.
-              </p>
-            </div>
-          </div>
-        </div>
-
-
-        {/* ==========================================
-            PART 2 — PERSONAL PHILOSOPHY (The Styled Letter)
-            ========================================== */}
-        <div ref={letterContainerRef} className="max-w-4xl mx-auto relative">
-          
-          {/* SVG filter for organic ink bleed distortion edge */}
-          <svg className="absolute w-0 h-0 pointer-events-none" width="0" height="0">
-            <defs>
-              <filter id="founder-ink-bleed">
-                <feTurbulence type="fractalNoise" baseFrequency="0.012" numOctaves="4" result="noise" />
-                <motion.feDisplacementMap
-                  in="SourceGraphic"
-                  in2="noise"
-                  scale={displacementScale}
-                  xChannelSelector="R"
-                  yChannelSelector="G"
-                />
-              </filter>
-            </defs>
-          </svg>
-
-          {/* Background layered watercolor/ink stains */}
-          <motion.div
-            style={{
-              scale: useTransform(springScroll, [0.1, 0.32], [0.1, 1.15]),
-              opacity: useTransform(springScroll, [0.1, 0.32], [0, 0.08]),
-              rotate: useTransform(springScroll, [0.1, 0.32], [-30, 10]),
-            }}
-            className="absolute -top-12 -left-12 w-64 h-64 rounded-full bg-primary/40 blur-3xl pointer-events-none mix-blend-multiply dark:mix-blend-screen"
-          />
-          <motion.div
-            style={{
-              scale: useTransform(springScroll, [0.18, 0.4], [0.1, 1.3]),
-              opacity: useTransform(springScroll, [0.18, 0.4], [0, 0.06]),
-              rotate: useTransform(springScroll, [0.18, 0.4], [20, -15]),
-            }}
-            className="absolute -bottom-16 -right-16 w-80 h-80 rounded-full bg-secondary/30 blur-3xl pointer-events-none mix-blend-multiply dark:mix-blend-screen"
-          />
-
-          <motion.div 
-            style={{
-              clipPath: clipPathStyle,
-              opacity: opacityStyle,
-              y: yStyle,
-              filter: filterStyle,
-            }}
-            className="relative bg-card/45 backdrop-blur-md rounded-[2.5rem] border border-border/20 p-8 lg:p-14 shadow-xl space-y-8"
-          >
-            {/* Soft decorative background leaf or geometry */}
-            <div className="absolute top-8 right-8 text-primary/5 select-none pointer-events-none">
-              <Sparkles className="w-40 h-40" />
-            </div>
-
-            <div className="text-center space-y-2">
-              <h3 className="font-cinzel text-xs font-bold uppercase tracking-[0.3em] text-primary">Philosophy</h3>
-              <h4 className="text-2xl lg:text-3xl font-extrabold font-cinzel text-text-primary">A Message from the Founder</h4>
-            </div>
-
-            <div className="text-text-secondary text-base lg:text-lg leading-[1.8] font-light space-y-6 relative">
-              <p className="first-letter:text-5xl first-letter:font-bold first-letter:font-cinzel first-letter:text-primary first-letter:float-left first-letter:mr-3 first-letter:mt-1">
-                "My mission has always been to make authentic spiritual knowledge understandable, practical, and beneficial for everyone. The sciences of Astro-Numerology and Vastu should not remain locked in complex manuals or traditional academic terms. They must translate directly to the physical success, prosperity, and peace of mind you experience daily."
-              </p>
-              <p>
-                "At LEO Family, we do not teach passive speculation. We train you in the actual code of cosmic values. Each calculation grid is a map to align your personal vibrational frequencies with auspicious periods of flow."
-              </p>
-            </div>
-
-            {/* Signature Animation */}
-            <div className="pt-6 flex flex-col items-end border-t border-border/10">
-              <div className="w-44 text-center">
-                <svg className="w-full h-12 text-primary overflow-visible" viewBox="0 0 150 50">
-                  {/* Real animating signature path concept */}
-                  <motion.path
-                    d="M 10,35 Q 25,10 40,25 T 70,15 T 100,30 T 130,20 Q 140,10 145,25"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    initial={{ pathLength: 0 }}
-                    whileInView={{ pathLength: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 2, ease: "easeInOut" }}
-                  />
-                </svg>
-                <p className="text-[10px] font-black uppercase tracking-widest text-primary mt-1">{BRAND_INFO.founder}</p>
-                <p className="text-[8px] uppercase tracking-widest text-text-secondary">Founder & Visionary, LEO Family</p>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-
-
-        {/* ==========================================
-            PART 3 — JOURNEY TIMELINE
-            ========================================== */}
-        <div className="space-y-12">
-          <div className="text-center space-y-3 max-w-2xl mx-auto">
-            <h3 className="font-cinzel text-xs font-bold uppercase tracking-[0.3em] text-primary">Evolution</h3>
-            <h4 className="text-3xl lg:text-4xl font-extrabold font-cinzel text-text-primary">Journey & Milestones</h4>
-            <p className="text-xs text-text-secondary uppercase tracking-widest font-medium">Click on any milestone to reveal detailed archives</p>
-          </div>
-
-          <div className="relative max-w-5xl mx-auto pt-6">
-            {/* Center spine line */}
-            <div className="absolute left-6 md:left-1/2 top-0 bottom-0 w-[2px] bg-gradient-to-b from-primary/10 via-primary/40 to-primary/10 -translate-x-1/2" />
-
-            <div className="space-y-10">
-              {MILESTONES.map((step, idx) => {
-                const isLeft = idx % 2 === 0;
-                const isSelected = activeMilestone === step.id;
-                const Icon = step.icon;
-
-                return (
-                  <div key={step.id} className={`flex flex-col md:flex-row items-start ${isLeft ? 'md:flex-row-reverse' : ''} relative`}>
-                    
-                    {/* Node Dot */}
-                    <div 
-                      onClick={() => setActiveMilestone(step.id)}
-                      className="absolute left-6 md:left-1/2 top-1 w-10 h-10 rounded-full border-4 border-background -translate-x-1/2 flex items-center justify-center cursor-pointer z-30 transition-all duration-300"
-                      style={{
-                        backgroundColor: isSelected ? 'var(--primary)' : 'var(--card)',
-                        boxShadow: isSelected ? '0 0 15px var(--primary)' : '0 4px 10px rgba(0,0,0,0.1)',
-                      }}
-                    >
-                      <Icon className={`w-4 h-4 ${isSelected ? 'text-white' : 'text-primary'}`} />
-                    </div>
-
-                    {/* Timeline Card */}
-                    <div className="w-full md:w-[45%] pl-14 md:pl-0 md:px-8">
-                      <motion.div
-                        onClick={() => setActiveMilestone(step.id)}
-                        whileHover={{ scale: 1.01 }}
-                        className={`p-5 rounded-2xl border transition-all duration-300 cursor-pointer text-left ${
-                          isSelected 
-                            ? 'bg-card border-primary shadow-xl ring-1 ring-primary/20' 
-                            : 'bg-card/50 border-border/20 hover:border-primary/20 hover:bg-card'
-                        }`}
-                      >
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-[11px] font-black tracking-widest text-primary uppercase font-mono">{step.year}</span>
-                          <span className="text-[9px] uppercase tracking-wider text-text-secondary bg-primary/10 px-2 py-0.5 rounded-full font-bold">Phase {step.id}</span>
-                        </div>
-                        <h5 className="text-base font-bold text-text-primary font-cinzel tracking-tight mb-1">{step.title}</h5>
-                        <p className="text-xs text-text-secondary leading-relaxed">{step.description}</p>
-                        
-                        {/* Expanded details */}
-                        <AnimatePresence initial={false}>
-                          {isSelected && (
-                            <motion.div
-                              initial={{ opacity: 0, height: 0 }}
-                              animate={{ opacity: 1, height: 'auto' }}
-                              exit={{ opacity: 0, height: 0 }}
-                              transition={{ duration: 0.3 }}
-                              className="overflow-hidden mt-3 pt-3 border-t border-border/10 text-xs text-text-secondary/90 leading-relaxed space-y-2"
-                            >
-                              <p>{step.extended}</p>
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
-                      </motion.div>
-                    </div>
-
-                    {/* Spacer for MD screens */}
-                    <div className="hidden md:block w-[10%]"></div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-
-
-        {/* ==========================================
-            PART 4 — CORE VALUES
-            ========================================== */}
-        <div className="space-y-12">
-          <div className="text-center space-y-3 max-w-2xl mx-auto">
-            <h3 className="font-cinzel text-xs font-bold uppercase tracking-[0.3em] text-primary">Core Values</h3>
-            <h4 className="text-3xl lg:text-4xl font-extrabold font-cinzel text-text-primary">What We Stand For</h4>
-            <p className="text-lg text-text-secondary font-light">Elegance, accuracy, and compassion anchoring our global mission.</p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {CORE_VALUES.map((val, idx) => {
-              const Icon = val.icon;
-              return (
-                <motion.div
-                  key={idx}
-                  whileHover={{ y: -6, boxShadow: "0 20px 40px rgba(0,0,0,0.05)" }}
-                  className="p-6 rounded-2xl bg-card border border-border/20 text-left space-y-4 hover:border-primary/45 transition-all"
-                >
-                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-                    <Icon className="w-5.5 h-5.5" />
-                  </div>
-                  <h5 className="text-base font-bold font-cinzel text-text-primary">{val.title}</h5>
-                  <p className="text-xs text-text-secondary leading-relaxed">{val.desc}</p>
-                </motion.div>
-              );
-            })}
-          </div>
-        </div>
-
-
-        {/* ==========================================
-            PART 5 — AREAS OF EXPERTISE (Circular Dial)
-            ========================================== */}
-        <div className="space-y-12">
-          <div className="text-center space-y-3 max-w-2xl mx-auto">
-            <h3 className="font-cinzel text-xs font-bold uppercase tracking-[0.3em] text-primary">Specializations</h3>
-            <h4 className="text-3xl lg:text-4xl font-extrabold font-cinzel text-text-primary">Areas of Expertise</h4>
-            <p className="text-lg text-text-secondary font-light">Click any discipline on the wheel or list below to inspect its core mechanics.</p>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center max-w-5xl mx-auto">
             
-            {/* LEFT: Circular Wheel Interface */}
-            <div className="lg:col-span-6 flex justify-center py-6">
-              <div className="relative w-80 h-80 md:w-[380px] md:h-[380px] rounded-full border border-border/20 flex items-center justify-center">
-                
-                {/* Slow Rotating Background Rings */}
-                <motion.div 
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
-                  className="absolute inset-4 rounded-full border border-dashed border-primary/25 pointer-events-none"
-                />
-                
-                {/* Dial Center */}
-                <div className="w-28 h-28 md:w-36 md:h-36 rounded-full bg-gradient-to-tr from-primary to-accent text-white flex flex-col items-center justify-center shadow-lg text-center p-3 relative z-20">
-                  <Compass className="w-6 h-6 md:w-8 md:h-8 animate-spin-slow mb-1" />
-                  <span className="text-[9px] font-black tracking-widest uppercase font-mono">Expertise</span>
-                  <span className="text-[7.5px] tracking-wide opacity-80 uppercase">Dial Selector</span>
-                </div>
+            <motion.h1 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+              className="text-4xl lg:text-6xl font-extrabold font-cinzel tracking-tight text-text-primary"
+            >
+              {t('about.title', 'About LEO Family')}
+            </motion.h1>
 
-                {/* Surrounding Nodes */}
-                {EXPERTISE_ITEMS.map((item, idx) => {
-                  const angle = (idx * 360) / EXPERTISE_ITEMS.length;
-                  const radius = 130; // Radius distance
-                  const isSelected = activeExpertise === item.id;
-
-                  // Translate calculations
-                  const x = radius * Math.cos((angle * Math.PI) / 180);
-                  const y = radius * Math.sin((angle * Math.PI) / 180);
-
-                  return (
-                    <motion.button
-                      key={item.id}
-                      onClick={() => {
-                        setActiveExpertise(item.id);
-                        setShowExpertiseModal(true);
-                      }}
-                      whileHover={{ scale: 1.1 }}
-                      className="absolute w-12 h-12 md:w-14 md:h-14 rounded-full border flex items-center justify-center cursor-pointer transition-all z-20 shadow-sm"
-                      style={{
-                        transform: `translate(${x}px, ${y}px)`,
-                        backgroundColor: isSelected ? 'var(--primary)' : 'var(--card)',
-                        borderColor: isSelected ? 'var(--primary)' : 'var(--border)',
-                      }}
-                    >
-                      <span className={`text-[8.5px] font-black tracking-tighter uppercase ${isSelected ? 'text-white' : 'text-text-secondary'}`}>
-                        {item.name.split(' ')[0]}
-                      </span>
-                    </motion.button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* RIGHT: Detailed Explanation of Selection */}
-            <div className="lg:col-span-6">
-              <AnimatePresence mode="wait">
-                {EXPERTISE_ITEMS.filter(it => it.id === activeExpertise).map((item) => (
-                  <motion.div
-                    key={item.id}
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    className="p-6 lg:p-8 bg-card rounded-3xl border border-border/20 shadow-xl space-y-6 text-left relative overflow-hidden"
-                  >
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
-                    
-                    <div className="flex items-center gap-2">
-                      <Sparkles className="w-5 h-5 text-primary" />
-                      <span className="text-[10px] uppercase font-bold tracking-widest text-primary">Core Specialization</span>
-                    </div>
-
-                    <h4 className="text-2xl font-bold font-cinzel text-text-primary">{item.name}</h4>
-                    <p className="text-xs tracking-widest font-bold uppercase text-text-secondary">{item.shortDesc}</p>
-                    <p className="text-sm text-text-secondary leading-relaxed">{item.fullDesc}</p>
-
-                    <div className="p-4 bg-primary/5 rounded-xl border border-primary/10">
-                      <p className="text-[10px] font-black tracking-widest text-primary uppercase mb-1">Expected Real-World Outcome</p>
-                      <p className="text-xs text-text-primary font-medium">{item.impact}</p>
-                    </div>
-
-                    <button
-                      onClick={() => setShowExpertiseModal(true)}
-                      className="inline-flex items-center gap-1.5 text-xs text-primary font-bold tracking-wider hover:translate-x-1 transition-transform"
-                    >
-                      <span>Read Full Integration Guideline</span>
-                      <ChevronRight className="w-4 h-4" />
-                    </button>
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-            </div>
-          </div>
-        </div>
-
-        {/* ==========================================
-            PART 6 — MEDIA & PUBLIC APPEARANCES
-            ========================================== */}
-        <div className="space-y-12">
-          <div className="text-center space-y-3 max-w-2xl mx-auto">
-            <h3 className="font-cinzel text-xs font-bold uppercase tracking-[0.3em] text-primary">Gallery</h3>
-            <h4 className="text-3xl lg:text-4xl font-extrabold font-cinzel text-text-primary">Media & Public Appearances</h4>
-            <p className="text-lg text-text-secondary font-light">Watch seminars, interviews, workshops, and weekly podcast releases.</p>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+              className="text-lg text-text-secondary leading-relaxed max-w-3xl mx-auto font-light"
+            >
+              {t('about.subtitle', 'LEO Family is a premier global spiritual and educational institution dedicated to bridging ancient Vedic sciences—Astro-Numerology, Vastu Shastra, and sacred geometry—with modern practical guidance, cinematic media, and cutting-edge digital intelligence.')}
+            </motion.p>
           </div>
 
-          {/* Gallery Filters */}
-          <div className="flex flex-wrap justify-center gap-2 max-w-lg mx-auto">
-            {["All", "Interviews", "Seminars", "Podcasts", "Television", "Workshops"].map((filter) => (
-              <button
-                key={filter}
-                onClick={() => setMediaFilter(filter)}
-                className={`px-4 py-1.5 rounded-full text-[10px] font-bold tracking-wider uppercase transition-all border cursor-pointer ${
-                  mediaFilter === filter
-                    ? 'bg-primary border-primary text-white'
-                    : 'bg-card/45 border-border/30 text-text-secondary hover:text-text-primary hover:border-primary/55'
-                }`}
-              >
-                {filter}
-              </button>
-            ))}
-          </div>
-
-          {/* Media Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-            {MEDIA_GALLERY
-              .filter(item => mediaFilter === "All" || item.category === mediaFilter)
-              .map((item, idx) => (
-                <motion.div
-                  key={idx}
-                  layout
-                  className="group bg-card rounded-2xl border border-border/20 overflow-hidden text-left hover:border-primary/30 transition-all flex flex-col justify-between"
-                >
-                  <div className="p-6 space-y-4">
-                    <div className="flex items-center justify-between">
-                      <span className="text-[9px] font-mono tracking-wider font-bold text-primary bg-primary/10 px-2 py-0.5 rounded uppercase">
-                        {item.category}
-                      </span>
-                      <span className="text-[9px] text-text-secondary font-medium flex items-center gap-1">
-                        <Calendar className="w-3 h-3" />
-                        {item.date}
-                      </span>
-                    </div>
-                    <h5 className="text-base font-bold text-text-primary font-cinzel tracking-tight leading-tight">
-                      {item.title}
-                    </h5>
-                    <p className="text-xs text-text-secondary leading-relaxed">
-                      {item.desc}
-                    </p>
-                  </div>
-
-                  <div className="px-6 pb-6 pt-3 border-t border-border/10 flex items-center justify-between bg-primary/5">
-                    <span className="text-[10px] text-text-secondary font-mono">
-                      {item.type === 'video' ? '🎬 Video Clip' : item.type === 'audio' ? '🎙️ Podcast Audio' : '📸 Summit Image'}
-                    </span>
-                    <button className="flex items-center gap-1 text-[10px] font-black text-primary uppercase tracking-widest hover:text-primary-dark cursor-pointer">
-                      <span>View Archive</span>
-                      <ChevronRight className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                </motion.div>
-              ))}
-          </div>
-        </div>
-
-
-        {/* ==========================================
-            PART 7 — BOOKS & PUBLICATIONS (Bookshelf Layout)
-            ========================================== */}
-        <div className="space-y-12">
-          <div className="text-center space-y-3 max-w-2xl mx-auto">
-            <h3 className="font-cinzel text-xs font-bold uppercase tracking-[0.3em] text-primary">Library</h3>
-            <h4 className="text-3xl lg:text-4xl font-extrabold font-cinzel text-text-primary">Books & Publications</h4>
-            <p className="text-lg text-text-secondary font-light">Core textbooks, spatial blueprints, and digital calculation sheets.</p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto relative">
-            {/* Wood bookshelf board under cards on MD+ screens */}
-            <div className="absolute left-0 right-0 bottom-[-16px] h-4 bg-gradient-to-r from-amber-950 via-amber-800 to-amber-950 rounded shadow-md hidden md:block border-t border-amber-600/30" />
-
-            {PUBLICATIONS.map((book, idx) => (
+          {/* Institutional Highlights Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-5xl mx-auto">
+            {[
+              { label: 'Global Students', value: '15,000+', desc: 'Across 10+ countries' },
+              { label: 'Expert Academies', value: '3 Master', desc: 'Astro, Numbers & Vastu' },
+              { label: 'Certified Modules', value: '12+ Courses', desc: 'Beginner to Professional' },
+              { label: 'Vedic Research', value: '20+ Years', desc: 'Proven calculation models' },
+            ].map((stat, idx) => (
               <motion.div
                 key={idx}
-                whileHover={{ y: -10 }}
-                className="bg-card rounded-2xl border border-border/20 p-6 text-left flex flex-col justify-between shadow-lg relative group transition-all"
+                initial={{ opacity: 0, y: 15 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.1 }}
+                className="p-6 bg-card border border-border/20 rounded-2xl text-center space-y-1 hover:border-primary/40 transition-all shadow-sm"
               >
-                {/* Book Spine color marker */}
-                <div className="absolute top-0 bottom-0 left-0 w-1 bg-gradient-to-b from-primary via-secondary to-accent rounded-l-2xl" />
-                
-                <div className="space-y-4 pl-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[8px] tracking-widest font-bold uppercase text-primary font-mono">{book.category}</span>
-                    <span className="text-[8.5px] font-medium text-text-secondary bg-primary/10 px-2 py-0.5 rounded">{book.pages}</span>
-                  </div>
-                  <h5 className="text-base font-bold font-cinzel text-text-primary leading-tight group-hover:text-primary transition-colors">{book.title}</h5>
-                  <p className="text-xs text-text-secondary leading-relaxed">{book.desc}</p>
-                </div>
-
-                <div className="pt-6 pl-2 mt-4 border-t border-border/10 flex flex-col gap-3">
-                  <span className="text-[9px] font-black tracking-widest text-primary uppercase font-mono">{book.status}</span>
-                  <div className="flex gap-2">
-                    <button className="flex-1 py-2 rounded-lg bg-primary/10 text-primary text-[10px] font-bold tracking-wider uppercase hover:bg-primary hover:text-white transition-all text-center cursor-pointer">
-                      Read Blueprint
-                    </button>
-                    <button className="flex-1 py-2 rounded-lg border border-border/20 hover:border-primary/45 text-[10px] font-bold tracking-wider uppercase text-text-secondary text-center cursor-pointer">
-                      Order Copy
-                    </button>
-                  </div>
-                </div>
+                <p className="text-2xl lg:text-3xl font-extrabold font-cinzel text-primary">{stat.value}</p>
+                <p className="text-xs font-bold text-text-primary uppercase tracking-wider">{stat.label}</p>
+                <p className="text-[10px] text-text-secondary">{stat.desc}</p>
               </motion.div>
             ))}
           </div>
-        </div>
 
-
-        {/* ==========================================
-            PART 8 — GLOBAL MISSION (Interactive SVG Map)
-            ========================================== */}
-        <div className="space-y-12 bg-card/20 backdrop-blur-md p-8 lg:p-14 rounded-[3rem] border border-border/10">
-          <div className="text-center space-y-3 max-w-2xl mx-auto">
-            <h3 className="font-cinzel text-xs font-bold uppercase tracking-[0.3em] text-primary">Global Reach</h3>
-            <h4 className="text-3xl lg:text-4xl font-extrabold font-cinzel text-text-primary">Global Learning Community</h4>
-            <p className="text-lg text-text-secondary font-light">Bridging digital platforms and offline coaching to support seekers in 10+ countries.</p>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center max-w-5xl mx-auto">
-            
-            {/* World Map SVG Left */}
-            <div className="lg:col-span-7 flex justify-center">
-              <div className="relative w-full max-w-[500px] aspect-[16/10] bg-background/40 border border-border/10 rounded-2xl p-4 overflow-hidden">
-                <svg className="w-full h-full text-text-secondary/15" viewBox="0 0 800 500" fill="none">
-                  {/* Simplified world map outline paths representing continents */}
-                  <path d="M120 150 Q160 100 240 120 T300 200 T200 350 Z" fill="currentColor" opacity="0.3" />
-                  <path d="M420 100 Q500 80 580 120 T620 220 T520 300 Z" fill="currentColor" opacity="0.3" />
-                  <path d="M540 280 Q600 250 680 300 T720 400 Z" fill="currentColor" opacity="0.3" />
-                  <path d="M180 320 Q220 300 280 340 T320 450 Z" fill="currentColor" opacity="0.3" />
-                  
-                  {/* Glowing Connection Lines / Arcs */}
-                  <motion.path 
-                    d="M 450,220 Q 300,100 200,200" 
-                    stroke="var(--primary)" 
-                    strokeWidth="1.5" 
-                    strokeDasharray="4,4"
-                    fill="none" 
-                    animate={{ strokeDashoffset: [0, -20] }}
-                    transition={{ repeat: Infinity, duration: 4, ease: "linear" }}
-                  />
-                  <motion.path 
-                    d="M 450,220 Q 550,120 650,240" 
-                    stroke="var(--primary)" 
-                    strokeWidth="1.5" 
-                    strokeDasharray="4,4"
-                    fill="none" 
-                    animate={{ strokeDashoffset: [0, 20] }}
-                    transition={{ repeat: Infinity, duration: 5, ease: "linear" }}
-                  />
-                  <motion.path 
-                    d="M 450,220 Q 400,320 300,380" 
-                    stroke="var(--primary)" 
-                    strokeWidth="1.5" 
-                    strokeDasharray="4,4"
-                    fill="none" 
-                    animate={{ strokeDashoffset: [0, -20] }}
-                    transition={{ repeat: Infinity, duration: 6, ease: "linear" }}
-                  />
-
-                  {/* Nodes with pulsing effects */}
-                  {/* India - Mumbai */}
-                  <circle cx="450" cy="220" r="8" fill="var(--primary)" />
-                  <circle cx="450" cy="220" r="16" stroke="var(--primary)" strokeWidth="1" fill="none" className="animate-ping" style={{ transformOrigin: '450px 220px' }} />
-                  <text x="465" y="225" fill="var(--text-primary)" fontSize="10" fontWeight="bold">Mumbai (HQ)</text>
-
-                  {/* Dubai */}
-                  <circle cx="390" cy="190" r="5" fill="var(--secondary)" />
-                  <circle cx="390" cy="190" r="10" stroke="var(--secondary)" strokeWidth="1" fill="none" className="animate-pulse" style={{ transformOrigin: '390px 190px' }} />
-                  <text x="370" y="175" fill="var(--text-secondary)" fontSize="8">Dubai</text>
-
-                  {/* London */}
-                  <circle cx="280" cy="110" r="5" fill="var(--secondary)" />
-                  <text x="250" y="95" fill="var(--text-secondary)" fontSize="8">London</text>
-
-                  {/* Singapore */}
-                  <circle cx="530" cy="280" r="5" fill="var(--secondary)" />
-                  <text x="540" y="290" fill="var(--text-secondary)" fontSize="8">Singapore</text>
-
-                  {/* USA - New York */}
-                  <circle cx="150" cy="160" r="5" fill="var(--secondary)" />
-                  <text x="110" y="180" fill="var(--text-secondary)" fontSize="8">New York</text>
-                </svg>
+          {/* Ecosystem Connected Node Graph */}
+          <div className="max-w-4xl mx-auto p-6 bg-card border border-border/15 rounded-[2.5rem] relative min-h-[380px] flex flex-col justify-between shadow-lg">
+            <div className="flex items-center justify-between pb-4 border-b border-border/10">
+              <div className="flex items-center gap-2">
+                <Layers className="w-4 h-4 text-primary" />
+                <span className="text-xs font-bold uppercase tracking-widest text-text-primary">The LEO Family Ecosystem Directory</span>
+              </div>
+              <div className="text-[9px] font-mono tracking-wider font-bold text-primary flex items-center gap-1">
+                <RefreshCw className="w-3 h-3 animate-spin" />
+                <span>Interactive Directory</span>
               </div>
             </div>
 
-            {/* Core KPI metrics Right */}
-            <div className="lg:col-span-5 space-y-6">
-              <div className="space-y-2 text-left">
-                <span className="text-[10px] font-bold text-primary uppercase tracking-widest">Growth Analytics</span>
-                <h5 className="text-2xl font-bold font-cinzel text-text-primary">Expanding Vedic Reach</h5>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                {[
-                  { value: "15,000+", label: "Students Trained", desc: "Across accredited modules" },
-                  { value: "10+ Co.", label: "Global Presence", desc: "Active family transits" },
-                  { value: "12+ Pro", label: "Certified Courses", desc: "Vastu, Astro & Numbers" },
-                  { value: "100K+", label: "Digital Members", desc: "Organic community" }
-                ].map((stat, i) => (
-                  <div key={i} className="p-4 bg-card rounded-xl border border-border/10 text-left">
-                    <p className="text-2xl font-bold font-cinzel text-primary leading-none mb-1">{stat.value}</p>
-                    <p className="text-[11px] font-bold text-text-primary">{stat.label}</p>
-                    <p className="text-[9px] text-text-secondary leading-tight">{stat.desc}</p>
-                  </div>
-                ))}
-              </div>
-
-              <div className="p-4.5 bg-primary/5 rounded-2xl border border-primary/10 text-left flex items-start gap-3">
-                <Globe className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                <p className="text-xs text-text-secondary leading-relaxed">
-                  With active student bodies in <strong>India, UAE, Singapore, UK, US, and Canada</strong>, LEO Family serves as the leading, highly trustworthy resource for ancient energetic wisdom translation.
-                </p>
-              </div>
-            </div>
-
-          </div>
-        </div>
-
-
-        {/* ==========================================
-            PART 9 — THE LEO FAMILY ECOSYSTEM (Connected Node Graph)
-            ========================================== */}
-        <div className="space-y-12">
-          <div className="text-center space-y-3 max-w-2xl mx-auto">
-            <h3 className="font-cinzel text-xs font-bold uppercase tracking-[0.3em] text-primary">Federation</h3>
-            <h4 className="text-3xl lg:text-4xl font-extrabold font-cinzel text-text-primary">The LEO Family Ecosystem</h4>
-            <p className="text-lg text-text-secondary font-light">Hover or tap on any surrounding node to inspect its specific purpose and relations.</p>
-          </div>
-
-          <div className="max-w-4xl mx-auto p-6 bg-card border border-border/15 rounded-[2.5rem] relative min-h-[420px] flex flex-col justify-between">
-            <div className="absolute top-4 right-4 text-[9px] font-mono tracking-wider font-bold text-primary flex items-center gap-1">
-              <RefreshCw className="w-3 h-3 animate-spin" />
-              <span>Interactive Graph</span>
-            </div>
-
-            {/* Graph Visual Frame */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center flex-1">
-              {/* Active Node explanation Panel left */}
-              <div className="md:col-span-5 text-left space-y-4">
-                <span className="text-[9px] font-bold text-primary uppercase tracking-widest">Ecosystem Component</span>
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center flex-1 pt-4">
+              {/* Active Node explanation Panel */}
+              <div className="md:col-span-5 text-left space-y-3">
+                <span className="text-[9px] font-bold text-primary uppercase tracking-widest">Selected Entity</span>
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={hoveredNode ? hoveredNode.id : 'default'}
@@ -928,14 +331,14 @@ export default function AboutSection({ section }: AboutSectionProps) {
                       {hoveredNode ? hoveredNode.label : 'Explore LEO Family'}
                     </h5>
                     <p className="text-xs text-text-secondary leading-relaxed">
-                      {hoveredNode ? hoveredNode.details : 'Hover or select any node in the directory on the right to discover the multi-tiered ecosystem managed by Raajeev Singh Chauhann.'}
+                      {hoveredNode ? hoveredNode.details : 'Select any branch or asset below to inspect its dedicated function within the overarching LEO Family organization.'}
                     </p>
                     {hoveredNode && hoveredNode.link && (
                       <a
                         href={hoveredNode.link}
                         className="inline-flex items-center gap-1.5 text-xs font-bold text-primary hover:underline"
                       >
-                        <span>Access Platform URL</span>
+                        <span>Access Entity Portal</span>
                         <ExternalLink className="w-3.5 h-3.5" />
                       </a>
                     )}
@@ -943,7 +346,7 @@ export default function AboutSection({ section }: AboutSectionProps) {
                 </AnimatePresence>
               </div>
 
-              {/* Node selection Grid right */}
+              {/* Node selection Grid */}
               <div className="md:col-span-7 grid grid-cols-2 sm:grid-cols-3 gap-2.5">
                 {ECOSYSTEM_NODES.map((node) => {
                   const isCenter = node.id === 'center';
@@ -954,7 +357,7 @@ export default function AboutSection({ section }: AboutSectionProps) {
                       key={node.id}
                       onMouseEnter={() => setHoveredNode(node)}
                       onClick={() => setHoveredNode(node)}
-                      className={`p-3 rounded-xl border text-left transition-all duration-300 relative overflow-hidden ${
+                      className={`p-3 rounded-xl border text-left transition-all duration-300 relative overflow-hidden cursor-pointer ${
                         isCenter 
                           ? 'col-span-2 sm:col-span-3 bg-primary text-white border-primary shadow-lg font-cinzel' 
                           : isHovered
@@ -980,199 +383,508 @@ export default function AboutSection({ section }: AboutSectionProps) {
 
 
         {/* ==========================================
-            PART 10 — DAILY INSPIRATION (Quote Slider)
+            FLOW STEP 2: MEET THE FOUNDER — RAAJEEV SINGH CHAUHANN
             ========================================== */}
-        <div className="max-w-3xl mx-auto">
-          <div className="bg-gradient-to-tr from-primary/5 via-secondary/5 to-accent/5 p-8 lg:p-14 rounded-3xl border border-border/15 text-center relative overflow-hidden">
-            {/* Quotation Marks */}
-            <span className="absolute top-4 left-6 text-7xl font-serif text-primary/10 select-none">“</span>
-            <span className="absolute bottom-4 right-6 text-7xl font-serif text-primary/10 select-none">”</span>
-
-            <div className="space-y-6">
-              <span className="text-[10px] uppercase tracking-[0.25em] font-bold text-primary font-mono">Daily Inspiration</span>
-              
-              <div className="min-h-[100px] flex items-center justify-center">
-                <AnimatePresence mode="wait">
-                  <motion.p
-                    key={activeQuoteIdx}
-                    initial={{ opacity: 0, scale: 0.98 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 1.02 }}
-                    className="text-lg lg:text-xl font-cinzel italic text-text-primary leading-relaxed"
-                  >
-                    {INSPIRATIONAL_QUOTES[activeQuoteIdx].text}
-                  </motion.p>
-                </AnimatePresence>
-              </div>
-
-              <div className="space-y-1">
-                <p className="text-[11px] font-black uppercase tracking-widest text-primary">Raajeev Singh Chauhann</p>
-                <p className="text-[9px] text-text-secondary">{INSPIRATIONAL_QUOTES[activeQuoteIdx].context}</p>
-              </div>
-
-              {/* Slider Dots */}
-              <div className="flex justify-center gap-1.5 pt-2">
-                {INSPIRATIONAL_QUOTES.map((_, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setActiveQuoteIdx(idx)}
-                    className={`w-2 h-2 rounded-full transition-all cursor-pointer ${
-                      activeQuoteIdx === idx ? 'bg-primary w-5' : 'bg-border/40 hover:bg-border'
-                    }`}
-                  />
-                ))}
-              </div>
-            </div>
+        <div className="space-y-16 pt-8 border-t border-border/10">
+          <div className="text-center space-y-3 max-w-3xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-[0.2em]"
+            >
+              <Crown className="w-3.5 h-3.5 text-primary" />
+              <span>Founding Visionary</span>
+            </motion.div>
+            <h2 className="text-3xl lg:text-5xl font-extrabold font-cinzel text-text-primary">
+              Meet the Founder — Raajeev Singh Chauhann
+            </h2>
+            <p className="text-base text-text-secondary font-light">
+              Founder & Visionary of LEO Family • Celebrity Astro-Numerologist • Vastu Expert • Filmmaker
+            </p>
           </div>
-        </div>
 
-
-        {/* ==========================================
-            PART 11 — PERSONAL CONSULTATION (Booking Card)
-            ========================================== */}
-        <div className="max-w-4xl mx-auto">
-          <div className="relative overflow-hidden rounded-[2.5rem] border border-border/30 bg-card shadow-2xl p-8 lg:p-14 text-left">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
             
-            {/* Subtle glow layer */}
-            <div className="absolute top-0 right-0 w-80 h-80 bg-primary/5 blur-[100px] rounded-full -translate-y-1/3 translate-x-1/3 pointer-events-none" />
-
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center relative z-10">
-              <div className="md:col-span-8 space-y-4">
-                <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-primary/10 text-primary text-[9px] font-bold uppercase tracking-widest">
-                  <Zap className="w-3 h-3 text-primary animate-bounce" />
-                  <span>Elite Consultation Session</span>
+            {/* LEFT SIDE - Portrait Showcase */}
+            <div className="lg:col-span-5 flex justify-center">
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.95 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8 }}
+                className="relative w-full max-w-[420px] aspect-[4/5] group"
+              >
+                <div className="absolute -inset-1.5 bg-gradient-to-tr from-primary via-secondary to-accent rounded-[2.5rem] opacity-35 blur-md group-hover:opacity-70 transition-opacity duration-700 -z-10" />
+                
+                <div className="relative w-full h-full flex justify-center items-center">
+                  <FounderImage 
+                    size="xl" 
+                    variant="portrait" 
+                    animation="shine" 
+                    showGlow={true}
+                    showFrame={true}
+                    className="w-full h-full"
+                  />
                 </div>
-                <h3 className="text-2xl lg:text-4xl font-extrabold font-cinzel text-text-primary leading-tight">
-                  Begin Your Journey with Personalized Guidance
+
+                <div className="absolute -bottom-5 -right-5 md:-right-8 bg-card border border-border/40 p-4.5 rounded-2xl shadow-2xl flex items-center gap-3.5 z-20">
+                  <div className="w-11 h-11 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
+                    <Award className="w-5.5 h-5.5" />
+                  </div>
+                  <div>
+                    <p className="text-[9px] uppercase tracking-widest text-text-secondary font-black">FOUNDER & VISIONARY</p>
+                    <p className="text-sm font-bold text-text-primary">20+ Yrs Experience</p>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+
+            {/* RIGHT SIDE - Founder Credentials & Bio */}
+            <div className="lg:col-span-7 space-y-8">
+              <div className="space-y-4">
+                <h3 className="text-2xl lg:text-4xl font-bold font-cinzel text-text-primary">
+                  {BRAND_INFO.founder}
                 </h3>
-                <p className="text-sm text-text-secondary leading-relaxed max-w-xl">
-                  Connect with Raajeev directly for corporate alignment, residential spatial audits, brand spellings, and private chart readings. Achieve effortless success through calculation.
+                <p className="text-lg text-text-secondary font-light max-w-xl leading-relaxed">
+                  Founder of LEO Family, celebrity Astro-Numerologist, Astrologer, Vastu Expert, and filmmaker. Raajeev Singh Chauhann has dedicated over two decades to decoding cosmic geometry, Chaldean numerical vibrations, and spatial energy alignment, transforming thousands of lives and top business brands globally.
                 </p>
               </div>
 
-              <div className="md:col-span-4 flex flex-col gap-3">
-                <a
-                  href="https://wa.me/919999999999" // Use Whatsapp link
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn-premium py-4.5 px-6 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-center shadow-lg cursor-pointer"
-                >
-                  Book Consultation
-                </a>
-                <button
-                  onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                  className="py-4 px-6 rounded-2xl border border-border/20 text-text-secondary hover:text-primary hover:border-primary/50 text-[10px] font-bold uppercase tracking-widest text-center transition-all cursor-pointer"
-                >
-                  Visit Founder Page
-                </button>
+              {/* Roles Badges Grid */}
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                {[
+                  { title: "LEO Family", label: "Enterprise Founder" },
+                  { title: "Celebrity Advisor", label: "Astro-Numerology" },
+                  { title: "Languages", label: "English & Hindi" },
+                  { title: "Vedic Science", label: "Chaldean Matrix" },
+                  { title: "Spatial Harmony", label: "Vastu Architecture" },
+                  { title: "Indian Films", label: "Cinematic Media" }
+                ].map((role, idx) => (
+                  <motion.div
+                    key={idx}
+                    initial={{ opacity: 0, y: 10 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: idx * 0.05 }}
+                    className="p-3 bg-card border border-border/10 rounded-xl flex flex-col justify-center hover:border-primary/30 hover:shadow-md transition-all group"
+                  >
+                    <span className="text-[11px] font-bold text-text-primary group-hover:text-primary transition-colors">{role.title}</span>
+                    <span className="text-[8px] tracking-widest uppercase text-text-secondary mt-0.5">{role.label}</span>
+                  </motion.div>
+                ))}
               </div>
+
+              <div className="flex gap-4 p-4.5 bg-primary/5 rounded-2xl border border-primary/10">
+                <Info className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                <p className="text-xs text-text-secondary leading-relaxed">
+                  <strong>{BRAND_INFO.founder}</strong> serves as the Founder & Visionary of <strong>LEO Family</strong>, establishing the core calculation standards, authorizing certified masterclass modules, and guiding personal consultations worldwide.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Founder Philosophy (A Message from the Founder) */}
+          <div ref={letterContainerRef} className="max-w-4xl mx-auto relative pt-8">
+            <svg className="absolute w-0 h-0 pointer-events-none" width="0" height="0">
+              <defs>
+                <filter id="founder-ink-bleed">
+                  <feTurbulence type="fractalNoise" baseFrequency="0.012" numOctaves="4" result="noise" />
+                  <motion.feDisplacementMap
+                    in="SourceGraphic"
+                    in2="noise"
+                    scale={displacementScale}
+                    xChannelSelector="R"
+                    yChannelSelector="G"
+                  />
+                </filter>
+              </defs>
+            </svg>
+
+            <motion.div 
+              style={{
+                clipPath: clipPathStyle,
+                opacity: opacityStyle,
+                y: yStyle,
+                filter: filterStyle,
+              }}
+              className="relative bg-card/45 backdrop-blur-md rounded-[2.5rem] border border-border/20 p-8 lg:p-14 shadow-xl space-y-8"
+            >
+              <div className="absolute top-8 right-8 text-primary/5 select-none pointer-events-none">
+                <Sparkles className="w-40 h-40" />
+              </div>
+
+              <div className="text-center space-y-2">
+                <h3 className="font-cinzel text-xs font-bold uppercase tracking-[0.3em] text-primary">Philosophy</h3>
+                <h4 className="text-2xl lg:text-3xl font-extrabold font-cinzel text-text-primary">A Message from the Founder</h4>
+              </div>
+
+              <div className="text-text-secondary text-base lg:text-lg leading-[1.8] font-light space-y-6 relative">
+                <p className="first-letter:text-5xl first-letter:font-bold first-letter:font-cinzel first-letter:text-primary first-letter:float-left first-letter:mr-3 first-letter:mt-1">
+                  "My mission has always been to make authentic spiritual knowledge understandable, practical, and beneficial for everyone. The sciences of Astro-Numerology and Vastu should not remain locked in complex manuals or traditional academic terms. They must translate directly to the physical success, prosperity, and peace of mind you experience daily."
+                </p>
+                <p>
+                  "At LEO Family, we do not teach passive speculation. We train you in the actual code of cosmic values. Each calculation grid is a map to align your personal vibrational frequencies with auspicious periods of flow."
+                </p>
+              </div>
+
+              {/* Signature */}
+              <div className="pt-6 flex flex-col items-end border-t border-border/10">
+                <div className="w-44 text-center">
+                  <svg className="w-full h-12 text-primary overflow-visible" viewBox="0 0 150 50">
+                    <motion.path
+                      d="M 10,35 Q 25,10 40,25 T 70,15 T 100,30 T 130,20 Q 140,10 145,25"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      initial={{ pathLength: 0 }}
+                      whileInView={{ pathLength: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 2, ease: "easeInOut" }}
+                    />
+                  </svg>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-primary mt-1">{BRAND_INFO.founder}</p>
+                  <p className="text-[8px] uppercase tracking-widest text-text-secondary">Founder & Visionary, LEO Family</p>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+
+
+        {/* ==========================================
+            FLOW STEP 3: OUR MISSION
+            ========================================== */}
+        <div className="space-y-12 pt-8 border-t border-border/10" id="our-mission">
+          <div className="text-center space-y-3 max-w-3xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-[0.2em]"
+            >
+              <ShieldCheck className="w-3.5 h-3.5 text-primary" />
+              <span>Core Purpose</span>
+            </motion.div>
+            <h2 className="text-3xl lg:text-4xl font-extrabold font-cinzel text-text-primary">
+              Our Mission
+            </h2>
+            <p className="text-lg text-text-secondary font-light">
+              Empowering individuals, families, and organizations through authentic, rapid-remedy Vedic calculation systems.
+            </p>
+          </div>
+
+          <div className="max-w-4xl mx-auto bg-card border border-border/20 rounded-[2.5rem] p-8 lg:p-12 shadow-xl space-y-8">
+            <p className="text-lg lg:text-xl text-text-primary font-cinzel text-center leading-relaxed">
+              "To demystify ancient Vedic sciences—Astro-Numerology, Vastu Shastra, and sacred geometry—and translate them into practical, actionable, and rapid-remedy solutions that transform human lives, careers, and global business brands."
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 border-t border-border/10">
+              {[
+                { title: "Calculation-Backed", desc: "Rooted strictly in mathematical Vedic grids and astronomical planetary transits." },
+                { title: "Actionable Remedies", desc: "Simple, highly effective daily spelling, name, and spatial alignments." },
+                { title: "Life Transformation", desc: "Clear career blocks, health stagnations, and financial bottlenecks effortlessly." }
+              ].map((pillar, idx) => (
+                <div key={idx} className="p-4 bg-background/50 rounded-xl border border-border/10 space-y-2">
+                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary font-bold text-xs">
+                    0{idx + 1}
+                  </div>
+                  <h4 className="text-sm font-bold text-text-primary font-cinzel">{pillar.title}</h4>
+                  <p className="text-xs text-text-secondary leading-relaxed">{pillar.desc}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>
 
 
         {/* ==========================================
-            PART 12 — FINAL VISION (Closing Cinematic)
+            FLOW STEP 4: OUR VISION
             ========================================== */}
-        <div className="relative py-24 rounded-[3.5rem] overflow-hidden text-center border border-border/10 bg-gradient-to-tr from-card via-background to-card shadow-3xl">
-          
-          {/* Rotating Sri Yantra or Sacred Geometry representation in background */}
-          <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] pointer-events-none">
-            <svg className="w-[500px] h-[500px] animate-spin-slow text-primary" viewBox="0 0 200 200" fill="none" stroke="currentColor">
-              <polygon points="100,20 170,140 30,140" strokeWidth="0.5" />
-              <polygon points="100,180 170,60 30,60" strokeWidth="0.5" />
-              <polygon points="100,40 160,130 40,130" strokeWidth="0.5" />
-              <polygon points="100,160 160,70 40,70" strokeWidth="0.5" />
-              <circle cx="100" cy="100" r="80" strokeWidth="0.5" />
-              <circle cx="100" cy="100" r="40" strokeWidth="0.5" />
-            </svg>
+        <div className="space-y-12 pt-8 border-t border-border/10" id="our-vision">
+          <div className="text-center space-y-3 max-w-3xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-[0.2em]"
+            >
+              <Compass className="w-3.5 h-3.5 text-primary" />
+              <span>Future Horizon</span>
+            </motion.div>
+            <h2 className="text-3xl lg:text-4xl font-extrabold font-cinzel text-text-primary">
+              Our Vision
+            </h2>
+            <p className="text-lg text-text-secondary font-light">
+              Bridging timeless spiritual heritage with AI technology and global educational accessibility.
+            </p>
           </div>
 
-          <div className="max-w-2xl mx-auto space-y-6 relative z-10 px-6">
-            <span className="text-[10px] uppercase tracking-[0.3em] font-bold text-primary font-mono">The Cosmic Horizon</span>
-            
-            <h3 className="text-3xl lg:text-5xl font-extrabold font-cinzel text-text-primary tracking-tight">
-              The Journey Has Just Begun.
-            </h3>
-
-            <p className="text-sm text-text-secondary leading-relaxed font-light">
-              "Our vision is to preserve timeless wisdom while embracing modern technology, empowering people worldwide through education, guidance, and innovation."
+          <div className="max-w-4xl mx-auto bg-card border border-border/20 rounded-[2.5rem] p-8 lg:p-12 shadow-xl space-y-8">
+            <p className="text-lg lg:text-xl text-text-primary font-cinzel text-center leading-relaxed">
+              "To build a world-class global ecosystem where timeless spiritual wisdom coexists with cutting-edge technology and AI, empowering seekers across every continent to discover and fulfill their true cosmic destiny."
             </p>
 
-            {/* Glowing Spark */}
-            <div className="flex justify-center pt-4">
-              <div className="w-10 h-[1.5px] bg-gradient-to-r from-transparent via-primary to-transparent" />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 border-t border-border/10">
+              {[
+                { title: "Global Reach", desc: "Expanding accredited masterclasses across 50+ countries with localized language support." },
+                { title: "AI Integration", desc: "Utilizing calculated planetary engines to deliver instant energetic reports globally." },
+                { title: "Preserving Wisdom", desc: "Protecting authentic Vedic scriptural precision for future generations." }
+              ].map((pillar, idx) => (
+                <div key={idx} className="p-4 bg-background/50 rounded-xl border border-border/10 space-y-2">
+                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary font-bold text-xs">
+                    0{idx + 1}
+                  </div>
+                  <h4 className="text-sm font-bold text-text-primary font-cinzel">{pillar.title}</h4>
+                  <p className="text-xs text-text-secondary leading-relaxed">{pillar.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+
+        {/* ==========================================
+            FLOW STEP 5: OUR JOURNEY
+            ========================================== */}
+        <div className="space-y-12 pt-8 border-t border-border/10" id="our-journey">
+          <div className="text-center space-y-3 max-w-2xl mx-auto">
+            <h3 className="font-cinzel text-xs font-bold uppercase tracking-[0.3em] text-primary">Evolution</h3>
+            <h2 className="text-3xl lg:text-4xl font-extrabold font-cinzel text-text-primary">Our Journey & Milestones</h2>
+            <p className="text-xs text-text-secondary uppercase tracking-widest font-medium">Click on any milestone to inspect historical archives</p>
+          </div>
+
+          <div className="relative max-w-5xl mx-auto pt-6">
+            <div className="absolute left-6 md:left-1/2 top-0 bottom-0 w-[2px] bg-gradient-to-b from-primary/10 via-primary/40 to-primary/10 -translate-x-1/2" />
+
+            <div className="space-y-10">
+              {MILESTONES.map((step, idx) => {
+                const isLeft = idx % 2 === 0;
+                const isSelected = activeMilestone === step.id;
+                const Icon = step.icon;
+
+                return (
+                  <div key={step.id} className={`flex flex-col md:flex-row items-start ${isLeft ? 'md:flex-row-reverse' : ''} relative`}>
+                    <div 
+                      onClick={() => setActiveMilestone(step.id)}
+                      className="absolute left-6 md:left-1/2 top-1 w-10 h-10 rounded-full border-4 border-background -translate-x-1/2 flex items-center justify-center cursor-pointer z-30 transition-all duration-300"
+                      style={{
+                        backgroundColor: isSelected ? 'var(--primary)' : 'var(--card)',
+                        boxShadow: isSelected ? '0 0 15px var(--primary)' : '0 4px 10px rgba(0,0,0,0.1)',
+                      }}
+                    >
+                      <Icon className={`w-4 h-4 ${isSelected ? 'text-white' : 'text-primary'}`} />
+                    </div>
+
+                    <div className="w-full md:w-[45%] pl-14 md:pl-0 md:px-8">
+                      <motion.div
+                        onClick={() => setActiveMilestone(step.id)}
+                        whileHover={{ scale: 1.01 }}
+                        className={`p-5 rounded-2xl border transition-all duration-300 cursor-pointer text-left ${
+                          isSelected 
+                            ? 'bg-card border-primary shadow-xl ring-1 ring-primary/20' 
+                            : 'bg-card/50 border-border/20 hover:border-primary/20 hover:bg-card'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-[11px] font-black tracking-widest text-primary uppercase font-mono">{step.year}</span>
+                          <span className="text-[9px] uppercase tracking-wider text-text-secondary bg-primary/10 px-2 py-0.5 rounded-full font-bold">Phase {step.id}</span>
+                        </div>
+                        <h5 className="text-base font-bold text-text-primary font-cinzel tracking-tight mb-1">{step.title}</h5>
+                        <p className="text-xs text-text-secondary leading-relaxed">{step.description}</p>
+                        
+                        <AnimatePresence initial={false}>
+                          {isSelected && (
+                            <motion.div
+                              initial={{ opacity: 0, height: 0 }}
+                              animate={{ opacity: 1, height: 'auto' }}
+                              exit={{ opacity: 0, height: 0 }}
+                              transition={{ duration: 0.3 }}
+                              className="overflow-hidden mt-3 pt-3 border-t border-border/10 text-xs text-text-secondary/90 leading-relaxed space-y-2"
+                            >
+                              <p>{step.extended}</p>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </motion.div>
+                    </div>
+
+                    <div className="hidden md:block w-[10%]"></div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+
+        {/* ==========================================
+            FLOW STEP 6: OUR VALUES
+            ========================================== */}
+        <div className="space-y-12 pt-8 border-t border-border/10" id="our-values">
+          <div className="text-center space-y-3 max-w-2xl mx-auto">
+            <h3 className="font-cinzel text-xs font-bold uppercase tracking-[0.3em] text-primary">Core Values</h3>
+            <h2 className="text-3xl lg:text-4xl font-extrabold font-cinzel text-text-primary">Our Values</h2>
+            <p className="text-lg text-text-secondary font-light">Elegance, accuracy, and compassion anchoring our global mission.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {CORE_VALUES.map((val, idx) => {
+              const Icon = val.icon;
+              return (
+                <motion.div
+                  key={idx}
+                  whileHover={{ y: -6, boxShadow: "0 20px 40px rgba(0,0,0,0.05)" }}
+                  className="p-6 rounded-2xl bg-card border border-border/20 text-left space-y-4 hover:border-primary/45 transition-all"
+                >
+                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                    <Icon className="w-5.5 h-5.5" />
+                  </div>
+                  <h5 className="text-base font-bold font-cinzel text-text-primary">{val.title}</h5>
+                  <p className="text-xs text-text-secondary leading-relaxed">{val.desc}</p>
+                </motion.div>
+              );
+            })}
+          </div>
+        </div>
+
+
+        {/* ==========================================
+            FLOW STEP 7: MEET OUR EXPERT FACULTY
+            (Shaunak S. Patthak & Sannjoy Biswass ONLY)
+            ========================================== */}
+        <div className="space-y-12 pt-8 border-t border-border/10" id="meet-our-expert-faculty">
+          <div className="text-center space-y-3 max-w-3xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-[0.2em]"
+            >
+              <GraduationCap className="w-3.5 h-3.5 text-primary" />
+              <span>Senior Faculty</span>
+            </motion.div>
+            <h2 className="text-3xl lg:text-5xl font-extrabold font-cinzel text-text-primary">
+              Meet Our Expert Faculty
+            </h2>
+            <p className="text-base text-text-secondary font-light">
+              Distinguished scholars and master instructors leading specialized curriculums across LEO Family.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            {FACULTY_MEMBERS.map((faculty) => (
+              <motion.div
+                key={faculty.id}
+                whileHover={{ y: -6 }}
+                className="bg-card border border-border/20 rounded-3xl p-6 lg:p-8 shadow-xl flex flex-col justify-between space-y-6 text-left hover:border-primary/40 transition-all group relative overflow-hidden"
+              >
+                <div className="space-y-6">
+                  {/* Faculty Header Card */}
+                  <div className="flex items-center gap-5">
+                    <div className="relative w-20 h-20 rounded-2xl overflow-hidden border-2 border-primary/30 shrink-0 shadow-md">
+                      <SmartImage
+                        src={faculty.image}
+                        alt={faculty.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <span className="text-[10px] font-bold text-primary bg-primary/10 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                        {faculty.roleBadge}
+                      </span>
+                      <h3 className="text-xl font-bold font-cinzel text-text-primary group-hover:text-primary transition-colors">
+                        {faculty.name}
+                      </h3>
+                      <p className="text-xs font-semibold text-text-secondary">{faculty.subtitle}</p>
+                    </div>
+                  </div>
+
+                  {/* Bio & Stats */}
+                  <p className="text-xs text-text-secondary leading-relaxed font-light">
+                    {faculty.description}
+                  </p>
+
+                  <div className="grid grid-cols-2 gap-2 text-[10px] font-medium text-text-secondary bg-background/50 p-3 rounded-xl border border-border/10">
+                    <div><strong className="text-text-primary">Experience:</strong> {faculty.experience}</div>
+                    <div><strong className="text-text-primary">Alumni:</strong> {faculty.students}</div>
+                    <div className="col-span-2"><strong className="text-text-primary">Languages:</strong> {faculty.languages}</div>
+                  </div>
+
+                  {/* Expertise Tags */}
+                  <div className="space-y-2">
+                    <span className="text-[9px] font-black uppercase tracking-widest text-primary font-mono block">Specializations</span>
+                    <div className="flex flex-wrap gap-1.5">
+                      {faculty.expertise.map((exp, i) => (
+                        <span key={i} className="text-[10px] bg-primary/5 text-text-primary px-2.5 py-1 rounded-lg border border-primary/10">
+                          {exp}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* CTA Button */}
+                <div className="pt-4 border-t border-border/10">
+                  <button
+                    onClick={() => switchAcademy(faculty.slug)}
+                    className="w-full py-3 rounded-xl bg-primary/10 hover:bg-primary hover:text-white text-primary text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    <span>View Faculty Masterclasses</span>
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
+
+        {/* ==========================================
+            FLOW STEP 8: BOOK CONSULTATION
+            ========================================== */}
+        <div className="space-y-12 pt-8 border-t border-border/10" id="book-consultation">
+          <div className="max-w-4xl mx-auto">
+            <div className="relative overflow-hidden rounded-[2.5rem] border border-border/30 bg-card shadow-2xl p-8 lg:p-14 text-left">
+              
+              <div className="absolute top-0 right-0 w-80 h-80 bg-primary/5 blur-[100px] rounded-full -translate-y-1/3 translate-x-1/3 pointer-events-none" />
+
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center relative z-10">
+                <div className="md:col-span-8 space-y-4">
+                  <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-primary/10 text-primary text-[9px] font-bold uppercase tracking-widest">
+                    <Zap className="w-3 h-3 text-primary animate-bounce" />
+                    <span>Elite Guidance & Consultation</span>
+                  </div>
+                  <h3 className="text-2xl lg:text-4xl font-extrabold font-cinzel text-text-primary leading-tight">
+                    Begin Your Journey with LEO Family
+                  </h3>
+                  <p className="text-sm text-text-secondary leading-relaxed max-w-xl">
+                    Connect directly with Raajeev Singh Chauhann and LEO Family for corporate brand alignment, residential spatial Vastu audits, mobile number realignment, and personal horoscope analysis.
+                  </p>
+                </div>
+
+                <div className="md:col-span-4 flex flex-col gap-3">
+                  <a
+                    href={WHATSAPP_CONSULTATION_LINK}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-premium py-4 px-6 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-center shadow-lg cursor-pointer"
+                  >
+                    Book Consultation
+                  </a>
+                  <a
+                    href="/contact"
+                    className="py-3.5 px-6 rounded-2xl border border-border/20 text-text-secondary hover:text-primary hover:border-primary/50 text-[10px] font-bold uppercase tracking-widest text-center transition-all cursor-pointer"
+                  >
+                    Contact Office
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
       </div>
-
-      {/* ==========================================
-          INTERACTIVE POPUP MODAL (For Wheel Items)
-          ========================================== */}
-      <AnimatePresence>
-        {showExpertiseModal && (
-          <div className="fixed inset-0 z-[99999] flex items-center justify-center p-6">
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setShowExpertiseModal(false)}
-              className="absolute inset-0 bg-background/80 backdrop-blur-md"
-            />
-
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-lg bg-card border border-border/30 rounded-3xl p-6 lg:p-8 shadow-2xl space-y-6 text-left"
-            >
-              {EXPERTISE_ITEMS.filter(it => it.id === activeExpertise).map((item) => (
-                <div key={item.id} className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-primary font-mono">Detailed Analysis</span>
-                    <button 
-                      onClick={() => setShowExpertiseModal(false)}
-                      className="p-1 rounded-lg hover:bg-primary/5 text-text-secondary hover:text-text-primary text-[10px] font-bold tracking-widest uppercase cursor-pointer"
-                    >
-                      Close
-                    </button>
-                  </div>
-
-                  <h4 className="text-2xl font-bold font-cinzel text-text-primary">{item.name}</h4>
-                  <p className="text-xs tracking-widest font-bold uppercase text-text-secondary border-b border-border/10 pb-2">{item.shortDesc}</p>
-                  
-                  <div className="space-y-3 text-sm text-text-secondary leading-relaxed">
-                    <p>{item.fullDesc}</p>
-                    <p>Within the LEO Family curriculum, this discipline is taught not as an abstract lore, but through strict mathematical grids and chronological planetary periods. Students analyze live database examples to master accuracy.</p>
-                  </div>
-
-                  <div className="p-4 bg-primary/5 rounded-2xl border border-primary/10">
-                    <p className="text-[10px] font-black tracking-widest text-primary uppercase mb-1">Expected Real-World Outcome</p>
-                    <p className="text-xs text-text-primary font-medium">{item.impact}</p>
-                  </div>
-
-                  <div className="pt-2 flex justify-end gap-2">
-                    <button 
-                      onClick={() => setShowExpertiseModal(false)}
-                      className="px-4 py-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all cursor-pointer"
-                    >
-                      Acknowledge
-                    </button>
-                    <a 
-                      href="/academy"
-                      className="px-4 py-2 bg-primary text-white hover:bg-primary-dark rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all text-center cursor-pointer"
-                    >
-                      Explore Courses
-                    </a>
-                  </div>
-                </div>
-              ))}
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
 
     </section>
   );

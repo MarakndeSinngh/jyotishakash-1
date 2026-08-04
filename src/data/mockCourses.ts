@@ -121,7 +121,7 @@ export const ENTERPRISE_COURSES_SEED: EnterpriseCourse[] = [
     id: 'shk-c1',
     academyId: 'shaunak',
     instructorId: 'shaunak-chakraborty',
-    instructorName: 'Shaunak Chakraborty',
+    instructorName: 'Shaunak S. Patthak',
     title: 'Astro-Numerology Blueprint',
     subtitle: 'Integrating Vedic Astrology with Chaldean Numerology for High Precision Predictions',
     description: 'Learn the synergistic fusion of planetary dasha periods, birth charts, and numeric vibrations for holistic life alignment and remedies.',
@@ -143,14 +143,14 @@ export const ENTERPRISE_COURSES_SEED: EnterpriseCourse[] = [
     isFeatured: true,
     isBestseller: false,
     isComingSoon: false,
-    tags: ['Astro-Numerology', 'Vedic Astrology', 'Remedies', 'Shaunak Chakraborty'],
+    tags: ['Astro-Numerology', 'Vedic Astrology', 'Remedies', 'Shaunak S. Patthak'],
     badge: 'Featured',
     hasCertificate: true,
     format: 'Self-Paced Video',
     seo: {
-      title: 'Astro-Numerology Blueprint by Shaunak Chakraborty',
+      title: 'Astro-Numerology Blueprint by Shaunak S. Patthak',
       description: 'Master the blend of Vedic astrology and numerology for deep predictions.',
-      keywords: ['astro numerology', 'vedic astrology', 'shaunak chakraborty'],
+      keywords: ['astro numerology', 'vedic astrology', 'shaunak s patthak'],
     },
     modules: [
       {

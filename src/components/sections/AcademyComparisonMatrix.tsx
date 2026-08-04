@@ -48,7 +48,7 @@ const COMPARISON_ROWS: ComparisonRow[] = [
     metric: 'Live Interaction',
     icon: Video,
     raajeev: 'Weekly Live Masterclasses & Q&A with Raajeev Sir',
-    shaunak: 'Dedicated Chart Reading Mentorship Circles with Shaunak Sir',
+    shaunak: 'Dedicated Chart Reading Mentorship Circles with Shaunak S. Patthak',
     sannjoy: 'Live Masterclasses & Direct Q&A in Native Bengali'
   },
   {

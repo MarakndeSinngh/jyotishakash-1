@@ -196,7 +196,7 @@ const Navbar = ({ navigate, currentPath }: NavbarProps) => {
               href={consultLink}
               target="_blank"
               rel="noopener noreferrer"
-              className="btn-premium px-4 xl:px-6 py-2.5 text-[10px] xl:text-xs font-extrabold tracking-[0.12em] xl:tracking-[0.18em] shadow-lg hover:scale-105 transition-all cursor-pointer uppercase whitespace-nowrap rounded-xl shrink-0"
+              className="btn-premium !rounded-xl !px-0 w-32 xl:w-36 h-10 text-[10px] xl:text-xs font-extrabold tracking-[0.12em] xl:tracking-[0.16em] shadow-lg hover:scale-[1.04] active:scale-95 transition-all duration-300 cursor-pointer uppercase whitespace-nowrap shrink-0 flex items-center justify-center text-center"
             >
               {t('nav.consultNow', 'CONSULT NOW')}
             </a>

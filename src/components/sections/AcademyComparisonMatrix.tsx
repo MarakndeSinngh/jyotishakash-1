@@ -143,27 +143,27 @@ export default function AcademyComparisonMatrix() {
                 </th>
                 <th className="p-6 text-center w-1/4 border-l border-border/20">
                   <div className="flex flex-col items-center">
-                    <span className="text-[10px] uppercase tracking-widest font-bold text-purple-400 bg-purple-400/10 px-3 py-1 rounded-full border border-purple-400/30">🎓 Senior Mentor</span>
-                    <h4 className="text-lg font-bold font-cinzel text-text-primary mt-2">Shaunak S. Pathak</h4>
-                    <span className="text-[10px] text-text-secondary font-medium">Senior Faculty • Gujrati Mentor</span>
+                    <span className="text-[10px] uppercase tracking-widest font-bold text-purple-400 bg-purple-400/10 px-3 py-1 rounded-full border border-purple-400/30">🎓 Senior Faculty</span>
+                    <h4 className="text-lg font-bold font-cinzel text-text-primary mt-2">Dr. Shaunak S. Pathak</h4>
+                    <span className="text-[10px] text-text-secondary font-medium">Astro-Vastu Grandmaster • Lead Faculty</span>
                     <button
                       onClick={() => switchAcademy('shaunak')}
                       className="mt-3 px-4 py-2 bg-purple-500/10 hover:bg-purple-500 text-purple-400 hover:text-white border border-purple-500/30 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer"
                     >
-                      Explore Academy
+                      Explore Programs
                     </button>
                   </div>
                 </th>
                 <th className="p-6 text-center w-1/4 border-l border-border/20">
                   <div className="flex flex-col items-center">
-                    <span className="text-[10px] uppercase tracking-widest font-bold text-emerald-400 bg-emerald-400/10 px-3 py-1 rounded-full border border-emerald-400/30">🎓 Senior Mentor</span>
+                    <span className="text-[10px] uppercase tracking-widest font-bold text-emerald-400 bg-emerald-400/10 px-3 py-1 rounded-full border border-emerald-400/30">🎓 Senior Faculty</span>
                     <h4 className="text-lg font-bold font-cinzel text-text-primary mt-2">Sannjoy Biswass</h4>
-                    <span className="text-[10px] text-text-secondary font-medium">Senior Faculty • Bengali Mentor</span>
+                    <span className="text-[10px] text-text-secondary font-medium">Master Numerologist • Regional Faculty</span>
                     <button
                       onClick={() => switchAcademy('sannjoy')}
                       className="mt-3 px-4 py-2 bg-emerald-500/10 hover:bg-emerald-500 text-emerald-400 hover:text-white border border-emerald-500/30 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer"
                     >
-                      Explore Academy
+                      Explore Programs
                     </button>
                   </div>
                 </th>

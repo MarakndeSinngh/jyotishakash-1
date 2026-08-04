@@ -39,11 +39,11 @@ export default function HomepageCTASection() {
             </div>
 
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold font-cinzel text-text-primary leading-tight">
-              Still Unsure Which Academy or Mentor is Right for You?
+              Still Unsure Which Expert or Program is Right for You?
             </h2>
 
             <p className="text-text-secondary text-base sm:text-lg font-light leading-relaxed font-sans">
-              Compare our specialized academies side-by-side or speak directly with our academic guidance counselors to find the ideal learning path for your goals.
+              Compare our LEO Family faculty programs side-by-side or speak directly with our guidance counselors to find the ideal learning path for your goals.
             </p>
 
             <div className="flex flex-col sm:flex-row justify-center items-stretch sm:items-center gap-4 pt-4">

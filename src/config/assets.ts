@@ -31,12 +31,12 @@ export const Assets = {
       openGraphImage: "/assets/teachers/shaunak.webp"
     },
     sannjoy: {
-      image: "/assets/teachers/sannjoy.webp",
-      alt: "Sannjoy Biswass, Senior Faculty",
-      avatar: "/assets/teachers/sannjoy.webp",
-      portrait: "/assets/teachers/sannjoy.webp",
-      seoImage: "/assets/teachers/sannjoy.webp",
-      openGraphImage: "/assets/teachers/sannjoy.webp"
+      image: "/assets/teachers/sannjoy/profile.png",
+      alt: "Sannjoy Biswass",
+      avatar: "/assets/teachers/sannjoy/profile.png",
+      portrait: "/assets/teachers/sannjoy/profile.png",
+      seoImage: "/assets/teachers/sannjoy/profile.png",
+      openGraphImage: "/assets/teachers/sannjoy/profile.png"
     }
   },
   logo: {

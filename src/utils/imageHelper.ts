@@ -31,8 +31,8 @@ export const resolveImagePath = (src: string): string => {
     return "https://picsum.photos/seed/astrology/1920/1080?blur=2";
   }
 
-  // If it's already a path to gemstone-assets, return it as is (with leading slash)
-  if (clean.startsWith("gemstone-assets/")) {
+  // If it's already a path to gemstone-assets or assets, return it as is (with leading slash)
+  if (clean.startsWith("gemstone-assets/") || clean.startsWith("assets/")) {
     return `/${clean}`;
   }
 

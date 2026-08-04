@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Star, Sparkles, Quote, CheckCircle2 } from 'lucide-react';
+import { Star, Sparkles, Quote, Video } from 'lucide-react';
 import { useAcademy } from '../../context/AcademyContext';
+import { getVideosByTeacher, TeacherId } from '../../config/mediaRegistry';
+import { YouTubeCard } from '../common/YouTubeCard';
 
 export default function DynamicTestimonialsHomepage() {
   const { allAcademies } = useAcademy();
-  const [selectedFilter, setSelectedFilter] = useState<string>('all');
+  const [selectedFilter, setSelectedFilter] = useState<TeacherId | 'all'>('all');
 
   // Collect testimonials from all academies
   const allTestimonials = allAcademies.flatMap((academy) => {
     return academy.testimonials.map((t) => ({
       ...t,
-      academySlug: academy.slug,
+      academySlug: academy.slug as TeacherId,
       academyName: academy.shortName,
       instructorName: academy.instructorName,
       instructorAvatar: academy.assets.profileImage,
@@ -22,6 +24,9 @@ export default function DynamicTestimonialsHomepage() {
     if (selectedFilter === 'all') return true;
     return t.academySlug === selectedFilter;
   });
+
+  // Get teacher's video transformations from central registry
+  const teacherVideos = getVideosByTeacher(selectedFilter);
 
   return (
     <section id="testimonials-home" className="relative py-24 sm:py-32 bg-surface/30 text-text-primary overflow-hidden border-t border-b border-border/20 z-10">
@@ -42,7 +47,7 @@ export default function DynamicTestimonialsHomepage() {
             className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/25 text-primary text-[10px] sm:text-xs font-bold uppercase tracking-[0.25em]"
           >
             <Sparkles className="w-3.5 h-3.5 text-primary animate-pulse" />
-            <span>Verified Student Reviews</span>
+            <span>Verified Media & Student Reviews</span>
           </motion.div>
 
           <motion.h2
@@ -52,7 +57,7 @@ export default function DynamicTestimonialsHomepage() {
             transition={{ delay: 0.1 }}
             className="text-3xl sm:text-4xl md:text-5xl font-extrabold font-cinzel tracking-tight text-text-primary"
           >
-            Student Transformations
+            Student & Mentor Transformations
           </motion.h2>
 
           <motion.p
@@ -62,15 +67,15 @@ export default function DynamicTestimonialsHomepage() {
             transition={{ delay: 0.2 }}
             className="text-text-secondary text-base sm:text-lg font-light leading-relaxed font-sans"
           >
-            Real stories from business leaders, medical professionals, fashion designers, and seekers who transformed their lives through our mentor academies.
+            Real video lessons and stories from business leaders, medical professionals, and seekers mentored by our faculty.
           </motion.p>
         </div>
 
         {/* Filter Buttons */}
         <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mb-16 max-w-3xl mx-auto">
           {[
-            { id: 'all', label: 'All Reviews' },
-            { id: 'raajeev', label: '👑 Founder' },
+            { id: 'all', label: 'All Mentors & Reviews' },
+            { id: 'raajeev', label: '👑 Raajeev Singh Chauhann' },
             { id: 'shaunak', label: 'Shaunak S. Patthak' },
             { id: 'sannjoy', label: 'Sannjoy Biswass' },
           ].map((tab) => {
@@ -78,7 +83,7 @@ export default function DynamicTestimonialsHomepage() {
             return (
               <button
                 key={tab.id}
-                onClick={() => setSelectedFilter(tab.id)}
+                onClick={() => setSelectedFilter(tab.id as any)}
                 className={`px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer ${
                   isActive
                     ? 'bg-primary text-background shadow-lg scale-105 font-extrabold'
@@ -90,6 +95,23 @@ export default function DynamicTestimonialsHomepage() {
             );
           })}
         </div>
+
+        {/* Video Highlights Grid */}
+        {teacherVideos.length > 0 && (
+          <div className="mb-16">
+            <div className="flex items-center gap-2 mb-8">
+              <Video className="w-5 h-5 text-amber-400" />
+              <h3 className="text-xl font-bold font-cinzel text-text-primary">
+                Featured Video Lessons & Case Studies
+              </h3>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {teacherVideos.slice(0, 3).map((video) => (
+                <YouTubeCard key={video.id} media={video} />
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Testimonials Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

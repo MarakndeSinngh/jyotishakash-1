@@ -28,6 +28,7 @@ import {
 import { useAcademy } from '../../context/AcademyContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { WHATSAPP_LINK } from '../../constants/contacts';
+import { getVideosByTeacher, getAutoYoutubeThumbnail } from '../../config/mediaRegistry';
 import SmartImage from './SmartImage';
 import AcademyNotFound from './AcademyNotFound';
 
@@ -473,18 +474,33 @@ export default function AcademyLandingPage({ navigate }: AcademyLandingPageProps
             </h2>
 
             {/* Video Poster Thumbnail with Play trigger */}
-            <div className="relative aspect-video max-w-2xl mx-auto rounded-2xl overflow-hidden border border-border/20 shadow-2xl group cursor-pointer" onClick={() => setIsVideoModalOpen(true)}>
-              <SmartImage
-                src={activeAcademy.assets?.videoPlayerPoster || activeAcademy.assets?.heroImage || activeAcademy.assets?.profileImage}
-                alt="Video Introduction"
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-              />
-              <div className="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-colors flex items-center justify-center">
-                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-primary text-background flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform">
-                  <Play className="w-8 h-8 fill-background ml-1" />
+            {(() => {
+              const teacherVideos = getVideosByTeacher(activeAcademy.slug);
+              const primaryVideo = teacherVideos[0];
+              const thumbUrl = primaryVideo
+                ? getAutoYoutubeThumbnail(primaryVideo.youtubeVideoId, 'maxresdefault')
+                : activeAcademy.assets?.videoPlayerPoster || activeAcademy.assets?.heroImage || activeAcademy.assets?.profileImage;
+
+              return (
+                <div
+                  className="relative aspect-video max-w-2xl mx-auto rounded-2xl overflow-hidden border border-border/20 shadow-2xl group cursor-pointer"
+                  onClick={() => setIsVideoModalOpen(true)}
+                >
+                  <img
+                    src={thumbUrl}
+                    alt={`${activeAcademy.instructorName} Video Introduction`}
+                    loading="lazy"
+                    decoding="async"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                  <div className="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-colors flex items-center justify-center">
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-primary text-background flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform">
+                      <Play className="w-8 h-8 fill-background ml-1" />
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
+              );
+            })()}
 
             <p className="text-text-secondary text-xs sm:text-sm font-light max-w-xl mx-auto">
               Watch this comprehensive introduction to understand how our certified masterclasses transform theoretical knowledge into life-changing mastery.
@@ -513,14 +529,24 @@ export default function AcademyLandingPage({ navigate }: AcademyLandingPageProps
                 {activeAcademy.instructorName} - Masterclass Preview
               </h3>
               <div className="aspect-video bg-black rounded-xl overflow-hidden flex items-center justify-center">
-                <SmartImage
-                  src={activeAcademy.assets?.videoPlayerPoster || activeAcademy.assets?.heroImage}
-                  alt="Video Stream"
-                  className="w-full h-full object-cover opacity-80"
-                />
+                {(() => {
+                  const teacherVideos = getVideosByTeacher(activeAcademy.slug);
+                  const primaryVideo = teacherVideos[0];
+                  const videoId = primaryVideo ? primaryVideo.youtubeVideoId : 'RcmLxAECJAc';
+                  return (
+                    <iframe
+                      src={`https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&rel=0`}
+                      title={`${activeAcademy.instructorName} Video Preview`}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      className="w-full h-full border-0"
+                      loading="lazy"
+                    />
+                  );
+                })()}
               </div>
               <p className="text-xs text-text-secondary mt-4">
-                Connect on WhatsApp to watch full live masterclass recordings and session highlights.
+                Explore our full media library or connect on WhatsApp for personalized consultations.
               </p>
             </motion.div>
           </div>
@@ -683,6 +709,8 @@ export default function AcademyLandingPage({ navigate }: AcademyLandingPageProps
                   <img
                     src={otherFaculty.assets.profileImage}
                     alt={otherFaculty.instructorName}
+                    loading="lazy"
+                    decoding="async"
                     className="w-10 h-10 rounded-full object-cover border border-primary/30 shrink-0"
                   />
                   <div className="text-left min-w-0">

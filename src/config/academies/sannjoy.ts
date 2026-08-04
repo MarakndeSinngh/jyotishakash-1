@@ -30,16 +30,16 @@ export const sannjoyAcademy: AcademyConfig = {
     courseBanner: '/assets/sannjoy/course_banner.jpg',
   },
   assets: {
-    heroImage: '/assets/teachers/sannjoy/profile.png',
-    profileImage: '/assets/teachers/sannjoy/profile.png',
-    founderPortrait: '/assets/teachers/sannjoy/profile.png',
-    background: '/assets/teachers/sannjoy/profile.png',
-    ogImage: '/assets/teachers/sannjoy/profile.png',
+    heroImage: '/assets/teachers/sannjoy.webp',
+    profileImage: '/assets/teachers/sannjoy.webp',
+    founderPortrait: '/assets/teachers/sannjoy.webp',
+    background: '/assets/teachers/sannjoy.webp',
+    ogImage: '/assets/teachers/sannjoy.webp',
     courseBanner: '/assets/sannjoy/course_banner.jpg',
-    dashboardProfile: '/assets/teachers/sannjoy/profile.png',
+    dashboardProfile: '/assets/teachers/sannjoy.webp',
     certificateTemplate: '/assets/sannjoy/course_banner.jpg',
-    videoPlayerPoster: '/assets/teachers/sannjoy/profile.png',
-    instructorCard: '/assets/teachers/sannjoy/profile.png',
+    videoPlayerPoster: '/assets/teachers/sannjoy.webp',
+    instructorCard: '/assets/teachers/sannjoy.webp',
   },
   contactDetails: {
     phone: '+91 99537 13176',
@@ -68,7 +68,7 @@ export const sannjoyAcademy: AcademyConfig = {
       'Name Numerology Bengali',
       'Bengali Astrologer'
     ],
-    ogImage: '/assets/sannjoy/profile.png',
+    ogImage: '/assets/teachers/sannjoy.webp',
     twitterCard: 'summary_large_image',
     siteName: 'Sannjoy Biswass Academy',
     structuredData: {

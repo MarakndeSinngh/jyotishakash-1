@@ -24,6 +24,7 @@ const SmartImage: React.FC<SmartImageProps> = ({
       src={imgSrc}
       alt={alt}
       loading="lazy"
+      decoding="async"
       onError={() => {
         // Prevent infinite loop if fallback also fails
         if (!hasFailed) {

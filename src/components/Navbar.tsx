@@ -64,154 +64,156 @@ const Navbar = ({ navigate, currentPath }: NavbarProps) => {
 
   return (
     <nav className="w-full fixed top-0 left-0 z-[9999] bg-white/95 backdrop-blur-xl shadow-sm border-b border-primary/15 transition-all duration-300">
-      <div className="max-w-[1480px] mx-auto flex items-center justify-between px-4 sm:px-6 lg:px-8 py-3">
-        
-        {/* LOGO - Left aligned */}
-        <div 
-          className="flex items-center gap-2.5 cursor-pointer group shrink-0 lg:w-1/5" 
-          onClick={() => handleNavigate("/")}
-        >
-          <img 
-            src={assets.logos.light} 
-            alt={brand.name} 
-            className="h-10 w-10 rounded-full object-cover border border-primary/30 group-hover:scale-110 transition-transform shadow-sm" 
-          />
-          <span className="font-bold tracking-widest text-xs sm:text-sm font-cinzel text-gold uppercase whitespace-nowrap">
-            {brand.name}
-          </span>
-        </div>
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-3">
+        <div className="flex items-center justify-between gap-3 xl:gap-6">
+          
+          {/* LOGO - Left aligned */}
+          <div 
+            className="flex items-center gap-2.5 cursor-pointer group shrink-0" 
+            onClick={() => handleNavigate("/")}
+          >
+            <img 
+              src={assets.logos.light} 
+              alt={brand.name} 
+              className="h-10 w-10 rounded-full object-cover border border-primary/30 group-hover:scale-110 transition-transform shadow-sm" 
+            />
+            <span className="font-bold tracking-widest text-xs sm:text-sm font-cinzel text-gold uppercase whitespace-nowrap">
+              {brand.name}
+            </span>
+          </div>
 
-        {/* DESKTOP NAVIGATION - Perfectly Centered */}
-        <div className="hidden lg:flex items-center justify-center flex-1 lg:w-3/5 px-2">
-          <ul className="flex items-center justify-center gap-1.5 xl:gap-4 2xl:gap-6">
-            {desktopNav.map((item, index) => {
-              const translatedLabel = getTranslatedNavLabel(item.path, item.label);
-              const hasDropdown = Boolean(item.dropdown && item.dropdown.length > 0);
-              const isDropdownOpen = activeDropdown === item.label;
-              const isActive = currentPath === item.path || (item.dropdown?.some(d => d.path === currentPath));
+          {/* DESKTOP NAVIGATION - Centered in available space */}
+          <div className="hidden lg:flex items-center justify-center flex-1 px-2 xl:px-4 min-w-0">
+            <ul className="flex items-center justify-center gap-1 xl:gap-3 2xl:gap-5">
+              {desktopNav.map((item, index) => {
+                const translatedLabel = getTranslatedNavLabel(item.path, item.label);
+                const hasDropdown = Boolean(item.dropdown && item.dropdown.length > 0);
+                const isDropdownOpen = activeDropdown === item.label;
+                const isActive = currentPath === item.path || (item.dropdown?.some(d => d.path === currentPath));
 
-              return (
-                <li 
-                  key={index} 
-                  className="relative"
-                  onMouseEnter={() => hasDropdown && handleMouseEnter(item.label)}
-                  onMouseLeave={handleMouseLeave}
-                >
-                  <button
-                    onClick={() => handleNavigate(item.path)}
-                    className={`text-[11px] xl:text-xs uppercase tracking-[0.12em] xl:tracking-[0.16em] font-extrabold transition-all duration-200 hover:text-primary whitespace-nowrap relative py-2 px-2 flex items-center gap-1 cursor-pointer ${
-                      isActive || isDropdownOpen ? 'text-primary' : 'text-zinc-800 hover:text-primary'
-                    }`}
+                return (
+                  <li 
+                    key={index} 
+                    className="relative"
+                    onMouseEnter={() => hasDropdown && handleMouseEnter(item.label)}
+                    onMouseLeave={handleMouseLeave}
                   >
-                    <span>{translatedLabel}</span>
-                    {hasDropdown && (
-                      <ChevronDown 
-                        className={`w-3.5 h-3.5 transition-transform duration-200 ${
-                          isDropdownOpen ? 'rotate-180 text-primary' : 'text-zinc-400 group-hover:text-primary'
-                        }`} 
-                      />
-                    )}
-                    {isActive && !isDropdownOpen && (
-                      <motion.div
-                        layoutId="activeNavIndicator"
-                        className="absolute bottom-0 left-2 right-2 h-[2px] bg-primary rounded-full shadow-[0_0_8px_rgba(212,175,55,0.6)]"
-                        transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                      />
-                    )}
-                  </button>
+                    <button
+                      onClick={() => handleNavigate(item.path)}
+                      className={`text-[11px] xl:text-xs uppercase tracking-[0.08em] xl:tracking-[0.14em] font-extrabold transition-all duration-200 hover:text-primary whitespace-nowrap relative py-2 px-1.5 xl:px-2 flex items-center gap-1 cursor-pointer ${
+                        isActive || isDropdownOpen ? 'text-primary' : 'text-zinc-800 hover:text-primary'
+                      }`}
+                    >
+                      <span>{translatedLabel}</span>
+                      {hasDropdown && (
+                        <ChevronDown 
+                          className={`w-3.5 h-3.5 transition-transform duration-200 ${
+                            isDropdownOpen ? 'rotate-180 text-primary' : 'text-zinc-400 group-hover:text-primary'
+                          }`} 
+                        />
+                      )}
+                      {isActive && !isDropdownOpen && (
+                        <motion.div
+                          layoutId="activeNavIndicator"
+                          className="absolute bottom-0 left-1.5 right-1.5 h-[2px] bg-primary rounded-full shadow-[0_0_8px_rgba(212,175,55,0.6)]"
+                          transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                        />
+                      )}
+                    </button>
 
-                  {/* PREMIUM DROPDOWN MENU */}
-                  <AnimatePresence>
-                    {hasDropdown && isDropdownOpen && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 12, scale: 0.98 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 8, scale: 0.98 }}
-                        transition={{ duration: 0.2, ease: "easeOut" }}
-                        className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-80 bg-white border border-primary/20 rounded-2xl p-3 shadow-2xl z-50 text-left space-y-1.5 backdrop-blur-2xl ring-1 ring-black/5"
-                      >
-                        {/* Header Tag */}
-                        <div className="px-3 py-1.5 border-b border-primary/10 flex items-center justify-between text-[10px] font-extrabold uppercase tracking-widest text-primary">
-                          <span className="flex items-center gap-1.5">
-                            <Sparkles className="w-3 h-3 text-primary animate-pulse" />
-                            {translatedLabel} Hub
-                          </span>
-                          <span className="text-[9px] text-zinc-400 font-sans normal-case">
-                            {item.dropdown?.length} Resources
-                          </span>
-                        </div>
+                    {/* PREMIUM DROPDOWN MENU */}
+                    <AnimatePresence>
+                      {hasDropdown && isDropdownOpen && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 12, scale: 0.98 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{ opacity: 0, y: 8, scale: 0.98 }}
+                          transition={{ duration: 0.2, ease: "easeOut" }}
+                          className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-80 bg-white border border-primary/20 rounded-2xl p-3 shadow-2xl z-50 text-left space-y-1.5 backdrop-blur-2xl ring-1 ring-black/5"
+                        >
+                          {/* Header Tag */}
+                          <div className="px-3 py-1.5 border-b border-primary/10 flex items-center justify-between text-[10px] font-extrabold uppercase tracking-widest text-primary">
+                            <span className="flex items-center gap-1.5">
+                              <Sparkles className="w-3 h-3 text-primary animate-pulse" />
+                              {translatedLabel} Hub
+                            </span>
+                            <span className="text-[9px] text-zinc-400 font-sans normal-case">
+                              {item.dropdown?.length} Resources
+                            </span>
+                          </div>
 
-                        {/* Dropdown Items List */}
-                        <div className="grid grid-cols-1 gap-1 pt-1 max-h-[380px] overflow-y-auto">
-                          {item.dropdown?.map((subItem: NavDropdownItem, subIdx: number) => {
-                            const isSubActive = currentPath === subItem.path;
+                          {/* Dropdown Items List */}
+                          <div className="grid grid-cols-1 gap-1 pt-1 max-h-[380px] overflow-y-auto">
+                            {item.dropdown?.map((subItem: NavDropdownItem, subIdx: number) => {
+                              const isSubActive = currentPath === subItem.path;
 
-                            return (
-                              <button
-                                key={subIdx}
-                                onClick={() => handleNavigate(subItem.path)}
-                                className={`w-full flex items-start justify-between p-2.5 rounded-xl text-left transition-all duration-200 group cursor-pointer ${
-                                  isSubActive 
-                                    ? 'bg-primary/10 border border-primary/30 text-primary' 
-                                    : 'hover:bg-primary/5 hover:border-primary/15 border border-transparent text-zinc-800'
-                                }`}
-                              >
-                                <div className="space-y-0.5 pr-2">
-                                  <div className="flex items-center gap-2">
-                                    <span className="text-xs font-bold font-cinzel text-zinc-900 group-hover:text-primary transition-colors">
-                                      {subItem.label}
-                                    </span>
-                                    {subItem.badge && (
-                                      <span className="text-[9px] font-bold uppercase tracking-wider text-primary bg-primary/10 border border-primary/20 px-1.5 py-0.2 rounded-full">
-                                        {subItem.badge}
+                              return (
+                                <button
+                                  key={subIdx}
+                                  onClick={() => handleNavigate(subItem.path)}
+                                  className={`w-full flex items-start justify-between p-2.5 rounded-xl text-left transition-all duration-200 group cursor-pointer ${
+                                    isSubActive 
+                                      ? 'bg-primary/10 border border-primary/30 text-primary' 
+                                      : 'hover:bg-primary/5 hover:border-primary/15 border border-transparent text-zinc-800'
+                                  }`}
+                                >
+                                  <div className="space-y-0.5 pr-2">
+                                    <div className="flex items-center gap-2">
+                                      <span className="text-xs font-bold font-cinzel text-zinc-900 group-hover:text-primary transition-colors">
+                                        {subItem.label}
                                       </span>
+                                      {subItem.badge && (
+                                        <span className="text-[9px] font-bold uppercase tracking-wider text-primary bg-primary/10 border border-primary/20 px-1.5 py-0.2 rounded-full">
+                                          {subItem.badge}
+                                        </span>
+                                      )}
+                                    </div>
+                                    {subItem.description && (
+                                      <p className="text-[10px] text-zinc-500 font-sans leading-tight line-clamp-1 group-hover:text-zinc-600">
+                                        {subItem.description}
+                                      </p>
                                     )}
                                   </div>
-                                  {subItem.description && (
-                                    <p className="text-[10px] text-zinc-500 font-sans leading-tight line-clamp-1 group-hover:text-zinc-600">
-                                      {subItem.description}
-                                    </p>
-                                  )}
-                                </div>
-                                <ArrowRight className="w-3.5 h-3.5 text-primary/40 group-hover:text-primary group-hover:translate-x-1 transition-all shrink-0 mt-0.5" />
-                              </button>
-                            );
-                          })}
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
+                                  <ArrowRight className="w-3.5 h-3.5 text-primary/40 group-hover:text-primary group-hover:translate-x-1 transition-all shrink-0 mt-0.5" />
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
 
-        {/* CTA BUTTON & LANGUAGE SELECTOR - Right aligned */}
-        <div className="hidden lg:flex items-center justify-end gap-3 xl:gap-4 shrink-0 lg:w-1/5">
-          <LanguageSelector />
+          {/* CTA BUTTON & LANGUAGE SELECTOR - Right aligned */}
+          <div className="hidden lg:flex items-center justify-end gap-2.5 xl:gap-4 shrink-0 min-w-max">
+            <LanguageSelector />
 
-          <a
-            href={consultLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn-premium px-5 xl:px-7 py-2.5 text-[10px] xl:text-xs font-extrabold tracking-[0.15em] xl:tracking-[0.2em] shadow-lg hover:scale-105 transition-all cursor-pointer uppercase whitespace-nowrap rounded-xl"
-          >
-            {t('nav.consultNow', 'CONSULT NOW')}
-          </a>
-        </div>
+            <a
+              href={consultLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-premium px-4 xl:px-6 py-2.5 text-[10px] xl:text-xs font-extrabold tracking-[0.12em] xl:tracking-[0.18em] shadow-lg hover:scale-105 transition-all cursor-pointer uppercase whitespace-nowrap rounded-xl shrink-0"
+            >
+              {t('nav.consultNow', 'CONSULT NOW')}
+            </a>
+          </div>
 
-        {/* MOBILE & TABLET CONTROLS */}
-        <div className="flex items-center gap-2 lg:hidden">
-          <LanguageSelector isMobile />
+          {/* MOBILE & TABLET CONTROLS */}
+          <div className="flex items-center gap-2 lg:hidden shrink-0">
+            <LanguageSelector isMobile />
 
-          <button 
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="p-2 text-primary hover:bg-primary/5 rounded-lg transition-all duration-300 cursor-pointer"
-            aria-label="Toggle Navigation Menu"
-          >
-            {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
+            <button 
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="p-2 text-primary hover:bg-primary/5 rounded-lg transition-all duration-300 cursor-pointer"
+              aria-label="Toggle Navigation Menu"
+            >
+              {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
+          </div>
         </div>
       </div>
 

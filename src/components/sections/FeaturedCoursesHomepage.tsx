@@ -65,7 +65,7 @@ export default function FeaturedCoursesHomepage() {
             transition={{ delay: 0.1 }}
             className="text-3xl sm:text-4xl md:text-5xl font-extrabold font-cinzel tracking-tight text-text-primary"
           >
-            Top Academy Courses
+            LEO FAMILY Masterclasses
           </motion.h2>
 
           <motion.p
@@ -75,17 +75,17 @@ export default function FeaturedCoursesHomepage() {
             transition={{ delay: 0.2 }}
             className="text-text-secondary text-base sm:text-lg font-light leading-relaxed font-sans"
           >
-            Explore the flagship certifications offered by each academy master. Select an academy tab to filter top masterclasses.
+            Explore flagship certifications offered across LEO Family. Select an expert tab to filter programs.
           </motion.p>
         </div>
 
         {/* Filter Tabs */}
         <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mb-16 max-w-3xl mx-auto">
           {[
-            { id: 'all', label: 'All Academies' },
-            { id: 'raajeev', label: 'Raajeev Singh Academy' },
-            { id: 'shaunak', label: 'Shaunak S Patthak Academy' },
-            { id: 'sannjoy', label: 'Sannjoy Biswass Academy' },
+            { id: 'all', label: 'All Programs' },
+            { id: 'raajeev', label: '👑 Founder' },
+            { id: 'shaunak', label: 'Dr. Shaunak S. Pathak' },
+            { id: 'sannjoy', label: 'Sannjoy Biswass' },
           ].map((tab) => {
             const isActive = selectedTab === tab.id;
             return (

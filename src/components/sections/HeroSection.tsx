@@ -43,8 +43,8 @@ const MENTORS_SHOWCASE: MentorShowcaseItem[] = [
     id: 'raajeev',
     slug: 'raajeev',
     name: 'Raajeev Singh Chauhann',
-    title: 'Founder & Astrogy, Numerology & vastu Expert',
-    roleBadge: 'Founder',
+    title: 'Founder & Visionary',
+    roleBadge: '👑 Founder',
     image: '/assets/teachers/Raajeev.webp',
     fallbackImage: '/gemstone-assets/rajeev-singh.jpg',
     accentColor: 'from-amber-500/20 to-yellow-500/10'
@@ -52,9 +52,9 @@ const MENTORS_SHOWCASE: MentorShowcaseItem[] = [
   {
     id: 'shaunak',
     slug: 'shaunak',
-    name: 'Shaunak S. Pathak',
-    title: 'Numerology Expert',
-    roleBadge: 'Expert Numerologist',
+    name: 'Dr. Shaunak S. Pathak',
+    title: 'Astro-Vastu Grandmaster',
+    roleBadge: '🎓 Senior Faculty',
     image: '/assets/teachers/shaunak.webp',
     fallbackImage: '/gemstone-assets/blue-sapphire.jpg',
     accentColor: 'from-purple-500/20 to-indigo-500/10'
@@ -64,7 +64,7 @@ const MENTORS_SHOWCASE: MentorShowcaseItem[] = [
     slug: 'sannjoy',
     name: 'Sannjoy Biswass',
     title: 'Master Numerologist',
-    roleBadge: 'Lo Shu Grid',
+    roleBadge: '🎓 Senior Faculty',
     image: '/assets/teachers/sannjoy.webp',
     fallbackImage: '/assets/sannjoy/profile.png',
     accentColor: 'from-emerald-500/20 to-teal-500/10'
@@ -239,7 +239,7 @@ const HeroSection: React.FC<HeroSectionProps> = () => {
                 transition={{ duration: 0.9, delay: 0.1 }}
                 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold font-cinzel tracking-tight leading-[1.1] text-text-primary"
               >
-                LEO FAMILY ACADEMY
+                LEO FAMILY
               </motion.h1>
 
               {/* Subtitle */}
@@ -249,9 +249,7 @@ const HeroSection: React.FC<HeroSectionProps> = () => {
                 transition={{ duration: 0.9, delay: 0.25 }}
                 className="space-y-1 font-cinzel font-bold text-lg sm:text-xl text-amber-400"
               >
-                <p>One Platform.</p>
-                <p>Three Master Mentors.</p>
-                <p className="text-primary">Unlimited Spiritual Growth.</p>
+                <p>One Platform • Multiple Expert Mentors • One Mission</p>
               </motion.div>
 
               {/* Description */}
@@ -261,7 +259,7 @@ const HeroSection: React.FC<HeroSectionProps> = () => {
                 transition={{ duration: 0.9, delay: 0.35 }}
                 className="text-text-secondary text-sm sm:text-base font-light leading-relaxed max-w-xl font-sans"
               >
-                Discover authentic Numerology, Astrology, Vastu, Gemstones, Spiritual Science and AI-powered learning from India's leading experts.
+                Discover authentic Numerology, Astrology, Vastu, Gemstones, Spiritual Science and AI-powered learning from India's leading experts under ONE unified organization.
               </motion.p>
             </div>
 

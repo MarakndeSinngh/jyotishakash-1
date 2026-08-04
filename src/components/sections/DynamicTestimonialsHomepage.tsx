@@ -70,9 +70,9 @@ export default function DynamicTestimonialsHomepage() {
         <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mb-16 max-w-3xl mx-auto">
           {[
             { id: 'all', label: 'All Reviews' },
-            { id: 'raajeev', label: 'Raajeev Singh Chauhann Academy' },
-            { id: 'shaunak', label: 'Shaunak S Patthak Academy' },
-            { id: 'sannjoy', label: 'Sannjoy Biswass Academy' },
+            { id: 'raajeev', label: '👑 Founder' },
+            { id: 'shaunak', label: 'Dr. Shaunak S. Pathak' },
+            { id: 'sannjoy', label: 'Sannjoy Biswass' },
           ].map((tab) => {
             const isActive = selectedFilter === tab.id;
             return (

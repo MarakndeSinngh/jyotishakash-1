@@ -55,7 +55,7 @@ const COMPARISON_ROWS: ComparisonRow[] = [
     metric: 'Certification',
     icon: Award,
     raajeev: 'Certified Occult Practitioner (Raajeev Singh Academy)',
-    shaunak: 'Certified Master Numerologist (Shaunak S Patthak Academy)',
+    shaunak: 'Certified Master Numerologist (Shaunak S. Patthak Academy)',
     sannjoy: 'Certified Master Numerologist (Sannjoy Biswass Academy)'
   },
   {
@@ -144,7 +144,7 @@ export default function AcademyComparisonMatrix() {
                 <th className="p-6 text-center w-1/4 border-l border-border/20">
                   <div className="flex flex-col items-center">
                     <span className="text-[10px] uppercase tracking-widest font-bold text-purple-400 bg-purple-400/10 px-3 py-1 rounded-full border border-purple-400/30">🎓 Senior Faculty</span>
-                    <h4 className="text-lg font-bold font-cinzel text-text-primary mt-2">Dr. Shaunak S. Pathak</h4>
+                    <h4 className="text-lg font-bold font-cinzel text-text-primary mt-2">Shaunak S. Patthak</h4>
                     <span className="text-[10px] text-text-secondary font-medium">Astro-Vastu Grandmaster • Lead Faculty</span>
                     <button
                       onClick={() => switchAcademy('shaunak')}
@@ -212,7 +212,7 @@ export default function AcademyComparisonMatrix() {
             },
             {
               slug: 'shaunak',
-              name: 'Shaunak S. Pathak',
+              name: 'Shaunak S. Patthak',
               focus: '🎓 Senior Mentor • Gujrati Mentor',
               color: 'border-purple-400/30',
               badgeColor: 'text-purple-400 bg-purple-400/10 border border-purple-400/30'

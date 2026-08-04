@@ -71,7 +71,7 @@ export default function DynamicTestimonialsHomepage() {
           {[
             { id: 'all', label: 'All Reviews' },
             { id: 'raajeev', label: '👑 Founder' },
-            { id: 'shaunak', label: 'Dr. Shaunak S. Pathak' },
+            { id: 'shaunak', label: 'Shaunak S. Patthak' },
             { id: 'sannjoy', label: 'Sannjoy Biswass' },
           ].map((tab) => {
             const isActive = selectedFilter === tab.id;

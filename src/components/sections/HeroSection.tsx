@@ -52,7 +52,7 @@ const MENTORS_SHOWCASE: MentorShowcaseItem[] = [
   {
     id: 'shaunak',
     slug: 'shaunak',
-    name: 'Dr. Shaunak S. Pathak',
+    name: 'Shaunak S. Patthak',
     title: 'Astro-Vastu Grandmaster',
     roleBadge: '🎓 Senior Faculty',
     image: '/assets/teachers/shaunak.webp',

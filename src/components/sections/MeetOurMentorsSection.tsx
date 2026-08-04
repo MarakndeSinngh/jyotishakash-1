@@ -70,7 +70,7 @@ const FACULTY: FacultyData[] = [
   {
     id: 'shaunak',
     slug: 'shaunak',
-    name: 'Dr. Shaunak S. Pathak',
+    name: 'Shaunak S. Patthak',
     roleBadge: '🎓 Senior Faculty',
     title: 'Senior Faculty',
     subtitle: 'Astro-Vastu Grandmaster • Lead Faculty',

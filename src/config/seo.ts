@@ -39,7 +39,7 @@ export const ROUTE_TITLE_MAP: Record<string, string> = {
 // Known Dedicated Instructor Page Titles
 export const INSTRUCTOR_TITLES: Record<string, string> = {
   raajeev: "Raajeev Singh Chauhann Programs | LEO Family",
-  shaunak: "Shaunak S. Pathak Programs | LEO Family",
+  shaunak: "Shaunak S. Patthak Programs | LEO Family",
   sannjoy: "Sannjoy Biswass Programs | LEO Family",
 };
 

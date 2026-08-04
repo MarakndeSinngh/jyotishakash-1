@@ -200,7 +200,7 @@ export default function App() {
       <Helmet>
         <title>{seo.title}</title>
         <meta name="description" content={seo.description} />
-        <meta name="keywords" content="LEO Family, Numerology, Vedic Astrology, Vastu, Gemstones, Name Science, AI Spiritual Intelligence, Raajeev Singh Chauhann, Shaunak S Pathak, Sannjoy Biswass" />
+        <meta name="keywords" content="LEO Family, Numerology, Vedic Astrology, Vastu, Gemstones, Name Science, AI Spiritual Intelligence, Raajeev Singh Chauhann, Shaunak S. Patthak, Sannjoy Biswass" />
         <meta property="og:title" content={seo.ogTitle} />
         <meta property="og:description" content={seo.ogDescription} />
         <meta property="og:image" content={seo.ogImage} />

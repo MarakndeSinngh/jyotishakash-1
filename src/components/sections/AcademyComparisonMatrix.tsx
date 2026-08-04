@@ -210,14 +210,14 @@ export default function AcademyComparisonMatrix() {
             {
               slug: 'shaunak',
               name: 'Shaunak S Patthak Academy',
-              focus: 'Classical Vedic Astrology & Astro-Vastu',
+              focus: 'Chaldean & Pythogorian Numerology Expert',
               color: 'border-purple-400/30',
               badgeColor: 'text-purple-400 bg-purple-400/10'
             },
             {
               slug: 'sannjoy',
               name: 'Sannjoy Biswass Academy',
-              focus: 'Bengali Numerology & Lo Shu Grid',
+              focus: 'Bengali Numerology & Lo Shu Grid Expert',
               color: 'border-emerald-400/30',
               badgeColor: 'text-emerald-400 bg-emerald-400/10'
             }

@@ -4,7 +4,7 @@ import { Gemstone, GEMSTONES } from '../constants/gemstones';
 // Mock data for initial development
 const MOCK_PAGES: Page[] = [
   {
-    title: 'Best Astrologer Online | Vedic Astrology Consultation - Leo Family',
+    title: "LEO Family | India's Premier Spiritual Learning Platform",
     slug: 'home',
     template: 'default',
     isPublished: true,
@@ -12,7 +12,7 @@ const MOCK_PAGES: Page[] = [
     updatedAt: new Date().toISOString()
   },
   {
-    title: 'About Raajeev Singh Chauhann | Leo Family',
+    title: 'About LEO Family | Our Mission, Vision & Founder',
     slug: 'about',
     template: 'default',
     isPublished: true,
@@ -20,7 +20,7 @@ const MOCK_PAGES: Page[] = [
     updatedAt: new Date().toISOString()
   },
   {
-    title: 'Vedic Gemstones | Leo Family',
+    title: 'Gemstones | LEO Family',
     slug: 'gemstones',
     template: 'default',
     isPublished: true,
@@ -28,7 +28,7 @@ const MOCK_PAGES: Page[] = [
     updatedAt: new Date().toISOString()
   },
   {
-    title: 'Numerology Calculator | Leo Family',
+    title: 'Numerology | LEO Family',
     slug: 'numerology',
     template: 'default',
     isPublished: true,
@@ -36,7 +36,7 @@ const MOCK_PAGES: Page[] = [
     updatedAt: new Date().toISOString()
   },
   {
-    title: 'Learning Academy | LEO Family Occult Science & Vedic Academy',
+    title: 'Programs | LEO Family',
     slug: 'academy',
     template: 'default',
     isPublished: true,
@@ -44,7 +44,7 @@ const MOCK_PAGES: Page[] = [
     updatedAt: new Date().toISOString()
   },
   {
-    title: 'AI Spiritual Intelligence | LEO Family',
+    title: 'LEO Family Spiritual AI',
     slug: 'ai',
     template: 'default',
     isPublished: true,
@@ -52,7 +52,7 @@ const MOCK_PAGES: Page[] = [
     updatedAt: new Date().toISOString()
   },
   {
-    title: 'LEO Family Ecosystem & Global Community | Leo Family',
+    title: 'Ecosystem | LEO Family',
     slug: 'ecosystem',
     template: 'default',
     isPublished: true,
@@ -60,7 +60,7 @@ const MOCK_PAGES: Page[] = [
     updatedAt: new Date().toISOString()
   },
   {
-    title: 'Contact Us | Leo Family',
+    title: 'Contact LEO Family',
     slug: 'contact',
     template: 'default',
     isPublished: true,

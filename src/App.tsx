@@ -35,6 +35,7 @@ import { Sparkles } from 'lucide-react';
 import { getActiveBrand } from './config/cms';
 import { useAcademy } from './context/AcademyContext';
 import { useLanguage } from './context/LanguageContext';
+import { getSeoMetadata } from './config/seo';
 
 export default function App() {
   const [currentPath, setCurrentPath] = useState(window.location.pathname);
@@ -57,16 +58,13 @@ export default function App() {
     }
   }, [currentPath]);
 
-  const getPageTitle = () => {
-    if (currentPath.startsWith('/academy')) {
-      return activeAcademy?.seo?.title || `${activeAcademy?.name || 'Academy'} | ${activeAcademy?.instructorName || 'Instructor'}`;
-    }
-    if (currentPath === '/') return `${activeAcademy?.name || brand.name} - ${activeAcademy?.tagline || 'Master Your Destiny Through Numbers'}`;
-    if (currentPath === '/media') return `Media Center | ${activeAcademy?.name || brand.name}`;
-    if (currentPath === '/shorts') return `Spiritual Shorts | ${activeAcademy?.name || brand.name}`;
-    const name = currentPath.replace('/', '').charAt(0).toUpperCase() + currentPath.slice(2);
-    return `${name} | ${activeAcademy?.shortName || brand.name}`;
-  };
+  // Centralized SEO Resolution
+  const seo = getSeoMetadata({
+    pathname: currentPath,
+    slug: activeAcademy?.slug,
+    instructorName: activeAcademy?.instructorName,
+    customTitle: page?.title,
+  });
 
   useEffect(() => {
     const handlePopState = () => setCurrentPath(window.location.pathname);
@@ -200,17 +198,18 @@ export default function App() {
   return (
     <ErrorBoundary>
       <Helmet>
-        <title>{getPageTitle()}</title>
-        <meta name="description" content={activeAcademy?.seo?.description || activeAcademy?.description || "Master ancient Vedic wisdom and Astro-Numerology."} />
-        {activeAcademy?.seo?.keywords && (
-          <meta name="keywords" content={activeAcademy.seo.keywords.join(', ')} />
-        )}
-        <meta property="og:title" content={getPageTitle()} />
-        <meta property="og:description" content={activeAcademy?.seo?.description || activeAcademy?.description} />
-        <meta property="og:image" content={activeAcademy?.seo?.ogImage || activeAcademy?.assets?.profileImage || activeAcademy?.assets?.heroImage} />
-        <meta property="twitter:title" content={getPageTitle()} />
-        <meta property="twitter:description" content={activeAcademy?.seo?.description || activeAcademy?.description} />
-        <link rel="canonical" href={window.location.origin + currentPath} />
+        <title>{seo.title}</title>
+        <meta name="description" content={seo.description} />
+        <meta name="keywords" content="LEO Family, Numerology, Vedic Astrology, Vastu, Gemstones, Name Science, AI Spiritual Intelligence, Raajeev Singh Chauhann, Shaunak S Pathak, Sannjoy Biswass" />
+        <meta property="og:title" content={seo.ogTitle} />
+        <meta property="og:description" content={seo.ogDescription} />
+        <meta property="og:image" content={seo.ogImage} />
+        <meta property="og:site_name" content={seo.siteName} />
+        <meta property="twitter:title" content={seo.twitterTitle} />
+        <meta property="twitter:description" content={seo.twitterDescription} />
+        <meta property="twitter:image" content={seo.twitterImage} />
+        <link rel="icon" type="image/jpeg" href={seo.favicon} />
+        <link rel="canonical" href={seo.canonical} />
       </Helmet>
       <motion.div 
         className="min-h-screen relative font-sans text-text-primary"

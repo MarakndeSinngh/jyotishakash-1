@@ -25,8 +25,8 @@ export const shaunakAcademy: AcademyConfig = {
     ogImage: '/gemstone-assets/blue-sapphire.jpg',
   },
   seo: {
-    title: 'Shaunak S Patthak Academy | Practical Numerology & Planetary Science',
-    description: 'Learn Vedic Astrology, Numerology chart overlays, Dasha period calculations, and planetary gemology with Dr. Shaunak Maharaj.',
+    title: 'Shaunak S. Pathak Programs | LEO Family',
+    description: 'Discover authentic Numerology, Astrology, Vastu, Gemstones, Name Science and AI-powered spiritual guidance from the experts at LEO Family.',
     keywords: ['Shaunak S Patthak', 'Numerology', 'Vedic Astrology', 'Dasha Calculations', 'Planetary Remedies'],
     ogImage: '/gemstone-assets/blue-sapphire.jpg',
   },

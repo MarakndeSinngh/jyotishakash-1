@@ -25,8 +25,8 @@ export const raajeevAcademy: AcademyConfig = {
     ogImage: '/gemstone-assets/logo.jpg',
   },
   seo: {
-    title: 'Raajeev Singh Occult Academy | Chaldean & Mobile Numerology Masterclasses',
-    description: 'Transform your destiny with Raajeev Singh Chauhann. Certified masterclasses in Chaldean Numerology, Mobile Numerology, and Name Correction.',
+    title: 'Raajeev Singh Chauhann Programs | LEO Family',
+    description: 'Discover authentic Numerology, Astrology, Vastu, Gemstones, Name Science and AI-powered spiritual guidance from the experts at LEO Family.',
     keywords: ['Raajeev Singh Chauhann', 'Chaldean Numerology', 'Mobile Numerology', 'Name Correction', 'Astro Numerology'],
     ogImage: '/gemstone-assets/logo.jpg',
   },

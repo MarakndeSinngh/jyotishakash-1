@@ -55,8 +55,8 @@ export const sannjoyAcademy: AcademyConfig = {
     twitter: 'https://twitter.com/sannjoybiswass',
   },
   seo: {
-    title: 'Sannjoy Biswass Academy | বাংলা সংখ্যাতত্ত্ব ও লো শু গ্রিড মাস্টারক্লাস',
-    description: 'শিখুন বাংলা ভাষায় প্রাকটিক্যাল চালডিয়ান নিউমেরোলজি, মোবাইল নিউমেরোলজি, লো শু গ্রিড ও বিজনেস ব্র্যান্ডিং সরাসরি সঞ্জয় বিশ্বাসের কাছ থেকে।',
+    title: 'Sannjoy Biswass Programs | LEO Family',
+    description: 'Discover authentic Numerology, Astrology, Vastu, Gemstones, Name Science and AI-powered spiritual guidance from the experts at LEO Family.',
     keywords: [
       'Sannjoy Biswass',
       'Sannjoy Biswass Academy',

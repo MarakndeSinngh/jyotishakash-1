@@ -163,11 +163,20 @@ export interface SEOField {
   };
 }
 
+export interface NavDropdownItem {
+  label: string;
+  path: string;
+  description?: string;
+  badge?: string;
+  icon?: string;
+}
+
 export interface NavItem {
   label: string;
   path: string;
   icon?: string;
   roles?: string[];
+  dropdown?: NavDropdownItem[];
 }
 
 export interface Navigation {

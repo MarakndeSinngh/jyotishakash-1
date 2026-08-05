@@ -24,53 +24,53 @@ interface ComparisonRow {
 
 const COMPARISON_ROWS: ComparisonRow[] = [
   {
-    metric: 'Primary Focus',
+    metric: 'Primary Expertise',
     icon: Target,
-    raajeev: 'Chaldean Numerology, Mobile Frequency & Name Spelling Correction',
-    shaunak: 'Classical Vedic Astrology, Astro-Vastu & Dasha Calculation',
-    sannjoy: 'Bengali Numerology, Lo Shu Grid Balance & Mobile Harmonics'
+    raajeev: '• Advance & Practical Numerology\n• Vedic Astrology\n• Vastu Consultancy\n• Life Transformation Coaching\n• Spiritual Guidance\n• Meditation',
+    shaunak: '• Chaldean Numerology\n• Pythagorean Numerology\n• Name Numerology\n• Mobile Numerology\n• Astrology Remedies\n• Numero Vastu Analysis',
+    sannjoy: '• Lo Shu Grid Numerology\n• Mobile Numerology\n• Chaldean Numerology\n• Name Numerology\n• Business Numerology\n• Relationship Numerology'
   },
   {
-    metric: 'Instruction Language',
+    metric: 'Teaching Language',
     icon: Globe,
-    raajeev: 'English & Hindi',
-    shaunak: 'English & Hinglish',
-    sannjoy: 'Bengali (বাংলা) & English'
+    raajeev: 'English, Hindi',
+    shaunak: 'English, Hindi, Gujarati',
+    sannjoy: 'Bengali, English'
   },
   {
-    metric: 'Courses Catalog',
+    metric: 'Programs',
     icon: BookOpen,
-    raajeev: '4 Certified Masterclasses (Beginner to Advanced)',
-    shaunak: '4 Certified Masterclasses (Beginner to Advanced)',
-    sannjoy: '5 Certified Masterclasses (Beginner to Advanced)'
+    raajeev: 'Professional Numerology Certification\nAdvanced Astrology\nPractical Vastu\nSpiritual Growth\nBusiness & Brand Consultation\nMeditation for Success',
+    shaunak: 'Chaldean Numerology\nPythagorean Numerology\nAdvanced Numerology\nMobile Numerology\nName Numerology\nRemedial Astrology',
+    sannjoy: 'Lo Shu Grid Masterclass\nMobile Numerology\nName Numerology\nRelationship Numerology\nBusiness Numerology\nLal Kitab Remedies'
   },
   {
-    metric: 'Live Interaction',
+    metric: 'Live Learning',
     icon: Video,
-    raajeev: 'Weekly Live Masterclasses & Q&A with Raajeev Sir',
-    shaunak: 'Dedicated Chart Reading Mentorship Circles with Shaunak S. Patthak',
-    sannjoy: 'Live Masterclasses & Direct Q&A in Native Bengali'
+    raajeev: '• Weekly Live Masterclasses\n• Personal Q&A\n• Community Mentorship',
+    shaunak: '• Interactive Astrology Sessions\n• Live Chart Reading\n• Practical Case Studies',
+    sannjoy: '• Bengali Live Classes\n• Weekly Q&A\n• Student Practice Sessions'
   },
   {
     metric: 'Certification',
     icon: Award,
-    raajeev: 'Certified Occult Practitioner (Raajeev Singh Academy)',
-    shaunak: 'Certified Master Numerologist (Shaunak S. Patthak Academy)',
-    sannjoy: 'Certified Master Numerologist (Sannjoy Biswass Academy)'
+    raajeev: '• Certified LEO Family Professional Numerologist\n• Astrologer & Vastu Expert',
+    shaunak: '• Certified Chaldean & Pythagorean Numerology Practitioner',
+    sannjoy: '• Certified Chaldean & Pythagorean Numerology Practitioner'
   },
   {
     metric: 'Personal Consultation',
     icon: UserCheck,
-    raajeev: 'VIP Celebrity, Mobile Vibration & Corporate Brand Audit',
-    shaunak: 'Horoscope Kundali Analysis & Astro-Vastu House Audit',
-    sannjoy: 'Personal Lo Shu Grid & Mobile Number Remedial Consultation'
+    raajeev: '• Celebrity Consultation\n• Business Numerology\n• Brand Name Correction\n• Vastu Audit\n• Life Coaching',
+    shaunak: '• Lo Shu Analysis\n• Mobile Number Analysis\n• Name Correction\n• Business Numerology\n• Relationship Guidance\n• Planetary Remedies\n• Career Guidance',
+    sannjoy: '• Lo Shu Analysis\n• Mobile Number Analysis\n• Name Correction\n• Business Numerology\n• Relationship Guidance'
   },
   {
     metric: 'Best Suited For',
     icon: Layers,
-    raajeev: 'Entrepreneurs, professionals, and students seeking rapid life alignment & brand power',
-    shaunak: 'Scholars and learners wanting authentic classical astrology & spatial Vastu remedies',
-    sannjoy: 'Native Bengali speakers & learners looking for practical Lo Shu grid solutions'
+    raajeev: 'Entrepreneurs, Business Owners, Professionals, Spiritual Seekers, Corporate Leaders',
+    shaunak: 'Astrology Learners, Vastu Consultants, Students, Researchers, Home Owners',
+    sannjoy: 'Bengali Students, Beginners, Working Professionals, Business Owners, Families'
   }
 ];
 
@@ -145,7 +145,7 @@ export default function AcademyComparisonMatrix() {
                   <div className="flex flex-col items-center">
                     <span className="text-[10px] uppercase tracking-widest font-bold text-purple-400 bg-purple-400/10 px-3 py-1 rounded-full border border-purple-400/30">🎓 Senior Faculty</span>
                     <h4 className="text-lg font-bold font-cinzel text-text-primary mt-2">Shaunak S. Patthak</h4>
-                    <span className="text-[10px] text-text-secondary font-medium">Astro-Vastu Grandmaster • Lead Faculty</span>
+                    <span className="text-[10px] text-text-secondary font-medium">Master Numerologist & Astrologer</span>
                     <button
                       onClick={() => switchAcademy('shaunak')}
                       className="mt-3 px-4 py-2 bg-purple-500/10 hover:bg-purple-500 text-purple-400 hover:text-white border border-purple-500/30 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer"
@@ -158,7 +158,7 @@ export default function AcademyComparisonMatrix() {
                   <div className="flex flex-col items-center">
                     <span className="text-[10px] uppercase tracking-widest font-bold text-emerald-400 bg-emerald-400/10 px-3 py-1 rounded-full border border-emerald-400/30">🎓 Senior Faculty</span>
                     <h4 className="text-lg font-bold font-cinzel text-text-primary mt-2">Sannjoy Biswass</h4>
-                    <span className="text-[10px] text-text-secondary font-medium">Master Numerologist • Regional Faculty</span>
+                    <span className="text-[10px] text-text-secondary font-medium">Master Numerologist & Astrologer</span>
                     <button
                       onClick={() => switchAcademy('sannjoy')}
                       className="mt-3 px-4 py-2 bg-emerald-500/10 hover:bg-emerald-500 text-emerald-400 hover:text-white border border-emerald-500/30 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer"
@@ -184,13 +184,13 @@ export default function AcademyComparisonMatrix() {
                         </span>
                       </div>
                     </td>
-                    <td className="p-6 text-xs text-text-secondary leading-relaxed border-l border-border/20 bg-amber-500/[0.01]">
+                    <td className="p-6 text-xs text-text-secondary leading-relaxed border-l border-border/20 bg-amber-500/[0.01] whitespace-pre-line">
                       {row.raajeev}
                     </td>
-                    <td className="p-6 text-xs text-text-secondary leading-relaxed border-l border-border/20 bg-purple-500/[0.01]">
+                    <td className="p-6 text-xs text-text-secondary leading-relaxed border-l border-border/20 bg-purple-500/[0.01] whitespace-pre-line">
                       {row.shaunak}
                     </td>
-                    <td className="p-6 text-xs text-text-secondary leading-relaxed border-l border-border/20 bg-emerald-500/[0.01]">
+                    <td className="p-6 text-xs text-text-secondary leading-relaxed border-l border-border/20 bg-emerald-500/[0.01] whitespace-pre-line">
                       {row.sannjoy}
                     </td>
                   </tr>
@@ -250,7 +250,7 @@ export default function AcademyComparisonMatrix() {
                   return (
                     <div key={idx} className="text-left space-y-1">
                       <span className="text-[10px] uppercase font-bold text-primary tracking-wider">{row.metric}:</span>
-                      <p className="text-xs text-text-secondary leading-relaxed">{val}</p>
+                      <p className="text-xs text-text-secondary leading-relaxed whitespace-pre-line">{val}</p>
                     </div>
                   );
                 })}

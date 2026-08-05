@@ -39,6 +39,7 @@ import { WHATSAPP_LINK } from '../../constants/contacts';
 import { getVideosByTeacher, getAutoYoutubeThumbnail, MediaItem } from '../../config/mediaRegistry';
 import SmartImage from './SmartImage';
 import AcademyNotFound from './AcademyNotFound';
+import LandingHero from '../LandingHero';
 
 interface AcademyLandingPageProps {
   navigate?: (path: string) => void;
@@ -212,131 +213,7 @@ export default function AcademyLandingPage({ navigate }: AcademyLandingPageProps
       {/* ==================================================
           FLOW 1: HERO SECTION (LandingHero)
           ================================================== */}
-      <section className="relative z-10 py-16 lg:py-24 px-6 max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          
-          {/* Hero Left Content */}
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
-            className="lg:col-span-7 space-y-6 text-left"
-          >
-            {/* Instructor Badge & Language */}
-            <div className="flex flex-wrap items-center gap-3">
-              <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-primary/10 border border-primary/25 text-primary text-[10px] font-bold uppercase tracking-[0.2em]">
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>{activeAcademy.instructorTitle}</span>
-              </span>
-
-              {activeAcademy.language && (
-                <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-card border border-border/20 text-text-secondary text-[10px] font-medium tracking-wider">
-                  <Globe className="w-3 h-3 text-primary" />
-                  <span>{activeAcademy.language}</span>
-                </span>
-              )}
-            </div>
-
-            {/* Academy Name */}
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold font-cinzel tracking-tight leading-[1.15] text-text-primary">
-              {activeAcademy.name}
-            </h1>
-
-            {/* Tagline */}
-            <p className="text-primary font-serif italic text-base sm:text-lg border-l-2 border-primary pl-4 py-1">
-              "{activeAcademy.tagline}"
-            </p>
-
-            {/* Biography */}
-            <p className="text-text-secondary text-sm sm:text-base font-light leading-relaxed max-w-2xl font-sans">
-              {activeAcademy.instructorBio || activeAcademy.description}
-            </p>
-
-            {/* CTA Action Buttons */}
-            <div className="flex flex-wrap gap-4 pt-4">
-              <a
-                href={whatsappUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group px-7 py-4 bg-primary text-background font-extrabold uppercase tracking-wider text-xs rounded-xl shadow-xl hover:shadow-primary/25 transition-all hover:-translate-y-0.5 flex items-center gap-2 cursor-pointer"
-              >
-                <MessageCircle className="w-4 h-4" />
-                <span>Book Personal Consultation</span>
-              </a>
-
-              <a
-                href="#courses"
-                className="px-7 py-4 bg-card hover:bg-surface border border-border/20 hover:border-primary/40 text-text-primary font-bold uppercase tracking-wider text-xs rounded-xl transition-all hover:-translate-y-0.5 flex items-center gap-2 cursor-pointer"
-              >
-                <span>Explore Courses</span>
-                <ChevronRight className="w-4 h-4 text-primary" />
-              </a>
-            </div>
-          </motion.div>
-
-          {/* Hero Right Image Card */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="lg:col-span-5 flex justify-center"
-          >
-            <div className="relative w-full max-w-md">
-              <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 via-primary/5 to-transparent rounded-[2.5rem] transform rotate-3 scale-105 blur-xl -z-10" />
-              
-              <div className="bg-card border border-primary/25 rounded-[2.5rem] p-6 sm:p-8 shadow-2xl relative overflow-hidden">
-                <div className="relative aspect-[4/5] rounded-2xl overflow-hidden mb-6 border border-border/20">
-                  <SmartImage
-                    src={activeAcademy.assets?.profileImage || activeAcademy.assets?.founderPortrait}
-                    alt={activeAcademy.instructorName}
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
-                  
-                  <div className="absolute bottom-4 left-4 right-4 text-left text-white">
-                    <h3 className="text-lg font-bold font-cinzel">{activeAcademy.instructorName}</h3>
-                    <p className="text-[10px] uppercase tracking-wider text-amber-300 font-sans font-semibold">
-                      {activeAcademy.instructorTitle}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Quick Info Bar */}
-                <div className="flex items-center justify-between text-xs text-text-secondary pt-2 border-t border-border/10">
-                  <div className="flex items-center gap-1.5">
-                    <ShieldCheck className="w-4 h-4 text-emerald-500" />
-                    <span>Certified Masterclass</span>
-                  </div>
-                  <div className="flex items-center gap-1 text-amber-400 font-bold font-cinzel">
-                    <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                    <span>4.9 / 5 Rating</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-
-        </div>
-
-        {/* HERO STATS BAR */}
-        {activeAcademy.stats && activeAcademy.stats.length > 0 && (
-          <div className="mt-16 pt-12 border-t border-border/10 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-            {activeAcademy.stats.map((st, i) => (
-              <div key={i} className="p-4 rounded-xl bg-card/40 border border-border/10">
-                <span className="text-2xl sm:text-3xl font-extrabold font-cinzel text-primary block mb-1">
-                  {st.value}
-                </span>
-                <span className="text-xs font-bold uppercase tracking-wider text-text-primary block font-cinzel">
-                  {st.label}
-                </span>
-                <span className="text-[10px] text-text-secondary block font-sans">
-                  {st.desc}
-                </span>
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
+      <LandingHero />
 
       {/* ==================================================
           FLOW 2: FEATURED PROGRAMS (Courses & Masterclasses)

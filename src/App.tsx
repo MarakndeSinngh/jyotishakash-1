@@ -30,6 +30,7 @@ import SmartImage from './components/sections/SmartImage';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
 import Navbar from "./components/Navbar";
+import StickyFloatingCTA from "./components/StickyFloatingCTA";
 import { THEME_COLORS } from './utils/themeColors';
 import { Sparkles } from 'lucide-react';
 import { getActiveBrand } from './config/cms';
@@ -314,6 +315,9 @@ export default function App() {
 
         {/* NAVBAR */}
         <Navbar navigate={navigate} currentPath={currentPath} />
+
+        {/* STICKY FLOATING CTA BAR (For Shaunak, Raajeev, Sannjoy Academy Programs) */}
+        <StickyFloatingCTA currentPath={currentPath} />
 
         {/* MAIN CONTENT */}
         <main className={`relative z-10 ${

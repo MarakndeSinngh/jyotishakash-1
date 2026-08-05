@@ -40,6 +40,8 @@ import { getVideosByTeacher, getAutoYoutubeThumbnail, MediaItem } from '../../co
 import SmartImage from './SmartImage';
 import AcademyNotFound from './AcademyNotFound';
 import LandingHero from '../LandingHero';
+import WorkshopTimeline from '../WorkshopTimeline';
+import StudentTransformations from '../StudentTransformations';
 
 interface AcademyLandingPageProps {
   navigate?: (path: string) => void;
@@ -345,68 +347,7 @@ export default function AcademyLandingPage({ navigate }: AcademyLandingPageProps
       {/* ==================================================
           FLOW 3: WORKSHOP TIMELINE (Learning Roadmap)
           ================================================== */}
-      {activeAcademy.learningRoadmap && activeAcademy.learningRoadmap.length > 0 && (
-        <section className="relative z-10 py-20 px-6 max-w-6xl mx-auto border-t border-border/10">
-          <div className="text-center max-w-3xl mx-auto mb-16">
-            <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary block mb-2">
-              CURRICULUM ROADMAP
-            </span>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold font-cinzel text-text-primary">
-              Workshop Learning Timeline
-            </h2>
-            <p className="text-xs text-text-secondary mt-2">
-              Step-by-step mastery framework structured by {activeAcademy.instructorName}
-            </p>
-            <div className="w-20 h-[2px] bg-gradient-to-r from-transparent via-primary to-transparent mx-auto mt-4" />
-          </div>
-
-          <div className="relative">
-            {/* Timeline Center Line */}
-            <div className="hidden md:block absolute top-0 bottom-0 left-1/2 w-[2px] bg-gradient-to-b from-primary/10 via-primary/40 to-primary/10 -translate-x-1/2" />
-
-            <div className="space-y-8 relative">
-              {activeAcademy.learningRoadmap.map((item, idx) => {
-                const isEven = idx % 2 === 0;
-                return (
-                  <motion.div
-                    key={idx}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5, delay: idx * 0.1 }}
-                    className={`flex flex-col md:flex-row items-center gap-6 ${
-                      isEven ? 'md:flex-row-reverse' : ''
-                    }`}
-                  >
-                    {/* Content Box */}
-                    <div className="w-full md:w-1/2">
-                      <div className="bg-card border border-border/15 hover:border-primary/30 p-6 rounded-2xl shadow-xl transition-all text-left relative">
-                        <span className="text-xs font-mono font-extrabold text-primary bg-primary/10 border border-primary/20 px-3 py-1 rounded-full mb-3 inline-block">
-                          Step {item.step}
-                        </span>
-                        <h3 className="text-base sm:text-lg font-bold font-cinzel text-text-primary mb-2">
-                          {item.title}
-                        </h3>
-                        <p className="text-text-secondary text-xs font-light leading-relaxed">
-                          {item.desc}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Timeline Dot */}
-                    <div className="relative z-10 w-10 h-10 rounded-full bg-primary text-background font-bold font-mono text-sm flex items-center justify-center shadow-lg border-4 border-background shrink-0">
-                      {item.step}
-                    </div>
-
-                    {/* Empty Spacer */}
-                    <div className="hidden md:block w-1/2" />
-                  </motion.div>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-      )}
+      <WorkshopTimeline />
 
       {/* ==================================================
           FLOW 4: INTERACTIVE LEARNING TOOLS
@@ -584,7 +525,9 @@ export default function AcademyLandingPage({ navigate }: AcademyLandingPageProps
       {/* ==================================================
           FLOW 5: STUDENT TRANSFORMATIONS (Testimonials)
           ================================================== */}
-      {activeAcademy.testimonials && activeAcademy.testimonials.length > 0 && (
+      {activeAcademy.id === 'shaunak' ? (
+        <StudentTransformations />
+      ) : activeAcademy.testimonials && activeAcademy.testimonials.length > 0 ? (
         <section className="relative z-10 py-20 px-6 max-w-7xl mx-auto border-t border-border/10">
           <div className="text-center max-w-3xl mx-auto mb-16">
             <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary block mb-2">
@@ -628,7 +571,7 @@ export default function AcademyLandingPage({ navigate }: AcademyLandingPageProps
             ))}
           </div>
         </section>
-      )}
+      ) : null}
 
       {/* ==================================================
           FLOW 6: VIDEO GALLERY

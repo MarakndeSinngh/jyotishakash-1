@@ -43,7 +43,7 @@ export const sannjoyAcademy: AcademyConfig = {
   },
   contactDetails: {
     phone: '+91 99537 13176',
-    whatsapp: 'https://chat.whatsapp.com/HOUZ3rmuigF32SjOVco8B2?s=sh&p=a&ilr=1',
+    whatsapp: 'https://chat.whatsapp.com/Duy1rNPagOD2sQWlNfyMfg',
     email: 'contact@sannjoybiswass.com',
     address: 'Kolkata, West Bengal, India',
   },

@@ -192,7 +192,7 @@ export const raajeevAcademy: AcademyConfig = {
   ],
   contactDetails: {
     phone: '+91 99537 13176',
-    whatsapp: 'https://wa.me/919953713176',
+    whatsapp: 'https://chat.whatsapp.com/K1HrfKraZlM36jHEErWsc8',
     email: 'contact@raajeevsingh.com',
     address: 'New Delhi & Mumbai, India',
   },

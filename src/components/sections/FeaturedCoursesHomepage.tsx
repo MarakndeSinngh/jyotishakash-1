@@ -12,46 +12,37 @@ import {
 } from 'lucide-react';
 import { useAcademy } from '../../context/AcademyContext';
 import { WHATSAPP_LINK } from '../../constants/contacts';
-import { contentEngine } from '../../services/contentEngine';
+import { useContentEngine } from '../../hooks/useContentEngine';
 import SmartImage from './SmartImage';
 
 export default function FeaturedCoursesHomepage() {
   const { allAcademies, switchAcademy } = useAcademy();
   const [selectedTab, setSelectedTab] = useState<string>('all');
-  const [featuredPrograms, setFeaturedPrograms] = useState<any[]>([]);
+  const { data, loading, error } = useContentEngine({ type: 'homepage' });
 
-  useEffect(() => {
-    async function loadPrograms() {
-      try {
-        const mentorId = selectedTab === 'all' ? undefined : selectedTab;
-        const data = await contentEngine.getFeaturedPrograms(mentorId);
-        // Map to UI format
-        const formatted = data.map((prog: any) => ({
-          ...prog,
-          academySlug: prog.mentorId || 'raajeev',
-          academyShortName: prog.mentorId === 'shaunak' ? 'Shaunak Academy' : prog.mentorId === 'sannjoy' ? 'Sannjoy Academy' : 'LEO Academy',
-          academyInstructor: prog.mentorId === 'shaunak' ? 'Shaunak S. Patthak' : prog.mentorId === 'sannjoy' ? 'Sannjoy Biswass' : 'Raajeev Singh Chauhann',
-          academyProfileImage: prog.image || '/gemstone-assets/logo.jpg',
-        }));
-        setFeaturedPrograms(formatted);
-      } catch (err) {
-        console.error('Failed to load featured programs from ContentEngine:', err);
-        // Fallback
-        const fallbackList = allAcademies.flatMap((academy) => {
-          const top2 = academy.courses.slice(0, 2);
-          return top2.map((course) => ({
-            ...course,
-            academySlug: academy.slug,
-            academyShortName: academy.shortName,
-            academyInstructor: academy.instructorName,
-            academyProfileImage: academy.assets.profileImage,
-          }));
-        });
-        setFeaturedPrograms(fallbackList);
-      }
-    }
-    loadPrograms();
-  }, [selectedTab, allAcademies]);
+  const homepageData = data as any;
+  const rawPrograms = homepageData?.featuredPrograms || [];
+
+  const filteredRawPrograms = selectedTab === 'all' 
+    ? rawPrograms 
+    : rawPrograms.filter((p: any) => p.mentorId === selectedTab);
+
+  const featuredPrograms = (filteredRawPrograms.length > 0 ? filteredRawPrograms : allAcademies.flatMap((academy) => {
+    const top2 = academy.courses.slice(0, 2);
+    return top2.map((course) => ({
+      ...course,
+      academySlug: academy.slug,
+      academyShortName: academy.shortName,
+      academyInstructor: academy.instructorName,
+      academyProfileImage: academy.assets.profileImage,
+    }));
+  })).map((prog: any) => ({
+    ...prog,
+    academySlug: prog.mentorId || prog.academySlug || 'raajeev',
+    academyShortName: prog.academyShortName || (prog.mentorId === 'shaunak' ? 'Shaunak Academy' : prog.mentorId === 'sannjoy' ? 'Sannjoy Academy' : 'LEO Academy'),
+    academyInstructor: prog.academyInstructor || (prog.mentorId === 'shaunak' ? 'Shaunak S. Patthak' : prog.mentorId === 'sannjoy' ? 'Sannjoy Biswass' : 'Raajeev Singh Chauhann'),
+    academyProfileImage: prog.academyProfileImage || prog.image || '/gemstone-assets/logo.jpg',
+  }));
 
   const filteredCourses = featuredPrograms.filter((course) => {
     if (selectedTab === 'all') return true;

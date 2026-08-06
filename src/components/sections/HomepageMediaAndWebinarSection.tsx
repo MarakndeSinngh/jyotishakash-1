@@ -1,36 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { Sparkles, Play, Clock, Calendar, Users, ExternalLink, Video } from 'lucide-react';
-import { contentEngine } from '../../services/contentEngine';
-import { Media } from '../../models/media';
-import { LiveEvent } from '../../models/liveEvent';
+import { useContentEngine } from '../../hooks/useContentEngine';
 import { useMedia } from '../../media/MediaProvider';
 import { YoutubeThumbnail } from '../common/YoutubeThumbnail';
 import SmartImage from './SmartImage';
 
 export default function HomepageMediaAndWebinarSection() {
-  const [featuredMedia, setFeaturedMedia] = useState<Media[]>([]);
-  const [liveEvents, setLiveEvents] = useState<LiveEvent[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data, loading, error } = useContentEngine({ type: 'homepage' });
   const { openPlayer } = useMedia();
 
-  useEffect(() => {
-    async function loadData() {
-      try {
-        const [mediaData, eventData] = await Promise.all([
-          contentEngine.getFeaturedMedia(),
-          contentEngine.getLiveWebinar()
-        ]);
-        setFeaturedMedia(mediaData);
-        setLiveEvents(eventData);
-      } catch (err) {
-        console.error('Failed to load homepage media/webinars:', err);
-      } finally {
-        setLoading(false);
-      }
-    }
-    loadData();
-  }, []);
+  const homepageData = data as any;
+  const featuredMedia = homepageData?.featuredMedia || [];
+  const liveEvents = homepageData?.liveEvents || [];
 
   return (
     <section className="relative py-24 sm:py-32 bg-background text-text-primary overflow-hidden z-10 border-t border-border/20">

@@ -22,6 +22,7 @@ import AISpiritualSection from './components/sections/AISpiritualSection';
 import MediaCenterPage from './components/sections/MediaCenterPage';
 import ShortsPage from './components/sections/ShortsPage';
 import AcademyLandingPage from './components/sections/AcademyLandingPage';
+import AdminPortal from './components/admin/AdminPortal';
 import ErrorBoundary from './components/ErrorBoundary';
 import ThemeSelector from './components/ThemeSelector';
 import { MediaPlayer } from './media/MediaPlayer';
@@ -198,6 +199,10 @@ export default function App() {
 
   return (
     <ErrorBoundary>
+      {currentPath.startsWith('/admin') ? (
+        <AdminPortal navigate={navigate} currentPath={currentPath} />
+      ) : (
+        <>
       <Helmet>
         <title>{seo.title}</title>
         <meta name="description" content={seo.description} />
@@ -413,6 +418,8 @@ export default function App() {
         </footer>
 
       </motion.div>
+        </>
+      )}
     </ErrorBoundary>
   );
 }

@@ -7,6 +7,11 @@ export interface Faculty {
   languages: string[];
   consultationLink: string;
   registrationLink: string;
+  facebookUrl?: string;
+  youtubeUrl?: string;
+  displayOrder?: number;
+  active?: boolean;
   createdAt?: string;
   updatedAt?: string;
 }
+

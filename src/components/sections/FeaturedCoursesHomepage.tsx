@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Sparkles, 
@@ -12,26 +12,48 @@ import {
 } from 'lucide-react';
 import { useAcademy } from '../../context/AcademyContext';
 import { WHATSAPP_LINK } from '../../constants/contacts';
+import { contentEngine } from '../../services/contentEngine';
 import SmartImage from './SmartImage';
 
 export default function FeaturedCoursesHomepage() {
   const { allAcademies, switchAcademy } = useAcademy();
   const [selectedTab, setSelectedTab] = useState<string>('all');
+  const [featuredPrograms, setFeaturedPrograms] = useState<any[]>([]);
 
-  // Collect top 2 courses from each academy
-  const featuredCoursesList = allAcademies.flatMap((academy) => {
-    // Top 2 courses
-    const top2 = academy.courses.slice(0, 2);
-    return top2.map((course) => ({
-      ...course,
-      academySlug: academy.slug,
-      academyShortName: academy.shortName,
-      academyInstructor: academy.instructorName,
-      academyProfileImage: academy.assets.profileImage,
-    }));
-  });
+  useEffect(() => {
+    async function loadPrograms() {
+      try {
+        const mentorId = selectedTab === 'all' ? undefined : selectedTab;
+        const data = await contentEngine.getFeaturedPrograms(mentorId);
+        // Map to UI format
+        const formatted = data.map((prog: any) => ({
+          ...prog,
+          academySlug: prog.mentorId || 'raajeev',
+          academyShortName: prog.mentorId === 'shaunak' ? 'Shaunak Academy' : prog.mentorId === 'sannjoy' ? 'Sannjoy Academy' : 'LEO Academy',
+          academyInstructor: prog.mentorId === 'shaunak' ? 'Shaunak S. Patthak' : prog.mentorId === 'sannjoy' ? 'Sannjoy Biswass' : 'Raajeev Singh Chauhann',
+          academyProfileImage: prog.image || '/gemstone-assets/logo.jpg',
+        }));
+        setFeaturedPrograms(formatted);
+      } catch (err) {
+        console.error('Failed to load featured programs from ContentEngine:', err);
+        // Fallback
+        const fallbackList = allAcademies.flatMap((academy) => {
+          const top2 = academy.courses.slice(0, 2);
+          return top2.map((course) => ({
+            ...course,
+            academySlug: academy.slug,
+            academyShortName: academy.shortName,
+            academyInstructor: academy.instructorName,
+            academyProfileImage: academy.assets.profileImage,
+          }));
+        });
+        setFeaturedPrograms(fallbackList);
+      }
+    }
+    loadPrograms();
+  }, [selectedTab, allAcademies]);
 
-  const filteredCourses = featuredCoursesList.filter((course) => {
+  const filteredCourses = featuredPrograms.filter((course) => {
     if (selectedTab === 'all') return true;
     return course.academySlug === selectedTab;
   });
@@ -75,7 +97,7 @@ export default function FeaturedCoursesHomepage() {
             transition={{ delay: 0.2 }}
             className="text-text-secondary text-base sm:text-lg font-light leading-relaxed font-sans"
           >
-            Explore flagship certifications offered across LEO Family. Select an expert tab to filter programs.
+            Explore flagship certifications offered across LEO Family via ContentEngine. Select an expert tab to filter programs.
           </motion.p>
         </div>
 

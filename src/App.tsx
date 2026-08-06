@@ -8,6 +8,7 @@ import TestimonialsSection from './components/sections/TestimonialsSection';
 import MeetOurMentorsSection from './components/sections/MeetOurMentorsSection';
 import AcademyComparisonMatrix from './components/sections/AcademyComparisonMatrix';
 import FeaturedCoursesHomepage from './components/sections/FeaturedCoursesHomepage';
+import HomepageMediaAndWebinarSection from './components/sections/HomepageMediaAndWebinarSection';
 import DynamicTestimonialsHomepage from './components/sections/DynamicTestimonialsHomepage';
 import SuccessMetricsSection from './components/sections/SuccessMetricsSection';
 import HomepageCTASection from './components/sections/HomepageCTASection';
@@ -353,6 +354,7 @@ export default function App() {
                               <MeetOurMentorsSection />
                               <AcademyComparisonMatrix />
                               <FeaturedCoursesHomepage />
+                              <HomepageMediaAndWebinarSection />
                             </>
                           )}
                         </React.Fragment>

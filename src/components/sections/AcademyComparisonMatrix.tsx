@@ -68,9 +68,9 @@ const COMPARISON_ROWS: ComparisonRow[] = [
   {
     metric: 'Best Suited For',
     icon: Layers,
-    raajeev: 'Entrepreneurs, Business Owners, Professionals, Spiritual Seekers, Corporate Leaders',
-    shaunak: 'Astrology Learners, Vastu Consultants, Students, Researchers, Home Owners',
-    sannjoy: 'Bengali Students, Beginners, Working Professionals, Business Owners, Families'
+    raajeev: '• Entrepreneurs\n• Business Owners\n• Professionals\n• Spiritual Seekers\n• Corporate Leaders',
+    shaunak: '• Astrology Learners\n• Vastu Consultants\n• Students\n• Researchers\n• Home Owners',
+    sannjoy: '• Bengali Students\n• Beginners\n• Working Professionals\n• Business Owners\n• Families'
   }
 ];
 

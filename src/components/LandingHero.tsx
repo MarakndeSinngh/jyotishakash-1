@@ -34,6 +34,9 @@ export default function LandingHero({
   const whatsappUrl = activeAcademy?.contactDetails?.whatsapp || WHATSAPP_LINK;
 
   const getNextBatchDate = (): Date => {
+    if (activeAcademy?.id === 'raajeev' || activeAcademy?.id === 'sannjoy') {
+      return new Date('2026-09-05T11:00:00');
+    }
     const now = new Date();
     const targetDays = [3, 5, 0]; // Wednesday, Friday, Sunday
     let minDiff = 8;
@@ -94,7 +97,9 @@ export default function LandingHero({
     ctaSubText: "Reminders • Exclusive PDFs • Bonus Materials on WhatsApp Group",
     ratingText: "★★★★★ 4.9/5 Rating (5,000+ Alumni)",
     batchPrefix: isGujarati ? "આગામી લાઈવ બેચ શરૂ થાય છે: " : isHindi ? "अगला लाइव बैच शुरू होता है: " : "Next Live Batch Starts: ",
-    timeText: isGujarati ? "સાંજે ૮:૦૦ વાગ્યે" : "At 8:00 PM IST",
+    timeText: (activeAcademy?.id === 'raajeev' || activeAcademy?.id === 'sannjoy')
+      ? (activeAcademy.id === 'sannjoy' ? "সকাল ১১:০০ - দুপুর ০১:০০ (IST)" : "11:00 AM - 01:00 PM IST")
+      : (isGujarati ? "સાંજે ૮:૦૦ વાગ્યે" : "At 8:00 PM IST"),
     expBadge: activeAcademy.stats?.[0]?.value ? `${activeAcademy.stats[0].value} ${activeAcademy.stats[0].label}` : "10+ Years Exp.",
     studentBadge: activeAcademy.stats?.[1]?.value ? `${activeAcademy.stats[1].value} Alumni` : "15,000+ Alumni",
     communityBadge: "LEO VIP Circle",

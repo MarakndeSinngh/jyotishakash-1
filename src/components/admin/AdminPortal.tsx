@@ -7,6 +7,7 @@ import {
   Star, 
   Users, 
   Settings, 
+  Globe,
   LogOut, 
   Menu, 
   X, 
@@ -19,17 +20,18 @@ import AdminLogin from './AdminLogin';
 import DashboardView from './DashboardView';
 import LiveWebinarView from './LiveWebinarView';
 import ProgramsView from './ProgramsView';
-import MediaLibraryView from './MediaLibraryView';
+import MediaAssetLibraryView from './MediaAssetLibraryView';
 import TestimonialsView from './TestimonialsView';
 import FacultyView from './FacultyView';
 import SettingsView from './SettingsView';
+import SEOManagerView from './SEOManagerView';
 
 interface AdminPortalProps {
   navigate: (path: string) => void;
   currentPath: string;
 }
 
-export type AdminTab = 'dashboard' | 'webinar' | 'programs' | 'media' | 'testimonials' | 'faculty' | 'settings';
+export type AdminTab = 'dashboard' | 'webinar' | 'programs' | 'media' | 'testimonials' | 'faculty' | 'settings' | 'seo';
 
 export default function AdminPortal({ navigate }: AdminPortalProps) {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
@@ -55,6 +57,7 @@ export default function AdminPortal({ navigate }: AdminPortalProps) {
     { id: 'media' as AdminTab, label: 'Media Library', icon: FolderKanban },
     { id: 'testimonials' as AdminTab, label: 'Testimonials', icon: Star },
     { id: 'faculty' as AdminTab, label: 'Faculty', icon: Users },
+    { id: 'seo' as AdminTab, label: 'SEO Manager', icon: Globe },
     { id: 'settings' as AdminTab, label: 'Settings', icon: Settings },
   ];
 
@@ -67,11 +70,13 @@ export default function AdminPortal({ navigate }: AdminPortalProps) {
       case 'programs':
         return <ProgramsView />;
       case 'media':
-        return <MediaLibraryView />;
+        return <MediaAssetLibraryView />;
       case 'testimonials':
         return <TestimonialsView />;
       case 'faculty':
         return <FacultyView />;
+      case 'seo':
+        return <SEOManagerView />;
       case 'settings':
         return <SettingsView />;
       default:

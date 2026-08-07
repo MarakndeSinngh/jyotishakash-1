@@ -1,4 +1,9 @@
 import { WebsiteSettings } from '../models/websiteSettings';
+import { db } from '../firebase/config';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+
+const COLLECTION_NAME = 'websiteSettings';
+const DOCUMENT_ID = 'global';
 
 let CURRENT_SETTINGS: WebsiteSettings = {
   id: 'settings-1',
@@ -28,15 +33,51 @@ let CURRENT_SETTINGS: WebsiteSettings = {
 
 export const websiteSettingsRepository = {
   async getSettings(): Promise<WebsiteSettings> {
-    return { ...CURRENT_SETTINGS };
+    try {
+      if (!db) {
+        return { ...CURRENT_SETTINGS };
+      }
+      const docRef = doc(db, COLLECTION_NAME, DOCUMENT_ID);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        const data = docSnap.data() as WebsiteSettings;
+        CURRENT_SETTINGS = {
+          ...CURRENT_SETTINGS,
+          ...data,
+          id: DOCUMENT_ID
+        };
+        return { ...CURRENT_SETTINGS };
+      } else {
+        // Initialize default document in Firestore if not exists
+        await setDoc(docRef, CURRENT_SETTINGS);
+        return { ...CURRENT_SETTINGS };
+      }
+    } catch (error) {
+      console.error('Error fetching website settings from Firestore:', error);
+      return { ...CURRENT_SETTINGS };
+    }
   },
 
   async updateSettings(updates: Partial<WebsiteSettings>): Promise<WebsiteSettings> {
-    CURRENT_SETTINGS = {
-      ...CURRENT_SETTINGS,
-      ...updates,
-      updatedAt: new Date().toISOString()
-    };
-    return { ...CURRENT_SETTINGS };
+    try {
+      const current = await this.getSettings();
+      const updated: WebsiteSettings = {
+        ...current,
+        ...updates,
+        id: DOCUMENT_ID,
+        updatedAt: new Date().toISOString()
+      };
+
+      if (db) {
+        const docRef = doc(db, COLLECTION_NAME, DOCUMENT_ID);
+        await setDoc(docRef, updated, { merge: true });
+      }
+
+      CURRENT_SETTINGS = updated;
+      return { ...CURRENT_SETTINGS };
+    } catch (error) {
+      console.error('Error updating website settings in Firestore:', error);
+      throw error;
+    }
   }
 };

@@ -1,4 +1,8 @@
 import { Faculty } from '../models/faculty';
+import { db } from '../firebase/config';
+import { collection, doc, getDoc, getDocs, setDoc, deleteDoc } from 'firebase/firestore';
+
+const COLLECTION_NAME = 'faculty';
 
 let MOCK_FACULTY: Faculty[] = [
   {
@@ -50,51 +54,134 @@ let MOCK_FACULTY: Faculty[] = [
 
 export const facultyRepository = {
   async getAll(): Promise<Faculty[]> {
-    return [...MOCK_FACULTY];
+    try {
+      if (!db) {
+        return [...MOCK_FACULTY];
+      }
+      const colRef = collection(db, COLLECTION_NAME);
+      const snapshot = await getDocs(colRef);
+      if (snapshot.empty) {
+        // Seed initial mock faculty into Firestore
+        for (const faculty of MOCK_FACULTY) {
+          const docRef = doc(db, COLLECTION_NAME, faculty.id);
+          await setDoc(docRef, faculty);
+        }
+        return [...MOCK_FACULTY];
+      }
+
+      const facultyList: Faculty[] = [];
+      snapshot.forEach(docSnap => {
+        const data = docSnap.data() as Faculty;
+        facultyList.push({
+          ...data,
+          id: docSnap.id
+        });
+      });
+
+      // Sort by displayOrder if present
+      facultyList.sort((a, b) => (a.displayOrder || 99) - (b.displayOrder || 99));
+      return facultyList;
+    } catch (error) {
+      console.error('Error fetching faculty from Firestore:', error);
+      return [...MOCK_FACULTY];
+    }
   },
 
   async getById(id: string): Promise<Faculty | null> {
-    return MOCK_FACULTY.find(f => f.id === id) || null;
+    try {
+      if (!db) {
+        return MOCK_FACULTY.find(f => f.id === id) || null;
+      }
+      const docRef = doc(db, COLLECTION_NAME, id);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        const data = docSnap.data() as Faculty;
+        return {
+          ...data,
+          id: docSnap.id
+        };
+      }
+      return MOCK_FACULTY.find(f => f.id === id) || null;
+    } catch (error) {
+      console.error(`Error fetching faculty ${id} from Firestore:`, error);
+      return MOCK_FACULTY.find(f => f.id === id) || null;
+    }
   },
 
   async getFounder(): Promise<Faculty | null> {
-    return MOCK_FACULTY.find(f => f.id === 'raajeev' || f.title.toLowerCase().includes('founder')) || MOCK_FACULTY[0] || null;
+    const all = await this.getAll();
+    return all.find(f => f.id === 'raajeev' || f.title.toLowerCase().includes('founder')) || all[0] || null;
   },
 
   async create(faculty: Faculty): Promise<Faculty> {
+    const newId = faculty.id || `faculty-${Date.now()}`;
     const newFaculty: Faculty = {
       ...faculty,
-      id: faculty.id || `faculty-${Date.now()}`,
+      id: newId,
       createdAt: faculty.createdAt || new Date().toISOString()
     };
-    MOCK_FACULTY = [newFaculty, ...MOCK_FACULTY];
-    return newFaculty;
+
+    try {
+      if (db) {
+        const docRef = doc(db, COLLECTION_NAME, newId);
+        await setDoc(docRef, newFaculty);
+      }
+      MOCK_FACULTY = [newFaculty, ...MOCK_FACULTY.filter(f => f.id !== newId)];
+      return newFaculty;
+    } catch (error) {
+      console.error('Error creating faculty in Firestore:', error);
+      throw error;
+    }
   },
 
   async update(id: string, updates: Partial<Faculty>): Promise<Faculty> {
-    let updated: Faculty | null = null;
-    MOCK_FACULTY = MOCK_FACULTY.map(faculty => {
-      if (faculty.id === id) {
-        updated = {
-          ...faculty,
-          ...updates,
-          updatedAt: new Date().toISOString()
-        };
-        return updated;
+    try {
+      const existing = await this.getById(id);
+      const updated: Faculty = {
+        ...(existing || {
+          id,
+          name: '',
+          title: '',
+          image: '',
+          bio: '',
+          languages: [],
+          consultationLink: '',
+          registrationLink: ''
+        }),
+        ...updates,
+        id,
+        updatedAt: new Date().toISOString()
+      };
+
+      if (db) {
+        const docRef = doc(db, COLLECTION_NAME, id);
+        await setDoc(docRef, updated, { merge: true });
       }
-      return faculty;
-    });
 
-    if (!updated) {
-      throw new Error(`Faculty with id ${id} not found.`);
+      MOCK_FACULTY = MOCK_FACULTY.map(f => f.id === id ? updated : f);
+      if (!MOCK_FACULTY.some(f => f.id === id)) {
+        MOCK_FACULTY.push(updated);
+      }
+
+      return updated;
+    } catch (error) {
+      console.error(`Error updating faculty ${id} in Firestore:`, error);
+      throw error;
     }
-
-    return updated;
   },
 
   async delete(id: string): Promise<boolean> {
-    const initialLength = MOCK_FACULTY.length;
-    MOCK_FACULTY = MOCK_FACULTY.filter(faculty => faculty.id !== id);
-    return MOCK_FACULTY.length < initialLength;
+    try {
+      if (db) {
+        const docRef = doc(db, COLLECTION_NAME, id);
+        await deleteDoc(docRef);
+      }
+      MOCK_FACULTY = MOCK_FACULTY.filter(faculty => faculty.id !== id);
+      return true;
+    } catch (error) {
+      console.error(`Error deleting faculty ${id} from Firestore:`, error);
+      return false;
+    }
   }
 };
+

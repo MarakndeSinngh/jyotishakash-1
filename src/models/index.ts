@@ -5,5 +5,6 @@ export * from './media';
 export * from './websiteSettings';
 export * from './seo';
 export * from './mediaAsset';
+export * from './storageAsset';
 
 

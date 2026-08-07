@@ -1,10 +1,12 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Menu, X, ChevronDown, ArrowRight, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { BrandRegistry } from "../config/brandRegistry";
 import { useLanguage } from "../context/LanguageContext";
 import { LanguageSelector } from "./common/LanguageSelector";
 import { NavDropdownItem, NavItem } from "../config/types";
+import { websiteSettingsService } from "../services/websiteSettingsService";
+import { WebsiteSettings } from "../models/websiteSettings";
 
 interface NavbarProps {
   navigate: (path: string) => void;
@@ -15,17 +17,29 @@ const Navbar = ({ navigate, currentPath }: NavbarProps) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [expandedMobileItem, setExpandedMobileItem] = useState<string | null>(null);
+  const [settings, setSettings] = useState<WebsiteSettings | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const { t } = useLanguage();
 
-  // Load from the centralized Brand Registry
-  const brand = BrandRegistry.brand;
-  const assets = BrandRegistry.assets;
+  useEffect(() => {
+    websiteSettingsService.getSettings().then(setSettings).catch(console.error);
+  }, []);
+
+  // Load from websiteSettingsService with BrandRegistry fallback
+  const brand = {
+    name: settings?.websiteName || BrandRegistry.brand.name,
+    tagline: BrandRegistry.brand.tagline
+  };
+  const assets = {
+    logos: {
+      light: settings?.logoUrl || BrandRegistry.assets.logos.light,
+      dark: settings?.logoUrl || BrandRegistry.assets.logos.dark
+    }
+  };
   const desktopNav: NavItem[] = BrandRegistry.navigation.desktop;
   const mobileNav: NavItem[] = BrandRegistry.navigation.mobile;
-  const whatsappContact = BrandRegistry.contacts.find(c => c.id === 'ct_whatsapp');
-  const consultLink = whatsappContact ? whatsappContact.url : "https://wa.me/919953713176";
+  const consultLink = settings?.whatsappNumber ? `https://wa.me/${settings.whatsappNumber.replace(/\D/g, '')}` : "https://wa.me/919953713176";
 
   const handleNavigate = (path: string) => {
     navigate(path);

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Page, Section, Service, Testimonial } from './types/cms';
 import { cmsService } from './services/cmsService';
+import { websiteSettingsService } from './services/websiteSettingsService';
+import { WebsiteSettings } from './models/websiteSettings';
 import HeroSection from './components/sections/HeroSection';
 import TrustCredibilitySection from './components/sections/TrustCredibilitySection';
 import ServicesSection from './components/sections/ServicesSection';
@@ -50,8 +52,15 @@ export default function App() {
   const { theme, mode } = useTheme();
   const currentColors = THEME_COLORS[theme][mode];
   const [brand, setBrand] = useState(getActiveBrand());
+  const [settings, setSettings] = useState<WebsiteSettings | null>(null);
   const { activeAcademy } = useAcademy();
   const { t, setLanguage } = useLanguage();
+
+  useEffect(() => {
+    websiteSettingsService.getSettings().then(setSettings).catch(console.error);
+  }, []);
+
+  const appBrandName = settings?.websiteName || brand.name;
 
   // Keep brand configuration synchronized in real-time on path navigation
   useEffect(() => {
@@ -407,13 +416,13 @@ export default function App() {
           <div className="max-w-7xl mx-auto px-6">
             <div className="flex flex-col items-center gap-6">
               <div className="flex items-center gap-2">
-                <img src="/gemstone-assets/logo.jpg" alt="Leo Family" className="h-8 w-8 rounded-full object-cover grayscale opacity-50" />
+                <img src={settings?.logoUrl || "/gemstone-assets/logo.jpg"} alt={appBrandName} className="h-8 w-8 rounded-full object-cover grayscale opacity-50" />
                 <span className="font-semibold tracking-[0.3em] text-[10px] font-cinzel text-text-secondary uppercase">
-                  {brand.name}
+                  {appBrandName}
                 </span>
               </div>
               <p className="text-[10px] tracking-widest uppercase opacity-60 text-text-secondary">
-                © {new Date().getFullYear()} {brand.name}. {t('common.copyright', 'All rights reserved.')}
+                {settings?.footerCopyright || `© ${new Date().getFullYear()} ${appBrandName}. All rights reserved.`}
               </p>
             </div>
           </div>

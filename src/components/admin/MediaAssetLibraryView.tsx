@@ -21,7 +21,7 @@ import {
   ShieldCheck,
   ExternalLink
 } from 'lucide-react';
-import { mediaAssetService } from '../../services/mediaAssetService';
+import { storageService } from '../../services/storageService';
 import { MediaAsset } from '../../models/mediaAsset';
 
 export default function MediaAssetLibraryView() {
@@ -55,12 +55,12 @@ export default function MediaAssetLibraryView() {
 
   useEffect(() => {
     loadAssets();
-  }, []);
+  }, [selectedCategory]);
 
   async function loadAssets() {
     try {
       setLoading(true);
-      const data = await mediaAssetService.getAssets();
+      const data = await storageService.listAssets(selectedCategory);
       setAssets(data);
     } catch (err: any) {
       console.error('Failed to load media assets:', err);
@@ -79,7 +79,7 @@ export default function MediaAssetLibraryView() {
   const handleDelete = async (id: string) => {
     if (!window.confirm('Are you sure you want to delete this asset from the library?')) return;
     try {
-      await mediaAssetService.deleteAsset(id);
+      await storageService.deleteImage(id);
       setSuccessMessage('Media asset deleted successfully.');
       await loadAssets();
       if (selectedAsset?.id === id) {
@@ -97,7 +97,7 @@ export default function MediaAssetLibraryView() {
     const newUrl = prompt('Enter new replacement image/video URL:', asset.url);
     if (!newUrl) return;
     try {
-      await mediaAssetService.updateAsset(asset.id, { url: newUrl });
+      await storageService.replaceImage(asset.id, { url: newUrl });
       setSuccessMessage('Asset successfully replaced.');
       await loadAssets();
       if (selectedAsset && selectedAsset.id === asset.id) {
@@ -113,7 +113,7 @@ export default function MediaAssetLibraryView() {
   const handleUploadSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await mediaAssetService.createAsset({
+      await storageService.uploadImage({
         fileName: newAssetData.fileName,
         url: newAssetData.url,
         category: newAssetData.category,

@@ -83,7 +83,7 @@ export const facultyRepository = {
       return facultyList;
     } catch (error) {
       console.error('Error fetching faculty from Firestore:', error);
-      return [...MOCK_FACULTY];
+      throw error;
     }
   },
 
@@ -101,10 +101,10 @@ export const facultyRepository = {
           id: docSnap.id
         };
       }
-      return MOCK_FACULTY.find(f => f.id === id) || null;
+      return null;
     } catch (error) {
       console.error(`Error fetching faculty ${id} from Firestore:`, error);
-      return MOCK_FACULTY.find(f => f.id === id) || null;
+      throw error;
     }
   },
 
@@ -180,7 +180,7 @@ export const facultyRepository = {
       return true;
     } catch (error) {
       console.error(`Error deleting faculty ${id} from Firestore:`, error);
-      return false;
+      throw error;
     }
   }
 };

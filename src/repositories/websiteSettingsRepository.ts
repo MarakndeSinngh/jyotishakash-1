@@ -53,7 +53,7 @@ export const websiteSettingsRepository = {
         return { ...CURRENT_SETTINGS };
       }
     } catch (error) {
-      console.error('Error fetching website settings from Firestore:', error);
+      console.warn('Could not fetch website settings from Firestore, using local fallback settings:', error);
       return { ...CURRENT_SETTINGS };
     }
   },

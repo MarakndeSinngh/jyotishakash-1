@@ -11,12 +11,12 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:892277851353:web:7cf84c19d4ee788e33eac8"
 };
 
-const databaseId = import.meta.env.VITE_FIREBASE_FIRESTORE_DATABASE_ID || "getFirestore(app)";
+const databaseId = import.meta.env.VITE_FIREBASE_FIRESTORE_DATABASE_ID;
 
 if (!firebaseConfig.apiKey) {
   console.error('[Firebase Diagnostics] VITE_FIREBASE_API_KEY is missing or empty.');
 } else {
-  console.log('[Firebase Diagnostics] Initializing Firebase with Project ID:', firebaseConfig.projectId, 'and Database ID:', databaseId);
+  console.log('[Firebase Diagnostics] Initializing Firebase with Project ID:', firebaseConfig.projectId, 'and Database ID:', databaseId || '(default)');
 }
 
 export const app = getApps().length === 0 && firebaseConfig.apiKey 
@@ -24,7 +24,11 @@ export const app = getApps().length === 0 && firebaseConfig.apiKey
   : (getApps()[0] || null);
 
 export const auth = app ? getAuth(app) : null;
-export const db = app ? getFirestore(app, databaseId) : null;
+export const db = app 
+  ? databaseId 
+    ? getFirestore(app, databaseId) 
+    : getFirestore(app) 
+  : null;
 
 if (!auth) {
   console.error('[Firebase Diagnostics] Firebase Auth failed to initialize. auth is null.');

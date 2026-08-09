@@ -9,7 +9,8 @@ import { auth } from '../firebase/config';
 export const adminAuthService = {
   async signIn(email: string, password: string): Promise<User> {
     if (!auth) {
-      throw new Error('Firebase Auth is not initialized. Please check configuration.');
+      console.error('[AdminAuthService] Firebase Auth instance is null. Check .env.local and Firebase initialization.');
+      throw new Error('Firebase Auth is not initialized. Please ensure VITE_FIREBASE_* environment variables are set in .env.local and restart the server.');
     }
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     return userCredential.user;

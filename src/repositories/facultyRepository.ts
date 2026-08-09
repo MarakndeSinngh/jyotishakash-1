@@ -121,20 +121,58 @@ export const facultyRepository = {
       createdAt: faculty.createdAt || new Date().toISOString()
     };
 
+    const docPath = `${COLLECTION_NAME}/${newId}`;
+    const projectId = db?.app?.options?.projectId || 'N/A (db null)';
+    const isDbInitialized = Boolean(db);
+
+    console.log('[Faculty Save Diagnostic - CREATE] Starting setDoc', {
+      facultyId: newId,
+      docPath,
+      projectId,
+      isDbInitialized,
+      setDocStarting: true
+    });
+
     try {
       if (db) {
         const docRef = doc(db, COLLECTION_NAME, newId);
         await setDoc(docRef, newFaculty);
+        console.log('[Faculty Save Diagnostic - CREATE] setDoc SUCCEEDED', {
+          facultyId: newId,
+          docPath,
+          projectId
+        });
+      } else {
+        console.warn('[Faculty Save Diagnostic - CREATE] db is null, setDoc skipped');
       }
       MOCK_FACULTY = [newFaculty, ...MOCK_FACULTY.filter(f => f.id !== newId)];
       return newFaculty;
-    } catch (error) {
-      console.error('Error creating faculty in Firestore:', error);
+    } catch (error: any) {
+      console.error('[Faculty Save Diagnostic - CREATE] setDoc FAILED', {
+        facultyId: newId,
+        docPath,
+        projectId,
+        errorCode: error?.code,
+        errorMessage: error?.message,
+        error
+      });
       throw error;
     }
   },
 
   async update(id: string, updates: Partial<Faculty>): Promise<Faculty> {
+    const docPath = `${COLLECTION_NAME}/${id}`;
+    const projectId = db?.app?.options?.projectId || 'N/A (db null)';
+    const isDbInitialized = Boolean(db);
+
+    console.log('[Faculty Save Diagnostic - UPDATE] Starting setDoc', {
+      facultyId: id,
+      docPath,
+      projectId,
+      isDbInitialized,
+      setDocStarting: true
+    });
+
     try {
       const existing = await this.getById(id);
       const updated: Faculty = {
@@ -156,6 +194,13 @@ export const facultyRepository = {
       if (db) {
         const docRef = doc(db, COLLECTION_NAME, id);
         await setDoc(docRef, updated, { merge: true });
+        console.log('[Faculty Save Diagnostic - UPDATE] setDoc SUCCEEDED', {
+          facultyId: id,
+          docPath,
+          projectId
+        });
+      } else {
+        console.warn('[Faculty Save Diagnostic - UPDATE] db is null, setDoc skipped');
       }
 
       MOCK_FACULTY = MOCK_FACULTY.map(f => f.id === id ? updated : f);
@@ -164,8 +209,15 @@ export const facultyRepository = {
       }
 
       return updated;
-    } catch (error) {
-      console.error(`Error updating faculty ${id} in Firestore:`, error);
+    } catch (error: any) {
+      console.error('[Faculty Save Diagnostic - UPDATE] setDoc FAILED', {
+        facultyId: id,
+        docPath,
+        projectId,
+        errorCode: error?.code,
+        errorMessage: error?.message,
+        error
+      });
       throw error;
     }
   },

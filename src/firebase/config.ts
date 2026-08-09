@@ -3,15 +3,15 @@ import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyAWq9p2oo_ZlHuHaWKIQDHZ0m5RJEoetIQ",
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "gen-lang-client-0035321266.firebaseapp.com",
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "gen-lang-client-0035321266",
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "gen-lang-client-0035321266.firebasestorage.app",
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "979849969657",
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:979849969657:web:75b61ca845cb72960ec728"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyBHJTO_X6004-K3SIFOXmiFwMBfYjgxFUQ",
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "leo-family-platform.firebaseapp.com",
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "leo-family-platform",
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "leo-family-platform.firebasestorage.app",
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "892277851353",
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:892277851353:web:7cf84c19d4ee788e33eac8"
 };
 
-const databaseId = import.meta.env.VITE_FIREBASE_FIRESTORE_DATABASE_ID || "ai-studio-remixleofamilyal-e5f38b4f-549e-4b53-a903-8142b9c43e41";
+const databaseId = import.meta.env.VITE_FIREBASE_FIRESTORE_DATABASE_ID || "getFirestore(app)";
 
 if (!firebaseConfig.apiKey) {
   console.error('[Firebase Diagnostics] VITE_FIREBASE_API_KEY is missing or empty.');

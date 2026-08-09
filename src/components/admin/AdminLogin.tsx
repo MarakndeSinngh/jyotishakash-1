@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Lock, Mail, ShieldCheck, Sparkles, ArrowRight } from 'lucide-react';
+import { adminAuthService } from '../../services/adminAuthService';
 
 interface AdminLoginProps {
   onLoginSuccess: () => void;
@@ -7,24 +8,33 @@ interface AdminLoginProps {
 
 export default function AdminLogin({ onLoginSuccess }: AdminLoginProps) {
   const [email, setEmail] = useState('admin@leofamily.com');
-  const [password, setPassword] = useState('••••••••');
+  const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
 
-    setTimeout(() => {
-      if (email && password) {
-        localStorage.setItem('leo_admin_auth', 'true');
-        onLoginSuccess();
-      } else {
-        setError('Please enter valid credentials.');
+    try {
+      await adminAuthService.signIn(email, password);
+      onLoginSuccess();
+    } catch (err: any) {
+      console.error('Admin login error:', err);
+      let message = 'Failed to sign in. Please check your credentials.';
+      const code = err?.code;
+      if (code === 'auth/invalid-credential' || code === 'auth/user-not-found' || code === 'auth/wrong-password') {
+        message = 'Invalid email or password.';
+      } else if (code === 'auth/too-many-requests') {
+        message = 'Access temporarily blocked due to too many failed login attempts. Please try again later.';
+      } else if (err?.message) {
+        message = err.message;
       }
+      setError(message);
+    } finally {
       setIsLoading(false);
-    }, 800);
+    }
   };
 
   return (

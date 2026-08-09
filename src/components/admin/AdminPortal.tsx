@@ -16,6 +16,8 @@ import {
   ChevronRight,
   Sparkles
 } from 'lucide-react';
+import { User } from 'firebase/auth';
+import { adminAuthService } from '../../services/adminAuthService';
 import AdminLogin from './AdminLogin';
 import DashboardView from './DashboardView';
 import LiveWebinarView from './LiveWebinarView';
@@ -34,20 +36,38 @@ interface AdminPortalProps {
 export type AdminTab = 'dashboard' | 'webinar' | 'programs' | 'media' | 'testimonials' | 'faculty' | 'settings' | 'seo';
 
 export default function AdminPortal({ navigate }: AdminPortalProps) {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
-    return localStorage.getItem('leo_admin_auth') === 'true';
-  });
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const [activeTab, setActiveTab] = useState<AdminTab>('dashboard');
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
-  const handleLogout = () => {
-    localStorage.removeItem('leo_admin_auth');
-    setIsAuthenticated(false);
+  useEffect(() => {
+    const unsubscribe = adminAuthService.onAuthStateChange((firebaseUser) => {
+      setUser(firebaseUser);
+      setLoading(false);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      await adminAuthService.signOut();
+    } catch (err) {
+      console.error('Logout error:', err);
+    }
   };
 
-  if (!isAuthenticated) {
-    return <AdminLogin onLoginSuccess={() => setIsAuthenticated(true)} />;
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-stone-50 flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-amber-600 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <AdminLogin onLoginSuccess={() => {}} />;
   }
 
   const menuItems = [
@@ -199,7 +219,7 @@ export default function AdminPortal({ navigate }: AdminPortalProps) {
             <div className="flex items-center gap-3">
               <div className="text-right hidden md:block">
                 <div className="text-xs font-bold text-stone-900">Master Admin</div>
-                <div className="text-[11px] text-stone-500">admin@leofamily.com</div>
+                <div className="text-[11px] text-stone-500">{user.email || 'admin@leofamily.com'}</div>
               </div>
               <div className="w-9 h-9 rounded-full bg-amber-600/10 text-amber-800 font-bold flex items-center justify-center text-xs border border-amber-500/30">
                 MA

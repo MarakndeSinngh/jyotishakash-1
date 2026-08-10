@@ -31,7 +31,10 @@ export default function LandingHero({
   const { activeAcademy } = useAcademy();
   const { language, t } = useLanguage();
 
-  const whatsappUrl = activeAcademy?.contactDetails?.whatsapp || WHATSAPP_LINK;
+  const isRaajeev = activeAcademy?.slug?.toLowerCase() === 'raajeev' || activeAcademy?.id === 'raajeev';
+  const whatsappUrl = isRaajeev
+    ? 'https://chat.whatsapp.com/Lw4d2fwc9uX2VpLjDn1sgo'
+    : (activeAcademy?.contactDetails?.whatsapp || WHATSAPP_LINK);
 
   const getNextBatchDate = (): Date => {
     if (activeAcademy?.id === 'raajeev' || activeAcademy?.id === 'sannjoy') {

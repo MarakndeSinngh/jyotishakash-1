@@ -16,7 +16,7 @@ import {
   EyeOff
 } from 'lucide-react';
 import { Faculty } from '../../models/faculty';
-import { facultyService } from '../../services/facultyService';
+import { supabaseFacultyRepository } from '../../repositories/supabaseFacultyRepository';
 
 export default function FacultyView() {
   const [facultyList, setFacultyList] = useState<Faculty[]>([]);
@@ -48,10 +48,11 @@ export default function FacultyView() {
   const loadFaculty = async () => {
     try {
       setLoading(true);
-      const data = await facultyService.getAllFaculty();
+      const data = await supabaseFacultyRepository.getAll();
       setFacultyList(data);
     } catch (err) {
-      console.error('Failed to load faculty:', err);
+      console.error('Failed to load faculty from Supabase:', err);
+      showNotification('Failed to load faculty from Supabase.');
     } finally {
       setLoading(false);
     }
@@ -88,60 +89,14 @@ export default function FacultyView() {
     setIsModalOpen(true);
   };
 
-  const handleDelete = async (id: string) => {
-    if (confirm('Are you sure you want to delete this faculty member?')) {
-      try {
-        await facultyService.deleteFaculty(id);
-        await loadFaculty();
-        showNotification('Faculty member deleted successfully.');
-      } catch (err) {
-        console.error('Failed to delete faculty:', err);
-        alert('Failed to delete faculty member.');
-      }
-    }
+  const handleDelete = async (_id: string) => {
+    alert('Faculty mutations are currently in Read-Only mode during Supabase migration phase.');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name || !formData.title) {
-      alert('Please fill in Name and Title.');
-      return;
-    }
-
-    const parsedLanguages = languagesInput.split(',').map(l => l.trim()).filter(Boolean);
-
-    try {
-      if (editingFaculty) {
-        await facultyService.updateFaculty(editingFaculty.id, {
-          ...formData,
-          languages: parsedLanguages
-        });
-        showNotification(`Faculty member "${formData.name}" updated successfully.`);
-      } else {
-        const newFaculty: Faculty = {
-          id: `faculty-${Date.now()}`,
-          name: formData.name || 'New Mentor',
-          title: formData.title || 'Master Numerologist',
-          image: formData.image || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=800',
-          bio: formData.bio || '',
-          languages: parsedLanguages.length ? parsedLanguages : ['English'],
-          consultationLink: formData.consultationLink || 'https://leofamily.com/consult',
-          registrationLink: formData.registrationLink || 'https://leofamily.com/webinar',
-          facebookUrl: formData.facebookUrl || '',
-          youtubeUrl: formData.youtubeUrl || '',
-          displayOrder: Number(formData.displayOrder) || 1,
-          active: formData.active !== false
-        };
-        await facultyService.saveFaculty(newFaculty);
-        showNotification('New faculty member created successfully.');
-      }
-
-      setIsModalOpen(false);
-      await loadFaculty();
-    } catch (err) {
-      console.error('Failed to save faculty:', err);
-      alert('Failed to save faculty member.');
-    }
+    alert('Faculty mutations are currently in Read-Only mode during Supabase migration phase.');
+    setIsModalOpen(false);
   };
 
   return (

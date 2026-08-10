@@ -43,12 +43,19 @@ export default function StickyFloatingCTA({ currentPath }: StickyFloatingCTAProp
 
   if (!shouldRender) return null;
 
-  // Centralized Registration URL from Academy Config / Teacher Registry
-  const registrationUrl =
-    activeAcademy?.contactDetails?.whatsapp ||
-    (activeAcademy?.contactDetails?.phone
-      ? `https://wa.me/${activeAcademy.contactDetails.phone.replace(/[^0-9]/g, '')}`
-      : 'https://chat.whatsapp.com/HOUZ3rmuigF32SjOVco8B2?s=sh&p=a&ilr=1');
+  const isRaajeev = activeAcademy?.slug?.toLowerCase() === 'raajeev';
+
+  const registrationUrl = isRaajeev
+    ? 'https://chat.whatsapp.com/Lw4d2fwc9uX2VpLjDn1sgo'
+    : (activeAcademy?.contactDetails?.whatsapp ||
+      (activeAcademy?.contactDetails?.phone
+        ? `https://wa.me/${activeAcademy.contactDetails.phone.replace(/[^0-9]/g, '')}`
+        : 'https://chat.whatsapp.com/HOUZ3rmuigF32SjOVco8B2?s=sh&p=a&ilr=1'));
+
+  const ctaButtonText = isRaajeev ? 'JOIN WHATSAPP GROUP' : t('cta.buttonText', 'Reserve My Free Seat');
+  const ctaTitle = isRaajeev ? 'JOIN OUR OFFICIAL WHATSAPP GROUP' : t('cta.reserveTitle', 'Reserve Your Free Seat');
+  const ctaTag = isRaajeev ? '🎓 OFFICIAL WHATSAPP GROUP' : '🎓 FREE LIVE MASTERCLASS';
+  const ctaBadge = isRaajeev ? 'COMMUNITY' : 'LIMITED SEATS';
 
   const instructorTitle = activeAcademy?.instructorName 
     ? `${activeAcademy.instructorName}'s Masterclass`
@@ -75,16 +82,18 @@ export default function StickyFloatingCTA({ currentPath }: StickyFloatingCTAProp
                 <div className="flex items-center gap-3 min-w-0">
                   <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#D4AF37]/15 border border-[#D4AF37]/30 text-[#F3E5AB] text-[11px] font-bold uppercase tracking-wider font-mono shrink-0 shadow-sm">
                     <Sparkles className="w-3.5 h-3.5 text-[#D4AF37] animate-pulse" />
-                    <span>🎓 FREE LIVE MASTERCLASS</span>
+                    <span>{ctaTag}</span>
                   </span>
 
                   <div className="flex items-center gap-2 truncate">
                     <span className="text-sm font-extrabold font-cinzel text-text-primary truncate">
-                      {t('cta.reserveTitle', 'Reserve Your Free Seat')}
+                      {ctaTitle}
                     </span>
-                    <span className="text-xs text-text-secondary font-sans hidden xl:inline">
-                      • {instructorTitle}
-                    </span>
+                    {!isRaajeev && (
+                      <span className="text-xs text-text-secondary font-sans hidden xl:inline">
+                        • {instructorTitle}
+                      </span>
+                    )}
                   </div>
                 </div>
 
@@ -92,7 +101,7 @@ export default function StickyFloatingCTA({ currentPath }: StickyFloatingCTAProp
                 <div className="flex items-center gap-4 shrink-0">
                   <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-bold tracking-widest uppercase font-mono">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
-                    <span>LIMITED SEATS</span>
+                    <span>{ctaBadge}</span>
                   </div>
 
                   <a
@@ -102,7 +111,7 @@ export default function StickyFloatingCTA({ currentPath }: StickyFloatingCTAProp
                     className="group relative inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#B8860B] text-black font-extrabold text-xs uppercase tracking-wider shadow-[0_0_20px_rgba(212,175,55,0.35)] hover:shadow-[0_0_30px_rgba(212,175,55,0.65)] hover:scale-[1.03] active:scale-95 transition-all duration-200 cursor-pointer overflow-hidden"
                   >
                     <span className="relative z-10 font-bold">
-                      {t('cta.buttonText', 'Reserve My Free Seat')}
+                      {ctaButtonText}
                     </span>
                     <ArrowRight className="w-4 h-4 text-black relative z-10 group-hover:translate-x-0.5 transition-transform shrink-0" />
                   </a>
@@ -128,10 +137,10 @@ export default function StickyFloatingCTA({ currentPath }: StickyFloatingCTAProp
               <div className="flex flex-col min-w-0">
                 <div className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-[#D4AF37] font-mono">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  <span>🎓 FREE MASTERCLASS</span>
+                  <span>{ctaTag}</span>
                 </div>
                 <span className="text-xs font-bold text-text-primary font-cinzel truncate mt-0.5">
-                  {t('cta.reserveTitle', 'Reserve Your Free Seat')}
+                  {ctaTitle}
                 </span>
               </div>
 
@@ -142,7 +151,7 @@ export default function StickyFloatingCTA({ currentPath }: StickyFloatingCTAProp
                 rel="noopener noreferrer"
                 className="flex-1 max-w-[210px] py-3 px-4 rounded-full bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#B8860B] text-black font-extrabold text-xs uppercase tracking-wider text-center shadow-[0_0_20px_rgba(212,175,55,0.4)] hover:shadow-[0_0_30px_rgba(212,175,55,0.7)] active:scale-95 transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer shrink-0"
               >
-                <span className="truncate font-extrabold">{t('cta.buttonText', 'Reserve My Free Seat')}</span>
+                <span className="truncate font-extrabold">{ctaButtonText}</span>
                 <ArrowRight className="w-4 h-4 text-black shrink-0" />
               </a>
 

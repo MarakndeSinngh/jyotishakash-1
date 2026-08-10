@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
 const getEnv = (key: string): string => {
   try {
@@ -16,13 +16,28 @@ const getEnv = (key: string): string => {
   return '';
 };
 
-const supabaseUrl = getEnv('VITE_SUPABASE_URL') || 'https://placeholder.supabase.co';
-const supabaseAnonKey = getEnv('VITE_SUPABASE_ANON_KEY') || 'placeholder-anon-key';
+const supabaseUrl = getEnv('VITE_SUPABASE_URL');
+const supabaseAnonKey = getEnv('VITE_SUPABASE_ANON_KEY');
 
-if (!getEnv('VITE_SUPABASE_URL') || !getEnv('VITE_SUPABASE_ANON_KEY')) {
-  console.warn('[Supabase Diagnostics] VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY is missing. Using placeholder client.');
-} else {
+let supabaseInstance: SupabaseClient | null = null;
+
+if (supabaseUrl && supabaseAnonKey) {
   console.log('[Supabase Diagnostics] Initializing Supabase client with URL:', supabaseUrl);
+  supabaseInstance = createClient(supabaseUrl, supabaseAnonKey);
+} else {
+  console.warn('[Supabase Diagnostics] VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY is missing. Supabase client is uninitialized.');
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+const createDummyClient = () => {
+  return new Proxy({} as SupabaseClient, {
+    get(target, prop) {
+      return (...args: any[]) => {
+        console.error(`[Supabase Error] Attempted to call supabase.${String(prop)}, but VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY are not configured.`);
+        throw new Error('Supabase is not configured. Please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY environment variables.');
+      };
+    }
+  });
+};
+
+export const supabase: SupabaseClient = supabaseInstance || createDummyClient();
+

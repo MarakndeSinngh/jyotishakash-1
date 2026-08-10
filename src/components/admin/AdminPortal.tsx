@@ -16,7 +16,7 @@ import {
   ChevronRight,
   Sparkles
 } from 'lucide-react';
-import { User } from 'firebase/auth';
+import { User as SupabaseUser } from '@supabase/supabase-js';
 import { adminAuthService } from '../../services/adminAuthService';
 import AdminLogin from './AdminLogin';
 import DashboardView from './DashboardView';
@@ -36,18 +36,22 @@ interface AdminPortalProps {
 export type AdminTab = 'dashboard' | 'webinar' | 'programs' | 'media' | 'testimonials' | 'faculty' | 'settings' | 'seo';
 
 export default function AdminPortal({ navigate }: AdminPortalProps) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<SupabaseUser | null>(null);
   const [loading, setLoading] = useState(true);
 
   const [activeTab, setActiveTab] = useState<AdminTab>('dashboard');
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   useEffect(() => {
-    const unsubscribe = adminAuthService.onAuthStateChange((firebaseUser) => {
-      setUser(firebaseUser);
+    const unsubscribe = adminAuthService.onAuthStateChange((supabaseUser) => {
+      setUser(supabaseUser);
       setLoading(false);
     });
-    return () => unsubscribe();
+    return () => {
+      if (typeof unsubscribe === 'function') {
+        unsubscribe();
+      }
+    };
   }, []);
 
   const handleLogout = async () => {
@@ -210,7 +214,7 @@ export default function AdminPortal({ navigate }: AdminPortalProps) {
           <div className="flex items-center gap-3">
             <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 text-amber-800 text-xs font-medium border border-amber-200">
               <Sparkles className="w-3.5 h-3.5 text-amber-600" />
-              Firebase Auth Ready
+              Supabase Auth Active
             </div>
 
             <div className="h-6 w-px bg-stone-200 hidden sm:block" />

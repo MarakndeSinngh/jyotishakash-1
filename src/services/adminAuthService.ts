@@ -1,56 +1,65 @@
-import { 
-  signInWithEmailAndPassword, 
-  signOut as fbSignOut, 
-  onAuthStateChanged, 
-  User 
-} from 'firebase/auth';
-import { auth } from '../firebase/config';
 import { supabase } from '../lib/supabaseClient';
+import { User as SupabaseUser } from '@supabase/supabase-js';
 
 export const adminAuthService = {
-  async signIn(email: string, password: string): Promise<User> {
-    if (!auth) {
-      console.error('[AdminAuthService] Firebase Auth instance is null. Check .env.local and Firebase initialization.');
-      throw new Error('Firebase Auth is not initialized. Please ensure VITE_FIREBASE_* environment variables are set in .env.local and restart the server.');
-    }
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+  async signIn(email: string, password: string): Promise<SupabaseUser> {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password
+    });
 
-    // Also authenticate with Supabase Auth for RLS faculty updates
+    if (error) {
+      throw error;
+    }
+
+    if (!data.user) {
+      throw new Error('Sign in failed: No user returned.');
+    }
+
+    // Verify admin authorization in public.admin_users using user_id
     try {
-      const { error: sbError } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      });
-      if (sbError) {
-        console.warn('[AdminAuthService] Supabase Auth sign-in warning:', sbError.message);
+      const { data: adminRecord, error: adminError } = await supabase
+        .from('admin_users')
+        .select('*')
+        .eq('user_id', data.user.id)
+        .single();
+
+      if (adminError || !adminRecord) {
+        await supabase.auth.signOut();
+        throw new Error('You are not authorized to access the admin portal.');
       }
-    } catch (sbErr) {
-      console.warn('[AdminAuthService] Supabase Auth sign-in exception:', sbErr);
+    } catch (err: any) {
+      await supabase.auth.signOut();
+      throw new Error(err.message || 'You are not authorized to access the admin portal.');
     }
 
-    return userCredential.user;
+    return data.user;
   },
 
   async signOut(): Promise<void> {
-    if (auth) {
-      await fbSignOut(auth);
-    }
-    try {
-      await supabase.auth.signOut();
-    } catch (e) {
-      console.warn('[AdminAuthService] Supabase signOut warning:', e);
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.warn('[AdminAuthService] Supabase signOut error:', error);
     }
   },
 
-  onAuthStateChange(callback: (user: User | null) => void) {
-    if (!auth) {
-      callback(null);
-      return () => {};
-    }
-    return onAuthStateChanged(auth, callback);
+  onAuthStateChange(callback: (user: SupabaseUser | null) => void) {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      callback(session?.user ?? null);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      callback(session?.user ?? null);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   },
 
-  getCurrentUser(): User | null {
-    return auth?.currentUser || null;
+  async getCurrentUser(): Promise<SupabaseUser | null> {
+    const { data: { session } } = await supabase.auth.getSession();
+    return session?.user ?? null;
   }
 };
+

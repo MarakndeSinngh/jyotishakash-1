@@ -346,7 +346,7 @@ export default function AcademySection({ initialSlug }: AcademySectionProps) {
 
               <div className="pt-2">
                 <a
-                  href="https://chat.whatsapp.com/Lw4d2fwc9uX2VpLjDn1sgo"
+                  href="https://chat.whatsapp.com/JSJ1cD0uUS2AYNabbH8IC3"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-3 px-8 py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold uppercase tracking-wider text-xs sm:text-sm rounded-xl shadow-lg hover:shadow-emerald-600/30 transition-all duration-300 transform hover:-translate-y-0.5 cursor-pointer"

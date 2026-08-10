@@ -56,7 +56,7 @@ export default function StickyFloatingCTA({ currentPath }: StickyFloatingCTAProp
   if (!shouldRender) return null;
 
   const registrationUrl = isRaajeev
-    ? 'https://chat.whatsapp.com/Lw4d2fwc9uX2VpLjDn1sgo'
+    ? 'https://chat.whatsapp.com/JSJ1cD0uUS2AYNabbH8IC3'
     : (activeAcademy?.contactDetails?.whatsapp ||
       (activeAcademy?.contactDetails?.phone
         ? `https://wa.me/${activeAcademy.contactDetails.phone.replace(/[^0-9]/g, '')}`

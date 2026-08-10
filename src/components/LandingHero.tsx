@@ -33,7 +33,7 @@ export default function LandingHero({
 
   const isRaajeev = activeAcademy?.slug?.toLowerCase() === 'raajeev' || activeAcademy?.id === 'raajeev';
   const whatsappUrl = isRaajeev
-    ? 'https://chat.whatsapp.com/Lw4d2fwc9uX2VpLjDn1sgo'
+    ? 'https://chat.whatsapp.com/JSJ1cD0uUS2AYNabbH8IC3'
     : (activeAcademy?.contactDetails?.whatsapp || WHATSAPP_LINK);
 
   const getNextBatchDate = (): Date => {

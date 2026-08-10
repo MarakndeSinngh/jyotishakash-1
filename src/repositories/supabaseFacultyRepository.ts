@@ -137,5 +137,83 @@ export const supabaseFacultyRepository = {
       console.error(`Failed to update faculty ${id} in Supabase:`, error);
       throw error;
     }
+  },
+
+  async create(faculty: Omit<Faculty, 'createdAt' | 'updatedAt'>): Promise<Faculty> {
+    try {
+      const baseSlug = faculty.name ? faculty.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') : 'faculty';
+      const generatedId = faculty.id || `${baseSlug}_${Date.now().toString().slice(-6)}`;
+
+      const dbPayload = {
+        id: generatedId,
+        name: faculty.name,
+        title: faculty.title,
+        image: faculty.image,
+        description: faculty.bio,
+        languages: Array.isArray(faculty.languages) ? faculty.languages.join(', ') : faculty.languages,
+        consultation_link: faculty.consultationLink,
+        registration_link: faculty.registrationLink,
+        facebook_url: faculty.facebookUrl,
+        youtube_url: faculty.youtubeUrl,
+        display_order: faculty.displayOrder ?? 1,
+        is_active: faculty.active !== false,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+
+      const { data, error } = await supabase
+        .from('faculty')
+        .insert([dbPayload])
+        .select();
+
+      if (error) {
+        console.error('Error creating faculty in Supabase:', error);
+        throw error;
+      }
+
+      if (!data || data.length === 0) {
+        throw new Error('Failed to create faculty record.');
+      }
+
+      const row = data[0];
+      return {
+        id: row.id,
+        name: row.name,
+        title: row.title,
+        image: row.image,
+        bio: row.description,
+        languages: typeof row.languages === 'string' 
+          ? row.languages.split('&').map((l: string) => l.trim()).flatMap((l: string) => l.split(',').map((x: string) => x.trim()))
+          : Array.isArray(row.languages) ? row.languages : ['English', 'Hindi'],
+        consultationLink: row.consultation_link || `https://leofamily.com/consult/${row.id}`,
+        registrationLink: row.registration_link || `https://leofamily.com/webinar/${row.id}`,
+        facebookUrl: row.facebook_url || '',
+        youtubeUrl: row.youtube_url || '',
+        displayOrder: row.display_order ?? 0,
+        active: row.is_active ?? true,
+        createdAt: row.created_at,
+        updatedAt: row.updated_at
+      };
+    } catch (error) {
+      console.error('Failed to create faculty in Supabase:', error);
+      throw error;
+    }
+  },
+
+  async delete(id: string): Promise<void> {
+    try {
+      const { error } = await supabase
+        .from('faculty')
+        .delete()
+        .eq('id', id);
+
+      if (error) {
+        console.error(`Error deleting faculty ${id} from Supabase:`, error);
+        throw error;
+      }
+    } catch (error) {
+      console.error(`Failed to delete faculty ${id} from Supabase:`, error);
+      throw error;
+    }
   }
 };

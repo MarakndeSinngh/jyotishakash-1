@@ -89,36 +89,65 @@ export default function FacultyView() {
     setIsModalOpen(true);
   };
 
-  const handleDelete = async (_id: string) => {
-    alert('Faculty mutations are currently in Read-Only mode during Supabase migration phase.');
+  const handleDelete = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this faculty member?')) return;
+    try {
+      setLoading(true);
+      await supabaseFacultyRepository.delete(id);
+      showNotification('Faculty member deleted successfully.');
+      await loadFaculty();
+    } catch (err: any) {
+      console.error('Failed to delete faculty from Supabase:', err);
+      alert('Failed to delete faculty member. Ensure you are signed in as an admin via Supabase Auth.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!editingFaculty) {
-      alert('Adding new faculty is not enabled in Phase 3A.');
-      setIsModalOpen(false);
-      return;
-    }
-
     try {
       setLoading(true);
       const parsedLanguages = languagesInput.split(',').map(l => l.trim()).filter(Boolean);
-      await supabaseFacultyRepository.update(editingFaculty.id, {
-        name: formData.name,
-        title: formData.title,
-        image: formData.image,
-        bio: formData.bio,
-        languages: parsedLanguages,
-        displayOrder: Number(formData.displayOrder) || 1,
-        active: formData.active !== false
-      });
-      showNotification(`Faculty member "${formData.name}" updated successfully.`);
+
+      if (editingFaculty) {
+        await supabaseFacultyRepository.update(editingFaculty.id, {
+          name: formData.name,
+          title: formData.title,
+          image: formData.image,
+          bio: formData.bio,
+          languages: parsedLanguages,
+          consultationLink: formData.consultationLink,
+          registrationLink: formData.registrationLink,
+          facebookUrl: formData.facebookUrl,
+          youtubeUrl: formData.youtubeUrl,
+          displayOrder: Number(formData.displayOrder) || 1,
+          active: formData.active !== false
+        });
+        showNotification(`Faculty member "${formData.name}" updated successfully.`);
+      } else {
+        await supabaseFacultyRepository.create({
+          id: `faculty_${Date.now()}`,
+          name: formData.name || 'New Faculty',
+          title: formData.title || 'Mentor',
+          image: formData.image || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=800',
+          bio: formData.bio || '',
+          languages: parsedLanguages,
+          consultationLink: formData.consultationLink || '',
+          registrationLink: formData.registrationLink || '',
+          facebookUrl: formData.facebookUrl || '',
+          youtubeUrl: formData.youtubeUrl || '',
+          displayOrder: Number(formData.displayOrder) || (facultyList.length + 1),
+          active: formData.active !== false
+        });
+        showNotification(`Faculty member "${formData.name}" created successfully.`);
+      }
+
       setIsModalOpen(false);
       await loadFaculty();
     } catch (err: any) {
-      console.error('Failed to update faculty in Supabase:', err);
-      alert('Failed to update faculty member. Note: Supabase RLS policy requires an authenticated session for updates.');
+      console.error('Failed to save faculty in Supabase:', err);
+      alert('Failed to save faculty member. Note: Supabase RLS policy requires an authenticated admin session.');
     } finally {
       setLoading(false);
     }

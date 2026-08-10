@@ -22,14 +22,14 @@ export default function AdminLogin({ onLoginSuccess }: AdminLoginProps) {
       onLoginSuccess();
     } catch (err: any) {
       console.error('Admin login error:', err);
-      let message = 'Failed to sign in. Please check your credentials.';
-      const code = err?.code;
-      if (code === 'auth/invalid-credential' || code === 'auth/user-not-found' || code === 'auth/wrong-password') {
+      let message = 'Unable to sign in. Please try again.';
+      const errMessage = err?.message || '';
+      if (errMessage.includes('Invalid login credentials') || errMessage.includes('Invalid email or password')) {
         message = 'Invalid email or password.';
-      } else if (code === 'auth/too-many-requests') {
-        message = 'Access temporarily blocked due to too many failed login attempts. Please try again later.';
-      } else if (err?.message) {
-        message = err.message;
+      } else if (errMessage.includes('not authorized')) {
+        message = 'You are not authorized to access the admin portal.';
+      } else if (errMessage) {
+        message = errMessage;
       }
       setError(message);
     } finally {
@@ -135,7 +135,7 @@ export default function AdminLogin({ onLoginSuccess }: AdminLoginProps) {
 
         <div className="mt-8 pt-6 border-t border-stone-100 text-center">
           <p className="text-xs text-stone-400">
-            Protected by LEO Family Security & Firebase Auth Ready
+            Protected by LEO Family Security & Supabase Auth
           </p>
           <div className="mt-3">
             <a

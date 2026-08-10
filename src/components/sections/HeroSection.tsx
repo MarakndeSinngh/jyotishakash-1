@@ -7,6 +7,8 @@ import { WHATSAPP_LINK, SOCIAL_LINKS } from '../../constants/contacts';
 import { BrandRegistry } from '../../config/brandRegistry';
 import { useAcademy } from '../../context/AcademyContext';
 import { useLanguage } from '../../context/LanguageContext';
+import { facultyService } from '../../services/facultyService';
+import { Faculty } from '../../models/faculty';
 import { 
   Sparkles, 
   Star, 
@@ -28,50 +30,6 @@ interface HeroSectionProps {
   section?: Section;
 }
 
-interface MentorShowcaseItem {
-  id: string;
-  slug: string;
-  name: string;
-  title: string;
-  roleBadge: string;
-  image: string;
-  fallbackImage: string;
-  accentColor: string;
-}
-
-const MENTORS_SHOWCASE: MentorShowcaseItem[] = [
-  {
-    id: 'raajeev',
-    slug: 'raajeev',
-    name: 'Raajeev Singh Chauhann',
-    title: 'Founder & Visionary',
-    roleBadge: '👑 Founder',
-    image: Assets.founder.image,
-    fallbackImage: Assets.founder.image,
-    accentColor: 'from-amber-500/20 to-yellow-500/10'
-  },
-  {
-    id: 'shaunak',
-    slug: 'shaunak',
-    name: 'Shaunak S. Patthak',
-    title: 'Astro-Vastu Grandmaster',
-    roleBadge: '🎓 Senior Faculty',
-    image: Assets.teachers.shaunak.image,
-    fallbackImage: Assets.teachers.shaunak.image,
-    accentColor: 'from-purple-500/20 to-indigo-500/10'
-  },
-  {
-    id: 'sannjoy',
-    slug: 'sannjoy',
-    name: 'Sannjoy Biswass',
-    title: 'Master Numerologist',
-    roleBadge: '🎓 Senior Faculty',
-    image: Assets.teachers.sannjoy.image,
-    fallbackImage: Assets.teachers.sannjoy.image,
-    accentColor: 'from-emerald-500/20 to-teal-500/10'
-  }
-];
-
 const FLOATING_STATS = [
   { value: '100K+', label: 'Students', sublabel: 'Empowered Globally' },
   { value: '10+', label: 'Countries', sublabel: 'International Alumni' },
@@ -80,6 +38,7 @@ const FLOATING_STATS = [
 
 const HeroSection: React.FC<HeroSectionProps> = () => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [mentors, setMentors] = useState<Faculty[]>([]);
   const { switchAcademy } = useAcademy();
   const { t } = useLanguage();
 
@@ -92,6 +51,12 @@ const HeroSection: React.FC<HeroSectionProps> = () => {
     };
     window.addEventListener('mousemove', handleMouseMove);
     return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
+  useEffect(() => {
+    facultyService.getAllFaculty()
+      .then(setMentors)
+      .catch(err => console.error('Failed to load active faculty in HeroSection:', err));
   }, []);
 
   const trustLinks = [
@@ -336,9 +301,11 @@ const HeroSection: React.FC<HeroSectionProps> = () => {
                 </span>
               </div>
 
-              {/* 3 Mentors Side By Side */}
+              {/* Mentors Side By Side */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-5">
-                {MENTORS_SHOWCASE.map((mentor, index) => (
+                {mentors.map((mentor, index) => {
+                  const roleBadge = mentor.id === 'raajeev' || mentor.title.toLowerCase().includes('founder') ? '👑 Founder' : '🎓 Senior Faculty';
+                  return (
                   <motion.div
                     key={mentor.id}
                     whileHover={{ y: -8 }}
@@ -359,7 +326,7 @@ const HeroSection: React.FC<HeroSectionProps> = () => {
 
                     {/* Role Badge */}
                     <span className="text-[9px] font-bold uppercase tracking-widest text-amber-400 bg-amber-400/10 border border-amber-400/30 px-2.5 py-0.5 rounded-full mb-2">
-                      {mentor.roleBadge}
+                      {roleBadge}
                     </span>
 
                     {/* Name */}
@@ -374,7 +341,7 @@ const HeroSection: React.FC<HeroSectionProps> = () => {
 
                     {/* View Academy Button */}
                     <button
-                      onClick={() => switchAcademy(mentor.slug)}
+                      onClick={() => switchAcademy(mentor.id)}
                       className="w-full py-2.5 bg-primary/10 hover:bg-primary text-primary hover:text-background border border-primary/30 font-bold uppercase tracking-wider text-[10px] rounded-xl transition-all duration-300 flex items-center justify-center gap-1.5 cursor-pointer shadow-sm group-hover:bg-primary group-hover:text-background"
                     >
                       <span>{mentor.name} Programs</span>
@@ -382,7 +349,7 @@ const HeroSection: React.FC<HeroSectionProps> = () => {
                     </button>
 
                   </motion.div>
-                ))}
+                );})}
               </div>
 
             </motion.div>

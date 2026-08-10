@@ -67,38 +67,7 @@ const FOUNDER: FounderData = {
   description: 'Founder and Visionary of LEO Family. Pioneer in Chaldean numerical vibrations, Vedic Astrology, signature realignment, and corporate spellings.'
 };
 
-const FACULTY: FacultyData[] = [
-  {
-    id: 'shaunak',
-    slug: 'shaunak',
-    name: 'Shaunak S. Patthak',
-    roleBadge: '🎓 Senior Faculty',
-    title: 'Senior Faculty',
-    subtitle: 'Astro-Vastu Grandmaster • Lead Faculty',
-    expertise: ['Numerology & Vedic Astrology', 'Planetary Dashas & Gemology', 'Astro-Vastu Calculations'],
-    languages: 'English, Gujarati & Hindi',
-    experience: '22+ Years',
-    students: '6,200+ Alumni',
-    rating: '5.0 ★',
-    image: Assets.teachers.shaunak.image,
-    description: 'Lead Faculty member specializing in Astro-Vastu, planetary Dashas, and deep numerical matrix transformations.'
-  },
-  {
-    id: 'sannjoy',
-    slug: 'sannjoy',
-    name: 'Sannjoy Biswass',
-    roleBadge: '🎓 Senior Faculty',
-    title: 'Senior Faculty',
-    subtitle: 'Master Numerologist • Regional Faculty (Bengali)',
-    expertise: ['Lo Shu Grid Science', 'Bengali Numerology', 'Mobile & Spatial Harmony'],
-    languages: 'Bengali (বাংলা) & English',
-    experience: '20+ Years',
-    students: '7,500+ Students',
-    rating: '4.9 ★',
-    image: Assets.teachers.sannjoy.image,
-    description: 'Master Numerologist and Regional Faculty leading authentic Lo Shu grid balancing and Bengali language masterclasses.'
-  }
-];
+const FACULTY: FacultyData[] = [];
 
 export default function MeetOurMentorsSection() {
   const { switchAcademy } = useAcademy();

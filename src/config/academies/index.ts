@@ -11,7 +11,7 @@ export const ACADEMIES_REGISTRY: Record<string, AcademyConfig> = {
   sannjoy: sannjoyAcademy,
 };
 
-export const DEFAULT_ACADEMY_SLUG = 'sannjoy';
+export const DEFAULT_ACADEMY_SLUG = 'raajeev';
 
 /**
  * Retrieve an academy configuration by slug (e.g. 'sannjoy', 'shaunak', 'raajeev').
@@ -20,6 +20,9 @@ export const DEFAULT_ACADEMY_SLUG = 'sannjoy';
 export function getAcademyBySlug(slug?: string): AcademyConfig {
   if (!slug) return ACADEMIES_REGISTRY[DEFAULT_ACADEMY_SLUG];
   const cleanSlug = slug.toLowerCase().trim().replace(/^\/academy\/?/, '').replace('/', '');
+  if (cleanSlug === 'shaunak' || cleanSlug === 'sannjoy') {
+    return ACADEMIES_REGISTRY['raajeev'];
+  }
   return ACADEMIES_REGISTRY[cleanSlug] || ACADEMIES_REGISTRY[DEFAULT_ACADEMY_SLUG];
 }
 
@@ -27,7 +30,7 @@ export function getAcademyBySlug(slug?: string): AcademyConfig {
  * Get all available academies in the platform.
  */
 export function getAllAcademies(): AcademyConfig[] {
-  return Object.values(ACADEMIES_REGISTRY);
+  return [ACADEMIES_REGISTRY['raajeev']];
 }
 
 /**

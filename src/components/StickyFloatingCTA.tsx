@@ -8,7 +8,7 @@ interface StickyFloatingCTAProps {
   currentPath: string;
 }
 
-const ALLOWED_SLUGS = ['shaunak', 'raajeev', 'sannjoy'];
+const ALLOWED_SLUGS = ['raajeev'];
 
 export default function StickyFloatingCTA({ currentPath }: StickyFloatingCTAProps) {
   const { activeAcademy } = useAcademy();

@@ -95,8 +95,33 @@ export default function FacultyView() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    alert('Faculty mutations are currently in Read-Only mode during Supabase migration phase.');
-    setIsModalOpen(false);
+    if (!editingFaculty) {
+      alert('Adding new faculty is not enabled in Phase 3A.');
+      setIsModalOpen(false);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const parsedLanguages = languagesInput.split(',').map(l => l.trim()).filter(Boolean);
+      await supabaseFacultyRepository.update(editingFaculty.id, {
+        name: formData.name,
+        title: formData.title,
+        image: formData.image,
+        bio: formData.bio,
+        languages: parsedLanguages,
+        displayOrder: Number(formData.displayOrder) || 1,
+        active: formData.active !== false
+      });
+      showNotification(`Faculty member "${formData.name}" updated successfully.`);
+      setIsModalOpen(false);
+      await loadFaculty();
+    } catch (err: any) {
+      console.error('Failed to update faculty in Supabase:', err);
+      alert('Failed to update faculty member. Note: Supabase RLS policy requires an authenticated session for updates.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

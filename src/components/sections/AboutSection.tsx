@@ -107,38 +107,7 @@ interface FacultyMember {
   description: string;
 }
 
-const FACULTY_MEMBERS: FacultyMember[] = [
-  {
-    id: 'shaunak',
-    slug: 'shaunak',
-    name: 'Shaunak S. Patthak',
-    roleBadge: '🎓 Senior Faculty',
-    title: 'Senior Faculty',
-    subtitle: 'Astro-Vastu Grandmaster • Lead Faculty',
-    experience: '22+ Years',
-    students: '6,200+ Alumni',
-    rating: '5.0 ★',
-    languages: 'English, Gujarati & Hindi',
-    image: Assets.teachers.shaunak.image,
-    expertise: ['Numerology & Vedic Astrology', 'Planetary Dashas & Gemology', 'Astro-Vastu Calculations'],
-    description: 'Lead Faculty member specializing in Astro-Vastu, planetary Dashas, and deep numerical matrix transformations.'
-  },
-  {
-    id: 'sannjoy',
-    slug: 'sannjoy',
-    name: 'Sannjoy Biswass',
-    roleBadge: '🎓 Senior Faculty',
-    title: 'Senior Faculty',
-    subtitle: 'Master Numerologist • Regional Faculty',
-    experience: '20+ Years',
-    students: '7,500+ Students',
-    rating: '4.9 ★',
-    languages: 'Bengali (বাংলা) & English',
-    image: Assets.teachers.sannjoy.image,
-    expertise: ['Lo Shu Grid Science', 'Bengali Numerology', 'Mobile & Spatial Harmony'],
-    description: 'Master Numerologist and Regional Faculty leading authentic Lo Shu grid balancing and Bengali language masterclasses.'
-  }
-];
+const FACULTY_MEMBERS: FacultyMember[] = [];
 
 // ==========================================
 // AREAS OF EXPERTISE

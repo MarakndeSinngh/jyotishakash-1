@@ -264,6 +264,103 @@ export default function AcademySection({ initialSlug }: AcademySectionProps) {
           </motion.div>
         </AnimatePresence>
 
+        {/* ==================================================
+            PROMINENT WEBINAR PROMOTION & WHATSAPP CTA
+            ================================================== */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="max-w-5xl mx-auto mb-20 bg-gradient-to-br from-card via-card/95 to-surface border-2 border-primary/40 rounded-[2.5rem] p-8 md:p-14 shadow-2xl relative overflow-hidden"
+        >
+          {/* Background Ambient Glow */}
+          <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-96 h-96 bg-amber-500/5 rounded-full blur-3xl pointer-events-none" />
+
+          <div className="relative z-10 space-y-8 text-center max-w-4xl mx-auto">
+            
+            {/* Badges */}
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              <span className="px-4 py-1.5 rounded-full bg-primary text-background text-xs font-bold uppercase tracking-[0.2em] shadow-lg flex items-center gap-2">
+                <Sparkles className="w-4 h-4" />
+                <span>10 DAYS FREE</span>
+              </span>
+              <span className="px-4 py-1.5 rounded-full bg-primary/15 border border-primary/30 text-primary text-xs font-bold uppercase tracking-[0.2em]">
+                FREE 10-DAY LIVE WEBINAR
+              </span>
+            </div>
+
+            {/* Titles */}
+            <div className="space-y-3">
+              <h3 className="text-3xl sm:text-4xl md:text-5xl font-extrabold font-cinzel tracking-tight text-text-primary">
+                ADVANCE LIVE WEBINAR
+              </h3>
+              <div className="text-xl sm:text-2xl font-bold font-cinzel text-primary tracking-wide">
+                ADVANCE CHALDEAN NUMEROLOGY
+              </div>
+              <p className="text-base sm:text-lg text-text-secondary font-light italic max-w-2xl mx-auto pt-2">
+                “Learn Advanced Chaldean Numerology — Practical Knowledge, Real Case Studies & Powerful Numerology Techniques”
+              </p>
+            </div>
+
+            {/* Key Learning Points Grid */}
+            <div className="pt-6 pb-2 border-t border-b border-border/20">
+              <h4 className="text-xs uppercase tracking-[0.25em] font-bold text-primary mb-6 font-cinzel">
+                Key Learning Curriculum & Masterclass Highlights
+              </h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 text-left">
+                {[
+                  'Advanced Chaldean Numerology',
+                  'Name Corrections',
+                  'Hidden Numbers & Karmic Lessons',
+                  'Birth Chart Decoding',
+                  'Mobile & Business Numerology',
+                  'Life Purpose & Destiny Numbers',
+                  'Money Magnet Numbers',
+                  'Powerful Remedies',
+                  'Real Case Studies',
+                  'Professional Consultation Skills'
+                ].map((point, idx) => (
+                  <div key={idx} className="flex items-start gap-2.5 bg-background/50 border border-border/20 p-3.5 rounded-xl shadow-xs">
+                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                    <span className="text-xs sm:text-sm font-medium text-text-primary leading-tight">{point}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* WhatsApp Group CTA Box */}
+            <div className="bg-gradient-to-r from-emerald-950/40 via-card to-emerald-950/40 border border-emerald-500/30 rounded-2xl p-6 sm:p-8 shadow-xl space-y-4">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 text-[10px] sm:text-xs font-bold uppercase tracking-widest">
+                <Users className="w-3.5 h-3.5" />
+                <span>Official Community Hub</span>
+              </div>
+
+              <h4 className="text-xl sm:text-2xl font-bold font-cinzel text-text-primary">
+                JOIN OUR OFFICIAL WHATSAPP GROUP
+              </h4>
+
+              <p className="text-text-secondary text-xs sm:text-sm max-w-xl mx-auto font-light">
+                “Join the community and stay updated with webinar sessions, announcements, learning resources and important updates.”
+              </p>
+
+              <div className="pt-2">
+                <a
+                  href="https://chat.whatsapp.com/Lw4d2fwc9uX2VpLjDn1sgo"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-3 px-8 py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold uppercase tracking-wider text-xs sm:text-sm rounded-xl shadow-lg hover:shadow-emerald-600/30 transition-all duration-300 transform hover:-translate-y-0.5 cursor-pointer"
+                >
+                  <Users className="w-5 h-5" />
+                  <span>JOIN WHATSAPP GROUP</span>
+                  <ArrowRight className="w-4 h-4" />
+                </a>
+              </div>
+            </div>
+
+          </div>
+        </motion.div>
+
 
         {/* ==================================================
             PART 1 — LEARNING ROADMAP (Horizontal Timeline)

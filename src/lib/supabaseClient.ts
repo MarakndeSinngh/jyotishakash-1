@@ -16,11 +16,11 @@ const getEnv = (key: string): string => {
   return '';
 };
 
-const supabaseUrl = getEnv('VITE_SUPABASE_URL');
-const supabaseAnonKey = getEnv('VITE_SUPABASE_ANON_KEY');
+const supabaseUrl = getEnv('VITE_SUPABASE_URL') || 'https://placeholder.supabase.co';
+const supabaseAnonKey = getEnv('VITE_SUPABASE_ANON_KEY') || 'placeholder-anon-key';
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn('[Supabase Diagnostics] VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY is missing.');
+if (!getEnv('VITE_SUPABASE_URL') || !getEnv('VITE_SUPABASE_ANON_KEY')) {
+  console.warn('[Supabase Diagnostics] VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY is missing. Using placeholder client.');
 } else {
   console.log('[Supabase Diagnostics] Initializing Supabase client with URL:', supabaseUrl);
 }

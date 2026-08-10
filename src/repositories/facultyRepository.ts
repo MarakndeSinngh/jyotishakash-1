@@ -1,239 +1,111 @@
 import { Faculty } from '../models/faculty';
-import { db } from '../firebase/config';
-import { collection, doc, getDoc, getDocs, setDoc, deleteDoc } from 'firebase/firestore';
-
-const COLLECTION_NAME = 'faculty';
-
-let MOCK_FACULTY: Faculty[] = [
-  {
-    id: 'raajeev',
-    name: 'Raajeev Singh Chauhann',
-    title: 'Founder & Chief Mentor',
-    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=800',
-    bio: 'Renowned expert in Vedic Numerology, Business Numerology & Vastu with over 15 years of transforming thousands of lives and businesses globally.',
-    languages: ['English', 'Hindi'],
-    consultationLink: 'https://leofamily.com/consult/raajeev',
-    registrationLink: 'https://leofamily.com/webinar/raajeev',
-    facebookUrl: 'https://facebook.com/raajeevsinghchauhann',
-    youtubeUrl: 'https://youtube.com/@raajeevsinghchauhann',
-    displayOrder: 1,
-    active: true,
-    createdAt: '2026-08-01'
-  },
-  {
-    id: 'shaunak',
-    name: 'Shaunak S. Patthak',
-    title: 'Master Numerologist & Astrologer',
-    image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=800',
-    bio: 'Specialist in Chaldean and Pythagorean Numerology, destiny numbers, name corrections, and deep occult vibration science.',
-    languages: ['English', 'Hindi', 'Gujarati'],
-    consultationLink: 'https://leofamily.com/consult/shaunak',
-    registrationLink: 'https://leofamily.com/webinar/shaunak',
-    facebookUrl: 'https://facebook.com/shaunakspatthak',
-    youtubeUrl: 'https://youtube.com/@shaunakpatthak',
-    displayOrder: 2,
-    active: true,
-    createdAt: '2026-08-02'
-  },
-  {
-    id: 'sannjoy',
-    name: 'Sannjoy Biswass',
-    title: 'Master Numerologist & Astrologer',
-    image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=800',
-    bio: 'Expert in Lo Shu Grid, Mobile Number Numerology, and traditional Vedic consultations with dedicated regional Bengali mentoring.',
-    languages: ['English', 'Hindi', 'Bengali'],
-    consultationLink: 'https://leofamily.com/consult/sannjoy',
-    registrationLink: 'https://leofamily.com/webinar/sannjoy',
-    facebookUrl: 'https://facebook.com/sannjoybiswass',
-    youtubeUrl: 'https://youtube.com/@sannjoybiswass',
-    displayOrder: 3,
-    active: true,
-    createdAt: '2026-08-03'
-  }
-];
+import { supabase } from '../lib/supabaseClient';
+import { supabaseFacultyRepository } from './supabaseFacultyRepository';
 
 export const facultyRepository = {
   async getAll(): Promise<Faculty[]> {
     try {
-      if (!db) {
-        return [...MOCK_FACULTY];
-      }
-      const colRef = collection(db, COLLECTION_NAME);
-      const snapshot = await getDocs(colRef);
-      if (snapshot.empty) {
-        // Seed initial mock faculty into Firestore
-        for (const faculty of MOCK_FACULTY) {
-          const docRef = doc(db, COLLECTION_NAME, faculty.id);
-          await setDoc(docRef, faculty);
-        }
-        return [...MOCK_FACULTY];
+      const { data, error } = await supabase
+        .from('faculty')
+        .select('*')
+        .eq('is_active', true)
+        .order('display_order', { ascending: true });
+
+      if (error) {
+        console.error('Error fetching public faculty from Supabase:', error);
+        return [];
       }
 
-      const facultyList: Faculty[] = [];
-      snapshot.forEach(docSnap => {
-        const data = docSnap.data() as Faculty;
-        facultyList.push({
-          ...data,
-          id: docSnap.id
-        });
-      });
+      if (!data) return [];
 
-      // Sort by displayOrder if present
-      facultyList.sort((a, b) => (a.displayOrder || 99) - (b.displayOrder || 99));
-      return facultyList;
+      return data.map((row: any) => ({
+        id: row.id,
+        name: row.name,
+        title: row.title,
+        image: row.image,
+        bio: row.description,
+        languages: typeof row.languages === 'string' 
+          ? row.languages.split('&').map((l: string) => l.trim()).flatMap((l: string) => l.split(',').map((x: string) => x.trim()))
+          : Array.isArray(row.languages) ? row.languages : ['English', 'Hindi'],
+        consultationLink: row.consultation_link || `https://leofamily.com/consult/${row.id}`,
+        registrationLink: row.registration_link || `https://leofamily.com/webinar/${row.id}`,
+        facebookUrl: row.facebook_url || '',
+        youtubeUrl: row.youtube_url || '',
+        displayOrder: row.display_order ?? 0,
+        active: row.is_active ?? true,
+        createdAt: row.created_at,
+        updatedAt: row.updated_at
+      }));
     } catch (error) {
-      console.error('Error fetching faculty from Firestore:', error);
-      throw error;
+      console.error('Failed to get public faculty from Supabase:', error);
+      return [];
     }
   },
 
   async getById(id: string): Promise<Faculty | null> {
     try {
-      if (!db) {
-        return MOCK_FACULTY.find(f => f.id === id) || null;
+      const { data, error } = await supabase
+        .from('faculty')
+        .select('*')
+        .eq('id', id)
+        .eq('is_active', true)
+        .single();
+
+      if (error) {
+        if (error.code === 'PGRST116') {
+          return null;
+        }
+        console.error(`Error fetching public faculty ${id} from Supabase:`, error);
+        return null;
       }
-      const docRef = doc(db, COLLECTION_NAME, id);
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        const data = docSnap.data() as Faculty;
-        return {
-          ...data,
-          id: docSnap.id
-        };
-      }
-      return null;
+
+      if (!data) return null;
+
+      const row = data;
+      return {
+        id: row.id,
+        name: row.name,
+        title: row.title,
+        image: row.image,
+        bio: row.description,
+        languages: typeof row.languages === 'string' 
+          ? row.languages.split('&').map((l: string) => l.trim()).flatMap((l: string) => l.split(',').map((x: string) => x.trim()))
+          : Array.isArray(row.languages) ? row.languages : ['English', 'Hindi'],
+        consultationLink: row.consultation_link || `https://leofamily.com/consult/${row.id}`,
+        registrationLink: row.registration_link || `https://leofamily.com/webinar/${row.id}`,
+        facebookUrl: row.facebook_url || '',
+        youtubeUrl: row.youtube_url || '',
+        displayOrder: row.display_order ?? 0,
+        active: row.is_active ?? true,
+        createdAt: row.created_at,
+        updatedAt: row.updated_at
+      };
     } catch (error) {
-      console.error(`Error fetching faculty ${id} from Firestore:`, error);
-      throw error;
+      console.error(`Failed to get public faculty ${id} from Supabase:`, error);
+      return null;
     }
   },
 
   async getFounder(): Promise<Faculty | null> {
-    const all = await this.getAll();
-    return all.find(f => f.id === 'raajeev' || f.title.toLowerCase().includes('founder')) || all[0] || null;
+    try {
+      const all = await this.getAll();
+      return all.find(f => f.id === 'raajeev' || f.title.toLowerCase().includes('founder')) || all[0] || null;
+    } catch (error) {
+      console.error('Failed to get founder from Supabase:', error);
+      return null;
+    }
   },
 
   async create(faculty: Faculty): Promise<Faculty> {
-    const newId = faculty.id || `faculty-${Date.now()}`;
-    const newFaculty: Faculty = {
-      ...faculty,
-      id: newId,
-      createdAt: faculty.createdAt || new Date().toISOString()
-    };
-
-    const docPath = `${COLLECTION_NAME}/${newId}`;
-    const projectId = db?.app?.options?.projectId || 'N/A (db null)';
-    const isDbInitialized = Boolean(db);
-
-    console.log('[Faculty Save Diagnostic - CREATE] Starting setDoc', {
-      facultyId: newId,
-      docPath,
-      projectId,
-      isDbInitialized,
-      setDocStarting: true
-    });
-
-    try {
-      if (db) {
-        const docRef = doc(db, COLLECTION_NAME, newId);
-        await setDoc(docRef, newFaculty);
-        console.log('[Faculty Save Diagnostic - CREATE] setDoc SUCCEEDED', {
-          facultyId: newId,
-          docPath,
-          projectId
-        });
-      } else {
-        console.warn('[Faculty Save Diagnostic - CREATE] db is null, setDoc skipped');
-      }
-      MOCK_FACULTY = [newFaculty, ...MOCK_FACULTY.filter(f => f.id !== newId)];
-      return newFaculty;
-    } catch (error: any) {
-      console.error('[Faculty Save Diagnostic - CREATE] setDoc FAILED', {
-        facultyId: newId,
-        docPath,
-        projectId,
-        errorCode: error?.code,
-        errorMessage: error?.message,
-        error
-      });
-      throw error;
-    }
+    return supabaseFacultyRepository.create(faculty);
   },
 
   async update(id: string, updates: Partial<Faculty>): Promise<Faculty> {
-    const docPath = `${COLLECTION_NAME}/${id}`;
-    const projectId = db?.app?.options?.projectId || 'N/A (db null)';
-    const isDbInitialized = Boolean(db);
-
-    console.log('[Faculty Save Diagnostic - UPDATE] Starting setDoc', {
-      facultyId: id,
-      docPath,
-      projectId,
-      isDbInitialized,
-      setDocStarting: true
-    });
-
-    try {
-      const existing = await this.getById(id);
-      const updated: Faculty = {
-        ...(existing || {
-          id,
-          name: '',
-          title: '',
-          image: '',
-          bio: '',
-          languages: [],
-          consultationLink: '',
-          registrationLink: ''
-        }),
-        ...updates,
-        id,
-        updatedAt: new Date().toISOString()
-      };
-
-      if (db) {
-        const docRef = doc(db, COLLECTION_NAME, id);
-        await setDoc(docRef, updated, { merge: true });
-        console.log('[Faculty Save Diagnostic - UPDATE] setDoc SUCCEEDED', {
-          facultyId: id,
-          docPath,
-          projectId
-        });
-      } else {
-        console.warn('[Faculty Save Diagnostic - UPDATE] db is null, setDoc skipped');
-      }
-
-      MOCK_FACULTY = MOCK_FACULTY.map(f => f.id === id ? updated : f);
-      if (!MOCK_FACULTY.some(f => f.id === id)) {
-        MOCK_FACULTY.push(updated);
-      }
-
-      return updated;
-    } catch (error: any) {
-      console.error('[Faculty Save Diagnostic - UPDATE] setDoc FAILED', {
-        facultyId: id,
-        docPath,
-        projectId,
-        errorCode: error?.code,
-        errorMessage: error?.message,
-        error
-      });
-      throw error;
-    }
+    return supabaseFacultyRepository.update(id, updates);
   },
 
   async delete(id: string): Promise<boolean> {
-    try {
-      if (db) {
-        const docRef = doc(db, COLLECTION_NAME, id);
-        await deleteDoc(docRef);
-      }
-      MOCK_FACULTY = MOCK_FACULTY.filter(faculty => faculty.id !== id);
-      return true;
-    } catch (error) {
-      console.error(`Error deleting faculty ${id} from Firestore:`, error);
-      throw error;
-    }
+    await supabaseFacultyRepository.delete(id);
+    return true;
   }
 };
-

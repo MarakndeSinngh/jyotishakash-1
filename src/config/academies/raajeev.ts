@@ -3,7 +3,7 @@ import { AcademyConfig } from './types';
 export const raajeevAcademy: AcademyConfig = {
   id: 'raajeev',
   slug: 'raajeev',
-  name: 'Raajeev Singh Occult Academy',
+  name: 'Raajeev Singh Chauhann Occult Academy',
   shortName: 'Raajeev Academy',
   instructorName: 'Raajeev Singh Chauhann',
   instructorTitle: 'Founder & Visionary',

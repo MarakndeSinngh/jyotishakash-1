@@ -294,7 +294,7 @@ const HeroSection: React.FC<HeroSectionProps> = () => {
               {/* Showcase Header Badge */}
               <div className="flex items-center justify-between pb-2">
                 <span className="text-[10px] font-extrabold uppercase tracking-[0.25em] text-primary bg-primary/10 border border-primary/20 px-3 py-1 rounded-full">
-                  Three Master Mentors
+                  The Master Mentor
                 </span>
                 <span className="text-[10px] text-text-secondary font-cinzel uppercase tracking-widest hidden sm:inline">
                   Select an Academy

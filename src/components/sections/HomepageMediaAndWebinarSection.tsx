@@ -138,44 +138,57 @@ export default function HomepageMediaAndWebinarSection() {
               <motion.div
                 key={event.id}
                 whileHover={{ y: -4 }}
-                className="group bg-card border border-amber-400/30 hover:border-amber-400 rounded-3xl p-6 sm:p-8 shadow-xl flex flex-col justify-between space-y-6 transition-all duration-300"
+                className="group bg-card border border-amber-400/30 hover:border-amber-400 rounded-3xl overflow-hidden shadow-xl flex flex-col justify-between transition-all duration-300"
               >
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="bg-amber-400/15 border border-amber-400/35 px-3 py-1 rounded-full text-[9px] font-extrabold text-amber-400 uppercase tracking-widest">
-                      {event.status || 'Live Masterclass'}
-                    </span>
-                    <span className="text-xs text-text-secondary font-mono flex items-center gap-1">
-                      <Calendar className="w-3.5 h-3.5 text-primary" /> {event.date} • {event.time}
-                    </span>
+                {event.banner && (
+                  <div className="relative w-full h-48 sm:h-52 overflow-hidden bg-background/50">
+                    <SmartImage
+                      src={event.banner}
+                      alt={`${event.title} webinar banner`}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-card/80 via-transparent to-transparent opacity-60" />
+                  </div>
+                )}
+
+                <div className="p-6 sm:p-8 flex flex-col justify-between flex-grow space-y-6">
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="bg-amber-400/15 border border-amber-400/35 px-3 py-1 rounded-full text-[9px] font-extrabold text-amber-400 uppercase tracking-widest">
+                        {event.status || 'Live Masterclass'}
+                      </span>
+                      <span className="text-xs text-text-secondary font-mono flex items-center gap-1">
+                        <Calendar className="w-3.5 h-3.5 text-primary" /> {event.date} • {event.time}
+                      </span>
+                    </div>
+
+                    <h3 className="text-xl font-bold font-cinzel text-text-primary group-hover:text-primary transition-colors">
+                      {event.title}
+                    </h3>
+
+                    <div className="grid grid-cols-2 gap-3 text-xs text-text-secondary pt-2">
+                      <div className="bg-background/60 p-2.5 rounded-xl border border-border/20">
+                        <span className="block text-[9px] uppercase tracking-wider text-text-secondary">Language</span>
+                        <span className="font-bold text-text-primary font-cinzel">{event.language}</span>
+                      </div>
+                      <div className="bg-background/60 p-2.5 rounded-xl border border-border/20">
+                        <span className="block text-[9px] uppercase tracking-wider text-text-secondary">Available Seats</span>
+                        <span className="font-bold text-amber-400 font-cinzel">{event.seats}</span>
+                      </div>
+                    </div>
                   </div>
 
-                  <h3 className="text-xl font-bold font-cinzel text-text-primary group-hover:text-primary transition-colors">
-                    {event.title}
-                  </h3>
-
-                  <div className="grid grid-cols-2 gap-3 text-xs text-text-secondary pt-2">
-                    <div className="bg-background/60 p-2.5 rounded-xl border border-border/20">
-                      <span className="block text-[9px] uppercase tracking-wider text-text-secondary">Language</span>
-                      <span className="font-bold text-text-primary font-cinzel">{event.language}</span>
-                    </div>
-                    <div className="bg-background/60 p-2.5 rounded-xl border border-border/20">
-                      <span className="block text-[9px] uppercase tracking-wider text-text-secondary">Available Seats</span>
-                      <span className="font-bold text-amber-400 font-cinzel">{event.seats}</span>
-                    </div>
+                  <div className="pt-4 border-t border-border/15">
+                    <a
+                      href={event.registrationLink || "https://wa.me/919953713176"}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full py-3.5 bg-primary hover:brightness-110 text-background font-extrabold uppercase tracking-wider text-xs rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
+                    >
+                      <span>Register For Free</span>
+                      <ExternalLink className="w-3.5 h-3.5" />
+                    </a>
                   </div>
-                </div>
-
-                <div className="pt-4 border-t border-border/15">
-                  <a
-                    href={event.registrationLink || "https://wa.me/919953713176"}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full py-3.5 bg-primary hover:brightness-110 text-background font-extrabold uppercase tracking-wider text-xs rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
-                  >
-                    <span>Register For Free</span>
-                    <ExternalLink className="w-3.5 h-3.5" />
-                  </a>
                 </div>
               </motion.div>
             ))}

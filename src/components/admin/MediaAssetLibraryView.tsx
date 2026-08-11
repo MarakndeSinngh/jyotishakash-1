@@ -164,7 +164,7 @@ export default function MediaAssetLibraryView() {
           <h1 className="text-2xl font-bold font-cinzel text-stone-900 flex items-center gap-2">
             <FolderKanban className="w-6 h-6 text-amber-600" /> Centralized Media Asset Manager
           </h1>
-          <p className="text-xs text-stone-500">Manage repository assets, images, videos, badges, and documentation ready for Firebase Storage</p>
+          <p className="text-xs text-stone-500">Manage repository assets, images, videos, badges, and documentation ready for Supabase Storage</p>
         </div>
         <button
           onClick={() => setIsUploadOpen(true)}
@@ -590,17 +590,17 @@ export default function MediaAssetLibraryView() {
         </div>
       )}
 
-      {/* Firebase Ready Notice */}
+      {/* Supabase Ready Notice */}
       <div className="bg-stone-50 border border-stone-200/80 rounded-2xl p-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <ShieldCheck className="w-5 h-5 text-amber-600 shrink-0" />
           <div>
-            <h4 className="text-xs font-bold text-stone-900">Firebase Storage Integration Ready</h4>
-            <p className="text-[11px] text-stone-500">Repository and service architecture prepared to connect directly with Firebase Storage for cloud media persistence.</p>
+            <h4 className="text-xs font-bold text-stone-900">Supabase Storage Integration Ready</h4>
+            <p className="text-[11px] text-stone-500">Repository and service architecture prepared to connect directly with Supabase Storage for cloud media persistence.</p>
           </div>
         </div>
         <span className="px-3 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full text-xs font-semibold shrink-0">
-          Ready for Firestore & Storage
+          Connected to Supabase
         </span>
       </div>
     </div>

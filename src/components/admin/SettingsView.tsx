@@ -370,19 +370,19 @@ export default function SettingsView() {
         </div>
 
 
-        {/* ==================== FIREBASE STATUS ==================== */}
+        {/* ==================== SUPABASE STATUS ==================== */}
         <div className="bg-white rounded-2xl border border-stone-200/80 shadow-sm p-6 space-y-4">
           <h2 className="text-sm font-bold uppercase tracking-wider text-stone-800 flex items-center gap-2">
-            <Database className="w-4 h-4 text-amber-700" /> Firebase & Database Integration
+            <Database className="w-4 h-4 text-amber-700" /> Supabase Database Integration
           </h2>
           <div className="space-y-3">
             <div className="flex items-center justify-between p-3.5 rounded-xl bg-stone-50 border border-stone-200">
               <div>
-                <h4 className="text-xs font-semibold text-stone-900">Firestore Database Sync</h4>
+                <h4 className="text-xs font-semibold text-stone-900">Supabase Database Sync</h4>
                 <p className="text-[11px] text-stone-500">Real-time synchronization for website settings & records</p>
               </div>
               <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
-                Ready for Firestore
+                Connected
               </span>
             </div>
           </div>

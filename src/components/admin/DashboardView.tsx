@@ -16,7 +16,7 @@ export default function DashboardView() {
             Welcome back, Master Admin
           </h1>
           <p className="text-stone-300 text-sm max-w-2xl">
-            LEO Family Astrological & Numerology Academy operations are running smoothly. All systems connected with Firebase backend & high-speed ingress.
+            LEO Family Astrological & Numerology Academy operations are running smoothly. All systems connected with Supabase backend & high-speed ingress.
           </p>
         </div>
       </div>
@@ -139,7 +139,7 @@ export default function DashboardView() {
           </p>
           <div className="space-y-1.5 text-xs text-stone-600 pt-2 border-t border-stone-100">
             <div className="flex items-center justify-between">
-              <span className="text-stone-400">Firebase Auth:</span>
+              <span className="text-stone-400">Supabase Auth:</span>
               <span className="font-medium text-emerald-600 flex items-center gap-1">
                 <CheckCircle2 className="w-3.5 h-3.5" /> Connected
               </span>

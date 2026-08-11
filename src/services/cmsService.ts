@@ -1,5 +1,6 @@
 import { Page, Section, Service, Testimonial } from '../types/cms';
 import { Gemstone, GEMSTONES } from '../constants/gemstones';
+import { supabaseTestimonialRepository } from '../repositories/supabaseTestimonialRepository';
 
 // Mock data for initial development
 const MOCK_PAGES: Page[] = [
@@ -220,7 +221,15 @@ export const cmsService = {
 
   // Testimonials
   async getTestimonials(): Promise<Testimonial[]> {
-    return MOCK_TESTIMONIALS;
+    try {
+      const testimonials = await supabaseTestimonialRepository.getPublished();
+      if (testimonials && testimonials.length > 0) {
+        return testimonials;
+      }
+    } catch (error) {
+      console.warn('Could not fetch testimonials from Supabase, returning empty array:', error);
+    }
+    return [];
   },
 
   // Gemstones

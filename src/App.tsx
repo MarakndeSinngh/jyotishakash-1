@@ -373,7 +373,7 @@ export default function App() {
                         <React.Fragment key={idx}>
                           {currentPath === '/' ? (
                             <>
-                              <DynamicTestimonialsHomepage />
+                              <DynamicTestimonialsHomepage testimonials={testimonials} />
                               <SuccessMetricsSection />
                               <HomepageCTASection />
                             </>

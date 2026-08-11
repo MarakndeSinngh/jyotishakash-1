@@ -36,8 +36,16 @@ export interface Service {
 
 export interface Testimonial {
   id?: string;
+  testimonialCode?: string;
   name: string;
+  role?: string;
+  course?: string;
   feedback: string;
   rating: number;
   image?: string;
+  published?: boolean;
+  displayOrder?: number;
+  testimonialDate?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }

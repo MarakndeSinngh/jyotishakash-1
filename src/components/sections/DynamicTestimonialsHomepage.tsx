@@ -1,29 +1,27 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Star, Sparkles, Quote, Video } from 'lucide-react';
-import { useAcademy } from '../../context/AcademyContext';
 import { getVideosByTeacher, TeacherId } from '../../config/mediaRegistry';
 import { YouTubeCard } from '../common/YouTubeCard';
+import { Testimonial } from '../../types/cms';
 
-export default function DynamicTestimonialsHomepage() {
-  const { allAcademies } = useAcademy();
+interface DynamicTestimonialsHomepageProps {
+  testimonials?: Testimonial[];
+}
+
+export default function DynamicTestimonialsHomepage({ testimonials = [] }: DynamicTestimonialsHomepageProps) {
   const [selectedFilter, setSelectedFilter] = useState<TeacherId | 'all'>('all');
 
-  // Collect testimonials from all academies
-  const allTestimonials = allAcademies.flatMap((academy) => {
-    return academy.testimonials.map((t) => ({
-      ...t,
-      academySlug: academy.slug as TeacherId,
-      academyName: academy.shortName,
-      instructorName: academy.instructorName,
-      instructorAvatar: academy.assets.profileImage,
-    }));
-  });
-
-  const filteredTestimonials = allTestimonials.filter((t) => {
-    if (selectedFilter === 'all') return true;
-    return t.academySlug === selectedFilter;
-  });
+  const displayTestimonials = testimonials.map((t) => ({
+    id: t.id || t.testimonialCode || Math.random().toString(),
+    name: t.name,
+    role: t.role || 'Verified Student',
+    courseTitle: t.course,
+    content: t.feedback,
+    rating: t.rating || 5,
+    avatar: t.image || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+    academyName: t.course ? t.course : 'Verified Review',
+  }));
 
   // Get teacher's video transformations from central registry
   const teacherVideos = getVideosByTeacher(selectedFilter);
@@ -114,64 +112,70 @@ export default function DynamicTestimonialsHomepage() {
         )}
 
         {/* Testimonials Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <AnimatePresence mode="popLayout">
-            {filteredTestimonials.map((t) => (
-              <motion.div
-                key={t.id}
-                layout
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.3 }}
-                className="bg-card border border-border/30 hover:border-amber-400/40 p-8 rounded-3xl flex flex-col justify-between text-left shadow-xl transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_0_30px_rgba(212,175,55,0.15)] relative overflow-hidden"
-              >
-                {/* Quote Icon Accent */}
-                <Quote className="absolute top-6 right-6 w-12 h-12 text-primary/10 pointer-events-none" />
+        {displayTestimonials.length === 0 ? (
+          <div className="text-center py-16 bg-card border border-border/20 rounded-3xl">
+            <p className="text-text-secondary text-xs">No testimonials published yet. Check back soon or add testimonials in the Admin Panel.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <AnimatePresence mode="popLayout">
+              {displayTestimonials.map((t) => (
+                <motion.div
+                  key={t.id}
+                  layout
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.3 }}
+                  className="bg-card border border-border/30 hover:border-amber-400/40 p-8 rounded-3xl flex flex-col justify-between text-left shadow-xl transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_0_30px_rgba(212,175,55,0.15)] relative overflow-hidden"
+                >
+                  {/* Quote Icon Accent */}
+                  <Quote className="absolute top-6 right-6 w-12 h-12 text-primary/10 pointer-events-none" />
 
-                <div className="space-y-4 relative z-10">
-                  {/* Academy Tag & Star Rating */}
-                  <div className="flex items-center justify-between">
-                    <span className="bg-primary/10 border border-primary/20 text-primary text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full">
-                      {t.academyName}
-                    </span>
-                    <div className="flex items-center gap-1 text-amber-400">
-                      {[...Array(t.rating)].map((_, r) => (
-                        <Star key={r} className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                      ))}
+                  <div className="space-y-4 relative z-10">
+                    {/* Academy Tag & Star Rating */}
+                    <div className="flex items-center justify-between">
+                      <span className="bg-primary/10 border border-primary/20 text-primary text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full">
+                        {t.academyName}
+                      </span>
+                      <div className="flex items-center gap-1 text-amber-400">
+                        {[...Array(t.rating)].map((_, r) => (
+                          <Star key={r} className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Testimonial Quote */}
+                    <p className="text-text-secondary text-xs sm:text-sm italic font-light leading-relaxed font-sans">
+                      "{t.content}"
+                    </p>
+                  </div>
+
+                  {/* Student Info Footer */}
+                  <div className="pt-6 mt-6 border-t border-border/15 flex items-center justify-between relative z-10">
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={t.avatar}
+                        alt={t.name}
+                        className="w-11 h-11 rounded-full object-cover border-2 border-primary/40 shadow-md"
+                      />
+                      <div className="text-left">
+                        <h4 className="text-xs font-bold font-cinzel text-text-primary">{t.name}</h4>
+                        <span className="text-[10px] text-text-secondary block font-sans">{t.role}</span>
+                        {t.courseTitle && (
+                          <span className="text-[9px] text-primary font-semibold block mt-0.5">
+                            Course: {t.courseTitle}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
 
-                  {/* Testimonial Quote */}
-                  <p className="text-text-secondary text-xs sm:text-sm italic font-light leading-relaxed font-sans">
-                    "{t.content}"
-                  </p>
-                </div>
-
-                {/* Student Info Footer */}
-                <div className="pt-6 mt-6 border-t border-border/15 flex items-center justify-between relative z-10">
-                  <div className="flex items-center gap-3">
-                    <img
-                      src={t.avatar}
-                      alt={t.name}
-                      className="w-11 h-11 rounded-full object-cover border-2 border-primary/40 shadow-md"
-                    />
-                    <div className="text-left">
-                      <h4 className="text-xs font-bold font-cinzel text-text-primary">{t.name}</h4>
-                      <span className="text-[10px] text-text-secondary block font-sans">{t.role}</span>
-                      {t.courseTitle && (
-                        <span className="text-[9px] text-primary font-semibold block mt-0.5">
-                          Course: {t.courseTitle}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
+        )}
 
       </div>
     </section>

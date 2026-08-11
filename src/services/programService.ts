@@ -1,46 +1,47 @@
 import { Program } from '../models/program';
-import { programRepository } from '../repositories/programRepository';
+import { supabaseProgramRepository } from '../repositories/supabaseProgramRepository';
 
 export const programService = {
   /**
    * Get all programs
    */
   async getAllPrograms(): Promise<Program[]> {
-    return programRepository.getAll();
+    return supabaseProgramRepository.getAll();
   },
 
   /**
    * Get programs by mentor ID
    */
   async getProgramsByMentor(mentorId: string): Promise<Program[]> {
-    return programRepository.getByMentor(mentorId);
+    return supabaseProgramRepository.getByMentor(mentorId);
   },
 
   /**
    * Get featured programs
    */
   async getFeaturedPrograms(): Promise<Program[]> {
-    return programRepository.getFeatured();
+    return supabaseProgramRepository.getFeatured();
   },
 
   /**
    * Save a new program
    */
   async saveProgram(program: Program): Promise<Program> {
-    return programRepository.create(program);
+    return supabaseProgramRepository.create(program);
   },
 
   /**
    * Update an existing program
    */
   async updateProgram(id: string, updates: Partial<Program>): Promise<Program> {
-    return programRepository.update(id, updates);
+    return supabaseProgramRepository.update(id, updates);
   },
 
   /**
    * Delete a program by ID
    */
   async deleteProgram(id: string): Promise<boolean> {
-    return programRepository.delete(id);
+    return supabaseProgramRepository.delete(id);
   }
 };
+

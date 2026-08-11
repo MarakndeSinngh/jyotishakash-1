@@ -16,7 +16,7 @@ import { useContentEngine } from '../../hooks/useContentEngine';
 import SmartImage from './SmartImage';
 
 export default function FeaturedCoursesHomepage() {
-  const { allAcademies, switchAcademy } = useAcademy();
+  const { switchAcademy } = useAcademy();
   const [selectedTab, setSelectedTab] = useState<string>('all');
   const { data, loading, error } = useContentEngine({ type: 'homepage' });
 
@@ -27,27 +27,19 @@ export default function FeaturedCoursesHomepage() {
     ? rawPrograms 
     : rawPrograms.filter((p: any) => p.mentorId === selectedTab);
 
-  const featuredPrograms = (filteredRawPrograms.length > 0 ? filteredRawPrograms : allAcademies.flatMap((academy) => {
-    const top2 = academy.courses.slice(0, 2);
-    return top2.map((course) => ({
-      ...course,
-      academySlug: academy.slug,
-      academyShortName: academy.shortName,
-      academyInstructor: academy.instructorName,
-      academyProfileImage: academy.assets.profileImage,
-    }));
-  })).map((prog: any) => ({
+  const featuredPrograms = filteredRawPrograms.map((prog: any) => ({
     ...prog,
-    academySlug: prog.mentorId || prog.academySlug || 'raajeev',
-    academyShortName: prog.academyShortName || (prog.mentorId === 'shaunak' ? 'Shaunak Academy' : prog.mentorId === 'sannjoy' ? 'Sannjoy Academy' : 'LEO Academy'),
-    academyInstructor: prog.academyInstructor || (prog.mentorId === 'shaunak' ? 'Shaunak S. Patthak' : prog.mentorId === 'sannjoy' ? 'Sannjoy Biswass' : 'Raajeev Singh Chauhann'),
-    academyProfileImage: prog.academyProfileImage || prog.image || '/gemstone-assets/logo.jpg',
+    academySlug: prog.mentorId || 'raajeev',
+    academyShortName: prog.mentorId === 'shaunak' ? 'Shaunak Academy' : prog.mentorId === 'sannjoy' ? 'Sannjoy Academy' : 'LEO Academy',
+    academyInstructor: prog.mentorId === 'shaunak' ? 'Shaunak S. Patthak' : prog.mentorId === 'sannjoy' ? 'Sannjoy Biswass' : 'Raajeev Singh Chauhann',
+    academyProfileImage: prog.image || '/gemstone-assets/logo.jpg',
+    difficulty: prog.difficulty || 'All Levels',
+    format: prog.format || 'Live & Recorded',
+    hasCertificate: prog.hasCertificate ?? true,
+    badge: prog.badge || (prog.featured ? 'Featured' : undefined),
   }));
 
-  const filteredCourses = featuredPrograms.filter((course) => {
-    if (selectedTab === 'all') return true;
-    return course.academySlug === selectedTab;
-  });
+  const filteredCourses = featuredPrograms;
 
   return (
     <section id="featured-courses" className="relative py-24 sm:py-32 bg-background text-text-primary overflow-hidden z-10">
@@ -118,9 +110,18 @@ export default function FeaturedCoursesHomepage() {
         </div>
 
         {/* Courses Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <AnimatePresence mode="popLayout">
-            {filteredCourses.map((course) => (
+        {filteredCourses.length === 0 ? (
+          <div className="text-center py-20 bg-card/50 border border-border/30 rounded-3xl p-8 max-w-lg mx-auto">
+            <Sparkles className="w-10 h-10 text-primary mx-auto mb-4 opacity-50" />
+            <h3 className="text-xl font-cinzel font-bold text-text-primary mb-2">No Programs Available</h3>
+            <p className="text-text-secondary text-sm font-light">
+              There are currently no featured masterclasses matching this selection.
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <AnimatePresence mode="popLayout">
+              {filteredCourses.map((course) => (
               <motion.div
                 key={course.id}
                 layout
@@ -201,7 +202,7 @@ export default function FeaturedCoursesHomepage() {
                         <User className="w-3.5 h-3.5 text-primary" />
                         <span className="text-[11px] font-medium">{course.academyInstructor}</span>
                       </div>
-                      <span className="text-primary font-bold font-cinzel text-sm">{course.price || "Inquire"}</span>
+                      <span className="text-primary font-bold font-cinzel text-sm">{course.price ? `₹${course.price.toLocaleString()}` : "Inquire"}</span>
                     </div>
 
                     <div className="grid grid-cols-2 gap-2.5">
@@ -225,8 +226,9 @@ export default function FeaturedCoursesHomepage() {
                 </div>
               </motion.div>
             ))}
-          </AnimatePresence>
-        </div>
+            </AnimatePresence>
+          </div>
+        )}
 
       </div>
     </section>

@@ -113,7 +113,12 @@ export default function ProgramsView() {
 
     try {
       if (editingProgram) {
-        await programService.updateProgram(editingProgram.id, formData);
+        console.log('PROGRAM_UPDATE_DEBUG_BEFORE', {
+          id: editingProgram.id,
+          formData
+        });
+        const updatedResult = await programService.updateProgram(editingProgram.id, formData);
+        console.log('PROGRAM_UPDATE_DEBUG_AFTER', updatedResult);
         showNotification(`Program "${formData.title}" updated successfully.`);
       } else {
         const newProg: Program = {

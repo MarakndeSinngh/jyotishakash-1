@@ -175,6 +175,11 @@ export const supabaseProgramRepository = {
   async update(id: string, updates: Partial<Program>): Promise<Program> {
     try {
       const row = mapProgramToRow(updates, true);
+      console.log('PROGRAM_REPOSITORY_UPDATE_PAYLOAD', {
+        id,
+        updates,
+        mappedRow: row
+      });
 
       const { data, error } = await supabase
         .from('programs')
@@ -182,6 +187,11 @@ export const supabaseProgramRepository = {
         .eq('id', id)
         .select()
         .single();
+
+      console.log('PROGRAM_REPOSITORY_UPDATE_RESULT', {
+        data,
+        error
+      });
 
       if (error) {
         console.error(`Error updating program ${id}:`, error);

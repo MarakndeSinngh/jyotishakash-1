@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import { MediaItem, PlayerState } from './MediaTypes';
-import { MediaLibrary } from './MediaLibrary';
+import { mediaService } from '../services/mediaService';
 
 interface MediaContextType {
   items: MediaItem[];
@@ -14,11 +14,11 @@ interface MediaContextType {
   // Library Actions (CMS / User)
   openPlayer: (item: MediaItem) => void;
   closePlayer: () => void;
-  addMediaItem: (item: MediaItem) => void;
-  updateMediaItem: (item: MediaItem) => void;
-  deleteMediaItem: (id: string) => void;
-  incrementViews: (id: string) => void;
-  addWatchTime: (id: string, minutes: number) => void;
+  addMediaItem: (item: MediaItem) => Promise<void>;
+  updateMediaItem: (item: MediaItem) => Promise<void>;
+  deleteMediaItem: (id: string) => Promise<void>;
+  incrementViews: (id: string) => Promise<void>;
+  addWatchTime: (id: string, minutes: number) => Promise<void>;
   
   // User Actions
   toggleFavorite: (id: string) => void;
@@ -49,10 +49,73 @@ export const MediaProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [recentlyViewed, setRecentlyViewed] = useState<string[]>([]);
   const [continueWatching, setContinueWatching] = useState<Record<string, { currentTime: number; duration: number; updatedAt: string }>>({});
 
-  // 1. Initial Load of items & lists
+  // 1. Initial Load of items from Supabase & lists from localStorage
+  const syncItems = async () => {
+    try {
+      const data = await mediaService.getAllMedia();
+      const mapped: MediaItem[] = data
+        .filter(m => m.visible !== false)
+        .map(m => ({
+          id: m.id,
+          title: m.title || '',
+          description: m.description || '',
+          youtubeUrl: m.youtubeUrl,
+          youtubeId: m.youtubeVideoId,
+          thumbnail: m.thumbnail,
+          category: m.category || 'General',
+          collection: [m.category?.toLowerCase() || 'general', m.featured ? 'featured' : 'latest'],
+          speaker: m.speaker,
+          instructor: m.speaker || 'LEO Faculty',
+          duration: '15:00',
+          publishedDate: m.publishedDate || m.createdAt?.split('T')[0] || '2025-01-01',
+          language: 'Hindi & English',
+          tags: [m.category || 'General'],
+          featured: m.featured,
+          visibility: m.visible ? 'public' : 'private',
+          createdAt: m.createdAt || new Date().toISOString(),
+          updatedAt: m.updatedAt || new Date().toISOString(),
+          viewCount: m.viewCount || 0
+        }));
+      setItems(mapped);
+    } catch (e) {
+      console.error("Failed to sync media from Supabase:", e);
+    }
+  };
+
   useEffect(() => {
-    // Items
-    setItems(MediaLibrary.getAll());
+    let isMounted = true;
+    mediaService.getAllMedia()
+      .then(data => {
+        if (!isMounted) return;
+        const mapped: MediaItem[] = data
+          .filter(m => m.visible !== false)
+          .map(m => ({
+            id: m.id,
+            title: m.title || '',
+            description: m.description || '',
+            youtubeUrl: m.youtubeUrl,
+            youtubeId: m.youtubeVideoId,
+            thumbnail: m.thumbnail,
+            category: m.category || 'General',
+            collection: [m.category?.toLowerCase() || 'general', m.featured ? 'featured' : 'latest'],
+            speaker: m.speaker,
+            instructor: m.speaker || 'LEO Faculty',
+            duration: '15:00',
+            publishedDate: m.publishedDate || m.createdAt?.split('T')[0] || '2025-01-01',
+            language: 'Hindi & English',
+            tags: [m.category || 'General'],
+            featured: m.featured,
+            visibility: m.visible ? 'public' : 'private',
+            createdAt: m.createdAt || new Date().toISOString(),
+            updatedAt: m.updatedAt || new Date().toISOString(),
+            viewCount: m.viewCount || 0
+          }));
+        setItems(mapped);
+      })
+      .catch(err => {
+        console.error("Failed to load Supabase media:", err);
+        if (isMounted) setItems([]);
+      });
 
     // User preference lists
     try {
@@ -70,12 +133,11 @@ export const MediaProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     } catch (e) {
       console.warn("Could not load user media configuration:", e);
     }
-  }, []);
 
-  // Sync state functions
-  const syncItems = () => {
-    setItems([...MediaLibrary.getAll()]);
-  };
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   // 2. Playback Control
   const openPlayer = (item: MediaItem) => {
@@ -108,36 +170,82 @@ export const MediaProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }));
   };
 
-  // 3. CMS Actions
-  const addMediaItem = (item: MediaItem) => {
-    MediaLibrary.add(item);
-    syncItems();
-  };
-
-  const updateMediaItem = (item: MediaItem) => {
-    MediaLibrary.update(item);
-    syncItems();
-    if (activeItem && activeItem.id === item.id) {
-      setActiveItem(item);
+  // 3. CMS Actions backed by Supabase mediaService
+  const addMediaItem = async (item: MediaItem) => {
+    try {
+      await mediaService.saveMedia({
+        id: item.id,
+        mentorId: 'founder',
+        title: item.title,
+        description: item.description,
+        youtubeUrl: item.youtubeUrl,
+        youtubeVideoId: item.youtubeId,
+        thumbnail: item.thumbnail,
+        category: item.category,
+        featured: !!item.featured,
+        visible: item.visibility === 'public',
+        order: 0,
+        speaker: item.speaker || item.instructor
+      });
+      await syncItems();
+    } catch (e) {
+      console.error("Failed to add media item:", e);
     }
   };
 
-  const deleteMediaItem = (id: string) => {
-    MediaLibrary.delete(id);
-    syncItems();
-    if (activeItem && activeItem.id === id) {
-      closePlayer();
+  const updateMediaItem = async (item: MediaItem) => {
+    try {
+      await mediaService.updateMedia(item.id, {
+        title: item.title,
+        description: item.description,
+        youtubeUrl: item.youtubeUrl,
+        youtubeVideoId: item.youtubeId,
+        thumbnail: item.thumbnail,
+        category: item.category,
+        featured: !!item.featured,
+        visible: item.visibility === 'public',
+        speaker: item.speaker || item.instructor
+      });
+      await syncItems();
+      if (activeItem && activeItem.id === item.id) {
+        setActiveItem(item);
+      }
+    } catch (e) {
+      console.error("Failed to update media item:", e);
     }
   };
 
-  const incrementViews = (id: string) => {
-    MediaLibrary.incrementViews(id);
-    syncItems();
+  const deleteMediaItem = async (id: string) => {
+    try {
+      await mediaService.deleteMedia(id);
+      await syncItems();
+      if (activeItem && activeItem.id === id) {
+        closePlayer();
+      }
+    } catch (e) {
+      console.error("Failed to delete media item:", e);
+    }
   };
 
-  const addWatchTime = (id: string, minutes: number) => {
-    MediaLibrary.addWatchTime(id, minutes);
-    syncItems();
+  const incrementViews = async (id: string) => {
+    try {
+      const item = items.find(i => i.id === id);
+      if (item) {
+        const newViews = (item.viewCount || 0) + 1;
+        await mediaService.updateMedia(id, { viewCount: newViews });
+        await syncItems();
+      }
+    } catch (e) {
+      console.warn("Failed to increment views:", e);
+    }
+  };
+
+  const addWatchTime = async (id: string, minutes: number) => {
+    try {
+      await syncItems();
+    } catch (e) {
+      console.warn("Failed to add watch time:", e);
+    }
   };
 
   // 4. User Interaction Methods
@@ -190,9 +298,8 @@ export const MediaProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     localStorage.removeItem('leo-media-progress');
   };
 
-  const resetToDefault = () => {
-    MediaLibrary.resetToDefault();
-    syncItems();
+  const resetToDefault = async () => {
+    await syncItems();
     closePlayer();
   };
 

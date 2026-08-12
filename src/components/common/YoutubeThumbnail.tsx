@@ -5,7 +5,9 @@ import { parseYoutubeUrl, getFallbackThumbnails, fetchYoutubeArtwork } from '../
 import { BrandRegistry } from '../../config/brandRegistry';
 
 interface YoutubeThumbnailProps {
-  url: string;
+  url?: string;
+  thumbnail?: string;
+  youtubeVideoId?: string;
   className?: string;
   alt?: string;
   lazy?: boolean;
@@ -16,7 +18,9 @@ interface YoutubeThumbnailProps {
 }
 
 export const YoutubeThumbnail: React.FC<YoutubeThumbnailProps> = ({
-  url,
+  url = '',
+  thumbnail = '',
+  youtubeVideoId = '',
   className = '',
   alt = 'YouTube Video Thumbnail',
   lazy = true,
@@ -32,7 +36,9 @@ export const YoutubeThumbnail: React.FC<YoutubeThumbnailProps> = ({
   const [isHovered, setIsHovered] = useState<boolean>(false);
   const imgRef = useRef<HTMLImageElement>(null);
 
-  const { type, id } = parseYoutubeUrl(url);
+  const parsed = url ? parseYoutubeUrl(url) : { type: 'video' as const, id: youtubeVideoId || '' };
+  const type = parsed.type;
+  const id = parsed.id || youtubeVideoId || '';
 
   // Synchronously set initial high resolution URL for video/shorts to avoid blank states
   useEffect(() => {
@@ -40,17 +46,20 @@ export const YoutubeThumbnail: React.FC<YoutubeThumbnailProps> = ({
     setLoading(true);
 
     if (type === 'video' || type === 'shorts') {
-      const list = getFallbackThumbnails(id);
+      const fallbacks = getFallbackThumbnails(id);
+      const list = thumbnail ? [thumbnail, ...fallbacks] : fallbacks;
       setFallbackList(list);
       if (list.length > 0) {
         setResolvedUrl(list[0]);
+      } else if (thumbnail) {
+        setResolvedUrl(thumbnail);
+        setLoading(false);
       }
     } else if (type === 'playlist' || type === 'channel') {
-      // Fetch playlist or channel artwork asynchronously (cached automatically)
       let active = true;
-      fetchYoutubeArtwork(url, id, type).then((artworkUrl) => {
+      fetchYoutubeArtwork(url || '', id, type).then((artworkUrl) => {
         if (active) {
-          setResolvedUrl(artworkUrl);
+          setResolvedUrl(thumbnail || artworkUrl);
           setLoading(false);
         }
       });
@@ -58,11 +67,10 @@ export const YoutubeThumbnail: React.FC<YoutubeThumbnailProps> = ({
         active = false;
       };
     } else {
-      // Generic fallback
-      setResolvedUrl(BrandRegistry.assets?.backgroundImages?.luxury || '/gemstone-assets/background.png');
+      setResolvedUrl(thumbnail || BrandRegistry.assets?.backgroundImages?.luxury || '/gemstone-assets/background.png');
       setLoading(false);
     }
-  }, [url, type, id]);
+  }, [url, thumbnail, youtubeVideoId, type, id]);
 
   // Handle image loading error or 120x90 missing thumbnail placeholder detection
   const handleLoad = () => {

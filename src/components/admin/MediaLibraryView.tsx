@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { Media } from '../../models/media';
 import { mediaService } from '../../services/mediaService';
+import { supabase } from '../../lib/supabaseClient';
 
 const MENTOR_NAMES: Record<string, string> = {
   raajeev: 'Raajeev Singh Chauhann',
@@ -31,12 +32,15 @@ export default function MediaLibraryView() {
   const [notification, setNotification] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [fetchingYt, setFetchingYt] = useState(false);
 
   // Form state
   const [formData, setFormData] = useState<Partial<Media>>({
     mentorId: 'raajeev',
     youtubeUrl: '',
     youtubeVideoId: '',
+    title: '',
+    description: '',
     thumbnail: '',
     category: 'Masterclass',
     featured: false,
@@ -80,6 +84,41 @@ export default function MediaLibraryView() {
       youtubeVideoId: videoId || prev.youtubeVideoId || '',
       thumbnail: videoId && !prev.thumbnail ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : prev.thumbnail
     }));
+  };
+
+  const handleFetchYoutubeInfo = async () => {
+    if (!formData.youtubeUrl) {
+      alert('Please enter a valid YouTube URL first.');
+      return;
+    }
+    try {
+      setFetchingYt(true);
+      const { data, error } = await supabase.functions.invoke('fetch-youtube-metadata', {
+        body: { youtubeUrl: formData.youtubeUrl }
+      });
+
+      if (error || !data || !data.success) {
+        throw new Error(error?.message || data?.error || 'Failed to fetch YouTube info');
+      }
+
+      const resData = data.data;
+      setFormData(prev => ({
+        ...prev,
+        youtubeVideoId: resData.youtubeVideoId || prev.youtubeVideoId,
+        youtubeUrl: resData.youtubeUrl || prev.youtubeUrl,
+        title: resData.title || prev.title,
+        description: resData.description || prev.description,
+        thumbnail: resData.thumbnail || prev.thumbnail,
+        publishedDate: resData.publishedDate || prev.publishedDate,
+        viewCount: resData.viewCount !== undefined ? resData.viewCount : prev.viewCount
+      }));
+      showNotification('YouTube metadata fetched successfully.');
+    } catch (err: any) {
+      console.error('Fetch YouTube info error:', err);
+      alert('Unable to fetch YouTube information. Please verify the video URL and try again.');
+    } finally {
+      setFetchingYt(false);
+    }
   };
 
   const handleOpenCreate = () => {
@@ -319,9 +358,20 @@ export default function MediaLibraryView() {
 
             <form onSubmit={handleSubmit} className="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1.5">
-                  YouTube Video URL
-                </label>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600">
+                    YouTube Video URL
+                  </label>
+                  <button
+                    type="button"
+                    onClick={handleFetchYoutubeInfo}
+                    disabled={fetchingYt}
+                    className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded-lg text-[11px] font-medium shadow-xs transition-colors disabled:opacity-50 inline-flex items-center gap-1.5"
+                  >
+                    <Youtube className="w-3.5 h-3.5" />
+                    {fetchingYt ? 'Fetching...' : 'Fetch YouTube Info'}
+                  </button>
+                </div>
                 <div className="relative">
                   <Youtube className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-red-600" />
                   <input
@@ -333,6 +383,32 @@ export default function MediaLibraryView() {
                     className="w-full pl-10 pr-4 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-900 focus:outline-none focus:border-amber-600"
                   />
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1.5">
+                  Video Title (Auto-fetched or Custom)
+                </label>
+                <input
+                  type="text"
+                  value={formData.title || ''}
+                  onChange={e => setFormData({ ...formData, title: e.target.value })}
+                  placeholder="e.g. Masterclass on Numerology"
+                  className="w-full px-4 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-900 focus:outline-none focus:border-amber-600"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1.5">
+                  Description (Auto-fetched or Custom)
+                </label>
+                <textarea
+                  rows={3}
+                  value={formData.description || ''}
+                  onChange={e => setFormData({ ...formData, description: e.target.value })}
+                  placeholder="Video description..."
+                  className="w-full px-4 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-900 focus:outline-none focus:border-amber-600 resize-none"
+                />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

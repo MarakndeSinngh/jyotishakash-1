@@ -22,6 +22,38 @@ export default function FeaturedCoursesHomepage() {
 
   const homepageData = data as any;
   const rawPrograms = homepageData?.featuredPrograms || [];
+  const founder = homepageData?.founder;
+  const facultyMembers = homepageData?.facultyMembers || [];
+
+  const facultyTabs: { id: string; label: string }[] = [];
+  if (founder && founder.active !== false) {
+    facultyTabs.push({
+      id: founder.id || 'raajeev',
+      label: '👑 Founder'
+    });
+  }
+  facultyMembers.forEach((f: any) => {
+    if (f.active !== false && f.id !== (founder?.id || 'raajeev')) {
+      let label = f.name;
+      if (f.id === 'shaunak') label = 'Shaunak S. Patthak';
+      else if (f.id === 'sannjoy') label = 'Sannjoy Biswass';
+      facultyTabs.push({
+        id: f.id,
+        label
+      });
+    }
+  });
+
+  const tabs = [
+    { id: 'all', label: 'All Programs' },
+    ...facultyTabs
+  ];
+
+  useEffect(() => {
+    if (selectedTab !== 'all' && !tabs.some(t => t.id === selectedTab)) {
+      setSelectedTab('all');
+    }
+  }, [tabs, selectedTab]);
 
   const filteredRawPrograms = selectedTab === 'all' 
     ? rawPrograms 
@@ -86,12 +118,7 @@ export default function FeaturedCoursesHomepage() {
 
         {/* Filter Tabs */}
         <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mb-16 max-w-3xl mx-auto">
-          {[
-            { id: 'all', label: 'All Programs' },
-            { id: 'raajeev', label: '👑 Founder' },
-            { id: 'shaunak', label: 'Shaunak S. Patthak' },
-            { id: 'sannjoy', label: 'Sannjoy Biswass' },
-          ].map((tab) => {
+          {tabs.map((tab) => {
             const isActive = selectedTab === tab.id;
             return (
               <button

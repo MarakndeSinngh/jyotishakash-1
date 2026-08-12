@@ -99,7 +99,7 @@ function LiveCountdown({ targetDate }: { targetDate: string }) {
 }
 
 export default function AcademyLandingPage({ navigate }: AcademyLandingPageProps) {
-  const { activeAcademy, isNotFound, switchAcademy } = useAcademy();
+  const { activeAcademy, isNotFound, isLoading, switchAcademy } = useAcademy();
   const { t } = useLanguage();
 
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('All');
@@ -119,6 +119,17 @@ export default function AcademyLandingPage({ navigate }: AcademyLandingPageProps
 
   // Gemstone Finder State
   const [selectedGoal, setSelectedGoal] = useState<'wealth' | 'career' | 'health' | 'harmony'>('wealth');
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="text-text-secondary text-xs uppercase tracking-widest font-semibold font-cinzel">Verifying Academy Access...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (isNotFound || !activeAcademy) {
     return <AcademyNotFound />;

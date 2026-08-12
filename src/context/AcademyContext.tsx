@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { AcademyConfig, ACADEMIES_REGISTRY, DEFAULT_ACADEMY_SLUG, getAllAcademies } from '../config/academies';
+import { facultyService } from '../services/facultyService';
 
 interface AcademyContextType {
   activeAcademy: AcademyConfig;
@@ -7,6 +8,7 @@ interface AcademyContextType {
   allAcademies: AcademyConfig[];
   switchAcademy: (slug: string) => void;
   isNotFound: boolean;
+  isLoading: boolean;
   getAcademyBySlug: (slug: string) => AcademyConfig | undefined;
 }
 
@@ -16,6 +18,8 @@ export const AcademyProvider: React.FC<{ children: ReactNode }> = ({ children })
   const [activeSlug, setActiveSlug] = useState<string>(() => {
     return parseAcademySlugFromPath(window.location.pathname);
   });
+  const [isFacultyActive, setIsFacultyActive] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(() => pathnameIsAcademyRoute(window.location.pathname));
 
   function parseAcademySlugFromPath(pathname: string): string {
     if (pathname.startsWith('/academy/')) {
@@ -26,27 +30,71 @@ export const AcademyProvider: React.FC<{ children: ReactNode }> = ({ children })
     return DEFAULT_ACADEMY_SLUG;
   }
 
-  // Determine if current slug is in registry
-  const academyInRegistry = ACADEMIES_REGISTRY[activeSlug];
-  const isNotFound = pathnameIsAcademyRoute(window.location.pathname) && !academyInRegistry;
-  
   function pathnameIsAcademyRoute(pathname: string): boolean {
     if (!pathname.startsWith('/academy/')) return false;
     const parts = pathname.split('/').filter(Boolean);
     return parts.length >= 2;
   }
 
-  const activeAcademy: AcademyConfig = academyInRegistry || ACADEMIES_REGISTRY[DEFAULT_ACADEMY_SLUG];
+  const academyInRegistry = ACADEMIES_REGISTRY[activeSlug];
+  const isRegistryNotFound = pathnameIsAcademyRoute(window.location.pathname) && !academyInRegistry;
 
   useEffect(() => {
+    let isMounted = true;
+    const verifyFaculty = async () => {
+      setIsLoading(true);
+      if (!pathnameIsAcademyRoute(window.location.pathname)) {
+        if (isMounted) {
+          setIsFacultyActive(true);
+          setIsLoading(false);
+        }
+        return;
+      }
+
+      if (!academyInRegistry) {
+        if (isMounted) {
+          setIsFacultyActive(false);
+          setIsLoading(false);
+        }
+        return;
+      }
+
+      try {
+        const activeFacultyList = await facultyService.getAllFaculty();
+        const activeFound = activeFacultyList.some(
+          f => f.id.toLowerCase() === activeSlug.toLowerCase()
+        );
+        if (isMounted) {
+          setIsFacultyActive(activeFound);
+        }
+      } catch (err) {
+        console.error('Error verifying faculty active status:', err);
+        if (isMounted) {
+          setIsFacultyActive(false); // Fail closed securely
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    verifyFaculty();
+
     const handlePopState = () => {
       const slug = parseAcademySlugFromPath(window.location.pathname);
       setActiveSlug(slug);
     };
 
     window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
-  }, []);
+    return () => {
+      isMounted = false;
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [activeSlug]);
+
+  const isNotFound = isRegistryNotFound || (pathnameIsAcademyRoute(window.location.pathname) && (!isFacultyActive || !academyInRegistry));
+  const activeAcademy: AcademyConfig = academyInRegistry || ACADEMIES_REGISTRY[DEFAULT_ACADEMY_SLUG];
 
   const switchAcademy = (slug: string) => {
     const cleanSlug = slug.toLowerCase().trim().replace(/^\/academy\/?/, '');
@@ -74,6 +122,7 @@ export const AcademyProvider: React.FC<{ children: ReactNode }> = ({ children })
         allAcademies: getAllAcademies(),
         switchAcademy,
         isNotFound,
+        isLoading,
         getAcademyBySlug,
       }}
     >

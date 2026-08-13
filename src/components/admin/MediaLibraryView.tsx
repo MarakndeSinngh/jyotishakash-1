@@ -98,6 +98,41 @@ export default function MediaLibraryView() {
     }));
   };
 
+  const getYouTubeErrorMessage = (err: any, data: any): string => {
+    const status = err?.status || err?.context?.status;
+    const msg = (data?.error || err?.message || '').toLowerCase();
+
+    if (msg.includes('failed to send a request') || msg.includes('network error') || msg.includes('fetch failed') || (!status && (msg.includes('failed to fetch') || msg.includes('network')))) {
+      return 'Unable to connect to the YouTube service. Please try again.';
+    }
+
+    if (status === 401 || msg.includes('401') || msg.includes('session') || (msg.includes('unauthorized') && !msg.includes('channel'))) {
+      return 'Your admin session has expired. Please sign in again.';
+    }
+
+    if (status === 403 || msg.includes('403') || msg.includes('forbidden') || msg.includes('does not belong to') || msg.includes('unauthorized youtube channel')) {
+      return 'External YouTube Channel — this video is not from the approved LEO Family channel.';
+    }
+
+    if (status === 404 || msg.includes('404') || msg.includes('not found')) {
+      return 'YouTube video not found.';
+    }
+
+    if (status === 400 || msg.includes('400') || msg.includes('invalid')) {
+      return 'Invalid YouTube video URL.';
+    }
+
+    if (status === 429 || msg.includes('429') || msg.includes('quota')) {
+      return 'YouTube API quota exceeded. Please try again later.';
+    }
+
+    if (status >= 500 || msg.includes('500') || msg.includes('server configuration') || msg.includes('encountered an error')) {
+      return 'YouTube metadata service encountered an error.';
+    }
+
+    return data?.error || err?.message || 'Unable to fetch YouTube information. Please verify the video URL and try again.';
+  };
+
   const handleFetchYoutubeInfo = async () => {
     if (!formData.youtubeUrl) {
       alert('Please enter a valid YouTube URL first.');
@@ -109,9 +144,9 @@ export default function MediaLibraryView() {
         body: { youtubeUrl: formData.youtubeUrl }
       });
 
-      const serverError = data?.error || error?.message;
+      const serverError = data?.error || error;
       if (serverError || !data || !data.success) {
-        throw new Error(serverError || 'Failed to fetch YouTube info');
+        throw error || new Error(data?.error || 'Failed to fetch YouTube info');
       }
 
       const resData = data.data;
@@ -128,18 +163,8 @@ export default function MediaLibraryView() {
       showNotification('YouTube metadata fetched successfully.');
     } catch (err: any) {
       console.error('Fetch YouTube info error:', err);
-      const errMsg = err.message || '';
-      if (errMsg.includes('does not belong to the official LEO Family') || errMsg.includes('unauthorized YouTube channel')) {
-        alert('External YouTube Channel: This video does not belong to the official LEO Family YouTube channel.');
-      } else if (errMsg.includes('Video not found')) {
-        alert('Video not found on YouTube.');
-      } else if (errMsg.includes('quota')) {
-        alert('YouTube API quota exceeded.');
-      } else if (errMsg.includes('authentication')) {
-        alert('YouTube API authentication failed.');
-      } else {
-        alert(errMsg || 'Unable to fetch YouTube information. Please verify the video URL and try again.');
-      }
+      const errMessage = getYouTubeErrorMessage(err, err?.response?.data);
+      alert(errMessage);
     } finally {
       setFetchingYt(false);
     }
@@ -152,9 +177,9 @@ export default function MediaLibraryView() {
         body: { youtubeUrl: item.youtubeUrl }
       });
 
-      const serverError = data?.error || error?.message;
+      const serverError = data?.error || error;
       if (serverError || !data || !data.success) {
-        throw new Error(serverError || 'Failed to sync');
+        throw error || new Error(data?.error || 'Failed to sync');
       }
 
       const resData = data.data;
@@ -170,8 +195,8 @@ export default function MediaLibraryView() {
       showNotification(`Successfully synced metadata for "${item.title || item.youtubeVideoId}"`);
     } catch (err: any) {
       console.error('Sync error:', err);
-      const errMsg = err.message || '';
-      alert(errMsg ? `Failed to sync: ${errMsg}` : 'Failed to sync YouTube metadata. Please try again.');
+      const errMessage = getYouTubeErrorMessage(err, null);
+      alert(`Failed to sync: ${errMessage}`);
     } finally {
       setSyncingId(null);
     }

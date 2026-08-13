@@ -20,6 +20,7 @@ interface MediaContextType {
   deleteMediaItem: (id: string) => Promise<void>;
   incrementViews: (id: string) => Promise<void>;
   addWatchTime: (id: string, minutes: number) => Promise<void>;
+  refresh: () => Promise<void>;
   
   // User Actions
   toggleFavorite: (id: string) => void;
@@ -344,6 +345,7 @@ export const MediaProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         deleteMediaItem,
         incrementViews,
         addWatchTime,
+        refresh: syncItems,
         
         toggleFavorite,
         toggleWatchLater,

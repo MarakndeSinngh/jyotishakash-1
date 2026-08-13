@@ -46,7 +46,11 @@ const HeroSection: React.FC<HeroSectionProps> = () => {
   const { switchAcademy } = useAcademy();
   const { t } = useLanguage();
   const { openLightbox } = useVideoLightbox();
-  const { items: media, openPlayer } = useMedia();
+  const { items: media, openPlayer, refresh } = useMedia();
+
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
 
   const studentReviews = media
     .filter(item => item.category === "Student Reviews" && item.visibility !== 'private')

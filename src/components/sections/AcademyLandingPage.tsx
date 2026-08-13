@@ -229,16 +229,16 @@ export default function AcademyLandingPage({ navigate }: AcademyLandingPageProps
       <LandingHero />
 
       {/* ==================================================
-          PROMINENT WEBINAR PROMOTION & WHATSAPP CTA
+          5 DAYS MEGA LIVE PREDICTION NUMEROLOGY MASTERCLASS
           ================================================== */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        className="max-w-5xl mx-auto my-16 px-6 relative z-10"
+        className="max-w-5xl mx-auto my-16 px-6 relative z-10 space-y-12"
       >
+        {/* HERO MASTERCLASS BANNER */}
         <div className="bg-gradient-to-br from-card via-card/95 to-surface border-2 border-primary/40 rounded-[2.5rem] p-8 md:p-14 shadow-2xl relative overflow-hidden">
-          {/* Background Ambient Glow */}
           <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
           <div className="absolute bottom-0 left-0 w-96 h-96 bg-amber-500/5 rounded-full blur-3xl pointer-events-none" />
 
@@ -248,82 +248,334 @@ export default function AcademyLandingPage({ navigate }: AcademyLandingPageProps
             <div className="flex flex-wrap items-center justify-center gap-3">
               <span className="px-4 py-1.5 rounded-full bg-primary text-background text-xs font-bold uppercase tracking-[0.2em] shadow-lg flex items-center gap-2">
                 <Sparkles className="w-4 h-4" />
-                <span>10 DAYS FREE</span>
+                <span>100% FREE • LIVE • 5 DAYS</span>
               </span>
               <span className="px-4 py-1.5 rounded-full bg-primary/15 border border-primary/30 text-primary text-xs font-bold uppercase tracking-[0.2em]">
-                FREE 10-DAY LIVE WEBINAR
+                LIMITED SEATS ONLY
               </span>
             </div>
 
             {/* Titles */}
-            <div className="space-y-3">
-              <h3 className="text-3xl sm:text-4xl md:text-5xl font-extrabold font-cinzel tracking-tight text-text-primary">
-                ADVANCE LIVE WEBINAR
-              </h3>
+            <div className="space-y-4">
               <div className="text-xl sm:text-2xl font-bold font-cinzel text-primary tracking-wide">
-                ADVANCE CHALDEAN NUMEROLOGY
+                Numerology Sab Sikhate Hain… Prediction Kaun Sikhata Hai?
               </div>
-              <p className="text-base sm:text-lg text-text-secondary font-light italic max-w-2xl mx-auto pt-2">
-                “Learn Advanced Chaldean Numerology — Practical Knowledge, Real Case Studies & Powerful Numerology Techniques”
+              <h3 className="text-3xl sm:text-4xl md:text-5xl font-extrabold font-cinzel tracking-tight text-text-primary leading-tight">
+                5 DAYS MEGA LIVE PREDICTION NUMEROLOGY MASTERCLASS
+              </h3>
+              <p className="text-lg sm:text-xl font-bold text-amber-400 font-cinzel">
+                🔮 EXPERIENCE THE MAGIC OF PREDICTION — LIVE!
+              </p>
+              <p className="text-sm sm:text-base text-text-secondary font-medium tracking-wide">
+                For Those Who Know the Basics of Numerology & Want to Master Prediction
               </p>
             </div>
 
-            {/* Key Learning Points Grid */}
-            <div className="pt-6 pb-2 border-t border-b border-border/20">
-              <h4 className="text-xs uppercase tracking-[0.25em] font-bold text-primary mb-6 font-cinzel">
-                Key Learning Curriculum & Masterclass Highlights
+            {/* HERO PROBLEM SECTION */}
+            <div className="bg-background/70 border border-border/25 rounded-2xl p-6 sm:p-8 text-left space-y-4 shadow-inner">
+              <h4 className="text-base sm:text-lg font-bold font-cinzel text-primary text-center">
+                क्या आपने Numerology सीखी है… लेकिन फिर भी Prediction में Confidence नहीं आता?
               </h4>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 text-left">
+              <p className="text-xs sm:text-sm text-text-secondary font-light leading-relaxed text-center">
+                आपने शायद Numbers, Names, Dates, Charts, Rules और अलग-अलग Numerology Systems के बारे में सीखा होगा।
+              </p>
+              <p className="text-xs sm:text-sm text-text-primary font-medium text-center pt-2">
+                लेकिन जब कोई सामने बैठकर पूछता है—
+              </p>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                 {[
-                  'Advanced Chaldean Numerology',
-                  'Name Corrections',
-                  'Hidden Numbers & Karmic Lessons',
-                  'Birth Chart Decoding',
-                  'Mobile & Business Numerology',
-                  'Life Purpose & Destiny Numbers',
-                  'Money Magnet Numbers',
-                  'Powerful Remedies',
-                  'Real Case Studies',
-                  'Professional Consultation Skills'
-                ].map((point, idx) => (
-                  <div key={idx} className="flex items-start gap-2.5 bg-background/50 border border-border/20 p-3.5 rounded-xl shadow-xs">
-                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-                    <span className="text-xs sm:text-sm font-medium text-text-primary leading-tight">{point}</span>
+                  "“मेरे Career में क्या होनेवाला है?”",
+                  "“मेरी शादी कब होगी?”",
+                  "“Business में क्या होगा?”",
+                  "“मेरी Problem का actual कारण क्या है?”",
+                  "“आगे आनेवाले समय में क्या बदलाव होंगे?”"
+                ].map((q, idx) => (
+                  <div key={idx} className="bg-card/80 border border-border/20 p-3.5 rounded-xl flex items-center gap-2.5 shadow-xs">
+                    <span className="w-2 h-2 rounded-full bg-primary shrink-0" />
+                    <span className="text-xs font-semibold text-text-primary italic">{q}</span>
                   </div>
                 ))}
               </div>
+
+              <div className="pt-4 text-center space-y-2 border-t border-border/20">
+                <p className="text-xs sm:text-sm text-text-secondary">
+                  तब क्या आप सिर्फ numbers explain करते हैं… या confidently prediction कर पाते हैं?
+                </p>
+                <p className="text-sm sm:text-base font-bold font-cinzel text-primary">
+                  यही फर्क है— Numerology जानने और Numerology से Prediction करने में।
+                </p>
+              </div>
             </div>
 
-            {/* WhatsApp Group CTA Box */}
-            <div className="bg-gradient-to-r from-emerald-950/40 via-card to-emerald-950/40 border border-emerald-500/30 rounded-2xl p-6 sm:p-8 shadow-xl space-y-4">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 text-[10px] sm:text-xs font-bold uppercase tracking-widest">
-                <Users className="w-3.5 h-3.5" />
-                <span>Official Community Hub</span>
-              </div>
-
-              <h4 className="text-xl sm:text-2xl font-bold font-cinzel text-text-primary">
-                JOIN OUR OFFICIAL WHATSAPP GROUP
+            {/* CORE MESSAGE */}
+            <div className="bg-gradient-to-r from-primary/10 via-card to-primary/10 border border-primary/30 rounded-2xl p-6 sm:p-8 text-center space-y-3">
+              <h4 className="text-sm sm:text-base font-extrabold font-cinzel tracking-wider text-text-primary">
+                NUMEROLOGY KNOWLEDGE IS NOT ENOUGH. PREDICTION IS THE NEXT LEVEL.
               </h4>
-
-              <p className="text-text-secondary text-xs sm:text-sm max-w-xl mx-auto font-light">
-                “Join the community and stay updated with webinar sessions, announcements, learning resources and important updates.”
+              <p className="text-xs sm:text-sm text-text-secondary font-light max-w-2xl mx-auto">
+                Numerology की basic knowledge आपको Numerologist बना सकती है। लेकिन practical prediction की understanding आपकी reading, consultation और professional practice को एक अलग level पर ले जा सकती है।
               </p>
-
-              <div className="pt-2">
-                <a
-                  href="https://chat.whatsapp.com/JSJ1cD0uUS2AYNabbH8IC3"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-3 px-8 py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold uppercase tracking-wider text-xs sm:text-sm rounded-xl shadow-lg hover:shadow-emerald-600/30 transition-all duration-300 transform hover:-translate-y-0.5 cursor-pointer"
-                >
-                  <Users className="w-5 h-5" />
-                  <span>JOIN WHATSAPP GROUP</span>
-                  <ArrowRight className="w-4 h-4" />
-                </a>
-              </div>
             </div>
 
           </div>
+        </div>
+
+        {/* MASTERCLASS DIFFERENCE & FEATURE CARDS */}
+        <div className="bg-card border border-primary/30 rounded-[2.5rem] p-8 md:p-12 shadow-xl space-y-8">
+          <div className="text-center space-y-2">
+            <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-primary block">
+              5 DAYS MEGA LIVE PREDICTION NUMEROLOGY MASTERCLASS
+            </span>
+            <h3 className="text-2xl sm:text-3xl font-extrabold font-cinzel text-text-primary">
+              इस Masterclass में क्या अलग होगा?
+            </h3>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[
+              { title: "PREDICTION", desc: "Moving beyond static numbers into dynamic future forecasting." },
+              { title: "PRACTICAL APPLICATION", desc: "Real-world consulting frameworks applied instantly." },
+              { title: "REAL CASE ANALYSIS", desc: "Deep study of authentic life cases and career patterns." },
+              { title: "LIVE OBSERVATION", desc: "Watch how master predictions unfold in live sessions." },
+              { title: "THINKING BEYOND BASIC RULES", desc: "Mastering intuitive synthesis over rigid textbook memorization." }
+            ].map((card, i) => (
+              <div key={i} className="bg-background/80 border border-border/20 p-6 rounded-2xl text-left space-y-2 hover:border-primary/40 transition-all shadow-md">
+                <div className="w-8 h-8 rounded-xl bg-primary/20 border border-primary/40 flex items-center justify-center text-primary font-bold text-xs mb-3">
+                  0{i + 1}
+                </div>
+                <h4 className="text-sm font-bold font-cinzel text-primary">{card.title}</h4>
+                <p className="text-xs text-text-secondary font-light leading-relaxed">{card.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* EXPERIENCE PREDICTION LIVE */}
+        <div className="bg-gradient-to-br from-card via-background to-card border border-border/20 rounded-[2.5rem] p-8 md:p-12 shadow-xl text-center space-y-6">
+          <h3 className="text-2xl sm:text-3xl font-extrabold font-cinzel text-text-primary">
+            EXPERIENCE PREDICTION LIVE
+          </h3>
+          <p className="text-sm text-text-secondary max-w-2xl mx-auto font-light">
+            आप केवल theory नहीं पढ़ेंगे। आप LIVE class में prediction होते हुए देखेंगे। Real-life cases को analyse करते हुए आप observe करेंगे कि एक experienced Numerologist:
+          </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 text-left max-w-3xl mx-auto">
+            {[
+              "क्या देखता है",
+              "कैसे जोड़ता है",
+              "किस pattern को पकड़ता है",
+              "किस information को महत्व देता है",
+              "prediction तक कैसे पहुँचता है"
+            ].map((item, idx) => (
+              <div key={idx} className="bg-card border border-border/20 p-4 rounded-xl flex items-center gap-3">
+                <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                <span className="text-xs sm:text-sm font-semibold text-text-primary">{item}</span>
+              </div>
+            ))}
+          </div>
+
+          <p className="text-xs text-text-secondary italic pt-2">
+            The section should communicate EXPERIENCE and OBSERVATION rather than just theory.
+          </p>
+        </div>
+
+        {/* MENTOR SECTION */}
+        <div className="bg-card border border-primary/30 rounded-[2.5rem] p-8 md:p-12 shadow-xl grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+          <div className="md:col-span-5 text-center">
+            <div className="aspect-[4/5] rounded-2xl overflow-hidden border-2 border-primary/40 shadow-2xl max-w-xs mx-auto">
+              <img
+                src={activeAcademy.assets.profileImage || "/assets/teachers/Raajeev.webp"}
+                alt="Raajeev Singh Chauhann"
+                className="w-full h-full object-cover"
+              />
+            </div>
+          </div>
+
+          <div className="md:col-span-7 space-y-6 text-left">
+            <div>
+              <span className="text-[10px] uppercase font-bold tracking-[0.25em] text-primary block mb-1">
+                LEARN DIRECTLY FROM
+              </span>
+              <h3 className="text-3xl sm:text-4xl font-extrabold font-cinzel text-text-primary">
+                RAAJEEV SINGH CHAUHANN
+              </h3>
+              <p className="text-xs font-bold text-primary tracking-wider uppercase mt-1">
+                Founder of Practical Numerology • Bollywood Actor & Director • King of Prediction in Numerology
+              </p>
+            </div>
+
+            <p className="text-xs sm:text-sm text-text-secondary font-light leading-relaxed">
+              Practical Numerology के अपने unique approach के साथ, Raajeev Singh Chauhann आपको Numerology को केवल जानने के बजाय उसे practical perspective से देखने और prediction की दिशा में apply करने का LIVE experience देंगे.
+            </p>
+
+            <div className="inline-flex items-center gap-2 bg-primary/15 border border-primary/30 px-5 py-3 rounded-xl text-xs font-bold text-primary">
+              <Award className="w-5 h-5 text-primary shrink-0" />
+              <span>🏆 10,000+ Families Transformed Through Practical Numerology</span>
+            </div>
+          </div>
+        </div>
+
+        {/* WHO SHOULD JOIN? */}
+        <div className="bg-card border border-border/20 rounded-[2.5rem] p-8 md:p-12 shadow-xl space-y-6 text-left">
+          <div className="text-center space-y-2">
+            <h3 className="text-2xl sm:text-3xl font-extrabold font-cinzel text-text-primary">
+              WHO SHOULD JOIN?
+            </h3>
+            <p className="text-xs sm:text-sm text-text-secondary font-light max-w-2xl mx-auto">
+              यह Masterclass Basic Numerology सीखने वालों के लिए नहीं, बल्कि उन लोगों के लिए है जो basics के आगे जाना चाहते हैं।
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {[
+              "आपने Numerology के basics सीखे हैं",
+              "आप Numerology को career के रूप में pursue करना चाहते हैं",
+              "आप Numerology consultation करना चाहते हैं",
+              "Prediction में confidence develop करना चाहते हैं",
+              "आपको लगता है कि आपकी Numerology knowledge है, लेकिन practical application अभी बाकी है",
+              "आप Astrology / Numerology / Occult field में हैं और Prediction skill को explore करना चाहते हैं"
+            ].map((point, idx) => (
+              <div key={idx} className="bg-background/80 border border-border/20 p-4 rounded-xl flex items-start gap-3 shadow-xs">
+                <CheckCircle2 className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                <span className="text-xs sm:text-sm font-medium text-text-primary leading-tight">{point}</span>
+              </div>
+            ))}
+          </div>
+
+          <div className="text-center pt-4 border-t border-border/10">
+            <span className="text-sm font-bold font-cinzel text-primary">
+              If You Know the Basics — You’re Ready for the Next Level.
+            </span>
+          </div>
+        </div>
+
+        {/* WHY PREDICTION? & HONEST POSITIONING */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="bg-card border border-border/20 rounded-[2.5rem] p-8 shadow-xl text-left space-y-4 flex flex-col justify-between">
+            <div className="space-y-3">
+              <h3 className="text-xl sm:text-2xl font-extrabold font-cinzel text-primary">
+                WHY PREDICTION?
+              </h3>
+              <p className="text-xs sm:text-sm text-text-secondary font-light leading-relaxed">
+                क्योंकि client को सिर्फ यह जानना नहीं होता कि— <strong className="text-text-primary">“आपका number 5 है.”</strong>
+              </p>
+              <p className="text-xs sm:text-sm text-text-secondary font-light leading-relaxed">
+                वह जानना चाहता है— <strong className="text-text-primary">“अब मेरे साथ क्या होगा?”</strong>
+              </p>
+              <p className="text-xs sm:text-sm text-text-secondary font-light leading-relaxed">
+                यहीं से एक ordinary reading और powerful predictive consultation के बीच का difference शुरू होता है।
+              </p>
+            </div>
+            <div className="pt-4 border-t border-border/10">
+              <span className="text-xs font-extrabold uppercase tracking-wider text-primary block text-center">
+                FROM AVERAGE NUMEROLOGIST TO EXTRAORDINARY NUMEROLOGIST
+              </span>
+            </div>
+          </div>
+
+          <div className="bg-card border border-border/20 rounded-[2.5rem] p-8 shadow-xl text-left space-y-4 flex flex-col justify-between">
+            <div className="space-y-3">
+              <h3 className="text-xl sm:text-2xl font-extrabold font-cinzel text-text-primary">
+                HONEST POSITIONING
+              </h3>
+              <p className="text-xs sm:text-sm text-text-secondary font-light leading-relaxed">
+                यह Masterclass आपको overnight expert बनाने का दावा नहीं करता।
+              </p>
+              <p className="text-xs sm:text-sm text-text-secondary font-light leading-relaxed">
+                लेकिन यह आपको Prediction को एक अलग perspective से LIVE देखने, समझने और सीखने का opportunity जरूर देता है।
+              </p>
+            </div>
+            <div className="pt-4 border-t border-border/10 text-center">
+              <span className="text-[10px] uppercase font-bold tracking-wider text-text-secondary">
+                Transparent & Authentic Learning Commitment
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* EXPERIENCE IT LIVE */}
+        <div className="bg-gradient-to-r from-card via-background to-card border border-primary/30 rounded-[2.5rem] p-8 md:p-12 shadow-xl text-center space-y-6">
+          <h3 className="text-2xl sm:text-3xl font-extrabold font-cinzel text-text-primary">
+            YOU DON’T HAVE TO BELIEVE US. EXPERIENCE IT LIVE.
+          </h3>
+          <p className="text-xs sm:text-sm text-text-secondary max-w-2xl mx-auto font-light">
+            आपको हमारी बात सिर्फ इसलिए मानने की जरूरत नहीं है कि हम कहते हैं कि Prediction powerful है। LIVE class में खुद देखिए।
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-left max-w-3xl mx-auto">
+            <div className="bg-card p-4 rounded-xl border border-border/20 text-xs text-text-secondary">
+              • देखिए कैसे real cases approach किए जाते हैं।
+            </div>
+            <div className="bg-card p-4 rounded-xl border border-border/20 text-xs text-text-secondary">
+              • देखिए कैसे patterns को connect किया जाता है।
+            </div>
+            <div className="bg-card p-4 rounded-xl border border-border/20 text-xs text-text-secondary">
+              • देखिए कैसे prediction की thinking develop की जाती है।
+            </div>
+          </div>
+          <p className="text-xs text-primary font-bold">
+            और फिर खुद decide कीजिए कि यह आपके लिए है या नहीं।
+          </p>
+        </div>
+
+        {/* MASTERCLASS DETAILS & FINAL PHILOSOPHY */}
+        <div className="bg-card border border-primary/40 rounded-[2.5rem] p-8 md:p-12 shadow-2xl space-y-8 text-center">
+          <div className="space-y-2">
+            <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary block">
+              MASTERCLASS DETAILS
+            </span>
+            <h3 className="text-2xl sm:text-3xl font-extrabold font-cinzel text-text-primary">
+              YOUR NEXT LEVEL IN NUMEROLOGY MAY NOT BE ANOTHER SYSTEM. IT MAY BE PREDICTION.
+            </h3>
+            <p className="text-sm font-bold text-primary font-cinzel">
+              Numerology Sab Sikhate Hain… Prediction Kaun Sikhata Hai?
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-left max-w-4xl mx-auto bg-background/80 p-6 rounded-2xl border border-border/20">
+            <div>
+              <span className="text-[10px] uppercase font-bold text-text-secondary block">Mentor</span>
+              <span className="text-xs sm:text-sm font-bold text-text-primary font-cinzel">Raajeev Singh Chauhann</span>
+            </div>
+            <div>
+              <span className="text-[10px] uppercase font-bold text-text-secondary block">Date</span>
+              <span className="text-xs sm:text-sm font-bold text-text-primary font-cinzel">Mid-September 2026</span>
+            </div>
+            <div>
+              <span className="text-[10px] uppercase font-bold text-text-secondary block">Time</span>
+              <span className="text-xs sm:text-sm font-bold text-text-primary font-cinzel">11:00 AM – 1:00 PM</span>
+            </div>
+            <div>
+              <span className="text-[10px] uppercase font-bold text-text-secondary block">Fee & Seats</span>
+              <span className="text-xs sm:text-sm font-bold text-emerald-400 font-cinzel">100% FREE (Limited)</span>
+            </div>
+          </div>
+
+          {/* FINAL CTA BOX */}
+          <div className="bg-gradient-to-r from-emerald-950/40 via-card to-emerald-950/40 border border-emerald-500/30 rounded-2xl p-8 shadow-xl space-y-4 max-w-3xl mx-auto">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 text-xs font-bold uppercase tracking-widest">
+              <Users className="w-4 h-4" />
+              <span>JOIN THE OFFICIAL WHATSAPP GROUP</span>
+            </div>
+
+            <p className="text-xs sm:text-sm text-text-secondary max-w-xl mx-auto font-light">
+              Click below to join the Official WhatsApp Group and receive the complete Masterclass schedule, joining details and important updates.
+            </p>
+
+            <div className="pt-2">
+              <a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-3 px-8 py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold uppercase tracking-wider text-xs sm:text-sm rounded-xl shadow-lg hover:shadow-emerald-600/30 transition-all duration-300 transform hover:-translate-y-0.5 cursor-pointer"
+              >
+                <Users className="w-5 h-5" />
+                <span>JOIN THE OFFICIAL WHATSAPP GROUP</span>
+                <ArrowRight className="w-4 h-4" />
+              </a>
+            </div>
+          </div>
+
         </div>
       </motion.div>
 

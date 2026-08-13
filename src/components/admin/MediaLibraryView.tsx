@@ -21,6 +21,7 @@ import {
 import { Media } from '../../models/media';
 import { mediaService } from '../../services/mediaService';
 import { supabase } from '../../lib/supabaseClient';
+import { extractYoutubeId } from '../../media/MediaHelpers';
 
 const MENTOR_NAMES: Record<string, string> = {
   raajeev: 'Raajeev Singh Chauhann',
@@ -83,18 +84,15 @@ export default function MediaLibraryView() {
   };
 
   const handleYoutubeUrlChange = (url: string) => {
-    let videoId = '';
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-    const match = url.match(regExp);
-    if (match && match[2].length === 11) {
-      videoId = match[2];
-    }
+    const { id: videoId, isShort } = extractYoutubeId(url);
+    const validVideoId = videoId && videoId.length === 11 ? videoId : '';
 
     setFormData(prev => ({
       ...prev,
       youtubeUrl: url,
-      youtubeVideoId: videoId || prev.youtubeVideoId || '',
-      thumbnail: videoId && !prev.thumbnail ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : prev.thumbnail
+      youtubeVideoId: validVideoId || prev.youtubeVideoId || '',
+      thumbnail: validVideoId && !prev.thumbnail ? `https://img.youtube.com/vi/${validVideoId}/hqdefault.jpg` : prev.thumbnail,
+      category: isShort && (!prev.category || prev.category === 'Masterclass' || prev.category === 'General') ? 'Trending Spiritual Shorts' : prev.category
     }));
   };
 

@@ -9,6 +9,9 @@ import { useAcademy } from '../../context/AcademyContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { facultyService } from '../../services/facultyService';
 import { Faculty } from '../../models/faculty';
+import { YoutubeThumbnail } from '../common/YoutubeThumbnail';
+import { useVideoLightbox } from '../common/VideoLightbox';
+import { useMedia } from '../../media/MediaProvider';
 import { 
   Sparkles, 
   Star, 
@@ -23,7 +26,8 @@ import {
   ChevronRight,
   ArrowRight,
   ShieldCheck,
-  Compass
+  Compass,
+  ArrowUpRight
 } from 'lucide-react';
 
 interface HeroSectionProps {
@@ -41,6 +45,40 @@ const HeroSection: React.FC<HeroSectionProps> = () => {
   const [mentors, setMentors] = useState<Faculty[]>([]);
   const { switchAcademy } = useAcademy();
   const { t } = useLanguage();
+  const { openLightbox } = useVideoLightbox();
+  const { items: media, openPlayer } = useMedia();
+
+  const studentReviews = media.filter(
+    item => item.category === "Student Reviews" && item.visibility !== 'private'
+  );
+
+  const spiritualShorts = media.filter(
+    item => item.category === "Trending Spiritual Shorts" && item.visibility !== 'private'
+  );
+
+  const reviewItem = studentReviews[0];
+  const shortItem = spiritualShorts[0];
+
+  const reviewsData = [
+    {
+      title: reviewItem ? reviewItem.title : "Deep Student Reviews",
+      link: reviewItem ? reviewItem.youtubeUrl : (BrandRegistry.assets.videoLinks?.studentReviewsPlaylist || "https://youtube.com/playlist?list=PLOFld0SYjqbZ-wCREGBGP4d96TDm7ZbDf"),
+      desc: reviewItem ? reviewItem.description : "Comprehensive video journals of professionals and business owners sharing their genuine transformations.",
+      tag: "Student Reviews",
+      image: reviewItem ? reviewItem.thumbnail : "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=600&q=80",
+      buttonText: "WATCH REVIEWS",
+      item: reviewItem
+    },
+    {
+      title: shortItem ? shortItem.title : "Bite-Sized Student Shorts",
+      link: shortItem ? shortItem.youtubeUrl : (BrandRegistry.assets.videoLinks?.unfilteredShort || "https://youtube.com/shorts/RcmLxAECJAc"),
+      desc: shortItem ? shortItem.description : "Quick, unfiltered student experiences and profound insights captured directly from our live webinars.",
+      tag: "Trending Spiritual Shorts",
+      image: shortItem ? shortItem.thumbnail : "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=600&q=80",
+      buttonText: "WATCH SHORTS",
+      item: shortItem
+    }
+  ];
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -300,8 +338,7 @@ const HeroSection: React.FC<HeroSectionProps> = () => {
                   Select an Academy
                 </span>
               </div>
-
-              {/* Mentors Side By Side */}
+                    {/* Mentors Side By Side */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-5">
                 {mentors.map((mentor, index) => {
                   const roleBadge = mentor.id === 'raajeev' || mentor.title.toLowerCase().includes('founder') ? '👑 Founder' : '🎓 Senior Faculty';
@@ -350,6 +387,77 @@ const HeroSection: React.FC<HeroSectionProps> = () => {
 
                   </motion.div>
                 );})}
+              </div>
+
+              {/* Compact Media Cards: Student Reviews & Trending Spiritual Shorts */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                {reviewsData.map((rev, i) => {
+                  const siblingVideos = reviewsData.map(v => ({
+                    url: v.link,
+                    title: v.title,
+                    channelName: 'LEO Family Reviews'
+                  }));
+
+                  return (
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, scale: 0.98 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.5, delay: 0.4 + i * 0.1 }}
+                      onClick={() => {
+                        if (rev.item) {
+                          openPlayer(rev.item);
+                        } else {
+                          openLightbox(rev.link, rev.title, 'LEO Family Reviews', siblingVideos);
+                        }
+                      }}
+                      className="group bg-card/90 border border-border/20 hover:border-primary/40 rounded-2xl overflow-hidden flex flex-col justify-between shadow-lg hover:shadow-xl cursor-pointer transition-all p-3.5 space-y-3"
+                    >
+                      {/* Compact Thumbnail */}
+                      <div className="relative aspect-video w-full bg-[#0E0601] overflow-hidden rounded-xl">
+                        <YoutubeThumbnail
+                          url={rev.link}
+                          aspectRatio="video"
+                          className="w-full h-full opacity-85"
+                          showPlayButton={true}
+                          hoverEffect={true}
+                          alt={rev.title}
+                        />
+                        <span className="absolute top-2.5 left-2.5 z-20 bg-background/90 border border-primary/25 px-2 py-0.5 rounded-full text-[9px] text-primary uppercase tracking-widest font-bold">
+                          {rev.tag}
+                        </span>
+                      </div>
+
+                      {/* Content */}
+                      <div className="space-y-1.5 text-left px-1">
+                        <h4 className="text-xs sm:text-sm font-bold text-text-primary font-cinzel tracking-tight line-clamp-1">
+                          {rev.title}
+                        </h4>
+                        <p className="text-text-secondary text-[11px] font-light leading-relaxed line-clamp-2">
+                          {rev.desc}
+                        </p>
+                      </div>
+
+                      {/* Action Button */}
+                      <div className="pt-1 px-1">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (rev.item) {
+                              openPlayer(rev.item);
+                            } else {
+                              openLightbox(rev.link, rev.title, 'LEO Family Reviews', siblingVideos);
+                            }
+                          }}
+                          className="w-full inline-flex items-center justify-center gap-1.5 py-2 bg-background group-hover:bg-primary border border-border/20 text-text-secondary group-hover:text-background font-bold uppercase tracking-wider text-[9px] rounded-xl transition-all cursor-pointer shadow-xs"
+                        >
+                          <span>{rev.buttonText}</span>
+                          <ArrowUpRight className="w-3 h-3" />
+                        </button>
+                      </div>
+                    </motion.div>
+                  );
+                })}
               </div>
 
             </motion.div>

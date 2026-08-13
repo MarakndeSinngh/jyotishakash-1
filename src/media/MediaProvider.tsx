@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import { MediaItem, PlayerState } from './MediaTypes';
 import { mediaService } from '../services/mediaService';
+import { extractYoutubeId, getYoutubeThumbnail } from './MediaHelpers';
 
 interface MediaContextType {
   items: MediaItem[];
@@ -55,27 +56,38 @@ export const MediaProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       const data = await mediaService.getAllMedia();
       const mapped: MediaItem[] = data
         .filter(m => m.visible !== false)
-        .map(m => ({
-          id: m.id,
-          title: m.title || '',
-          description: m.description || '',
-          youtubeUrl: m.youtubeUrl,
-          youtubeId: m.youtubeVideoId,
-          thumbnail: m.thumbnail,
-          category: m.category || 'General',
-          collection: [m.category?.toLowerCase() || 'general', m.featured ? 'featured' : 'latest'],
-          speaker: m.speaker,
-          instructor: m.speaker || 'LEO Faculty',
-          duration: '15:00',
-          publishedDate: m.publishedDate || m.createdAt?.split('T')[0] || '2025-01-01',
-          language: 'Hindi & English',
-          tags: [m.category || 'General'],
-          featured: m.featured,
-          visibility: m.visible ? 'public' : 'private',
-          createdAt: m.createdAt || new Date().toISOString(),
-          updatedAt: m.updatedAt || new Date().toISOString(),
-          viewCount: m.viewCount || 0
-        }));
+        .map(m => {
+          const { id: ytId, isPlaylist, isShort } = extractYoutubeId(m.youtubeUrl);
+          const isShortItem = isShort || (m.category && (m.category.toLowerCase().includes('short') || m.category === 'Trending Spiritual Shorts'));
+          const resolvedYtId = m.youtubeVideoId || ytId;
+          console.log('PUBLIC_MEDIA_CATEGORY', {
+            mediaId: m.id,
+            category: m.category,
+            isShort: isShortItem
+          });
+          return {
+            id: m.id,
+            title: m.title || '',
+            description: m.description || '',
+            youtubeUrl: m.youtubeUrl,
+            youtubeId: resolvedYtId,
+            thumbnail: m.thumbnail || getYoutubeThumbnail(resolvedYtId),
+            category: m.category || 'General',
+            collection: [m.category?.toLowerCase() || 'general', m.featured ? 'featured' : 'latest', isShortItem ? 'shorts' : 'videos'],
+            speaker: m.speaker,
+            instructor: m.speaker || 'LEO Faculty',
+            duration: isShortItem ? '1 Min' : '15:00',
+            publishedDate: m.publishedDate || m.createdAt?.split('T')[0] || '2025-01-01',
+            language: 'Hindi & English',
+            tags: [m.category || 'General'],
+            featured: m.featured,
+            isShort: isShortItem,
+            visibility: m.visible ? 'public' : 'private',
+            createdAt: m.createdAt || new Date().toISOString(),
+            updatedAt: m.updatedAt || new Date().toISOString(),
+            viewCount: m.viewCount || 0
+          };
+        });
       setItems(mapped);
     } catch (e) {
       console.error("Failed to sync media from Supabase:", e);
@@ -89,27 +101,38 @@ export const MediaProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         if (!isMounted) return;
         const mapped: MediaItem[] = data
           .filter(m => m.visible !== false)
-          .map(m => ({
-            id: m.id,
-            title: m.title || '',
-            description: m.description || '',
-            youtubeUrl: m.youtubeUrl,
-            youtubeId: m.youtubeVideoId,
-            thumbnail: m.thumbnail,
-            category: m.category || 'General',
-            collection: [m.category?.toLowerCase() || 'general', m.featured ? 'featured' : 'latest'],
-            speaker: m.speaker,
-            instructor: m.speaker || 'LEO Faculty',
-            duration: '15:00',
-            publishedDate: m.publishedDate || m.createdAt?.split('T')[0] || '2025-01-01',
-            language: 'Hindi & English',
-            tags: [m.category || 'General'],
-            featured: m.featured,
-            visibility: m.visible ? 'public' : 'private',
-            createdAt: m.createdAt || new Date().toISOString(),
-            updatedAt: m.updatedAt || new Date().toISOString(),
-            viewCount: m.viewCount || 0
-          }));
+          .map(m => {
+            const { id: ytId, isPlaylist, isShort } = extractYoutubeId(m.youtubeUrl);
+            const isShortItem = isShort || (m.category && (m.category.toLowerCase().includes('short') || m.category === 'Trending Spiritual Shorts'));
+            const resolvedYtId = m.youtubeVideoId || ytId;
+            console.log('PUBLIC_MEDIA_CATEGORY', {
+              mediaId: m.id,
+              category: m.category,
+              isShort: isShortItem
+            });
+            return {
+              id: m.id,
+              title: m.title || '',
+              description: m.description || '',
+              youtubeUrl: m.youtubeUrl,
+              youtubeId: resolvedYtId,
+              thumbnail: m.thumbnail || getYoutubeThumbnail(resolvedYtId),
+              category: m.category || 'General',
+              collection: [m.category?.toLowerCase() || 'general', m.featured ? 'featured' : 'latest', isShortItem ? 'shorts' : 'videos'],
+              speaker: m.speaker,
+              instructor: m.speaker || 'LEO Faculty',
+              duration: isShortItem ? '1 Min' : '15:00',
+              publishedDate: m.publishedDate || m.createdAt?.split('T')[0] || '2025-01-01',
+              language: 'Hindi & English',
+              tags: [m.category || 'General'],
+              featured: m.featured,
+              isShort: isShortItem,
+              visibility: m.visible ? 'public' : 'private',
+              createdAt: m.createdAt || new Date().toISOString(),
+              updatedAt: m.updatedAt || new Date().toISOString(),
+              viewCount: m.viewCount || 0
+            };
+          });
         setItems(mapped);
       })
       .catch(err => {

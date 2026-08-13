@@ -303,12 +303,16 @@ export default function MediaLibraryView() {
           mentorId: formData.mentorId || 'raajeev',
           youtubeUrl: formData.youtubeUrl || '',
           youtubeVideoId: formData.youtubeVideoId || '',
+          title: formData.title || '',
+          description: formData.description || '',
           thumbnail: formData.thumbnail || 'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&q=80&w=800',
           category: formData.category || 'Masterclass',
           featured: Boolean(formData.featured),
           visible: formData.visible !== false,
           order: Number(formData.order) || 1,
-          speaker: formData.speaker || ''
+          speaker: formData.speaker || '',
+          publishedDate: formData.publishedDate || new Date().toISOString().split('T')[0],
+          viewCount: formData.viewCount || 0
         };
         await mediaService.saveMedia(newItem);
         showNotification('New media added successfully.');

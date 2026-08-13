@@ -138,16 +138,41 @@ export default function MediaLibraryView() {
       alert('Please enter a valid YouTube URL first.');
       return;
     }
+    let resDataCache: any = null;
+    let responseDataCache: any = null;
     try {
       setFetchingYt(true);
+      console.log('YOUTUBE_FETCH_UI_BEFORE', {
+        youtubeUrl: formData.youtubeUrl,
+        parsedVideoId: formData.youtubeVideoId
+      });
+      console.log('YOUTUBE_FETCH_UI_INVOKE_START');
+
       const { data, error } = await supabase.functions.invoke('fetch-youtube-metadata', {
         body: { youtubeUrl: formData.youtubeUrl }
+      });
+      responseDataCache = data;
+
+      console.log('YOUTUBE_FETCH_UI_RESPONSE', {
+        data,
+        error
       });
 
       const serverError = data?.error || error;
       if (serverError || !data || !data.success) {
+        console.log('YOUTUBE_FETCH_UI_INVOKE_ERROR', {
+          error,
+          message: error?.message || data?.error,
+          context: error?.context,
+          status: error?.status
+        });
         throw error || new Error(data?.error || 'Failed to fetch YouTube info');
       }
+
+      resDataCache = data.data;
+      console.log('YOUTUBE_FETCH_UI_SUCCESS', {
+        returnedMetadata: resDataCache
+      });
 
       const resData = data.data;
       setFormData(prev => ({
@@ -163,7 +188,7 @@ export default function MediaLibraryView() {
       showNotification('YouTube metadata fetched successfully.');
     } catch (err: any) {
       console.error('Fetch YouTube info error:', err);
-      const errMessage = getYouTubeErrorMessage(err, err?.response?.data);
+      const errMessage = getYouTubeErrorMessage(err, responseDataCache);
       alert(errMessage);
     } finally {
       setFetchingYt(false);

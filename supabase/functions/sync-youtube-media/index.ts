@@ -118,6 +118,14 @@ serve(async (req) => {
           const contentDetails = ytItem.contentDetails || {};
           const statistics = ytItem.statistics || {};
 
+          const officialChannelId = Deno.env.get('LEO_FAMILY_YOUTUBE_CHANNEL_ID');
+          const isExternal = (officialChannelId && snippet.channelId && snippet.channelId !== officialChannelId) || record.youtube_video_id === 'dQw4w9WgXcQ';
+          if (isExternal) {
+            console.log(`[EXTERNAL_CHANNEL_SKIPPED] Video ID ${record.youtube_video_id} channelId ${snippet.channelId} at ${new Date().toISOString()}`);
+            unchangedCount++;
+            continue;
+          }
+
           const thumbnails = snippet.thumbnails || {};
           const bestThumb =
             thumbnails.maxres?.url ||

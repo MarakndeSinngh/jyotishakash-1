@@ -14,7 +14,9 @@ import {
   ShieldCheck, 
   ExternalLink,
   ChevronRight,
-  Sparkles
+  Sparkles,
+  Film,
+  Image
 } from 'lucide-react';
 import { User as SupabaseUser } from '@supabase/supabase-js';
 import { adminAuthService } from '../../services/adminAuthService';
@@ -22,6 +24,7 @@ import AdminLogin from './AdminLogin';
 import DashboardView from './DashboardView';
 import LiveWebinarView from './LiveWebinarView';
 import ProgramsView from './ProgramsView';
+import MediaLibraryView from './MediaLibraryView';
 import MediaAssetLibraryView from './MediaAssetLibraryView';
 import TestimonialsView from './TestimonialsView';
 import FacultyView from './FacultyView';
@@ -40,6 +43,7 @@ export default function AdminPortal({ navigate }: AdminPortalProps) {
   const [loading, setLoading] = useState(true);
 
   const [activeTab, setActiveTab] = useState<AdminTab>('dashboard');
+  const [mediaSubTab, setMediaSubTab] = useState<'youtube' | 'assets'>('youtube');
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   useEffect(() => {
@@ -94,7 +98,43 @@ export default function AdminPortal({ navigate }: AdminPortalProps) {
       case 'programs':
         return <ProgramsView />;
       case 'media':
-        return <MediaAssetLibraryView />;
+        return (
+          <div className="space-y-6">
+            <div className="bg-white p-2 rounded-2xl shadow-sm border border-stone-200 flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setMediaSubTab('youtube')}
+                  className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold transition-all ${
+                    mediaSubTab === 'youtube'
+                      ? 'bg-amber-600 text-white shadow-md'
+                      : 'text-stone-600 hover:bg-stone-100 hover:text-stone-900'
+                  }`}
+                >
+                  <Film className="w-4 h-4" />
+                  <span>🎬 YouTube & Masterclass Videos</span>
+                </button>
+                <button
+                  onClick={() => setMediaSubTab('assets')}
+                  className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold transition-all ${
+                    mediaSubTab === 'assets'
+                      ? 'bg-amber-600 text-white shadow-md'
+                      : 'text-stone-600 hover:bg-stone-100 hover:text-stone-900'
+                  }`}
+                >
+                  <Image className="w-4 h-4" />
+                  <span>🖼️ Storage Assets & Files</span>
+                </button>
+              </div>
+              <div className="text-xs text-stone-500 px-3 hidden sm:block">
+                {mediaSubTab === 'youtube' ? 'Managing public.media YouTube video catalog' : 'Managing leo-media storage bucket assets'}
+              </div>
+            </div>
+
+            <div className="transition-all">
+              {mediaSubTab === 'youtube' ? <MediaLibraryView /> : <MediaAssetLibraryView />}
+            </div>
+          </div>
+        );
       case 'testimonials':
         return <TestimonialsView />;
       case 'faculty':

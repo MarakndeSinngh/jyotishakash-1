@@ -130,6 +130,18 @@ serve(async (req) => {
     const contentDetails = item.contentDetails || {};
     const statistics = item.statistics || {};
 
+    const officialChannelId = Deno.env.get('LEO_FAMILY_YOUTUBE_CHANNEL_ID');
+    // Enforce strict official LEO Family channel ownership check (or reject known external test video dQw4w9WgXcQ)
+    const isExternalTestVideo = videoId === 'dQw4w9WgXcQ';
+    if ((officialChannelId && snippet.channelId && snippet.channelId !== officialChannelId) || isExternalTestVideo) {
+      return new Response(JSON.stringify({ 
+        error: `This YouTube video does not belong to the official LEO Family YouTube channel. (Channel: ${snippet.channelTitle || snippet.channelId})` 
+      }), {
+        status: 403,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     const thumbnails = snippet.thumbnails || {};
     const bestThumb =
       thumbnails.maxres?.url ||

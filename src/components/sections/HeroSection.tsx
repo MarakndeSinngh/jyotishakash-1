@@ -48,16 +48,24 @@ const HeroSection: React.FC<HeroSectionProps> = () => {
   const { openLightbox } = useVideoLightbox();
   const { items: media, openPlayer } = useMedia();
 
-  const studentReviews = media.filter(
-    item => item.category === "Student Reviews" && item.visibility !== 'private'
-  );
+  const studentReviews = media
+    .filter(item => item.category === "Student Reviews" && item.visibility !== 'private')
+    .sort((a, b) => {
+      const timeA = new Date(a.createdAt || a.updatedAt || 0).getTime();
+      const timeB = new Date(b.createdAt || b.updatedAt || 0).getTime();
+      return timeB - timeA;
+    });
 
-  const spiritualShorts = media.filter(
-    item => item.category === "Trending Spiritual Shorts" && item.visibility !== 'private'
-  );
+  const spiritualShorts = media
+    .filter(item => item.category === "Trending Spiritual Shorts" && item.visibility !== 'private')
+    .sort((a, b) => {
+      const timeA = new Date(a.createdAt || a.updatedAt || 0).getTime();
+      const timeB = new Date(b.createdAt || b.updatedAt || 0).getTime();
+      return timeB - timeA;
+    });
 
-  const reviewItem = studentReviews[0];
-  const shortItem = spiritualShorts[0];
+  const reviewItem = studentReviews.length > 0 ? studentReviews[0] : undefined;
+  const shortItem = spiritualShorts.length > 0 ? spiritualShorts[0] : undefined;
 
   const reviewsData = [
     {

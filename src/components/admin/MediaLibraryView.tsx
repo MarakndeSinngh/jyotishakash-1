@@ -109,8 +109,9 @@ export default function MediaLibraryView() {
         body: { youtubeUrl: formData.youtubeUrl }
       });
 
-      if (error || !data || !data.success) {
-        throw new Error(error?.message || data?.error || 'Failed to fetch YouTube info');
+      const serverError = data?.error || error?.message;
+      if (serverError || !data || !data.success) {
+        throw new Error(serverError || 'Failed to fetch YouTube info');
       }
 
       const resData = data.data;
@@ -128,10 +129,16 @@ export default function MediaLibraryView() {
     } catch (err: any) {
       console.error('Fetch YouTube info error:', err);
       const errMsg = err.message || '';
-      if (errMsg.includes('does not belong to the official LEO Family')) {
+      if (errMsg.includes('does not belong to the official LEO Family') || errMsg.includes('unauthorized YouTube channel')) {
         alert('External YouTube Channel: This video does not belong to the official LEO Family YouTube channel.');
+      } else if (errMsg.includes('Video not found')) {
+        alert('Video not found on YouTube.');
+      } else if (errMsg.includes('quota')) {
+        alert('YouTube API quota exceeded.');
+      } else if (errMsg.includes('authentication')) {
+        alert('YouTube API authentication failed.');
       } else {
-        alert('Unable to fetch YouTube information. Please verify the video URL and try again.');
+        alert(errMsg || 'Unable to fetch YouTube information. Please verify the video URL and try again.');
       }
     } finally {
       setFetchingYt(false);
@@ -145,8 +152,9 @@ export default function MediaLibraryView() {
         body: { youtubeUrl: item.youtubeUrl }
       });
 
-      if (error || !data || !data.success) {
-        throw new Error(error?.message || data?.error || 'Failed to sync');
+      const serverError = data?.error || error?.message;
+      if (serverError || !data || !data.success) {
+        throw new Error(serverError || 'Failed to sync');
       }
 
       const resData = data.data;
@@ -162,7 +170,8 @@ export default function MediaLibraryView() {
       showNotification(`Successfully synced metadata for "${item.title || item.youtubeVideoId}"`);
     } catch (err: any) {
       console.error('Sync error:', err);
-      alert('Failed to sync YouTube metadata. Please try again.');
+      const errMsg = err.message || '';
+      alert(errMsg ? `Failed to sync: ${errMsg}` : 'Failed to sync YouTube metadata. Please try again.');
     } finally {
       setSyncingId(null);
     }

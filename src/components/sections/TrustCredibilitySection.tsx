@@ -4,6 +4,7 @@ import SmartImage from './SmartImage';
 import { FounderImage } from '../common/FounderImage';
 import { YoutubeThumbnail } from '../common/YoutubeThumbnail';
 import { useVideoLightbox } from '../common/VideoLightbox';
+import { useMedia } from '../../media/MediaProvider';
 import { WHATSAPP_LINK, SOCIAL_LINKS } from '../../constants/contacts';
 import { BrandRegistry } from '../../config/brandRegistry';
 import { 
@@ -166,20 +167,45 @@ export default function TrustCredibilitySection() {
   ];
 
   // Part 6 Real Student Experiences
+  const { items: media, openPlayer } = useMedia();
+
+  const studentReviews = media.filter(
+    item => item.category === "Student Reviews" && item.visibility !== 'private'
+  );
+
+  const spiritualShorts = media.filter(
+    item => item.category === "Trending Spiritual Shorts" && item.visibility !== 'private'
+  );
+
+  console.log("HOME_MEDIA_DEBUG", {
+    totalMedia: media.length,
+    studentReviewsCount: studentReviews.length,
+    spiritualShortsCount: spiritualShorts.length,
+    studentReviews,
+    spiritualShorts
+  });
+
+  const reviewItem = studentReviews[0];
+  const shortItem = spiritualShorts[0];
+
   const reviewsData = [
     {
-      title: "Deep Student Reviews",
-      link: BrandRegistry.assets.videoLinks?.studentReviewsPlaylist || "https://youtube.com/playlist?list=PLOFld0SYjqbZ-wCREGBGP4d96TDm7ZbDf",
-      desc: "Comprehensive video journals of professionals and business owners sharing their genuine transformations.",
-      tag: "100+ Video Reviews Playlist",
-      image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=600&q=80"
+      title: reviewItem ? reviewItem.title : "Deep Student Reviews",
+      link: reviewItem ? reviewItem.youtubeUrl : (BrandRegistry.assets.videoLinks?.studentReviewsPlaylist || "https://youtube.com/playlist?list=PLOFld0SYjqbZ-wCREGBGP4d96TDm7ZbDf"),
+      desc: reviewItem ? reviewItem.description : "Comprehensive video journals of professionals and business owners sharing their genuine transformations.",
+      tag: "Student Reviews",
+      image: reviewItem ? reviewItem.thumbnail : "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=600&q=80",
+      buttonText: "WATCH REVIEWS",
+      item: reviewItem
     },
     {
-      title: "Bite-Sized Student Shorts",
-      link: BrandRegistry.assets.videoLinks?.unfilteredShort || "https://youtube.com/shorts/RcmLxAECJAc",
-      desc: "Quick, unfiltered student experiences and profound insights captured directly from our live webinars.",
-      tag: "Inspiring Short Clips",
-      image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=600&q=80"
+      title: shortItem ? shortItem.title : "Bite-Sized Student Shorts",
+      link: shortItem ? shortItem.youtubeUrl : (BrandRegistry.assets.videoLinks?.unfilteredShort || "https://youtube.com/shorts/RcmLxAECJAc"),
+      desc: shortItem ? shortItem.description : "Quick, unfiltered student experiences and profound insights captured directly from our live webinars.",
+      tag: "Trending Spiritual Shorts",
+      image: shortItem ? shortItem.thumbnail : "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=600&q=80",
+      buttonText: "WATCH SHORTS",
+      item: shortItem
     }
   ];
 
@@ -580,7 +606,13 @@ export default function TrustCredibilitySection() {
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.7 }}
-                  onClick={() => openLightbox(rev.link, rev.title, 'LEO Family Reviews', siblingVideos)}
+                  onClick={() => {
+                    if (rev.item) {
+                      openPlayer(rev.item);
+                    } else {
+                      openLightbox(rev.link, rev.title, 'LEO Family Reviews', siblingVideos);
+                    }
+                  }}
                   className="group bg-card border border-border/15 rounded-[2rem] overflow-hidden flex flex-col justify-between shadow-2xl cursor-pointer"
                 >
                   {/* Real Dynamic Youtube Thumbnail with Play Button */}
@@ -611,11 +643,15 @@ export default function TrustCredibilitySection() {
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          openLightbox(rev.link, rev.title, 'LEO Family Reviews', siblingVideos);
+                          if (rev.item) {
+                            openPlayer(rev.item);
+                          } else {
+                            openLightbox(rev.link, rev.title, 'LEO Family Reviews', siblingVideos);
+                          }
                         }}
                         className="inline-flex items-center gap-2 px-5 py-3 bg-background group-hover:bg-primary border border-border/20 text-text-secondary group-hover:text-background font-bold uppercase tracking-wider text-[10px] rounded-xl transition-all cursor-pointer"
                       >
-                        <span>Watch Reviews</span>
+                        <span>{rev.buttonText}</span>
                         <ArrowUpRight className="w-3.5 h-3.5" />
                       </button>
                     </div>

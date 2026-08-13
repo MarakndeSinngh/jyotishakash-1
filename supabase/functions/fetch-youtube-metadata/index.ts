@@ -1,10 +1,16 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+function getCorsHeaders(req: Request) {
+  const origin = req.headers.get('Origin') || 'https://www.leofamily.online';
+  const allowOrigin = origin.includes('leofamily.online') || origin.includes('localhost') || origin.includes('ais-') ? origin : 'https://www.leofamily.online';
+  return {
+    'Access-Control-Allow-Origin': allowOrigin,
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+    'Vary': 'Origin',
+  };
+}
 
 function parseYoutubeVideoId(urlOrId: string): string | null {
   if (!urlOrId) return null;
@@ -45,8 +51,14 @@ function parseYoutubeVideoId(urlOrId: string): string | null {
 }
 
 serve(async (req) => {
+  const corsHeaders = getCorsHeaders(req);
+
+  // 1. OPTIONS preflight handling must be BEFORE authentication or request processing
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders });
+    return new Response(null, {
+      status: 200,
+      headers: corsHeaders,
+    });
   }
 
   try {
@@ -130,17 +142,7 @@ serve(async (req) => {
     const contentDetails = item.contentDetails || {};
     const statistics = item.statistics || {};
 
-    const officialChannelId = Deno.env.get('LEO_FAMILY_YOUTUBE_CHANNEL_ID');
-    // Enforce strict official LEO Family channel ownership check (or reject known external test video dQw4w9WgXcQ)
-    const isExternalTestVideo = videoId === 'dQw4w9WgXcQ';
-    if ((officialChannelId && snippet.channelId && snippet.channelId !== officialChannelId) || isExternalTestVideo) {
-      return new Response(JSON.stringify({ 
-        error: `This YouTube video does not belong to the official LEO Family YouTube channel. (Channel: ${snippet.channelTitle || snippet.channelId})` 
-      }), {
-        status: 403,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
+    // Channel verification has been removed per requirements. Any valid YouTube video is accepted.
 
     const thumbnails = snippet.thumbnails || {};
     const bestThumb =

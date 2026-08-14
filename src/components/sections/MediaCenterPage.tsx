@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   Search, SlidersHorizontal, Play, Volume2, Share2, ExternalLink, 
@@ -35,8 +35,19 @@ export default function MediaCenterPage() {
   const [activeTab, setActiveTab] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [sortBy, setSortBy] = useState<string>('Newest');
-  const [filterType, setFilterType] = useState<string>('All'); // 'All' | 'Student Reviews' | 'Courses' | 'Free'
+  const [filterType, setFilterType] = useState<string>(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('filter') || 'All';
+  });
   const [showShareToast, setShowShareToast] = useState(false);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const f = params.get('filter');
+    if (f) {
+      setFilterType(f);
+    }
+  }, []);
 
   // Retrieve continue watching list using our smart centralized hook
   const continueWatchingList = useContinueWatchingList();
@@ -66,7 +77,10 @@ export default function MediaCenterPage() {
 
       // Secondary filters
       if (filterType === 'Student Reviews') {
-        return video.category === 'Student Success Stories' || video.collection.includes('student-reviews');
+        return video.category === 'Student Success Stories' || 
+               video.category === 'Student Reviews' || 
+               video.category.toLowerCase().includes('student review') || 
+               video.collection.includes('student-reviews');
       } else if (filterType === 'Courses') {
         return !!video.relatedCourseId;
       } else if (filterType === 'Free') {

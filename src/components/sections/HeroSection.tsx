@@ -455,10 +455,16 @@ const HeroSection: React.FC<HeroSectionProps> = () => {
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            if (rev.item) {
-                              openPlayer(rev.item);
+                            if (rev.tag === "Student Reviews") {
+                              window.history.pushState({}, '', '/media?filter=Student+Reviews');
+                              window.dispatchEvent(new Event('popstate'));
+                              window.scrollTo(0, 0);
                             } else {
-                              openLightbox(rev.link, rev.title, 'LEO Family Reviews', siblingVideos);
+                              if (rev.item) {
+                                openPlayer(rev.item);
+                              } else {
+                                openLightbox(rev.link, rev.title, 'LEO Family Reviews', siblingVideos);
+                              }
                             }
                           }}
                           className="w-full inline-flex items-center justify-center gap-1.5 py-2 bg-background group-hover:bg-primary border border-border/20 text-text-secondary group-hover:text-background font-bold uppercase tracking-wider text-[9px] rounded-xl transition-all cursor-pointer shadow-xs"

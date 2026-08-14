@@ -14,7 +14,7 @@ export const NAVIGATION_REGISTRY: Navigation = {
         { label: "Name Correction", path: "/programs?filter=name", description: "Phonetic vibration & name frequency shift" },
         { label: "Gemstones", path: "/gemstones", description: "Authentic Vedic gemstone guidance & energization" },
         { label: "Courses", path: "/programs", description: "Masterclasses & structured training programs", badge: "Programs" },
-        { label: "Blogs", path: "/media", description: "Articles, guides & spiritual wisdom" }
+        { label: "Blogs", path: "/blogs", description: "Articles, guides & spiritual wisdom" }
       ]
     },
     { 
@@ -45,7 +45,7 @@ export const NAVIGATION_REGISTRY: Navigation = {
         { label: "Name Correction", path: "/programs?filter=name" },
         { label: "Gemstones", path: "/gemstones" },
         { label: "Courses", path: "/programs" },
-        { label: "Blogs", path: "/media" }
+        { label: "Blogs", path: "/blogs" }
       ]
     },
     { 

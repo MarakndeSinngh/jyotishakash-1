@@ -9,11 +9,11 @@ export const NAVIGATION_REGISTRY: Navigation = {
       path: "/numerology",
       dropdown: [
         { label: "Numerology", path: "/numerology", description: "Calculate core numbers & destiny blueprint" },
-        { label: "Astrology", path: "/services", description: "Vedic chart analysis & planetary transits" },
-        { label: "Vastu", path: "/services", description: "Sacred space energy & directional alignment" },
-        { label: "Name Correction", path: "/numerology", description: "Phonetic vibration & name frequency shift" },
+        { label: "Astrology", path: "/programs?filter=astrology", description: "Vedic chart analysis & planetary transits" },
+        { label: "Vastu", path: "/programs?filter=vastu", description: "Sacred space energy & directional alignment" },
+        { label: "Name Correction", path: "/programs?filter=name", description: "Phonetic vibration & name frequency shift" },
         { label: "Gemstones", path: "/gemstones", description: "Authentic Vedic gemstone guidance & energization" },
-        { label: "Courses", path: "/academy", description: "Masterclasses & structured training programs", badge: "Programs" },
+        { label: "Courses", path: "/programs", description: "Masterclasses & structured training programs", badge: "Programs" },
         { label: "Blogs", path: "/media", description: "Articles, guides & spiritual wisdom" }
       ]
     },
@@ -40,11 +40,11 @@ export const NAVIGATION_REGISTRY: Navigation = {
       path: "/numerology",
       dropdown: [
         { label: "Numerology", path: "/numerology" },
-        { label: "Astrology", path: "/services" },
-        { label: "Vastu", path: "/services" },
-        { label: "Name Correction", path: "/numerology" },
+        { label: "Astrology", path: "/programs?filter=astrology" },
+        { label: "Vastu", path: "/programs?filter=vastu" },
+        { label: "Name Correction", path: "/programs?filter=name" },
         { label: "Gemstones", path: "/gemstones" },
-        { label: "Courses", path: "/academy" },
+        { label: "Courses", path: "/programs" },
         { label: "Blogs", path: "/media" }
       ]
     },

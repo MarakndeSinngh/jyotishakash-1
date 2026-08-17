@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   FolderKanban, 
   Search, 
@@ -19,7 +19,11 @@ import {
   Globe, 
   Lock, 
   ShieldCheck,
-  ExternalLink
+  ExternalLink,
+  Upload,
+  FileUp,
+  AlertCircle,
+  Loader2
 } from 'lucide-react';
 import { storageService } from '../../services/storageService';
 import { MediaAsset } from '../../models/mediaAsset';
@@ -37,18 +41,19 @@ export default function MediaAssetLibraryView() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  // New asset form state
-  const [newAssetData, setNewAssetData] = useState({
-    fileName: 'new-occult-asset.jpg',
-    url: 'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&q=80&w=1200',
+  // Local file upload state with progress tracking & status messages
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [filePreviewUrl, setFilePreviewUrl] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadStatusText, setUploadStatusText] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [uploadForm, setUploadForm] = useState({
     category: 'General' as MediaAsset['category'],
-    altText: 'Occult spiritual symbol and sacred geometry',
-    caption: 'Newly uploaded asset for LEO Family academy programs.',
+    altText: '',
+    caption: '',
     tags: 'occult, sacred geometry, spirituality',
-    width: 1920,
-    height: 1080,
-    fileSize: '1.2 MB',
-    fileType: 'image/jpeg',
     visibility: 'Public' as MediaAsset['visibility'],
     usedBy: 'Homepage'
   });
@@ -60,11 +65,12 @@ export default function MediaAssetLibraryView() {
   async function loadAssets() {
     try {
       setLoading(true);
+      setError(null);
       const data = await storageService.listAssets(selectedCategory);
       setAssets(data);
     } catch (err: any) {
       console.error('Failed to load media assets:', err);
-      setError('Failed to load media assets');
+      setError('Failed to load media assets from Supabase storage');
     } finally {
       setLoading(false);
     }
@@ -77,8 +83,9 @@ export default function MediaAssetLibraryView() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm('Are you sure you want to delete this asset from the library?')) return;
+    if (!window.confirm('Are you sure you want to delete this asset from the library and storage?')) return;
     try {
+      setError(null);
       await storageService.deleteImage(id);
       setSuccessMessage('Media asset deleted successfully.');
       await loadAssets();
@@ -93,64 +100,136 @@ export default function MediaAssetLibraryView() {
     }
   };
 
-  const handleReplace = async (asset: MediaAsset) => {
-    const newUrl = prompt('Enter new replacement image/video URL:', asset.url);
-    if (!newUrl) return;
-    try {
-      await storageService.replaceImage(asset.id, { url: newUrl });
-      setSuccessMessage('Asset successfully replaced.');
-      await loadAssets();
-      if (selectedAsset && selectedAsset.id === asset.id) {
-        setSelectedAsset({ ...selectedAsset, url: newUrl });
-      }
-      setTimeout(() => setSuccessMessage(null), 3000);
-    } catch (err: any) {
-      console.error('Failed to replace asset:', err);
-      setError('Failed to replace asset');
+  const handleFileSelect = (file: File) => {
+    // Validate file size (max 50MB)
+    const maxSize = 50 * 1024 * 1024;
+    if (file.size > maxSize) {
+      setError(`File size error: ${(file.size / (1024 * 1024)).toFixed(1)}MB exceeds the 50MB maximum limit.`);
+      return;
     }
+
+    // Validate file type
+    const validTypes = [
+      'image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml',
+      'video/mp4', 'video/webm', 'video/quicktime',
+      'audio/mpeg', 'audio/wav', 'audio/m4a', 'application/pdf'
+    ];
+    
+    const isValid = validTypes.includes(file.type) || file.type.startsWith('image/') || file.type.startsWith('video/') || file.type.startsWith('audio/') || file.type === 'application/pdf';
+    
+    if (!isValid) {
+      setError(`Unsupported file type ("${file.type || 'unknown'}"). Please select a valid Image, Video, Audio, or PDF document.`);
+      return;
+    }
+
+    setError(null);
+    setSelectedFile(file);
+
+    if (file.type.startsWith('image/') || file.type.startsWith('video/')) {
+      const url = URL.createObjectURL(file);
+      setFilePreviewUrl(url);
+    } else {
+      setFilePreviewUrl(null);
+    }
+
+    if (!uploadForm.altText) {
+      const baseName = file.name.replace(/\.[^/.]+$/, '');
+      setUploadForm(prev => ({ ...prev, altText: baseName }));
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      handleFileSelect(e.dataTransfer.files[0]);
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
   };
 
   const handleUploadSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!selectedFile) {
+      setError('Please select a local file to upload.');
+      return;
+    }
+
     try {
+      setUploading(true);
+      setUploadProgress(15);
+      setUploadStatusText('Validating file and security permissions...');
+      setError(null);
+
+      await new Promise(resolve => setTimeout(resolve, 250));
+      setUploadProgress(40);
+      setUploadStatusText('Uploading to Supabase Storage bucket (leo-media)...');
+
       await storageService.uploadImage({
-        fileName: newAssetData.fileName,
-        url: newAssetData.url,
-        category: newAssetData.category,
-        altText: newAssetData.altText,
-        caption: newAssetData.caption,
-        tags: newAssetData.tags.split(',').map(t => t.trim()).filter(Boolean),
-        width: Number(newAssetData.width),
-        height: Number(newAssetData.height),
-        fileSize: newAssetData.fileSize,
-        fileType: newAssetData.fileType,
-        visibility: newAssetData.visibility,
-        usedBy: [newAssetData.usedBy]
+        file: selectedFile,
+        fileName: selectedFile.name,
+        category: uploadForm.category,
+        altText: uploadForm.altText || selectedFile.name,
+        caption: uploadForm.caption || selectedFile.name,
+        tags: uploadForm.tags.split(',').map(t => t.trim()).filter(Boolean),
+        visibility: uploadForm.visibility,
+        usedBy: [uploadForm.usedBy]
       });
-      setSuccessMessage('New asset successfully uploaded to library.');
+
+      setUploadProgress(85);
+      setUploadStatusText('Registering asset record in database...');
+      await new Promise(resolve => setTimeout(resolve, 200));
+
+      setUploadProgress(100);
+      setUploadStatusText('Upload complete!');
+      setSuccessMessage('File successfully uploaded to Supabase Storage and registered in Media Library.');
+      
       setIsUploadOpen(false);
+      setSelectedFile(null);
+      setFilePreviewUrl(null);
+      setUploadForm({
+        category: 'General',
+        altText: '',
+        caption: '',
+        tags: 'occult, sacred geometry, spirituality',
+        visibility: 'Public',
+        usedBy: 'Homepage'
+      });
       await loadAssets();
-      setTimeout(() => setSuccessMessage(null), 3000);
+      setTimeout(() => setSuccessMessage(null), 4000);
     } catch (err: any) {
-      console.error('Failed to upload asset:', err);
-      setError('Failed to upload asset');
+      console.error('Failed to upload local file:', err);
+      const msg = err?.message || '';
+      if (msg.includes('row-level security') || msg.includes('policy') || msg.includes('permission') || msg.includes('unauthorized')) {
+        setError('Permission denied or RLS policy violation. Please ensure you are logged in as a verified Leo Family admin.');
+      } else if (msg.includes('storage')) {
+        setError(`Supabase Storage error: ${msg}`);
+      } else {
+        setError(msg || 'Failed to upload asset to Supabase Storage. Please check network connection and try again.');
+      }
+    } finally {
+      setUploading(false);
+      setUploadProgress(0);
+      setUploadStatusText('');
     }
   };
 
   const filteredAssets = assets.filter(asset => {
     const matchesSearch = 
-      asset.fileName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      asset.altText.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      asset.tags.some(t => t.toLowerCase().includes(searchTerm.toLowerCase()));
+      (asset.fileName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (asset.altText || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (asset.tags || []).some(t => t.toLowerCase().includes(searchTerm.toLowerCase()));
     
     const matchesCategory = selectedCategory === 'all' || asset.category === selectedCategory;
 
     return matchesSearch && matchesCategory;
   });
 
-  if (loading) {
+  if (loading && assets.length === 0) {
     return (
-      <div className="flex items-center justify-center p-12 text-stone-500 text-xs">
+      <div className="flex items-center justify-center p-16 text-stone-500 text-xs">
+        <RefreshCw className="w-5 h-5 animate-spin text-amber-600 mr-2" />
         Loading Centralized Media Asset Library...
       </div>
     );
@@ -164,10 +243,15 @@ export default function MediaAssetLibraryView() {
           <h1 className="text-2xl font-bold font-cinzel text-stone-900 flex items-center gap-2">
             <FolderKanban className="w-6 h-6 text-amber-600" /> Centralized Media Asset Manager
           </h1>
-          <p className="text-xs text-stone-500">Manage repository assets, images, videos, badges, and documentation ready for Supabase Storage</p>
+          <p className="text-xs text-stone-500">Upload and manage repository assets, images, videos, badges, and certificates in Supabase Storage</p>
         </div>
         <button
-          onClick={() => setIsUploadOpen(true)}
+          onClick={() => {
+            setSelectedFile(null);
+            setFilePreviewUrl(null);
+            setError(null);
+            setIsUploadOpen(true);
+          }}
           className="px-4 py-2.5 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-bold uppercase tracking-wider shadow-sm transition-all inline-flex items-center gap-2 cursor-pointer self-start sm:self-auto"
         >
           <Plus className="w-4 h-4" /> Upload New Asset
@@ -176,14 +260,15 @@ export default function MediaAssetLibraryView() {
 
       {successMessage && (
         <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-medium flex items-center gap-2">
-          <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-          {successMessage}
+          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+          <span>{successMessage}</span>
         </div>
       )}
 
-      {error && (
-        <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-medium">
-          {error}
+      {error && !isUploadOpen && (
+        <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-medium flex items-center gap-2">
+          <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+          <span>{error}</span>
         </div>
       )}
 
@@ -238,148 +323,97 @@ export default function MediaAssetLibraryView() {
         </div>
       </div>
 
-      {/* ASSET PREVIEW MODAL */}
-      {isPreviewOpen && selectedAsset && (
+      {/* UPLOAD MODAL */}
+      {isUploadOpen && (
         <div className="fixed inset-0 bg-stone-950/60 z-50 flex items-center justify-center p-4 overflow-y-auto backdrop-blur-xs">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto border border-stone-200 p-6 space-y-6">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-xl w-full max-h-[95vh] overflow-y-auto border border-stone-200 p-6 space-y-6">
             <div className="flex items-center justify-between border-b border-stone-200 pb-4">
               <div>
-                <h2 className="text-base font-bold font-cinzel text-stone-900">{selectedAsset.fileName}</h2>
-                <span className="inline-block mt-1 px-2.5 py-0.5 rounded-md text-[10px] font-semibold bg-amber-50 text-amber-800 border border-amber-200">
-                  {selectedAsset.category}
-                </span>
+                <h2 className="text-base font-bold font-cinzel text-stone-900 flex items-center gap-2">
+                  <FileUp className="w-5 h-5 text-amber-600" /> Upload Asset from Local Device
+                </h2>
+                <p className="text-xs text-stone-500">Select an image, video, audio, or document to upload directly to Supabase Storage</p>
               </div>
-              <button
-                onClick={() => setIsPreviewOpen(false)}
+              <button 
+                onClick={() => { if (!uploading) setIsUploadOpen(false); }} 
                 className="p-2 text-stone-400 hover:text-stone-700 rounded-lg cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Preview Box */}
-              <div className="bg-stone-900 rounded-xl overflow-hidden flex items-center justify-center min-h-[240px] relative">
-                {selectedAsset.fileType.startsWith('video') ? (
-                  <video src={selectedAsset.url} controls className="max-h-72 w-full object-cover" />
-                ) : (
-                  <img src={selectedAsset.url} alt={selectedAsset.altText} className="max-h-72 w-full object-contain" />
-                )}
-                <div className="absolute bottom-2 right-2 px-2 py-1 bg-black/75 rounded text-[10px] text-white font-mono">
-                  {selectedAsset.width} × {selectedAsset.height} px
-                </div>
+            {error && (
+              <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-medium flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+                <span>{error}</span>
               </div>
-
-              {/* Asset Metadata Details */}
-              <div className="space-y-4 text-xs">
-                <div>
-                  <span className="font-semibold uppercase tracking-wider text-stone-500 block">Alt Text</span>
-                  <p className="text-stone-900 mt-0.5">{selectedAsset.altText || 'None'}</p>
-                </div>
-                <div>
-                  <span className="font-semibold uppercase tracking-wider text-stone-500 block">Caption</span>
-                  <p className="text-stone-900 mt-0.5">{selectedAsset.caption || 'None'}</p>
-                </div>
-                <div>
-                  <span className="font-semibold uppercase tracking-wider text-stone-500 block">File Details</span>
-                  <div className="grid grid-cols-2 gap-2 mt-1 text-stone-700">
-                    <div>Type: <span className="font-mono text-stone-900">{selectedAsset.fileType}</span></div>
-                    <div>Size: <span className="font-mono text-stone-900">{selectedAsset.fileSize}</span></div>
-                    <div>Created: <span className="font-mono text-stone-900">{selectedAsset.createdDate}</span></div>
-                    <div>Visibility: <span className="font-mono text-stone-900">{selectedAsset.visibility}</span></div>
-                  </div>
-                </div>
-                <div>
-                  <span className="font-semibold uppercase tracking-wider text-stone-500 block mb-1">Used By</span>
-                  <div className="flex flex-wrap gap-1">
-                    {selectedAsset.usedBy.map((usage, i) => (
-                      <span key={i} className="px-2 py-0.5 bg-stone-100 rounded text-[11px] text-stone-700 font-medium">
-                        {usage}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-                <div>
-                  <span className="font-semibold uppercase tracking-wider text-stone-500 block mb-1">Tags</span>
-                  <div className="flex flex-wrap gap-1">
-                    {selectedAsset.tags.map((tag, i) => (
-                      <span key={i} className="px-2 py-0.5 bg-amber-50 text-amber-800 rounded text-[11px] font-medium border border-amber-200">
-                        #{tag}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Modal Actions */}
-            <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-stone-200">
-              <button
-                onClick={() => handleCopyUrl(selectedAsset.url, selectedAsset.id)}
-                className="px-4 py-2 bg-stone-100 hover:bg-stone-200 text-stone-800 rounded-xl text-xs font-semibold inline-flex items-center gap-2 cursor-pointer"
-              >
-                <Copy className="w-4 h-4 text-stone-600" />
-                {copiedId === selectedAsset.id ? 'URL Copied!' : 'Copy Asset URL'}
-              </button>
-
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => handleReplace(selectedAsset)}
-                  className="px-4 py-2 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 rounded-xl text-xs font-semibold inline-flex items-center gap-2 cursor-pointer"
-                >
-                  <RefreshCw className="w-4 h-4" /> Replace Asset
-                </button>
-                <button
-                  onClick={() => handleDelete(selectedAsset.id)}
-                  className="px-4 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-xl text-xs font-semibold inline-flex items-center gap-2 cursor-pointer"
-                >
-                  <Trash2 className="w-4 h-4" /> Delete Asset
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* UPLOAD / CREATE NEW ASSET MODAL */}
-      {isUploadOpen && (
-        <div className="fixed inset-0 bg-stone-950/60 z-50 flex items-center justify-center p-4 overflow-y-auto backdrop-blur-xs">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-xl w-full border border-stone-200 p-6 space-y-6">
-            <div className="flex items-center justify-between border-b border-stone-200 pb-4">
-              <h2 className="text-base font-bold font-cinzel text-stone-900">Upload New Media Asset</h2>
-              <button onClick={() => setIsUploadOpen(false)} className="p-2 text-stone-400 hover:text-stone-700 rounded-lg">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
+            )}
 
             <form onSubmit={handleUploadSubmit} className="space-y-4">
+              {/* Drag & Drop / File Picker Area */}
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1">File Name</label>
-                <input
-                  type="text"
-                  required
-                  value={newAssetData.fileName}
-                  onChange={(e) => setNewAssetData({ ...newAssetData, fileName: e.target.value })}
-                  className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-900 focus:outline-none focus:border-amber-600"
-                />
+                <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1.5">Select File (*.JPG, PNG, WEBP, MP4, PDF)</label>
+                <div
+                  onDrop={handleDrop}
+                  onDragOver={handleDragOver}
+                  onClick={() => { if (!uploading) fileInputRef.current?.click(); }}
+                  className="border-2 border-dashed border-stone-300 hover:border-amber-600 bg-stone-50 hover:bg-amber-50/20 rounded-2xl p-6 text-center cursor-pointer transition-all flex flex-col items-center justify-center space-y-3"
+                >
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*,video/*,audio/*,application/pdf"
+                    className="hidden"
+                    onChange={(e) => {
+                      if (e.target.files && e.target.files[0]) {
+                        handleFileSelect(e.target.files[0]);
+                      }
+                    }}
+                  />
+
+                  {selectedFile ? (
+                    <div className="w-full space-y-3">
+                      {filePreviewUrl && selectedFile.type.startsWith('image/') ? (
+                        <div className="w-24 h-24 mx-auto rounded-xl overflow-hidden border border-stone-200 bg-stone-900 shadow-sm">
+                          <img src={filePreviewUrl} alt="Preview" className="w-full h-full object-cover" />
+                        </div>
+                      ) : (
+                        <div className="w-12 h-12 mx-auto rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center">
+                          <Upload className="w-6 h-6" />
+                        </div>
+                      )}
+                      <div>
+                        <p className="text-xs font-bold text-stone-900 truncate max-w-xs mx-auto">{selectedFile.name}</p>
+                        <p className="text-[11px] text-stone-500 font-mono">
+                          {(selectedFile.size / (1024 * 1024)).toFixed(2)} MB • {selectedFile.type || 'Unknown Type'}
+                        </p>
+                      </div>
+                      <span className="inline-block px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-[10px] font-bold uppercase tracking-wider">
+                        Click or drag to change file
+                      </span>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="w-12 h-12 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center shadow-xs">
+                        <Upload className="w-6 h-6" />
+                      </div>
+                      <div>
+                        <p className="text-xs font-bold text-stone-800">Drag & drop your file here, or <span className="text-amber-600 underline">browse files</span></p>
+                        <p className="text-[11px] text-stone-400 mt-1">Supports Images, Videos, Audio, and PDFs up to 50MB</p>
+                      </div>
+                    </>
+                  )}
+                </div>
               </div>
-              <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1">Asset URL (Mock / CDN)</label>
-                <input
-                  type="text"
-                  required
-                  value={newAssetData.url}
-                  onChange={(e) => setNewAssetData({ ...newAssetData, url: e.target.value })}
-                  className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-900 focus:outline-none focus:border-amber-600"
-                />
-              </div>
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1">Category</label>
                   <select
-                    value={newAssetData.category}
-                    onChange={(e) => setNewAssetData({ ...newAssetData, category: e.target.value as any })}
-                    className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-900 focus:outline-none focus:border-amber-600"
+                    disabled={uploading}
+                    value={uploadForm.category}
+                    onChange={(e) => setUploadForm({ ...uploadForm, category: e.target.value as any })}
+                    className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-900 focus:outline-none focus:border-amber-600 disabled:opacity-60"
                   >
                     <option value="Banners">Banners</option>
                     <option value="Faculty">Faculty</option>
@@ -393,9 +427,10 @@ export default function MediaAssetLibraryView() {
                 <div>
                   <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1">Visibility</label>
                   <select
-                    value={newAssetData.visibility}
-                    onChange={(e) => setNewAssetData({ ...newAssetData, visibility: e.target.value as any })}
-                    className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-900 focus:outline-none focus:border-amber-600"
+                    disabled={uploading}
+                    value={uploadForm.visibility}
+                    onChange={(e) => setUploadForm({ ...uploadForm, visibility: e.target.value as any })}
+                    className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-900 focus:outline-none focus:border-amber-600 disabled:opacity-60"
                   >
                     <option value="Public">Public</option>
                     <option value="Protected">Protected</option>
@@ -403,41 +438,179 @@ export default function MediaAssetLibraryView() {
                   </select>
                 </div>
               </div>
+
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1">Alt Text</label>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1">Alt Text / Title</label>
                 <input
                   type="text"
-                  value={newAssetData.altText}
-                  onChange={(e) => setNewAssetData({ ...newAssetData, altText: e.target.value })}
-                  className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-900 focus:outline-none focus:border-amber-600"
+                  required
+                  disabled={uploading}
+                  value={uploadForm.altText}
+                  onChange={(e) => setUploadForm({ ...uploadForm, altText: e.target.value })}
+                  placeholder="e.g., LEO Family Academy Banner"
+                  className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-900 focus:outline-none focus:border-amber-600 disabled:opacity-60"
                 />
               </div>
+
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1">Caption / Description</label>
+                <input
+                  type="text"
+                  disabled={uploading}
+                  value={uploadForm.caption}
+                  onChange={(e) => setUploadForm({ ...uploadForm, caption: e.target.value })}
+                  placeholder="e.g., Promotional banner for upcoming Vedic Astrology Masterclass"
+                  className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-900 focus:outline-none focus:border-amber-600 disabled:opacity-60"
+                />
+              </div>
+
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1">Tags (comma separated)</label>
                 <input
                   type="text"
-                  value={newAssetData.tags}
-                  onChange={(e) => setNewAssetData({ ...newAssetData, tags: e.target.value })}
-                  className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-900 focus:outline-none focus:border-amber-600"
+                  disabled={uploading}
+                  value={uploadForm.tags}
+                  onChange={(e) => setUploadForm({ ...uploadForm, tags: e.target.value })}
+                  className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-900 focus:outline-none focus:border-amber-600 disabled:opacity-60"
                 />
               </div>
+
+              {/* ADVANCED PROGRESS BAR COMPONENT */}
+              {uploading && (
+                <div className="bg-amber-50/60 border border-amber-200/80 rounded-2xl p-4 space-y-3">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-bold text-amber-900 flex items-center gap-2">
+                      <Loader2 className="w-4 h-4 animate-spin text-amber-600" />
+                      <span>{uploadStatusText || 'Processing Upload...'}</span>
+                    </span>
+                    <span className="font-mono font-bold text-amber-800">{uploadProgress}%</span>
+                  </div>
+                  <div className="w-full bg-stone-200 rounded-full h-2.5 overflow-hidden p-0.5 bg-stone-100 border border-amber-200/50">
+                    <div 
+                      className="bg-gradient-to-r from-amber-500 to-amber-600 h-full rounded-full transition-all duration-300 shadow-sm" 
+                      style={{ width: `${uploadProgress}%` }} 
+                    />
+                  </div>
+                  <div className="flex items-center justify-between text-[10px] text-stone-500 font-medium">
+                    <span>Bucket: <strong className="text-stone-700">leo-media</strong></span>
+                    <span>Secure Admin Upload</span>
+                  </div>
+                </div>
+              )}
 
               <div className="flex justify-end gap-3 pt-4 border-t border-stone-200">
                 <button
                   type="button"
                   onClick={() => setIsUploadOpen(false)}
-                  className="px-4 py-2 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-xl text-xs font-semibold cursor-pointer"
+                  disabled={uploading}
+                  className="px-4 py-2 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-xl text-xs font-semibold cursor-pointer disabled:opacity-50"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-bold uppercase tracking-wider shadow-md cursor-pointer"
+                  disabled={uploading || !selectedFile}
+                  className="px-6 py-2.5 bg-amber-600 hover:bg-amber-700 disabled:opacity-50 text-white rounded-xl text-xs font-bold uppercase tracking-wider shadow-md cursor-pointer inline-flex items-center gap-2"
                 >
-                  Save Asset
+                  {uploading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Uploading...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="w-4 h-4" />
+                      <span>Upload & Register</span>
+                    </>
+                  )}
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* ASSET PREVIEW MODAL */}
+      {isPreviewOpen && selectedAsset && (
+        <div className="fixed inset-0 bg-stone-950/60 z-50 flex items-center justify-center p-4 overflow-y-auto backdrop-blur-xs">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto border border-stone-200 p-6 space-y-6">
+            <div className="flex items-center justify-between border-b border-stone-200 pb-4">
+              <div>
+                <h2 className="text-base font-bold font-cinzel text-stone-900">{selectedAsset.fileName}</h2>
+                <span className="inline-block mt-1 px-2.5 py-0.5 rounded-md text-[10px] font-semibold bg-amber-50 text-amber-800 border border-amber-200">
+                  {selectedAsset.category}
+                </span>
+              </div>
+              <button onClick={() => setIsPreviewOpen(false)} className="p-2 text-stone-400 hover:text-stone-700 rounded-lg cursor-pointer">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div className="bg-stone-950 rounded-2xl overflow-hidden flex items-center justify-center max-h-[450px]">
+                {selectedAsset.fileType?.startsWith('video') ? (
+                  <video src={selectedAsset.url} controls className="max-h-[450px] w-full object-contain" />
+                ) : (
+                  <img src={selectedAsset.url} alt={selectedAsset.altText} className="max-h-[450px] w-full object-contain" />
+                )}
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-stone-50 p-4 rounded-xl border border-stone-200 text-xs">
+                <div>
+                  <span className="text-stone-400 block mb-0.5 font-semibold uppercase">File Name</span>
+                  <span className="text-stone-800 font-mono font-medium">{selectedAsset.fileName}</span>
+                </div>
+                <div>
+                  <span className="text-stone-400 block mb-0.5 font-semibold uppercase">File Size & Type</span>
+                  <span className="text-stone-800 font-mono font-medium">{selectedAsset.fileSize} ({selectedAsset.fileType})</span>
+                </div>
+                <div>
+                  <span className="text-stone-400 block mb-0.5 font-semibold uppercase">Dimensions</span>
+                  <span className="text-stone-800 font-mono font-medium">{selectedAsset.width} × {selectedAsset.height} px</span>
+                </div>
+                <div>
+                  <span className="text-stone-400 block mb-0.5 font-semibold uppercase">Visibility</span>
+                  <span className="text-stone-800 font-medium">{selectedAsset.visibility}</span>
+                </div>
+                <div className="sm:col-span-2">
+                  <span className="text-stone-400 block mb-0.5 font-semibold uppercase">Alt Text / Description</span>
+                  <span className="text-stone-800">{selectedAsset.altText || selectedAsset.caption || 'None'}</span>
+                </div>
+                <div className="sm:col-span-2">
+                  <span className="text-stone-400 block mb-0.5 font-semibold uppercase">Storage Public URL</span>
+                  <div className="flex items-center gap-2 mt-1">
+                    <input
+                      type="text"
+                      readOnly
+                      value={selectedAsset.url}
+                      className="w-full bg-white border border-stone-200 px-3 py-1.5 rounded-lg font-mono text-[11px] text-stone-600 select-all"
+                    />
+                    <button
+                      onClick={() => handleCopyUrl(selectedAsset.url, selectedAsset.id)}
+                      className="px-3 py-1.5 bg-amber-600 text-white rounded-lg font-semibold shrink-0 hover:bg-amber-700 transition-colors inline-flex items-center gap-1 cursor-pointer text-xs"
+                    >
+                      <Copy className="w-3.5 h-3.5" />
+                      <span>{copiedId === selectedAsset.id ? 'Copied!' : 'Copy'}</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between pt-4 border-t border-stone-200">
+              <button
+                onClick={() => handleDelete(selectedAsset.id)}
+                className="px-4 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors inline-flex items-center gap-1.5 cursor-pointer"
+              >
+                <Trash2 className="w-4 h-4" /> Delete Asset
+              </button>
+              <button
+                onClick={() => setIsPreviewOpen(false)}
+                className="px-5 py-2 bg-stone-900 text-white rounded-xl text-xs font-semibold cursor-pointer hover:bg-stone-800"
+              >
+                Close Preview
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -451,7 +624,7 @@ export default function MediaAssetLibraryView() {
                 className="relative h-44 bg-stone-900 overflow-hidden cursor-pointer"
                 onClick={() => { setSelectedAsset(asset); setIsPreviewOpen(true); }}
               >
-                {asset.fileType.startsWith('video') ? (
+                {asset.fileType?.startsWith('video') ? (
                   <video src={asset.url} className="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-300" />
                 ) : (
                   <img src={asset.url} alt={asset.altText} className="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-300" />
@@ -475,21 +648,21 @@ export default function MediaAssetLibraryView() {
                   <div className="flex items-center gap-1">
                     <button
                       onClick={() => handleCopyUrl(asset.url, asset.id)}
-                      className="p-1.5 text-stone-600 hover:text-amber-700 hover:bg-amber-50 rounded-lg transition-colors"
+                      className="p-1.5 text-stone-600 hover:text-amber-700 hover:bg-amber-50 rounded-lg transition-colors cursor-pointer"
                       title="Copy URL"
                     >
                       <Copy className="w-3.5 h-3.5" />
                     </button>
                     <button
                       onClick={() => { setSelectedAsset(asset); setIsPreviewOpen(true); }}
-                      className="p-1.5 text-stone-600 hover:text-amber-700 hover:bg-amber-50 rounded-lg transition-colors"
+                      className="p-1.5 text-stone-600 hover:text-amber-700 hover:bg-amber-50 rounded-lg transition-colors cursor-pointer"
                       title="Preview"
                     >
                       <Eye className="w-3.5 h-3.5" />
                     </button>
                     <button
                       onClick={() => handleDelete(asset.id)}
-                      className="p-1.5 text-stone-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+                      className="p-1.5 text-stone-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
                       title="Delete"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -500,8 +673,8 @@ export default function MediaAssetLibraryView() {
             </div>
           ))}
           {filteredAssets.length === 0 && (
-            <div className="col-span-full py-12 text-center text-stone-400 text-xs">
-              No media assets found matching your criteria.
+            <div className="col-span-full py-16 text-center text-stone-400 text-xs bg-white rounded-2xl border border-stone-200">
+              No media assets found matching your criteria. Click "Upload New Asset" to add files.
             </div>
           )}
         </div>
@@ -543,7 +716,7 @@ export default function MediaAssetLibraryView() {
                     </td>
                     <td className="p-4">
                       <div className="flex flex-wrap gap-1 max-w-xs">
-                        {asset.usedBy.map((u, i) => (
+                        {asset.usedBy?.map((u, i) => (
                           <span key={i} className="px-1.5 py-0.5 bg-stone-100 rounded text-[10px] text-stone-700 font-medium">
                             {u}
                           </span>
@@ -554,21 +727,21 @@ export default function MediaAssetLibraryView() {
                       <div className="flex items-center justify-end gap-2">
                         <button
                           onClick={() => handleCopyUrl(asset.url, asset.id)}
-                          className="p-1.5 text-stone-600 hover:text-amber-700 hover:bg-amber-50 rounded-lg transition-colors"
+                          className="p-1.5 text-stone-600 hover:text-amber-700 hover:bg-amber-50 rounded-lg transition-colors cursor-pointer"
                           title="Copy URL"
                         >
                           <Copy className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => { setSelectedAsset(asset); setIsPreviewOpen(true); }}
-                          className="p-1.5 text-stone-600 hover:text-amber-700 hover:bg-amber-50 rounded-lg transition-colors"
+                          className="p-1.5 text-stone-600 hover:text-amber-700 hover:bg-amber-50 rounded-lg transition-colors cursor-pointer"
                           title="Preview"
                         >
                           <Eye className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => handleDelete(asset.id)}
-                          className="p-1.5 text-stone-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+                          className="p-1.5 text-stone-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
                           title="Delete"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -590,13 +763,13 @@ export default function MediaAssetLibraryView() {
         </div>
       )}
 
-      {/* Supabase Ready Notice */}
+      {/* Supabase Storage Ready Notice */}
       <div className="bg-stone-50 border border-stone-200/80 rounded-2xl p-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <ShieldCheck className="w-5 h-5 text-amber-600 shrink-0" />
           <div>
-            <h4 className="text-xs font-bold text-stone-900">Supabase Storage Integration Ready</h4>
-            <p className="text-[11px] text-stone-500">Repository and service architecture prepared to connect directly with Supabase Storage for cloud media persistence.</p>
+            <h4 className="text-xs font-bold text-stone-900">Supabase Storage Integration Active (`leo-media` bucket)</h4>
+            <p className="text-[11px] text-stone-500">Local device files upload directly to Supabase storage with automatic public URL generation and database registration.</p>
           </div>
         </div>
         <span className="px-3 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full text-xs font-semibold shrink-0">

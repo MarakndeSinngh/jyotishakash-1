@@ -160,9 +160,15 @@ export const websiteSettingsRepository = {
         .single();
 
       if (error) {
-        console.error('MEDITATION_VIDEO_SAVE_ERROR', { error: error.message, code: error.code });
+        const errDetails = {
+          message: error.message,
+          code: error.code,
+          details: error.details,
+          hint: error.hint
+        };
+        console.error('MEDITATION_VIDEO_SAVE_ERROR', errDetails);
         if (isRemoving) {
-          console.error('MEDITATION_VIDEO_REMOVE_ERROR', error.message);
+          console.error('MEDITATION_VIDEO_REMOVE_ERROR', errDetails);
         }
         throw error;
       }
@@ -192,5 +198,9 @@ export const websiteSettingsRepository = {
       }
       throw error;
     }
+  },
+
+  async saveMeditationHeroVideo(youtubeUrl: string): Promise<WebsiteSettings> {
+    return this.updateSettings({ meditationHeroYoutubeUrl: youtubeUrl });
   }
 };

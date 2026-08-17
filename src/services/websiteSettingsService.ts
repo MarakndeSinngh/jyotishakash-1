@@ -14,5 +14,12 @@ export const websiteSettingsService = {
    */
   async updateSettings(updates: Partial<WebsiteSettings>): Promise<WebsiteSettings> {
     return websiteSettingsRepository.updateSettings(updates);
+  },
+
+  /**
+   * Save Meditation Hero YouTube URL to Supabase via persistent UPSERT
+   */
+  async saveMeditationHeroVideo(youtubeUrl: string): Promise<WebsiteSettings> {
+    return websiteSettingsRepository.saveMeditationHeroVideo(youtubeUrl);
   }
 };

@@ -42,8 +42,14 @@ export default function SettingsView() {
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
     } catch (err: any) {
-      console.error('Failed to save settings:', err);
-      setError('Failed to save settings');
+      const errInfo = {
+        message: err?.message,
+        code: err?.code,
+        details: err?.details,
+        hint: err?.hint
+      };
+      console.error('MEDITATION_SETTINGS_SAVE_ERROR', errInfo);
+      setError(`Failed to save settings: ${err?.message || JSON.stringify(err)}`);
     }
   };
 

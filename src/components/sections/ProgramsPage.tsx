@@ -206,7 +206,7 @@ export default function ProgramsPage({ navigate }: ProgramsPageProps) {
                       <SmartImage
                         src={course.image || '/gemstone-assets/logo.jpg'}
                         alt={course.title}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-85"
+                        className="w-full h-full object-contain object-center transition-transform duration-700 group-hover:scale-105 bg-background"
                       />
 
                       {/* Academy Profile Badge */}

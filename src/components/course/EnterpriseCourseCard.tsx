@@ -59,7 +59,7 @@ export const EnterpriseCourseCard: React.FC<EnterpriseCourseCardProps> = ({
         <SmartImage
           src={course.thumbnail}
           alt={course.title}
-          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+          className="w-full h-full object-contain object-center transition-transform duration-700 group-hover:scale-105 bg-background"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-card via-transparent to-transparent opacity-90" />
 

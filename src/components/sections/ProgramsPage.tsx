@@ -10,6 +10,15 @@ interface ProgramsPageProps {
   navigate?: (path: string) => void;
 }
 
+// Centralized ID-based primary category mapping (No keyword matching)
+export const PROGRAM_CATEGORY_MAP: Record<string, string[]> = {
+  numerology: ['prog-1', 'prog-6'],
+  astrology: ['prog-2'],
+  vastu: ['prog-3', 'prog-4'],
+  name: ['prog-5'],
+  'name-correction': ['prog-5']
+};
+
 export default function ProgramsPage({ navigate }: ProgramsPageProps) {
   const [programs, setPrograms] = useState<Program[]>([]);
   const [loading, setLoading] = useState(true);
@@ -52,20 +61,8 @@ export default function ProgramsPage({ navigate }: ProgramsPageProps) {
     if (!prog.visible) return false;
     if (selectedCategory === 'all') return true;
 
-    const t = (prog.title || '').toLowerCase();
-    const d = (prog.description || '').toLowerCase();
-    const sub = (prog.subtitle || '').toLowerCase();
-
-    if (selectedCategory === 'astrology') {
-      return t.includes('astrology') || t.includes('astro') || d.includes('astrology') || d.includes('astro') || sub.includes('astrology') || sub.includes('astro');
-    }
-    if (selectedCategory === 'vastu') {
-      return t.includes('vastu') || t.includes('devta') || d.includes('vastu') || d.includes('devta') || sub.includes('vastu') || sub.includes('devta');
-    }
-    if (selectedCategory === 'name' || selectedCategory === 'name-correction') {
-      return t.includes('name') || t.includes('mobile') || d.includes('name') || d.includes('mobile') || sub.includes('name') || sub.includes('mobile');
-    }
-    return true;
+    const allowedIds = PROGRAM_CATEGORY_MAP[selectedCategory] || [];
+    return allowedIds.includes(prog.id);
   });
 
   const getMentorDetails = (mentorId: string) => {
@@ -138,6 +135,7 @@ export default function ProgramsPage({ navigate }: ProgramsPageProps) {
         <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mb-16 max-w-4xl mx-auto">
           {[
             { id: 'all', label: 'All Programs' },
+            { id: 'numerology', label: 'Numerology' },
             { id: 'astrology', label: 'Astrology' },
             { id: 'vastu', label: 'Vastu' },
             { id: 'name', label: 'Name Correction' },

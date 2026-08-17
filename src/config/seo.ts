@@ -34,6 +34,7 @@ export const ROUTE_TITLE_MAP: Record<string, string> = {
   '/services': "Services | LEO Family",
   '/ecosystem': "Ecosystem | LEO Family",
   '/academy': "Programs | LEO Family",
+  '/meditation': "Meditation Classes & Guided Meditation | Leo Family Occult School",
 };
 
 // Known Dedicated Instructor Page Titles
@@ -109,7 +110,9 @@ export function getSeoMetadata(options: SeoMetadataOptions = {}): ResolvedSeoMet
     resolvedTitle = DEFAULT_SEO.title;
   }
 
-  const description = options.customDescription || DEFAULT_SEO.description;
+  const description = options.customDescription || (normalizedPath === '/meditation' 
+    ? "Explore guided meditation learning and upcoming meditation batches at Leo Family Occult School with structured practice, awareness and inner growth."
+    : DEFAULT_SEO.description);
   const image = options.customImage || DEFAULT_SEO.image;
   const canonical = typeof window !== 'undefined' ? (window.location.origin + normalizedPath) : `${mainUrl}${normalizedPath}`;
 

@@ -26,6 +26,7 @@ import ShortsPage from './components/sections/ShortsPage';
 import AcademyLandingPage from './components/sections/AcademyLandingPage';
 import ProgramsPage from './components/sections/ProgramsPage';
 import BlogsPage from './components/sections/BlogsPage';
+import MeditationPage from './components/sections/MeditationPage';
 import AdminPortal from './components/admin/AdminPortal';
 import ErrorBoundary from './components/ErrorBoundary';
 import ThemeSelector from './components/ThemeSelector';
@@ -100,7 +101,7 @@ export default function App() {
   const loadContent = async () => {
     setLoading(true);
     try {
-      if (currentPath === '/media' || currentPath === '/shorts' || currentPath.startsWith('/academy/')) {
+      if (currentPath === '/media' || currentPath === '/shorts' || currentPath === '/meditation' || currentPath.startsWith('/academy/')) {
         setPage(null);
         setSections([]);
         setLoading(false);
@@ -337,7 +338,7 @@ export default function App() {
 
         {/* MAIN CONTENT */}
         <main className={`relative z-10 ${
-          currentPath === '/' || currentPath === '/gemstones' || currentPath === '/numerology' || currentPath === '/academy' || currentPath.startsWith('/academy/') || currentPath.startsWith('/programs') || currentPath === '/blogs' || currentPath === '/ai' || currentPath === '/ecosystem' || currentPath === '/contact' || currentPath === '/media' || currentPath === '/shorts'
+          currentPath === '/' || currentPath === '/gemstones' || currentPath === '/numerology' || currentPath === '/meditation' || currentPath === '/academy' || currentPath.startsWith('/academy/') || currentPath.startsWith('/programs') || currentPath === '/blogs' || currentPath === '/ai' || currentPath === '/ecosystem' || currentPath === '/contact' || currentPath === '/media' || currentPath === '/shorts'
             ? 'pt-0'
             : 'pt-24'
         }`}>
@@ -346,6 +347,8 @@ export default function App() {
               <MediaCenterPage key="media-center" />
             ) : currentPath === '/shorts' ? (
               <ShortsPage key="shorts-page" navigate={navigate} />
+            ) : currentPath === '/meditation' ? (
+              <MeditationPage key="meditation-page" navigate={navigate} />
             ) : currentPath.startsWith('/programs') ? (
               <ProgramsPage key="programs-page" navigate={navigate} />
             ) : currentPath === '/blogs' ? (

@@ -13,6 +13,7 @@ export const NAVIGATION_REGISTRY: Navigation = {
         { label: "Vastu", path: "/programs?filter=vastu", description: "Sacred space energy & directional alignment" },
         { label: "Name Correction", path: "/programs?filter=name", description: "Phonetic vibration & name frequency shift" },
         { label: "Gemstones", path: "/gemstones", description: "Authentic Vedic gemstone guidance & energization" },
+        { label: "Meditation", path: "/meditation", description: "Guided inner stillness, mindfulness & batch learning", badge: "New" },
         { label: "Courses", path: "/programs", description: "Masterclasses & structured training programs", badge: "Programs" },
         { label: "Blogs", path: "/blogs", description: "Articles, guides & spiritual wisdom" }
       ]
@@ -44,6 +45,7 @@ export const NAVIGATION_REGISTRY: Navigation = {
         { label: "Vastu", path: "/programs?filter=vastu" },
         { label: "Name Correction", path: "/programs?filter=name" },
         { label: "Gemstones", path: "/gemstones" },
+        { label: "Meditation", path: "/meditation" },
         { label: "Courses", path: "/programs" },
         { label: "Blogs", path: "/blogs" }
       ]

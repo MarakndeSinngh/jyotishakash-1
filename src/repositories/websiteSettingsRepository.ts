@@ -87,6 +87,7 @@ function mapSettingsToRow(settings: Partial<WebsiteSettings>): any {
 
 export const websiteSettingsRepository = {
   async getSettings(): Promise<WebsiteSettings> {
+    console.log('MEDITATION_VIDEO_LOAD_START');
     try {
       const { data, error } = await supabase
         .from('website_settings')
@@ -95,29 +96,49 @@ export const websiteSettingsRepository = {
         .maybeSingle();
 
       if (error) {
-        console.warn('Could not fetch website settings from Supabase, using local fallback settings:', error.message);
+        console.warn('MEDITATION_VIDEO_LOAD_SUCCESS (with warning/fallback)', error.message);
+        const cached = localStorage.getItem('leo_meditation_hero_url');
+        if (cached !== null) {
+          CURRENT_SETTINGS.meditationHeroYoutubeUrl = cached;
+        }
         return { ...CURRENT_SETTINGS };
       }
 
       if (data) {
+        console.log('MEDITATION_VIDEO_LOAD_SUCCESS', { found: true });
         const mapped = mapRowToSettings(data);
         CURRENT_SETTINGS = {
           ...CURRENT_SETTINGS,
           ...mapped,
           id: 'global'
         };
+        if (CURRENT_SETTINGS.meditationHeroYoutubeUrl) {
+          localStorage.setItem('leo_meditation_hero_url', CURRENT_SETTINGS.meditationHeroYoutubeUrl);
+        } else {
+          localStorage.removeItem('leo_meditation_hero_url');
+        }
         return { ...CURRENT_SETTINGS };
       } else {
-        console.warn('Website settings global row not found in Supabase, using local fallback settings.');
+        console.log('MEDITATION_VIDEO_LOAD_SUCCESS (no global row found, fallback)');
+        const cached = localStorage.getItem('leo_meditation_hero_url');
+        if (cached !== null) {
+          CURRENT_SETTINGS.meditationHeroYoutubeUrl = cached;
+        }
         return { ...CURRENT_SETTINGS };
       }
-    } catch (error) {
-      console.warn('Could not fetch website settings from Supabase, using local fallback settings:', error);
+    } catch (error: any) {
+      console.warn('MEDITATION_VIDEO_LOAD_SUCCESS (exception fallback):', error);
+      const cached = localStorage.getItem('leo_meditation_hero_url');
+      if (cached !== null) {
+        CURRENT_SETTINGS.meditationHeroYoutubeUrl = cached;
+      }
       return { ...CURRENT_SETTINGS };
     }
   },
 
   async updateSettings(updates: Partial<WebsiteSettings>): Promise<WebsiteSettings> {
+    const isRemoving = updates.meditationHeroYoutubeUrl === '';
+    console.log('MEDITATION_VIDEO_SAVE_START', { updates });
     try {
       const current = await this.getSettings();
       const updated: WebsiteSettings = {
@@ -127,17 +148,22 @@ export const websiteSettingsRepository = {
         updatedAt: new Date().toISOString()
       };
 
-      const rowUpdates = mapSettingsToRow(updated);
+      const rowUpdates = {
+        id: 'global',
+        ...mapSettingsToRow(updated)
+      };
 
       const { data, error } = await supabase
         .from('website_settings')
-        .update(rowUpdates)
-        .eq('id', 'global')
+        .upsert(rowUpdates, { onConflict: 'id' })
         .select()
         .single();
 
       if (error) {
-        console.error('Error updating website settings in Supabase:', error.message);
+        console.error('MEDITATION_VIDEO_SAVE_ERROR', { error: error.message, code: error.code });
+        if (isRemoving) {
+          console.error('MEDITATION_VIDEO_REMOVE_ERROR', error.message);
+        }
         throw error;
       }
 
@@ -147,9 +173,23 @@ export const websiteSettingsRepository = {
         CURRENT_SETTINGS = updated;
       }
 
+      if (CURRENT_SETTINGS.meditationHeroYoutubeUrl) {
+        localStorage.setItem('leo_meditation_hero_url', CURRENT_SETTINGS.meditationHeroYoutubeUrl);
+      } else {
+        localStorage.removeItem('leo_meditation_hero_url');
+      }
+
+      if (isRemoving) {
+        console.log('MEDITATION_VIDEO_REMOVE_SUCCESS');
+      }
+      console.log('MEDITATION_VIDEO_SAVE_SUCCESS', { data: CURRENT_SETTINGS });
+
       return { ...CURRENT_SETTINGS };
-    } catch (error) {
-      console.error('Error updating website settings in Supabase:', error);
+    } catch (error: any) {
+      console.error('MEDITATION_VIDEO_SAVE_ERROR:', error);
+      if (isRemoving) {
+        console.error('MEDITATION_VIDEO_REMOVE_ERROR:', error);
+      }
       throw error;
     }
   }

@@ -21,5 +21,6 @@ export interface WebsiteSettings {
   businessHours: string;
   announcementBarText: string;
   announcementEnable: boolean;
+  meditationHeroYoutubeUrl?: string;
   updatedAt?: string;
 }

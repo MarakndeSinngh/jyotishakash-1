@@ -24,6 +24,7 @@ let CURRENT_SETTINGS: WebsiteSettings = {
   businessHours: 'Mon - Sat: 9:00 AM - 7:00 PM IST',
   announcementBarText: '🌟 Special Masterclass Announcement: Register for our upcoming Vedic Numerology live session today!',
   announcementEnable: true,
+  meditationHeroYoutubeUrl: '',
   updatedAt: new Date().toISOString()
 };
 
@@ -51,6 +52,7 @@ function mapRowToSettings(row: any): WebsiteSettings {
     businessHours: row.business_hours ?? CURRENT_SETTINGS.businessHours,
     announcementBarText: row.announcement_bar_text ?? CURRENT_SETTINGS.announcementBarText,
     announcementEnable: row.announcement_enable ?? CURRENT_SETTINGS.announcementEnable,
+    meditationHeroYoutubeUrl: row.meditation_hero_youtube_url ?? CURRENT_SETTINGS.meditationHeroYoutubeUrl,
     updatedAt: row.updated_at ?? CURRENT_SETTINGS.updatedAt
   };
 }
@@ -78,6 +80,7 @@ function mapSettingsToRow(settings: Partial<WebsiteSettings>): any {
   if (settings.businessHours !== undefined) row.business_hours = settings.businessHours;
   if (settings.announcementBarText !== undefined) row.announcement_bar_text = settings.announcementBarText;
   if (settings.announcementEnable !== undefined) row.announcement_enable = settings.announcementEnable;
+  if (settings.meditationHeroYoutubeUrl !== undefined) row.meditation_hero_youtube_url = settings.meditationHeroYoutubeUrl;
   if (settings.updatedAt !== undefined) row.updated_at = settings.updatedAt;
   return row;
 }

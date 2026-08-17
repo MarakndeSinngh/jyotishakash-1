@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Settings, Shield, Bell, Database, Globe, Save, CheckCircle2, Phone, Mail, MapPin, Share2, BarChart3, Link as LinkIcon, Megaphone } from 'lucide-react';
+import { Settings, Shield, Bell, Database, Globe, Save, CheckCircle2, Phone, Mail, MapPin, Share2, BarChart3, Link as LinkIcon, Megaphone, Film, Play } from 'lucide-react';
 import { websiteSettingsService } from '../../services/websiteSettingsService';
 import { WebsiteSettings } from '../../models/websiteSettings';
+import { parseYoutubeUrl } from '../../utils/youtube';
 
 export default function SettingsView() {
   const [settings, setSettings] = useState<WebsiteSettings | null>(null);
@@ -366,6 +367,72 @@ export default function SettingsView() {
               onChange={(e) => handleChange('announcementBarText', e.target.value)}
               className="w-full px-4 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-900 focus:outline-none focus:border-amber-600"
             />
+          </div>
+        </div>
+
+
+        {/* ==================== MEDITATION HERO VIDEO ==================== */}
+        <div className="bg-white rounded-2xl border border-stone-200/80 shadow-sm p-6 space-y-4">
+          <h2 className="text-sm font-bold uppercase tracking-wider text-stone-800 flex items-center gap-2">
+            <Film className="w-4 h-4 text-amber-700" /> Meditation Hero Video
+          </h2>
+          <p className="text-xs text-stone-500">
+            Configure the YouTube video featured in the Hero section of the public /meditation page.
+          </p>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1.5">
+                YouTube Video URL
+              </label>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={settings.meditationHeroYoutubeUrl || ''}
+                  onChange={(e) => handleChange('meditationHeroYoutubeUrl', e.target.value)}
+                  placeholder="https://www.youtube.com/watch?v=..."
+                  className="flex-1 px-4 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-900 focus:outline-none focus:border-amber-600 font-mono"
+                />
+                {settings.meditationHeroYoutubeUrl && (
+                  <button
+                    type="button"
+                    onClick={() => handleChange('meditationHeroYoutubeUrl', '')}
+                    className="px-4 py-2.5 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-xl text-xs font-semibold transition-colors cursor-pointer shrink-0"
+                  >
+                    Remove Video
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Video ID & Thumbnail Preview */}
+            {settings.meditationHeroYoutubeUrl && (() => {
+              const parsed = parseYoutubeUrl(settings.meditationHeroYoutubeUrl);
+              const videoId = parsed.id;
+              if (!videoId) {
+                return (
+                  <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800">
+                    ⚠️ Unable to extract valid YouTube Video ID from URL. Please check the link.
+                  </div>
+                );
+              }
+              const thumbUrl = `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
+              return (
+                <div className="bg-stone-50 border border-stone-200 rounded-2xl p-4 space-y-3">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-bold text-stone-700 font-mono">Video ID: {videoId}</span>
+                    <span className="px-2.5 py-0.5 bg-emerald-100 text-emerald-800 rounded-full text-[10px] font-bold uppercase">Valid YouTube URL</span>
+                  </div>
+                  <div className="relative w-full max-w-sm aspect-video rounded-xl overflow-hidden border border-stone-200 bg-stone-900 shadow-sm">
+                    <img src={thumbUrl} alt="Preview" className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+                      <div className="w-10 h-10 rounded-full bg-amber-600 text-white flex items-center justify-center shadow-lg">
+                        <Play className="w-5 h-5 fill-white ml-0.5" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
           </div>
         </div>
 

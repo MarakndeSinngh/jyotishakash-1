@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Sparkles, 
@@ -17,10 +17,13 @@ import {
   MessageCircle,
   Award,
   Zap,
-  Volume2
+  Volume2,
+  Play
 } from 'lucide-react';
 import { WHATSAPP_LINK } from '../../constants/contacts';
 import SmartImage from './SmartImage';
+import { websiteSettingsService } from '../../services/websiteSettingsService';
+import { parseYoutubeUrl } from '../../utils/youtube';
 
 interface MeditationPageProps {
   navigate?: (path: string) => void;
@@ -28,6 +31,25 @@ interface MeditationPageProps {
 
 export default function MeditationPage({ navigate }: MeditationPageProps) {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const [heroYoutubeUrl, setHeroYoutubeUrl] = useState<string>('');
+  const [isPlayingHeroVideo, setIsPlayingHeroVideo] = useState(false);
+
+  useEffect(() => {
+    async function loadHeroVideo() {
+      try {
+        const settings = await websiteSettingsService.getSettings();
+        if (settings?.meditationHeroYoutubeUrl) {
+          setHeroYoutubeUrl(settings.meditationHeroYoutubeUrl);
+        }
+      } catch (err) {
+        console.error('Failed to load meditation hero video setting:', err);
+      }
+    }
+    loadHeroVideo();
+  }, []);
+
+  const parsedHero = parseYoutubeUrl(heroYoutubeUrl);
+  const heroVideoId = parsedHero.id;
 
   const whyMeditationCards = [
     {
@@ -202,6 +224,71 @@ export default function MeditationPage({ navigate }: MeditationPageProps) {
             >
               <span>Explore Batches</span>
             </a>
+          </motion.div>
+
+          {/* HERO VIDEO / FEATURED PLAYER */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="pt-8 max-w-4xl mx-auto"
+          >
+            {heroVideoId ? (
+              <div className="relative w-full aspect-video rounded-3xl overflow-hidden border-2 border-primary/40 bg-stone-950 shadow-2xl group">
+                {!isPlayingHeroVideo ? (
+                  <>
+                    <img
+                      src={`https://i.ytimg.com/vi/${heroVideoId}/maxresdefault.jpg`}
+                      alt="Meditation Featured Video"
+                      className="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-700"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = `https://i.ytimg.com/vi/${heroVideoId}/hqdefault.jpg`;
+                      }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-stone-950/80 via-transparent to-stone-950/20 pointer-events-none" />
+                    
+                    <div className="absolute top-4 left-4 z-10">
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-stone-950/80 border border-primary/30 text-primary text-[10px] font-bold uppercase tracking-wider backdrop-blur-md">
+                        <Sparkles className="w-3 h-3 text-primary animate-pulse" />
+                        Featured Meditation Guidance
+                      </span>
+                    </div>
+
+                    <button
+                      onClick={() => setIsPlayingHeroVideo(true)}
+                      aria-label="Play Meditation Video"
+                      className="absolute inset-0 flex items-center justify-center z-20 cursor-pointer group/btn"
+                    >
+                      <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-primary text-background flex items-center justify-center shadow-2xl group-hover/btn:scale-110 transition-transform duration-300">
+                        <Play className="w-8 h-8 fill-background ml-1" />
+                      </div>
+                    </button>
+                  </>
+                ) : (
+                  <iframe
+                    src={`https://www.youtube.com/embed/${heroVideoId}?autoplay=1&rel=0`}
+                    title="Meditation Featured Video"
+                    className="w-full h-full border-0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                )}
+              </div>
+            ) : (
+              <div className="relative w-full aspect-video rounded-3xl overflow-hidden border-2 border-primary/30 bg-gradient-to-br from-card via-stone-900 to-stone-950 shadow-xl flex flex-col items-center justify-center text-center p-8 space-y-3">
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.06)_0%,transparent_70%)] pointer-events-none" />
+                <div className="w-14 h-14 rounded-2xl bg-primary/10 border border-primary/30 flex items-center justify-center text-primary shadow-md relative z-10">
+                  <Sparkles className="w-7 h-7 animate-pulse" />
+                </div>
+                <div className="space-y-1 relative z-10">
+                  <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary">MEDITATION JOURNEY</span>
+                  <h3 className="text-xl sm:text-2xl font-bold font-cinzel text-text-primary">Quiet Awareness & Inner Peace</h3>
+                  <p className="text-xs text-text-secondary font-light max-w-md mx-auto">
+                    Explore inner stillness and guided awareness. Configure a featured meditation video in the Admin panel to display it here.
+                  </p>
+                </div>
+              </div>
+            )}
           </motion.div>
         </section>
 

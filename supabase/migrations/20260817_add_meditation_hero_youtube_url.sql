@@ -1,0 +1,3 @@
+-- ADD MEDITATION HERO YOUTUBE URL COLUMN TO WEBSITE_SETTINGS
+ALTER TABLE public.website_settings
+ADD COLUMN IF NOT EXISTS meditation_hero_youtube_url TEXT;

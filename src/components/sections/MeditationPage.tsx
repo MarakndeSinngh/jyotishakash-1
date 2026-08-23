@@ -29,6 +29,8 @@ import SmartImage from './SmartImage';
 import { websiteSettingsService } from '../../services/websiteSettingsService';
 import { parseYoutubeUrl } from '../../utils/youtube';
 
+const MEDITATION_WHATSAPP_GROUP_URL = 'https://chat.whatsapp.com/E1CeluFqVlIGWzMYVSQ2F9';
+
 interface MeditationPageProps {
   navigate?: (path: string) => void;
 }
@@ -289,13 +291,13 @@ export default function MeditationPage({ navigate }: MeditationPageProps) {
             className="flex flex-wrap items-center justify-center gap-4 pt-4"
           >
             <a
-              href={`${WHATSAPP_LINK}?text=I am interested in joining the upcoming Meditation batch at LEO Family.`}
+              href={MEDITATION_WHATSAPP_GROUP_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="px-8 py-4 bg-primary hover:bg-primary/90 text-background font-extrabold text-xs uppercase tracking-widest rounded-xl transition-all duration-300 shadow-lg hover:scale-105 flex items-center gap-2 cursor-pointer"
             >
-              <span>Join Upcoming Batch</span>
-              <ArrowRight className="w-4 h-4" />
+              <MessageCircle className="w-4 h-4" />
+              <span>Join Meditation WhatsApp Group</span>
             </a>
             <a
               href="#batches"
@@ -603,16 +605,55 @@ export default function MeditationPage({ navigate }: MeditationPageProps) {
 
             <div className="pt-2 flex justify-center">
               <a
-                href={`${WHATSAPP_LINK}?text=I want to join the upcoming Meditation batch guided by Raajeev Singh Chauhann at LEO Family.`}
+                href={MEDITATION_WHATSAPP_GROUP_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="px-8 py-4 bg-primary hover:bg-primary/90 text-background font-extrabold text-xs uppercase tracking-widest rounded-xl transition-all duration-300 shadow-lg hover:scale-105 flex items-center gap-2 cursor-pointer"
               >
+                <MessageCircle className="w-4 h-4" />
                 <span>JOIN THE NEXT MEDITATION BATCH</span>
-                <ArrowRight className="w-4 h-4" />
               </a>
             </div>
           </div>
+        </section>
+
+        {/* 3. BATCH STARTING SOON - PROMINENT WHATSAPP CTA */}
+        <section className="max-w-4xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="relative rounded-3xl p-8 sm:p-12 bg-gradient-to-br from-card via-stone-900 to-card border-2 border-primary/40 shadow-2xl overflow-hidden text-center space-y-6"
+          >
+            <div className="absolute -top-12 -right-12 w-48 h-48 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute -bottom-12 -left-12 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/30 text-primary text-[10px] sm:text-xs font-bold uppercase tracking-[0.25em]">
+              <Sparkles className="w-3.5 h-3.5 text-primary animate-pulse" />
+              <span>UPCOMING MEDITATION COHORT</span>
+            </div>
+
+            <div className="space-y-3">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold font-cinzel text-text-primary tracking-wide">
+                BATCH STARTING SOON
+              </h2>
+              <p className="text-text-secondary text-xs sm:text-sm md:text-base font-light leading-relaxed max-w-2xl mx-auto">
+                Join the Meditation WhatsApp Group to receive updates about the upcoming batch, including batch dates, timings, enrollment information and other important announcements.
+              </p>
+            </div>
+
+            <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4">
+              <a
+                href={MEDITATION_WHATSAPP_GROUP_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full sm:w-auto px-8 sm:px-10 py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs sm:text-sm uppercase tracking-widest rounded-xl transition-all duration-300 shadow-xl hover:scale-105 flex items-center justify-center gap-3 cursor-pointer group"
+              >
+                <MessageCircle className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                <span>JOIN MEDITATION WHATSAPP GROUP</span>
+              </a>
+            </div>
+          </motion.div>
         </section>
 
         {/* 3. WHY MEDITATION / BENEFITS */}
@@ -757,13 +798,13 @@ export default function MeditationPage({ navigate }: MeditationPageProps) {
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <a
-                href={`${WHATSAPP_LINK}?text=Please add me to the Meditation batch interest list at LEO Family.`}
+                href={MEDITATION_WHATSAPP_GROUP_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full sm:w-auto px-8 py-3.5 bg-primary hover:bg-primary/95 text-background font-extrabold text-xs uppercase tracking-wider rounded-xl transition-all duration-300 shadow-md flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full sm:w-auto px-8 py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs uppercase tracking-wider rounded-xl transition-all duration-300 shadow-md flex items-center justify-center gap-2 cursor-pointer"
               >
                 <MessageCircle className="w-4 h-4" />
-                <span>Join Interest List / Enquire</span>
+                <span>JOIN MEDITATION WHATSAPP GROUP</span>
               </a>
             </div>
           </div>
@@ -848,13 +889,13 @@ export default function MeditationPage({ navigate }: MeditationPageProps) {
           </p>
           <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
             <a
-              href={`${WHATSAPP_LINK}?text=I want to join the upcoming Meditation batch at LEO Family.`}
+              href={MEDITATION_WHATSAPP_GROUP_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="px-8 py-4 bg-primary hover:bg-primary/90 text-background font-extrabold text-xs uppercase tracking-widest rounded-xl transition-all duration-300 shadow-lg hover:scale-105 flex items-center gap-2 cursor-pointer"
+              className="px-8 py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs uppercase tracking-widest rounded-xl transition-all duration-300 shadow-lg hover:scale-105 flex items-center gap-2 cursor-pointer"
             >
-              <span>Join Upcoming Batch</span>
-              <ArrowRight className="w-4 h-4" />
+              <MessageCircle className="w-4 h-4" />
+              <span>Join Meditation WhatsApp Group</span>
             </a>
             <a
               href={`${WHATSAPP_LINK}?text=I have an enquiry regarding LEO Family Meditation classes.`}

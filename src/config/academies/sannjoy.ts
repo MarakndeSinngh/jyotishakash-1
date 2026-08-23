@@ -228,23 +228,23 @@ export const sannjoyAcademy: AcademyConfig = {
   events: [
     {
       id: 'sbe1',
-      date: 'সেপ্টেম্বর ০৫, ২০২৬',
+      date: 'সেপ্টেম্বর ১৪, ২০২৬',
       time: 'সকাল ১১:০০ - দুপুর ০১:০০ (IST)',
       speaker: 'Sannjoy Biswass',
       topic: 'লাইভ মাস্টারক্লাস: মোবাইল নাম্বার কীভাবে ভাগ্য নিয়ন্ত্রণ করে?',
       seatsAvailable: 15,
       totalSeats: 100,
-      countdownTarget: '2026-09-05T11:00:00',
+      countdownTarget: '2024-09-14T11:00:00',
     },
     {
       id: 'sbe2',
-      date: 'সেপ্টেম্বর ০৫, ২০২৬',
+      date: 'সেপ্টেম্বর ১৪, ২০২৬',
       time: 'সকাল ১১:০০ - দুপুর ০১:০০ (IST)',
       speaker: 'Sannjoy Biswass',
       topic: 'বিশেষ সেশন: লো শু গ্রিডে হারানো সংখ্যার রেমেডি ও বাস্তু কানেকশন',
       seatsAvailable: 20,
       totalSeats: 80,
-      countdownTarget: '2026-09-05T11:00:00',
+      countdownTarget: '2024-09-14T11:00:00',
     },
   ],
   freeResources: [

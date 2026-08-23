@@ -38,7 +38,7 @@ export default function LandingHero({
 
   const getNextBatchDate = (): Date => {
     if (activeAcademy?.id === 'raajeev' || activeAcademy?.id === 'sannjoy') {
-      return new Date('2026-09-05T11:00:00');
+      return new Date('2024-09-14T11:00:00');
     }
     const now = new Date();
     const targetDays = [3, 5, 0]; // Wednesday, Friday, Sunday

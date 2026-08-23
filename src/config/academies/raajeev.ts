@@ -153,23 +153,23 @@ export const raajeevAcademy: AcademyConfig = {
   events: [
     {
       id: 'rje1',
-      date: 'Sept 05, 2026',
+      date: 'Sept 14, 2026',
       time: '11:00 AM - 01:00 PM IST',
       speaker: 'Raajeev Singh Chauhann',
       topic: 'Vedic Alignment for Business & Brand Success',
       seatsAvailable: 14,
       totalSeats: 100,
-      countdownTarget: '2026-09-05T11:00:00',
+      countdownTarget: '2024-09-14T11:00:00',
     },
     {
       id: 'rje2',
-      date: 'Sept 05, 2026',
+      date: 'Sept 14, 2026',
       time: '11:00 AM - 01:00 PM IST',
       speaker: 'Raajeev Singh Chauhann',
       topic: 'Chaldean Compound Frequencies & Signature Corrections',
       seatsAvailable: 8,
       totalSeats: 75,
-      countdownTarget: '2026-09-05T11:00:00',
+      countdownTarget: '2024-09-14T11:00:00',
     },
   ],
   freeResources: [

@@ -43,7 +43,7 @@ export default function DashboardView() {
           <div className="space-y-1.5 text-xs text-stone-600 pt-2 border-t border-stone-100">
             <div className="flex items-center justify-between">
               <span className="text-stone-400 flex items-center gap-1"><Calendar className="w-3.5 h-3.5"/> Date:</span>
-              <span className="font-medium text-stone-800">Sept 05, 2026</span>
+              <span className="font-medium text-stone-800">Sept 14, 2026</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-stone-400">Timing:</span>
@@ -202,7 +202,7 @@ export default function DashboardView() {
             <p className="text-xs text-stone-500 mb-6">Common administrative tools for academy management</p>
             <div className="space-y-3">
               {[
-                { title: 'Update Webinar Timing', desc: 'Sync Sept 05 11 AM - 1 PM across all platforms', icon: Calendar },
+                { title: 'Update Webinar Timing', desc: 'Sync Sept 14 11 AM - 1 PM across all platforms', icon: Calendar },
                 { title: 'Broadcast SMS / WhatsApp', desc: 'Send reminders to enrolled students', icon: Users },
                 { title: 'Export Student Records', desc: 'Download CSV of all academy registrations', icon: TrendingUp },
               ].map((action, idx) => (

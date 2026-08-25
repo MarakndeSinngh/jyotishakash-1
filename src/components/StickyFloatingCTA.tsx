@@ -16,12 +16,12 @@ export default function StickyFloatingCTA({ currentPath }: StickyFloatingCTAProp
   const [isVisible, setIsVisible] = useState(false);
   const [showNotice, setShowNotice] = useState(true);
 
-  // Check if current path is one of the allowed academy pages
+  const isMeditation = currentPath === '/meditation';
   const isAcademyPage = currentPath.startsWith('/academy/');
   const isAllowedAcademy = ALLOWED_SLUGS.includes(activeAcademy?.slug?.toLowerCase() || '');
-  const shouldRender = isAcademyPage && isAllowedAcademy;
+  const shouldRender = (isAcademyPage && isAllowedAcademy) || isMeditation;
 
-  const isRaajeev = activeAcademy?.slug?.toLowerCase() === 'raajeev';
+  const isRaajeev = activeAcademy?.slug?.toLowerCase() === 'raajeev' || isMeditation;
 
   useEffect(() => {
     if (!shouldRender) {
@@ -30,12 +30,7 @@ export default function StickyFloatingCTA({ currentPath }: StickyFloatingCTAProp
     }
 
     const handleScroll = () => {
-      if (window.scrollY > 40) {
-        setIsVisible(true);
-      } else {
-        // For Raajeev, keep it visible or show right away to be immediately noticeable
-        setIsVisible(true);
-      }
+      setIsVisible(true);
     };
 
     handleScroll();
@@ -43,7 +38,7 @@ export default function StickyFloatingCTA({ currentPath }: StickyFloatingCTAProp
     return () => window.removeEventListener('scroll', handleScroll);
   }, [shouldRender, currentPath]);
 
-  // Auto-collapse the expanded notice after 6 seconds on Raajeev page
+  // Auto-collapse the expanded notice after 6 seconds
   useEffect(() => {
     if (isRaajeev && shouldRender) {
       const timer = setTimeout(() => {
@@ -55,17 +50,19 @@ export default function StickyFloatingCTA({ currentPath }: StickyFloatingCTAProp
 
   if (!shouldRender) return null;
 
-  const registrationUrl = isRaajeev
+  const registrationUrl = isMeditation
+    ? 'https://chat.whatsapp.com/E1CeluFqVlIGWzMYVSQ2F9'
+    : isRaajeev
     ? 'https://chat.whatsapp.com/JSJ1cD0uUS2AYNabbH8IC3'
     : (activeAcademy?.contactDetails?.whatsapp ||
       (activeAcademy?.contactDetails?.phone
         ? `https://wa.me/${activeAcademy.contactDetails.phone.replace(/[^0-9]/g, '')}`
         : 'https://chat.whatsapp.com/HOUZ3rmuigF32SjOVco8B2?s=sh&p=a&ilr=1'));
 
-  const ctaButtonText = isRaajeev ? 'JOIN WHATSAPP GROUP' : t('cta.buttonText', 'Reserve My Free Seat');
-  const ctaTitle = isRaajeev ? 'JOIN OUR OFFICIAL WHATSAPP GROUP' : t('cta.reserveTitle', 'Reserve Your Free Seat');
-  const ctaTag = isRaajeev ? '🎓 OFFICIAL WHATSAPP GROUP' : '🎓 FREE LIVE MASTERCLASS';
-  const ctaBadge = isRaajeev ? 'LIVE UPDATES' : 'LIMITED SEATS';
+  const ctaButtonText = isMeditation ? 'JOIN MEDITATION BATCH' : isRaajeev ? 'JOIN WHATSAPP GROUP' : t('cta.buttonText', 'Reserve My Free Seat');
+  const ctaTitle = isMeditation ? 'JOIN MEDITATION WHATSAPP GROUP' : isRaajeev ? 'JOIN OUR OFFICIAL WHATSAPP GROUP' : t('cta.reserveTitle', 'Reserve Your Free Seat');
+  const ctaTag = isMeditation ? '🌿 LIVE WEBINAR UPDATES' : isRaajeev ? '🎓 OFFICIAL WHATSAPP GROUP' : '🎓 FREE LIVE MASTERCLASS';
+  const ctaBadge = isMeditation ? '3 DAYS FREE' : isRaajeev ? 'LIVE UPDATES' : 'LIMITED SEATS';
 
   const instructorTitle = activeAcademy?.instructorName 
     ? `${activeAcademy.instructorName}'s Masterclass`

@@ -24,7 +24,6 @@ import {
   Flame,
   ArrowDown
 } from 'lucide-react';
-import { WHATSAPP_LINK } from '../../constants/contacts';
 import SmartImage from './SmartImage';
 import { websiteSettingsService } from '../../services/websiteSettingsService';
 import { parseYoutubeUrl } from '../../utils/youtube';
@@ -56,67 +55,6 @@ export default function MeditationPage({ navigate }: MeditationPageProps) {
 
   const parsedHero = parseYoutubeUrl(heroYoutubeUrl);
   const heroVideoId = parsedHero.id;
-
-  const whyMeditationCards = [
-    {
-      title: "Inner Peace",
-      description: "Cultivate deep tranquility and quiet the constant mental chatter through proven meditative techniques.",
-      icon: Heart
-    },
-    {
-      title: "Mental Clarity",
-      description: "Shed mental fog and gain sharp focus to navigate life's complexities with calm discernment.",
-      icon: Compass
-    },
-    {
-      title: "Focus & Concentration",
-      description: "Train the mind to stay anchored in the present moment, improving productivity and awareness.",
-      icon: Zap
-    },
-    {
-      title: "Emotional Balance",
-      description: "Develop equanimity in the face of stress, reactivity, and emotional fluctuations.",
-      icon: ShieldCheck
-    },
-    {
-      title: "Self Awareness",
-      description: "Discover your deeper inner self beyond thoughts, roles, and external distractions.",
-      icon: Sparkles
-    },
-    {
-      title: "Spiritual Growth",
-      description: "Deepen your spiritual journey and establish a strong foundation for higher inner exploration.",
-      icon: Award
-    }
-  ];
-
-  const experienceSteps = [
-    { step: "01", title: "Understand", desc: "Grasp the core philosophy and mechanics of the mind." },
-    { step: "02", title: "Practice", desc: "Learn correct posture, breathing, and concentration anchors." },
-    { step: "03", title: "Guided Meditation", desc: "Experience live guided sessions with expert mentorship." },
-    { step: "04", title: "Develop Daily Practice", desc: "Build sustainable habits to meditate independently every day." },
-    { step: "05", title: "Deepen Awareness", desc: "Expand consciousness and integrate mindfulness into daily life." }
-  ];
-
-  const learningModules = [
-    "Meditation Fundamentals & Philosophy",
-    "Preparation and Posture for Stability",
-    "Breath Awareness (Prana & Anapanasati)",
-    "Concentration (Dharana) Techniques",
-    "Guided Meditation & Deep Relaxation",
-    "Mindfulness and Present-Moment Awareness",
-    "Developing and Maintaining a Regular Practice",
-    "Inner Stillness and Mental Equilibrium"
-  ];
-
-  const targetAudience = [
-    { title: "Beginners", desc: "Complete newcomers looking for a structured, step-by-step introduction to meditation." },
-    { title: "Working Professionals", desc: "Individuals seeking stress relief, mental clarity, and work-life balance." },
-    { title: "Students", desc: "Learners wanting improved concentration, memory, and emotional resilience." },
-    { title: "Spiritual Seekers", desc: "Practitioners wishing to deepen their inner exploration and meditative depth." },
-    { title: "Structured Seekers", desc: "People looking for a disciplined, authentic meditation practice." },
-    { title: "Existing Practitioners", desc: "Those wanting live guided sessions and refinement under expert mentorship." }
-  ];
 
   const raajeevDifferentiators = [
     {
@@ -185,12 +123,8 @@ export default function MeditationPage({ navigate }: MeditationPageProps) {
     }
   ];
 
-  const visualJourney = [
-    { step: "CALM", desc: "Still the mental turbulence" },
-    { step: "AWARENESS", desc: "Anchor in conscious presence" },
-    { step: "INNER EXPLORATION", desc: "Reflective inquiry & emotional release" },
-    { step: "ENERGY AWARENESS", desc: "Chakra balance & subtle flow" },
-    { step: "SPIRITUAL PRACTICE", desc: "Sustained holistic integration" }
+  const professions = [
+    "Doctor", "Teacher", "Student", "Businessman", "Entrepreneur", "Professional", "Employee", "Homemaker", "Artist", "Creator", "Coach"
   ];
 
   const faqs = [
@@ -227,8 +161,8 @@ export default function MeditationPage({ navigate }: MeditationPageProps) {
       a: "Sessions are conducted in clear, accessible English and Hindi blend for effortless understanding."
     },
     {
-      q: "How can I join the next batch?",
-      a: "You can click 'Join Upcoming Batch' or connect with our team via WhatsApp to reserve your spot on the interest list."
+      q: "How can I join the webinar?",
+      a: "You can click any of the WhatsApp Group buttons on this page to join our official WhatsApp group for instant webinar access and updates."
     }
   ];
 
@@ -240,7 +174,7 @@ export default function MeditationPage({ navigate }: MeditationPageProps) {
         <div className="absolute top-[60%] right-[5%] w-[500px] h-[500px] bg-[radial-gradient(circle_at_center,rgba(16,185,129,0.03)_0%,transparent_70%)]" />
       </div>
 
-      <div className="container mx-auto px-6 relative z-10 max-w-7xl space-y-24">
+      <div className="container mx-auto px-6 relative z-10 max-w-5xl space-y-24">
         
         {/* Back Navigation */}
         {navigate && (
@@ -263,7 +197,7 @@ export default function MeditationPage({ navigate }: MeditationPageProps) {
             className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/25 text-primary text-[10px] sm:text-xs font-bold uppercase tracking-[0.25em]"
           >
             <Sparkles className="w-3.5 h-3.5 text-primary animate-pulse" />
-            <span>LEO FAMILY MEDITATION ACADEMY</span>
+            <span>3 DAYS FREE LIVE MEDITATION WEBINAR</span>
           </motion.div>
 
           <motion.h1
@@ -275,111 +209,322 @@ export default function MeditationPage({ navigate }: MeditationPageProps) {
             Quiet the Mind. <span className="text-primary gold-glow-text">Awaken Within.</span>
           </motion.h1>
 
-          <motion.p
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="text-text-secondary text-base sm:text-xl font-light leading-relaxed font-sans max-w-2xl mx-auto"
+            className="bg-card/80 border border-border/40 rounded-3xl p-6 sm:p-10 shadow-xl space-y-4 max-w-2xl mx-auto text-left"
           >
-            Experience a sacred, structured journey into meditation under expert guidance. Develop inner stillness, mental clarity, emotional balance, and a profound connection with your true self.
-          </motion.p>
+            <div className="space-y-2 text-center">
+              <span className="text-primary text-xs font-bold uppercase tracking-widest">🧘‍♂️ WHAT IF… YOUR LIFE DOESN'T NEED ANOTHER SOLUTION?</span>
+              <h3 className="text-lg sm:text-xl font-bold font-cinzel text-text-primary">
+                WHAT IF… YOU JUST NEED TO CALM YOUR MIND?
+              </h3>
+            </div>
+            <p className="text-xs sm:text-sm text-text-secondary leading-relaxed font-light text-center">
+              Today, we have almost everything—Money. Career. Business. Family. Success. Comfort. Technology. But still… Stress. Overthinking. Anxiety. Relationship Problems. Emotional Pressure. Health Concerns.
+            </p>
+            <div className="border-t border-border/30 pt-4 text-center space-y-2">
+              <p className="text-xs text-text-secondary font-light">And sometimes—</p>
+              <p className="text-sm font-bold font-cinzel text-text-primary">EVERYTHING IS FINE OUTSIDE… BUT NOTHING FEELS FINE INSIDE.</p>
+              <p className="text-primary font-serif italic text-base pt-1">"सब कुछ होते हुए भी… मैं खुश क्यों नहीं हूँ?"</p>
+            </div>
+          </motion.div>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="flex flex-wrap items-center justify-center gap-4 pt-4"
+            className="flex flex-wrap items-center justify-center gap-4 pt-2"
           >
             <a
               href={MEDITATION_WHATSAPP_GROUP_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="px-8 py-4 bg-primary hover:bg-primary/90 text-background font-extrabold text-xs uppercase tracking-widest rounded-xl transition-all duration-300 shadow-lg hover:scale-105 flex items-center gap-2 cursor-pointer"
+              className="px-8 py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs sm:text-sm uppercase tracking-widest rounded-xl transition-all duration-300 shadow-xl hover:scale-105 flex items-center gap-2 cursor-pointer"
             >
               <MessageCircle className="w-4 h-4" />
-              <span>Join Meditation WhatsApp Group</span>
+              <span>JOIN MEDITATION WHATSAPP GROUP</span>
             </a>
-            <a
-              href="#batches"
-              className="px-8 py-4 bg-card border border-border/40 hover:border-primary/40 text-text-primary font-bold text-xs uppercase tracking-widest rounded-xl transition-all duration-300 hover:scale-105 cursor-pointer"
-            >
-              <span>Explore Batches</span>
-            </a>
-          </motion.div>
-
-          {/* HERO VIDEO / FEATURED PLAYER */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="pt-8 max-w-4xl mx-auto"
-          >
-            {heroVideoId ? (
-              <div className="relative w-full aspect-video rounded-3xl overflow-hidden border-2 border-primary/40 bg-stone-950 shadow-2xl group">
-                {!isPlayingHeroVideo ? (
-                  <>
-                    <img
-                      src={`https://i.ytimg.com/vi/${heroVideoId}/maxresdefault.jpg`}
-                      alt="Meditation Featured Video"
-                      className="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-700"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src = `https://i.ytimg.com/vi/${heroVideoId}/hqdefault.jpg`;
-                      }}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-stone-950/80 via-transparent to-stone-950/20 pointer-events-none" />
-                    
-                    <div className="absolute top-4 left-4 z-10">
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-stone-950/80 border border-primary/30 text-primary text-[10px] font-bold uppercase tracking-wider backdrop-blur-md">
-                        <Sparkles className="w-3 h-3 text-primary animate-pulse" />
-                        Featured Meditation Guidance
-                      </span>
-                    </div>
-
-                    <button
-                      onClick={() => setIsPlayingHeroVideo(true)}
-                      aria-label="Play Meditation Video"
-                      className="absolute inset-0 flex items-center justify-center z-20 cursor-pointer group/btn"
-                    >
-                      <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-primary text-background flex items-center justify-center shadow-2xl group-hover/btn:scale-110 transition-transform duration-300">
-                        <Play className="w-8 h-8 fill-background ml-1" />
-                      </div>
-                    </button>
-                  </>
-                ) : (
-                  <iframe
-                    src={`https://www.youtube.com/embed/${heroVideoId}?autoplay=1&rel=0`}
-                    title="Meditation Featured Video"
-                    className="w-full h-full border-0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                  />
-                )}
-              </div>
-            ) : (
-              <div className="relative w-full aspect-video rounded-3xl overflow-hidden border-2 border-primary/30 bg-gradient-to-br from-card via-stone-900 to-stone-950 shadow-xl flex flex-col items-center justify-center text-center p-8 space-y-3">
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.06)_0%,transparent_70%)] pointer-events-none" />
-                <div className="w-14 h-14 rounded-2xl bg-primary/10 border border-primary/30 flex items-center justify-center text-primary shadow-md relative z-10">
-                  <Sparkles className="w-7 h-7 animate-pulse" />
-                </div>
-                <div className="space-y-1 relative z-10">
-                  <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary">MEDITATION JOURNEY</span>
-                  <h3 className="text-xl sm:text-2xl font-bold font-cinzel text-text-primary">Quiet Awareness & Inner Peace</h3>
-                  <p className="text-xs text-text-secondary font-light max-w-md mx-auto">
-                    Explore inner stillness and guided awareness. Configure a featured meditation video in the Admin panel to display it here.
-                  </p>
-                </div>
-              </div>
-            )}
           </motion.div>
         </section>
 
-        {/* 2. WHY LEARN MEDITATION FROM RAAJEEV SINGH CHAUHANN? (PREMIUM SECTION) */}
+        {/* HERO YOUTUBE VIDEO SECTION */}
+        {heroVideoId && (
+          <section className="max-w-4xl mx-auto">
+            <div className="bg-card/70 border border-border/40 rounded-3xl p-4 sm:p-6 shadow-2xl relative overflow-hidden group">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.08)_0%,transparent_70%)] pointer-events-none" />
+              <div className="relative rounded-2xl overflow-hidden aspect-video bg-stone-950 border border-border/30 shadow-inner">
+                <iframe
+                  src={`https://www.youtube.com/embed/${heroVideoId}?autoplay=0&rel=0&modestbranding=1`}
+                  title="Meditation Featured Video"
+                  className="w-full h-full border-0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* SECTION 1: EVERY TRANSFORMATION BEGINS WITH THE MIND */}
+        <section className="bg-card/80 border border-border/40 rounded-3xl p-8 sm:p-12 shadow-xl space-y-6">
+          <div className="text-center max-w-2xl mx-auto space-y-3">
+            <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-primary bg-primary/10 px-3.5 py-1 rounded-full border border-primary/20">
+              SECTION 01
+            </span>
+            <h2 className="text-2xl sm:text-4xl font-bold font-cinzel text-text-primary">
+              Every Transformation Begins With The Mind
+            </h2>
+          </div>
+          <div className="space-y-4 text-center max-w-2xl mx-auto text-xs sm:text-sm text-text-secondary font-light leading-relaxed">
+            <p>We keep trying to fix everything outside.</p>
+            <p>But our thoughts, emotions and inner state can deeply influence the way we experience our life.</p>
+            <p className="text-primary font-semibold text-sm sm:text-base py-2">
+              इसलिए असली बदलाव की शुरुआत बाहर से नहीं… अंदर से होनी चाहिए।
+            </p>
+          </div>
+          <div className="border-t border-border/30 pt-8 max-w-2xl mx-auto space-y-4">
+            <div className="flex items-center gap-2 text-primary text-xs font-bold uppercase tracking-widest justify-center">
+              <Sparkles className="w-4 h-4" />
+              <span>🧘‍♂️ THE POWER OF MEDITATION</span>
+            </div>
+            <p className="text-center text-xs text-text-secondary">Meditation is not just sitting with closed eyes. It is a journey of:</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+              {[
+                "Understanding Your Mind",
+                "Connecting With Yourself",
+                "Finding Inner Calm",
+                "Building Awareness",
+                "Creating Positive Change"
+              ].map((item, idx) => (
+                <div key={idx} className="flex items-center gap-3 p-3 rounded-xl bg-background border border-border/20 text-xs text-text-primary font-medium">
+                  <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                  <span>{item}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* SECTION 2: I HAVE PERSONALLY SEEN THE TRANSFORMATION… */}
+        <section className="bg-gradient-to-br from-card via-stone-900 to-card border border-border/40 rounded-3xl p-8 sm:p-12 shadow-xl space-y-6 text-center">
+          <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-primary bg-primary/10 px-3.5 py-1 rounded-full border border-primary/20">
+            SECTION 02
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-bold font-cinzel text-text-primary">
+            I Have Personally Seen The Transformation…
+          </h2>
+          <div className="max-w-2xl mx-auto space-y-4 text-xs sm:text-sm text-text-secondary font-light leading-relaxed">
+            <p>Many times, one person starts working on themselves through meditation…</p>
+            <p>But the transformation doesn't stop with that person.</p>
+            <p className="text-primary font-semibold text-sm sm:text-base py-1">
+              जब एक व्यक्ति अंदर से बदलता है, तो उसका असर पूरे परिवार पर पड़ सकता है।
+            </p>
+            <p>When one person becomes calmer—Relationships can become better.</p>
+            <p>When one person becomes emotionally stronger—The whole family can experience a positive shift.</p>
+          </div>
+          <div className="pt-2">
+            <span className="inline-block px-6 py-2 rounded-full bg-primary/20 border border-primary/40 text-primary text-xs font-bold uppercase tracking-widest">
+              INNER TRANSFORMATION
+            </span>
+          </div>
+        </section>
+
+        {/* SECTION 3: 3 DAYS FREE LIVE MEDITATION WEBINAR */}
+        <section className="bg-card/90 border-2 border-primary/40 rounded-3xl p-8 sm:p-12 shadow-2xl text-center space-y-6 relative overflow-hidden">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.08)_0%,transparent_70%)] pointer-events-none" />
+          <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary bg-primary/10 px-4 py-1.5 rounded-full border border-primary/25">
+            SECTION 03 • FREE WEBINAR
+          </span>
+          <h2 className="text-3xl sm:text-4xl font-extrabold font-cinzel text-text-primary">
+            3 Days Free Live Meditation Webinar
+          </h2>
+          <p className="text-sm font-bold text-emerald-400">YES — IT'S COMPLETELY FREE!</p>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 max-w-2xl mx-auto py-2 text-xs">
+            <div className="bg-background/80 border border-border/30 p-3 rounded-xl flex flex-col items-center justify-center space-y-1">
+              <Clock className="w-5 h-5 text-primary" />
+              <span className="text-stone-400 text-[10px]">TIME</span>
+              <strong className="text-text-primary">5:00 AM – 6:00 AM</strong>
+            </div>
+            <div className="bg-background/80 border border-border/30 p-3 rounded-xl flex flex-col items-center justify-center space-y-1">
+              <Calendar className="w-5 h-5 text-primary" />
+              <span className="text-stone-400 text-[10px]">DURATION</span>
+              <strong className="text-text-primary">3 Days Live</strong>
+            </div>
+            <div className="bg-background/80 border border-border/30 p-3 rounded-xl flex flex-col items-center justify-center space-y-1">
+              <Users className="w-5 h-5 text-primary" />
+              <span className="text-stone-400 text-[10px]">MODE & ACCESS</span>
+              <strong className="text-text-primary">Online • 100% Free</strong>
+            </div>
+          </div>
+
+          <div className="pt-2">
+            <a
+              href={MEDITATION_WHATSAPP_GROUP_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs uppercase tracking-widest rounded-xl transition-all duration-300 shadow-xl hover:scale-105 cursor-pointer"
+            >
+              <MessageCircle className="w-4 h-4" />
+              <span>JOIN MEDITATION WHATSAPP GROUP</span>
+            </a>
+          </div>
+        </section>
+
+        {/* SECTION 4: BUT THERE'S ONE SMALL CONDITION… */}
+        <section className="bg-card/70 border border-border/40 rounded-3xl p-8 sm:p-12 shadow-xl space-y-6 text-center">
+          <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-primary bg-primary/10 px-3.5 py-1 rounded-full border border-primary/20">
+            SECTION 04
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-bold font-cinzel text-text-primary">
+            But There's One Small Condition…
+          </h2>
+          <div className="max-w-xl mx-auto space-y-4 text-xs sm:text-sm text-text-secondary font-light leading-relaxed">
+            <p className="text-text-primary font-bold text-base">YOU HAVE TO WAKE UP AT 5 AM.</p>
+            <p className="text-primary font-semibold">सुबह 5 बजे उठना आसान नहीं है।</p>
+            <p className="font-serif italic text-stone-300">"If you want to achieve something, you have to sacrifice something."</p>
+            <p>For just three days… थोड़ी नींद का त्याग कीजिए। अपने लिए एक घंटा निकालिए।</p>
+            <p className="font-bold text-text-primary">Wake up at 5:00 AM. Sit with yourself. And experience—THE POWER OF MEDITATION.</p>
+          </div>
+        </section>
+
+        {/* SECTION 5: 5:00 AM – 6:00 AM */}
+        <section className="bg-gradient-to-r from-card via-stone-900 to-card border-2 border-primary/40 rounded-3xl p-8 sm:p-12 shadow-2xl text-center space-y-6 relative overflow-hidden">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.1)_0%,transparent_70%)] pointer-events-none" />
+          <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary bg-primary/10 px-4 py-1.5 rounded-full border border-primary/25">
+            SECTION 05 • MORNING SILENCE
+          </span>
+          <h2 className="text-3xl sm:text-5xl font-extrabold font-cinzel text-primary gold-glow-text">
+            5:00 AM – 6:00 AM
+          </h2>
+          <p className="text-sm sm:text-base font-bold text-text-primary">
+            When most of the world is still sleeping… YOU WILL BE AWAKE WITHIN.
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-3 text-xs text-stone-400 font-mono">
+            <span className="px-3 py-1 rounded-lg bg-background/80 border border-border/30">No Noise</span>
+            <span className="px-3 py-1 rounded-lg bg-background/80 border border-border/30">No Distraction</span>
+            <span className="px-3 py-1 rounded-lg bg-background/80 border border-border/30">No Office Pressure</span>
+            <span className="px-3 py-1 rounded-lg bg-background/80 border border-border/30">No Social Media</span>
+          </div>
+          <p className="text-xs sm:text-sm text-text-secondary pt-2">
+            Just—<strong className="text-text-primary">YOU + YOUR BREATH + YOUR MIND + YOUR INNER ENERGY</strong>
+          </p>
+          <p className="text-primary font-semibold text-sm sm:text-base pt-2">
+            और यहीं से शुरू हो सकती है—YOUR INNER TRANSFORMATION JOURNEY.
+          </p>
+        </section>
+
+        {/* SECTION 6: THIS WEBINAR IS FOR EVERYONE */}
+        <section className="bg-card/80 border border-border/40 rounded-3xl p-8 sm:p-12 shadow-xl space-y-8">
+          <div className="text-center max-w-2xl mx-auto space-y-3">
+            <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-primary bg-primary/10 px-3.5 py-1 rounded-full border border-primary/20">
+              SECTION 06
+            </span>
+            <h2 className="text-2xl sm:text-4xl font-bold font-cinzel text-text-primary">
+              This Webinar Is For Everyone
+            </h2>
+            <p className="text-stone-400 text-xs sm:text-sm font-light">Your profession doesn't matter.</p>
+          </div>
+
+          <div className="flex flex-wrap items-center justify-center gap-2 max-w-3xl mx-auto">
+            {professions.map((prof, idx) => (
+              <span key={idx} className="px-4 py-2 rounded-xl bg-background border border-border/30 text-xs font-semibold text-text-primary shadow-sm hover:border-primary/50 transition-colors">
+                {prof}
+              </span>
+            ))}
+          </div>
+
+          <div className="max-w-2xl mx-auto bg-background/80 border border-border/30 rounded-2xl p-6 space-y-3 text-xs sm:text-sm text-text-secondary font-light">
+            <div className="space-y-2">
+              <p>अगर आपके अंदर Stress है—<strong className="text-text-primary">This is for you.</strong></p>
+              <p>अगर Overthinking है—<strong className="text-text-primary">This is for you.</strong></p>
+              <p>अगर Relationship Issues हैं—<strong className="text-text-primary">This is for you.</strong></p>
+              <p>अगर Emotional Pressure है—<strong className="text-text-primary">This is for you.</strong></p>
+              <p>अगर Life में सब कुछ होते हुए भी emptiness है—<strong className="text-text-primary">This is for you.</strong></p>
+            </div>
+            <div className="pt-3 border-t border-border/20 text-center">
+              <p className="text-primary font-bold text-sm sm:text-base font-cinzel">
+                अगर आप Inner Peace चाहते हैं—THIS IS FOR YOU.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* SECTION 7: MAYBE YOU DON'T NEED TO CHANGE YOUR WHOLE LIFE… */}
+        <section className="bg-card/70 border border-border/40 rounded-3xl p-8 sm:p-12 shadow-xl space-y-6 text-center">
+          <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-primary bg-primary/10 px-3.5 py-1 rounded-full border border-primary/20">
+            SECTION 07
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-bold font-cinzel text-primary gold-glow-text">
+            MAYBE YOU DON'T NEED TO CHANGE YOUR WHOLE LIFE…
+          </h2>
+          <p className="text-base sm:text-xl font-extrabold font-cinzel text-text-primary">
+            MAYBE YOU JUST NEED TO CHANGE YOUR INNER STATE.
+          </p>
+          <div className="max-w-xl mx-auto space-y-3 text-xs sm:text-sm text-text-secondary font-light">
+            <p>Sometimes you don't need more money. You don't need another achievement. You don't need another distraction.</p>
+            <p className="text-primary font-semibold pt-1">आपको बस थोड़ी देर रुकने की जरूरत है।</p>
+            <p className="font-bold text-text-primary">To breathe. To observe. To listen to yourself. And to reconnect with the person within you.</p>
+          </div>
+        </section>
+
+        {/* SECTION 8: YOUR MENTOR */}
+        <section className="bg-card/90 border border-border/40 rounded-3xl p-8 sm:p-12 shadow-2xl max-w-4xl mx-auto flex flex-col sm:flex-row items-center gap-8 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-72 h-72 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
+          
+          <div className="w-36 h-36 sm:w-44 sm:h-44 rounded-2xl overflow-hidden border-2 border-primary/50 shrink-0 bg-stone-900 shadow-xl relative group">
+            <SmartImage
+              src="/assets/teachers/Raajeev.webp"
+              alt="Raajeev Singh Chauhann"
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-stone-950/60 via-transparent to-transparent pointer-events-none" />
+          </div>
+
+          <div className="space-y-4 text-center sm:text-left flex-1 relative z-10">
+            <div className="space-y-1">
+              <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-primary">
+                SECTION 08 • YOUR MENTOR
+              </span>
+              <h3 className="text-2xl sm:text-3xl font-extrabold font-cinzel text-text-primary">
+                RAAJEEV SINGH CHAUHANN
+              </h3>
+              <p className="text-[11px] sm:text-xs font-semibold text-primary/90 tracking-wide uppercase">
+                Meditation Coach | Spiritual Healer | Life Coach | Occult Teacher
+              </p>
+            </div>
+
+            <p className="text-xs text-text-secondary leading-relaxed font-light">
+              Rajeev Singh Chauhann is not just a Meditation Coach. He brings together Meditation, Spirituality, Healing, Mindset and Personal Transformation to help people work on themselves at a deeper level.
+            </p>
+
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[11px] font-bold">
+              <span>✨ 10+ YEARS OF EXPERIENCE</span>
+            </div>
+
+            <p className="text-xs text-text-secondary leading-relaxed font-light">
+              He has worked with and guided thousands of people through different journeys of personal growth, meditation, spirituality, healing and life transformation.
+            </p>
+
+            <p className="text-primary font-semibold text-xs pt-1">
+              उनका उद्देश्य सिर्फ meditation सिखाना नहीं है। उनका उद्देश्य है—<br />
+              <strong className="text-text-primary font-cinzel">"पहले व्यक्ति को अंदर से बदलना।"</strong>
+            </p>
+
+            <p className="text-[11px] text-stone-400 font-light">
+              Because when the person changes—their thoughts change, their emotions change, their relationships can change, and their entire experience of life can change.
+            </p>
+          </div>
+        </section>
+
+        {/* SECTION 9: WHY LEARN MEDITATION FROM RAAJEEV SINGH CHAUHANN? */}
         <section className="space-y-16 pt-6">
-          {/* Section Introduction */}
           <div className="text-center max-w-3xl mx-auto space-y-4">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/30 text-primary text-[10px] sm:text-xs font-bold uppercase tracking-[0.25em]">
               <Sparkles className="w-3.5 h-3.5 text-primary animate-pulse" />
-              <span>MULTIDISCIPLINARY SPIRITUAL GUIDANCE</span>
+              <span>SECTION 09 • MULTIDISCIPLINARY GUIDANCE</span>
             </div>
 
             <h2 className="text-2xl sm:text-4xl md:text-5xl font-extrabold font-cinzel text-text-primary leading-tight">
@@ -389,13 +534,8 @@ export default function MeditationPage({ navigate }: MeditationPageProps) {
             <p className="text-text-secondary text-sm sm:text-base font-light leading-relaxed max-w-2xl mx-auto">
               Learning meditation is not only about learning how to sit quietly. With the right guidance, it can become a structured journey into awareness, inner work and deeper self-understanding.
             </p>
-
-            <p className="text-xs sm:text-sm text-stone-400 font-light leading-relaxed max-w-2xl mx-auto">
-              Raajeev Singh Chauhann brings together meditation with his wider experience in numerology, astrology, vastu and occult/spiritual practices, creating a broader context for students who want to explore meditation beyond basic relaxation.
-            </p>
           </div>
 
-          {/* 6 Key Differentiator Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {raajeevDifferentiators.map((card, idx) => {
               const Icon = card.icon;
@@ -438,13 +578,12 @@ export default function MeditationPage({ navigate }: MeditationPageProps) {
             })}
           </div>
 
-          {/* Highlighted Differentiator Banner */}
           <div className="relative rounded-3xl p-8 sm:p-12 bg-gradient-to-r from-card via-stone-900 to-card border border-primary/30 shadow-2xl text-center space-y-4 overflow-hidden max-w-4xl mx-auto">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.08)_0%,transparent_70%)] pointer-events-none" />
             
             <div className="inline-flex items-center gap-2 text-primary text-[10px] font-bold uppercase tracking-[0.3em]">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>THE CORE PHILOSOPHY</span>
+              <span>ONE MENTOR. MULTIPLE DIMENSIONS OF INNER WORK.</span>
             </div>
 
             <h3 className="text-2xl sm:text-3xl md:text-4xl font-extrabold font-cinzel text-text-primary">
@@ -456,7 +595,6 @@ export default function MeditationPage({ navigate }: MeditationPageProps) {
             </p>
           </div>
 
-          {/* Why This Approach Can Be Beneficial */}
           <div className="bg-card/50 border border-border/30 rounded-3xl p-8 sm:p-12 shadow-xl space-y-8">
             <div className="text-center max-w-2xl mx-auto space-y-2">
               <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-primary">
@@ -493,381 +631,173 @@ export default function MeditationPage({ navigate }: MeditationPageProps) {
               ))}
             </div>
           </div>
+        </section>
 
-          {/* A Personalized Learning Journey */}
-          <div className="bg-card/70 border border-border/30 rounded-3xl p-8 sm:p-12 shadow-xl space-y-8 text-center">
-            <div className="space-y-2 max-w-xl mx-auto">
-              <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-primary">
-                PROGRESSION
-              </span>
-              <h3 className="text-2xl sm:text-3xl font-bold font-cinzel text-text-primary">
-                A Personalized Learning Journey
-              </h3>
-              <p className="text-xs text-stone-400 font-light">
-                A natural inward path progressing from calm to sustained spiritual discipline.
-              </p>
-            </div>
-
-            {/* Visual Journey Steps */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 pt-2">
-              {visualJourney.map((journey, idx) => (
-                <div key={idx} className="relative flex flex-col items-center">
-                  <div className="w-full bg-background border border-border/40 hover:border-primary/40 rounded-2xl p-5 space-y-2 transition-colors h-full flex flex-col justify-between">
-                    <div>
-                      <span className="text-[10px] font-bold text-primary font-mono block mb-1">
-                        STAGE 0{idx + 1}
-                      </span>
-                      <h4 className="text-xs sm:text-sm font-bold font-cinzel text-text-primary tracking-wide">
-                        {journey.step}
-                      </h4>
-                    </div>
-                    <p className="text-[11px] text-text-secondary font-light leading-snug">
-                      {journey.desc}
-                    </p>
-                  </div>
-                  {idx < visualJourney.length - 1 && (
-                    <div className="hidden lg:flex absolute -right-2 top-1/2 -translate-y-1/2 z-20 text-primary/40 pointer-events-none">
-                      <ArrowRight className="w-4 h-4" />
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-
-            <p className="text-xs sm:text-sm text-stone-300 font-serif italic max-w-xl mx-auto pt-2 border-t border-border/20">
-              "Every practice begins with awareness. The deeper journey develops through consistent learning, reflection and practice."
+        {/* SECTION 10: 3 DAYS. 3 MORNINGS. ONE POWERFUL EXPERIENCE. */}
+        <section className="bg-card/70 border border-border/40 rounded-3xl p-8 sm:p-12 shadow-xl space-y-6 text-center">
+          <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-primary bg-primary/10 px-3.5 py-1 rounded-full border border-primary/20">
+            SECTION 10
+          </span>
+          <h2 className="text-2xl sm:text-4xl font-bold font-cinzel text-text-primary">
+            3 Days. 3 Mornings. One Powerful Experience.
+          </h2>
+          <div className="max-w-xl mx-auto space-y-3 text-xs sm:text-sm text-text-secondary font-light">
+            <p>You don't need a huge commitment. You just need—<strong className="text-text-primary">3 Days. 1 Hour Every Morning. 5:00 AM – 6:00 AM.</strong></p>
+            <p className="text-primary font-semibold pt-1">अपने लिए सिर्फ तीन दिन निकालिए।</p>
+            <p>Maybe you discover a new way of looking at your life. Maybe you discover a calmer version of yourself.</p>
+            <p className="font-bold text-text-primary font-cinzel text-base pt-1">
+              Maybe these three mornings become—THE BEGINNING OF SOMETHING BEAUTIFUL.
             </p>
           </div>
+        </section>
 
-          {/* Premium Mentor Callout Card */}
-          <div className="bg-gradient-to-br from-card via-card/90 to-stone-900 border-2 border-primary/40 rounded-3xl p-8 sm:p-12 shadow-2xl max-w-4xl mx-auto flex flex-col sm:flex-row items-center gap-8 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-72 h-72 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
-            
-            <div className="w-36 h-36 sm:w-44 sm:h-44 rounded-2xl overflow-hidden border-2 border-primary/50 shrink-0 bg-stone-900 shadow-xl relative group">
-              <SmartImage
-                src="/assets/teachers/Raajeev.webp"
-                alt="Raajeev Singh Chauhann"
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-stone-950/60 via-transparent to-transparent pointer-events-none" />
-            </div>
-
-            <div className="space-y-4 text-center sm:text-left flex-1 relative z-10">
-              <div className="space-y-1">
-                <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-primary">
-                  LEAD MENTOR & SPIRITUAL GUIDE
-                </span>
-                <h3 className="text-2xl sm:text-3xl font-extrabold font-cinzel text-text-primary">
-                  RAAJEEV SINGH CHAUHANN
-                </h3>
-                <p className="text-[11px] sm:text-xs font-semibold text-primary/90 tracking-wide uppercase">
-                  Occult Specialist • Spiritual Mentor • Numerologist • Astrologer • Vastu Expert
-                </p>
-              </div>
-
-              <p className="text-xs text-text-secondary leading-relaxed font-light">
-                Founder & Lead Mentor at LEO Family. Bringing decades of profound spiritual wisdom, occult mastery, and practical meditative teachings to help seekers establish true inner harmony, awareness, and spiritual clarity.
-              </p>
-
-              <div className="pt-2 flex flex-wrap items-center justify-center sm:justify-start gap-3">
-                <button
-                  onClick={() => {
-                    if (navigate) {
-                      navigate('/academy/raajeev');
-                    } else {
-                      window.location.href = '/academy/raajeev';
-                    }
-                  }}
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary/90 text-background rounded-xl text-xs font-extrabold uppercase tracking-wider transition-all duration-300 shadow-md hover:scale-105 cursor-pointer"
-                >
-                  <span>EXPLORE HIS APPROACH</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            </div>
+        {/* SECTION 11: DON'T JUST READ ABOUT MEDITATION… EXPERIENCE IT. */}
+        <section className="bg-gradient-to-br from-card via-stone-900 to-card border border-border/40 rounded-3xl p-8 sm:p-12 shadow-xl space-y-6 text-center">
+          <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-primary bg-primary/10 px-3.5 py-1 rounded-full border border-primary/20">
+            SECTION 11
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-bold font-cinzel text-text-primary">
+            Don't Just Read About Meditation… Experience It.
+          </h2>
+          <div className="max-w-xl mx-auto space-y-3 text-xs sm:text-sm text-text-secondary font-light">
+            <p>Videos देखना आसान है। दूसरों की transformation stories सुनना आसान है।</p>
+            <p className="text-text-primary font-semibold">लेकिन real experience तब होगा—जब आप खुद बैठेंगे। खुद अपनी breath को महसूस करेंगे। खुद अपने mind को observe करेंगे। और खुद अपने अंदर की शक्ति को experience करेंगे।</p>
           </div>
-
-          {/* Deep Meditation Callout CTA */}
-          <div className="text-center max-w-3xl mx-auto bg-card/90 border border-border/40 rounded-3xl p-8 sm:p-12 shadow-2xl space-y-5 relative overflow-hidden">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.06)_0%,transparent_70%)] pointer-events-none" />
-            
-            <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary">
-              EXPAND YOUR PRACTICE
+          <div className="pt-2">
+            <span className="inline-block px-6 py-2 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs font-extrabold uppercase tracking-widest">
+              DON'T JUST BELIEVE. EXPERIENCE.
             </span>
-
-            <h3 className="text-2xl sm:text-4xl font-extrabold font-cinzel text-text-primary">
-              Your Meditation Journey Can Go Deeper.
-            </h3>
-
-            <p className="text-xs sm:text-sm text-text-secondary font-light max-w-xl mx-auto leading-relaxed">
-              Learn meditation as a foundation for awareness, inner work and spiritual exploration—with guidance from a mentor who works across multiple dimensions of occult and spiritual knowledge.
-            </p>
-
-            <div className="pt-2 flex justify-center">
-              <a
-                href={MEDITATION_WHATSAPP_GROUP_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-8 py-4 bg-primary hover:bg-primary/90 text-background font-extrabold text-xs uppercase tracking-widest rounded-xl transition-all duration-300 shadow-lg hover:scale-105 flex items-center gap-2 cursor-pointer"
-              >
-                <MessageCircle className="w-4 h-4" />
-                <span>JOIN THE NEXT MEDITATION BATCH</span>
-              </a>
-            </div>
           </div>
         </section>
 
-        {/* 3. BATCH STARTING SOON - PROMINENT WHATSAPP CTA */}
-        <section className="max-w-4xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="relative rounded-3xl p-8 sm:p-12 bg-gradient-to-br from-card via-stone-900 to-card border-2 border-primary/40 shadow-2xl overflow-hidden text-center space-y-6"
-          >
-            <div className="absolute -top-12 -right-12 w-48 h-48 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute -bottom-12 -left-12 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
-
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/30 text-primary text-[10px] sm:text-xs font-bold uppercase tracking-[0.25em]">
-              <Sparkles className="w-3.5 h-3.5 text-primary animate-pulse" />
-              <span>UPCOMING MEDITATION COHORT</span>
-            </div>
-
-            <div className="space-y-3">
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold font-cinzel text-text-primary tracking-wide">
-                BATCH STARTING SOON
-              </h2>
-              <p className="text-text-secondary text-xs sm:text-sm md:text-base font-light leading-relaxed max-w-2xl mx-auto">
-                Join the Meditation WhatsApp Group to receive updates about the upcoming batch, including batch dates, timings, enrollment information and other important announcements.
-              </p>
-            </div>
-
-            <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4">
-              <a
-                href={MEDITATION_WHATSAPP_GROUP_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full sm:w-auto px-8 sm:px-10 py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs sm:text-sm uppercase tracking-widest rounded-xl transition-all duration-300 shadow-xl hover:scale-105 flex items-center justify-center gap-3 cursor-pointer group"
-              >
-                <MessageCircle className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                <span>JOIN MEDITATION WHATSAPP GROUP</span>
-              </a>
-            </div>
-          </motion.div>
+        {/* SECTION 12: FINAL WEBINAR CTA */}
+        <section className="bg-card/90 border-2 border-primary/40 rounded-3xl p-8 sm:p-12 shadow-2xl text-center space-y-6 relative overflow-hidden">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.08)_0%,transparent_70%)] pointer-events-none" />
+          <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary bg-primary/10 px-4 py-1.5 rounded-full border border-primary/25">
+            SECTION 12 • JOIN WEBINAR
+          </span>
+          <h2 className="text-2xl sm:text-4xl font-extrabold font-cinzel text-text-primary">
+            🎁 3 Days Free Live Meditation Webinar
+          </h2>
+          <div className="flex flex-wrap items-center justify-center gap-3 text-xs text-stone-300 font-mono">
+            <span className="px-3 py-1 rounded-lg bg-background border border-border/30">🌅 5:00 AM – 6:00 AM</span>
+            <span className="px-3 py-1 rounded-lg bg-background border border-border/30">📅 3 Days Live</span>
+            <span className="px-3 py-1 rounded-lg bg-background border border-border/30">💻 Online</span>
+            <span className="px-3 py-1 rounded-lg bg-background border border-border/30">💯 100% Free</span>
+          </div>
+          <div className="pt-2">
+            <a
+              href={MEDITATION_WHATSAPP_GROUP_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs uppercase tracking-widest rounded-xl transition-all duration-300 shadow-xl hover:scale-105 cursor-pointer"
+            >
+              <MessageCircle className="w-4 h-4" />
+              <span>JOIN MEDITATION WHATSAPP GROUP</span>
+            </a>
+          </div>
         </section>
 
-        {/* 3. WHY MEDITATION / BENEFITS */}
-        <section className="space-y-12">
-          <div className="text-center max-w-2xl mx-auto space-y-3">
-            <h2 className="text-2xl sm:text-4xl font-bold font-cinzel text-text-primary">
-              Why Practice Meditation?
-            </h2>
-            <p className="text-stone-400 text-xs sm:text-sm font-light">
-              The transformative dimensions of inner stillness and conscious awareness in modern life.
+        {/* SECTION 13: HOW TO JOIN? */}
+        <section className="bg-card/70 border border-border/40 rounded-3xl p-8 sm:p-12 shadow-xl space-y-6 text-center">
+          <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-primary bg-primary/10 px-3.5 py-1 rounded-full border border-primary/20">
+            SECTION 13
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-bold font-cinzel text-text-primary">
+            How To Join?
+          </h2>
+          <div className="max-w-xl mx-auto space-y-4 text-xs sm:text-sm text-text-secondary font-light leading-relaxed">
+            <p className="text-primary font-semibold">नीचे दिखाई दे रहे WHATSAPP GROUP ICON पर CLICK करें।</p>
+            <p>No need to search for any link. बस WhatsApp Group का ICON दिखाई दे रहा है—उस पर CLICK करें और GROUP JOIN करें।</p>
+            <p className="text-text-primary font-medium">
+              Meditation से related सभी important links, webinar updates, joining details और future session information इसी WhatsApp Group में share की जाएगी। इसलिए सिर्फ page पढ़कर मत जाइए। GROUP जरूर JOIN करें।
+            </p>
+            <p className="text-[11px] text-stone-400 italic">
+              (Note: The floating WhatsApp Join button remains available while you browse the page.)
             </p>
           </div>
+        </section>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {whyMeditationCards.map((card, idx) => {
-              const Icon = card.icon;
-              return (
-                <motion.div
-                  key={idx}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: idx * 0.1 }}
-                  className="bg-card border border-border/30 hover:border-primary/40 rounded-3xl p-8 space-y-4 shadow-xl transition-all duration-300 hover:-translate-y-1 group"
-                >
-                  <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
-                    <Icon className="w-6 h-6" />
-                  </div>
-                  <h3 className="text-lg font-bold font-cinzel text-text-primary">{card.title}</h3>
-                  <p className="text-xs text-text-secondary leading-relaxed font-light">{card.description}</p>
-                </motion.div>
-              );
-            })}
+        {/* SECTION 14: GIVE YOURSELF ONE CHANCE. */}
+        <section className="bg-card/70 border border-border/40 rounded-3xl p-8 sm:p-12 shadow-xl space-y-6 text-center">
+          <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-primary bg-primary/10 px-3.5 py-1 rounded-full border border-primary/20">
+            SECTION 14
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-bold font-cinzel text-primary gold-glow-text">
+            Give Yourself One Chance.
+          </h2>
+          <div className="max-w-xl mx-auto space-y-3 text-xs sm:text-sm text-text-secondary font-light">
+            <p>You have spent years doing things for—Your Career. Your Business. Your Family. Your Responsibilities. Everyone Around You.</p>
+            <p className="text-primary font-semibold pt-1">अब सिर्फ 3 दिन… खुद के लिए।</p>
+            <p className="font-bold text-text-primary">Wake up at 5 AM. थोड़ी नींद का त्याग कीजिए। And give yourself a chance to experience—THE BRILLIANT POWER OF MEDITATION.</p>
           </div>
         </section>
 
-        {/* 4. WHAT YOU WILL LEARN / EXPERIENCE */}
-        <section className="space-y-16">
-          {/* 4A. What You Will Experience */}
-          <div className="space-y-12">
-            <div className="text-center max-w-2xl mx-auto space-y-3">
-              <h2 className="text-2xl sm:text-4xl font-bold font-cinzel text-text-primary">
-                What You Will Experience
-              </h2>
-              <p className="text-stone-400 text-xs sm:text-sm font-light">
-                A progressive, guided learning journey designed to establish lasting inner stillness.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-              {experienceSteps.map((item, idx) => (
-                <div key={idx} className="bg-card border border-border/30 rounded-2xl p-6 relative flex flex-col justify-between space-y-4 shadow-md">
-                  <span className="text-2xl font-black text-primary/30 font-mono">{item.step}</span>
-                  <div className="space-y-1">
-                    <h3 className="text-sm font-bold font-cinzel text-text-primary">{item.title}</h3>
-                    <p className="text-[11px] text-text-secondary leading-relaxed font-light">{item.desc}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* 4B. What You May Learn (Curriculum) */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-card/40 border border-border/30 rounded-3xl p-8 sm:p-12 shadow-xl">
-            <div className="lg:col-span-5 space-y-4">
-              <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-primary bg-primary/10 px-3.5 py-1 rounded-full border border-primary/20">
-                CURRICULUM
-              </span>
-              <h2 className="text-2xl sm:text-3xl font-bold font-cinzel text-text-primary">
-                What You May Learn
-              </h2>
-              <p className="text-xs sm:text-sm text-text-secondary leading-relaxed font-light">
-                Our structured modules cover the essential pillars of meditation, breathwork, posture, and deep relaxation.
-              </p>
-            </div>
-
-            <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {learningModules.map((mod, idx) => (
-                <div key={idx} className="flex items-center gap-3 p-3.5 rounded-xl bg-background border border-border/30 text-xs text-text-primary font-medium">
-                  <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
-                  <span>{mod}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* 5. UPCOMING MEDITATION BATCHES */}
-        <section id="batches" className="bg-card/60 border border-border/30 rounded-3xl p-8 sm:p-12 shadow-2xl relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
-          
-          <div className="max-w-3xl mx-auto text-center space-y-4 mb-12">
-            <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-primary bg-primary/10 px-3.5 py-1 rounded-full border border-primary/20">
-              UPCOMING BATCH
-            </span>
-            <h2 className="text-3xl sm:text-4xl font-bold font-cinzel text-text-primary">
-              Meditation Foundation Batch
-            </h2>
-            <p className="text-xs sm:text-sm text-text-secondary font-light">
-              Beginner Friendly • Live Online Mentorship
-            </p>
-          </div>
-
-          <div className="max-w-2xl mx-auto bg-background/80 border border-border/40 rounded-2xl p-6 sm:p-8 space-y-6 shadow-md">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-              <div className="flex items-center gap-3 p-3 rounded-xl bg-card border border-border/20">
-                <Calendar className="w-5 h-5 text-primary shrink-0" />
-                <div>
-                  <span className="text-stone-400 block uppercase text-[10px]">Starting Date</span>
-                  <strong className="text-text-primary">Coming Soon (Announcing Shortly)</strong>
-                </div>
-              </div>
-              <div className="flex items-center gap-3 p-3 rounded-xl bg-card border border-border/20">
-                <Clock className="w-5 h-5 text-primary shrink-0" />
-                <div>
-                  <span className="text-stone-400 block uppercase text-[10px]">Duration</span>
-                  <strong className="text-text-primary">4 Weeks Structured</strong>
-                </div>
-              </div>
-              <div className="flex items-center gap-3 p-3 rounded-xl bg-card border border-border/20">
-                <Users className="w-5 h-5 text-primary shrink-0" />
-                <div>
-                  <span className="text-stone-400 block uppercase text-[10px]">Mode</span>
-                  <strong className="text-text-primary">Live Online Interactive</strong>
-                </div>
-              </div>
-              <div className="flex items-center gap-3 p-3 rounded-xl bg-card border border-border/20">
-                <BookOpen className="w-5 h-5 text-primary shrink-0" />
-                <div>
-                  <span className="text-stone-400 block uppercase text-[10px]">Level</span>
-                  <strong className="text-text-primary">Beginner Friendly</strong>
-                </div>
-              </div>
-            </div>
-
-            <div className="text-center py-6 border-y border-border/20 space-y-2">
-              <h3 className="text-base font-bold font-cinzel text-text-primary">New Meditation Batches Coming Soon</h3>
-              <p className="text-xs text-text-secondary max-w-md mx-auto font-light">
-                Join our interest list to receive priority notification, curriculum details, and schedule updates for the upcoming batch.
-              </p>
-            </div>
-
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <a
-                href={MEDITATION_WHATSAPP_GROUP_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full sm:w-auto px-8 py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs uppercase tracking-wider rounded-xl transition-all duration-300 shadow-md flex items-center justify-center gap-2 cursor-pointer"
-              >
-                <MessageCircle className="w-4 h-4" />
-                <span>JOIN MEDITATION WHATSAPP GROUP</span>
-              </a>
-            </div>
-          </div>
-        </section>
-
-        {/* 6. WHO IS THIS FOR? */}
-        <section className="space-y-12">
-          <div className="text-center max-w-2xl mx-auto space-y-3">
-            <h2 className="text-2xl sm:text-4xl font-bold font-cinzel text-text-primary">
-              Who Is This For?
-            </h2>
-            <p className="text-stone-400 text-xs sm:text-sm font-light">
-              Whether you are taking your first steps into meditation or seeking structured guidance.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {targetAudience.map((aud, idx) => (
-              <div key={idx} className="bg-card border border-border/30 rounded-2xl p-6 space-y-2 shadow-md">
-                <h3 className="text-sm font-bold font-cinzel text-text-primary flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-primary" />
-                  {aud.title}
-                </h3>
-                <p className="text-xs text-text-secondary font-light leading-relaxed">{aud.desc}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* 8. STUDENT EXPERIENCES (EMPTY STATE) */}
-        <section className="text-center py-12 bg-card/30 border border-border/20 rounded-3xl p-8 max-w-xl mx-auto space-y-3">
-          <Sparkles className="w-8 h-8 text-primary mx-auto opacity-60" />
-          <h3 className="text-lg font-cinzel font-bold text-text-primary">Student Experiences</h3>
-          <p className="text-xs text-text-secondary font-light">
-            Verified meditation testimonials and practitioner reflections will be published here upon batch completion.
+        {/* SECTION 15: FINAL CLOSING */}
+        <section className="bg-gradient-to-br from-card via-stone-900 to-card border-2 border-primary/40 rounded-3xl p-8 sm:p-12 shadow-2xl text-center space-y-6 relative overflow-hidden">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.08)_0%,transparent_70%)] pointer-events-none" />
+          <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary bg-primary/10 px-4 py-1.5 rounded-full border border-primary/25">
+            SECTION 15 • FINAL CLOSING
+          </span>
+          <h2 className="text-2xl sm:text-4xl font-extrabold font-cinzel text-text-primary">
+            🌟 MAYBE THESE 3 DAYS ARE NOT JUST 3 DAYS…
+          </h2>
+          <p className="text-lg font-bold font-cinzel text-primary">
+            MAYBE THEY ARE THE BEGINNING OF A NEW YOU.
           </p>
+          <div className="flex flex-wrap items-center justify-center gap-3 text-xs text-stone-300 font-mono">
+            <span className="px-3 py-1 rounded-lg bg-background border border-border/30">🌅 5:00 AM – 6:00 AM</span>
+            <span className="px-3 py-1 rounded-lg bg-background border border-border/30">🧘‍♂️ 3 Days Free Live Meditation</span>
+            <span className="px-3 py-1 rounded-lg bg-background border border-border/30">⚡ Limited Seats</span>
+          </div>
+          <div className="space-y-2 text-xs text-text-secondary">
+            <p className="text-primary font-semibold">👇 WHATSAPP GROUP ICON पर CLICK करें और अभी JOIN करें।</p>
+            <p>Meditation से related सभी links और updates इसी WhatsApp Group में मिलेंगी।</p>
+          </div>
+          <div className="pt-2 flex flex-col items-center gap-2 text-xs font-bold text-text-primary uppercase tracking-widest">
+            <p>GIVE YOURSELF A CHANCE.</p>
+            <p>EXPERIENCE THE POWER.</p>
+            <p>EXPERIENCE THE TRANSFORMATION.</p>
+            <p className="text-primary pt-1">🧘‍♂️ MEDITATE. 🌿 HEAL WITHIN. ✨ TRANSFORM YOUR LIFE.</p>
+          </div>
+          <div className="pt-4">
+            <a
+              href={MEDITATION_WHATSAPP_GROUP_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs uppercase tracking-widest rounded-xl transition-all duration-300 shadow-xl hover:scale-105 cursor-pointer"
+            >
+              <MessageCircle className="w-4 h-4" />
+              <span>JOIN MEDITATION WHATSAPP GROUP</span>
+            </a>
+          </div>
         </section>
 
-        {/* 9. FAQ */}
-        <section className="max-w-3xl mx-auto space-y-6">
+        {/* SECTION 16: FREQUENTLY ASKED QUESTIONS & DISCLAIMER */}
+        <section className="space-y-12 max-w-3xl mx-auto">
           <div className="text-center space-y-3">
-            <h2 className="text-2xl sm:text-4xl font-bold font-cinzel text-text-primary">
+            <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-primary bg-primary/10 px-3.5 py-1 rounded-full border border-primary/20">
+              SECTION 16 • FAQ & DISCLAIMER
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-bold font-cinzel text-text-primary">
               Frequently Asked Questions
             </h2>
-            <p className="text-stone-400 text-xs sm:text-sm font-light">
-              Everything you need to know about our meditation batches and sessions.
-            </p>
           </div>
 
           <div className="space-y-3">
             {faqs.map((faq, idx) => {
               const isOpen = openFaq === idx;
               return (
-                <div key={idx} className="bg-card border border-border/30 rounded-2xl overflow-hidden shadow-xs">
+                <div key={idx} className="bg-card border border-border/30 rounded-2xl overflow-hidden transition-all shadow-md">
                   <button
                     onClick={() => setOpenFaq(isOpen ? null : idx)}
-                    className="w-full p-5 text-left flex items-center justify-between gap-4 text-xs sm:text-sm font-bold text-text-primary hover:text-primary transition-colors cursor-pointer"
+                    className="w-full p-5 text-left flex items-center justify-between gap-4 font-cinzel font-bold text-xs sm:text-sm text-text-primary hover:text-primary transition-colors cursor-pointer"
                   >
                     <span>{faq.q}</span>
                     <ChevronDown className={`w-4 h-4 text-primary shrink-0 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
                   </button>
                   {isOpen && (
-                    <div className="px-5 pb-5 text-xs text-text-secondary font-light leading-relaxed border-t border-border/20 pt-3">
+                    <div className="px-5 pb-5 text-xs text-text-secondary leading-relaxed font-light border-t border-border/20 pt-3">
                       {faq.a}
                     </div>
                   )}
@@ -875,36 +805,13 @@ export default function MeditationPage({ navigate }: MeditationPageProps) {
               );
             })}
           </div>
-        </section>
 
-        {/* 10. FINAL CTA */}
-        <section className="text-center max-w-3xl mx-auto bg-card/80 border border-border/40 rounded-3xl p-10 sm:p-16 shadow-2xl space-y-6 relative overflow-hidden">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.06)_0%,transparent_70%)] pointer-events-none" />
-          
-          <h2 className="text-3xl sm:text-4xl font-extrabold font-cinzel text-text-primary">
-            YOUR JOURNEY WITHIN BEGINS HERE
-          </h2>
-          <p className="text-xs sm:text-sm text-text-secondary font-light max-w-xl mx-auto leading-relaxed">
-            Discover the power of a consistent meditation practice with guided learning and supportive sessions.
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
-            <a
-              href={MEDITATION_WHATSAPP_GROUP_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-8 py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs uppercase tracking-widest rounded-xl transition-all duration-300 shadow-lg hover:scale-105 flex items-center gap-2 cursor-pointer"
-            >
-              <MessageCircle className="w-4 h-4" />
-              <span>Join Meditation WhatsApp Group</span>
-            </a>
-            <a
-              href={`${WHATSAPP_LINK}?text=I have an enquiry regarding LEO Family Meditation classes.`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-8 py-4 bg-card border border-border/40 hover:border-primary/40 text-text-primary font-bold text-xs uppercase tracking-widest rounded-xl transition-all duration-300 hover:scale-105 cursor-pointer"
-            >
-              <span>Contact Us</span>
-            </a>
+          {/* SECTION 16 IMPORTANT NOTE DISCLAIMER */}
+          <div className="bg-background/90 border border-border/30 rounded-2xl p-6 text-center space-y-2">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-primary block">IMPORTANT NOTE</span>
+            <p className="text-[11px] text-stone-400 font-light leading-relaxed">
+              "Meditation is a supportive wellness, self-awareness and personal-growth practice. It is not a substitute for diagnosis, treatment or cure of any medical condition. If you are experiencing a serious physical or mental health condition, please consult a qualified healthcare professional."
+            </p>
           </div>
         </section>
 

@@ -31,6 +31,38 @@ export default function MeditationPage({ navigate }: MeditationPageProps) {
   const [isLoadingVideo, setIsLoadingVideo] = useState(true);
 
   useEffect(() => {
+    document.title = "Leo Family Meditation Academy | Meditation with Raajeev Singh Chauhann";
+    
+    const updateMeta = (property: string, content: string, isName = false) => {
+      const attr = isName ? 'name' : 'property';
+      let el = document.querySelector(`meta[${attr}="${property}"]`);
+      if (!el) {
+        el = document.createElement('meta');
+        el.setAttribute(attr, property);
+        document.head.appendChild(el);
+      }
+      el.setAttribute('content', content);
+    };
+
+    updateMeta('description', 'Learn Meditation, Inner Healing, Chakra Balancing, Akashic Records & Spiritual Practices with Raajeev Singh Chauhann — Meditation Coach, Spiritual Healer, Life Coach & Occult Teacher.', true);
+    updateMeta('og:type', 'website');
+    updateMeta('og:title', 'Leo Family Meditation Academy | Meditation with Raajeev Singh Chauhann');
+    updateMeta('og:description', 'Learn Meditation, Inner Healing, Chakra Balancing, Akashic Records & Spiritual Practices with Raajeev Singh Chauhann — Meditation Coach, Spiritual Healer, Life Coach & Occult Teacher.');
+    updateMeta('og:url', 'https://www.leofamily.online/meditation');
+    updateMeta('og:image', 'https://www.leofamily.online/assets/teachers/Raajeev.webp');
+    updateMeta('og:image:secure_url', 'https://www.leofamily.online/assets/teachers/Raajeev.webp');
+    updateMeta('og:image:type', 'image/webp');
+    updateMeta('og:image:width', '1200');
+    updateMeta('og:image:height', '630');
+    updateMeta('og:image:alt', 'Raajeev Singh Chauhann - Leo Family Meditation Academy');
+    updateMeta('og:site_name', 'LEO FAMILY OCCULT SCHOOL');
+    updateMeta('twitter:card', 'summary_large_image', true);
+    updateMeta('twitter:title', 'Leo Family Meditation Academy | Meditation with Raajeev Singh Chauhann', true);
+    updateMeta('twitter:description', 'Learn Meditation, Inner Healing, Chakra Balancing, Akashic Records & Spiritual Practices with Raajeev Singh Chauhann.', true);
+    updateMeta('twitter:image', 'https://www.leofamily.online/assets/teachers/Raajeev.webp', true);
+  }, []);
+
+  useEffect(() => {
     async function loadHeroVideo() {
       try {
         const settings = await websiteSettingsService.getSettings();

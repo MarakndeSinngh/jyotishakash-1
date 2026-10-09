@@ -19,7 +19,8 @@ import {
   Image as ImageIcon,
   DollarSign,
   Package,
-  Award
+  Award,
+  AlertTriangle
 } from 'lucide-react';
 import { GemstoneProduct, GemstoneVariant } from '../../models/gemstoneProduct';
 import { gemstoneProductService } from '../../services/gemstoneProductService';
@@ -528,7 +529,7 @@ export default function GemstoneAdminView() {
                       <div className="flex items-center gap-3">
                         <div className="w-12 h-12 rounded-xl bg-stone-100 border border-stone-200 shrink-0 overflow-hidden p-1 flex items-center justify-center">
                           <SmartImage
-                            src={resolveImagePath(product.images[0] || '/gemstone-assets/ruby.jpg')}
+                            src={resolveImagePath(product.images?.[0] || '')}
                             alt={product.name}
                             className="w-full h-full object-contain"
                           />
@@ -540,6 +541,14 @@ export default function GemstoneAdminView() {
                           <div className="text-[11px] text-amber-700 font-medium">
                             {product.hindiName} ({product.category})
                           </div>
+                          {product.specifications?.adminReviewNotice && (
+                            <div className="mt-1">
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-50 text-amber-800 border border-amber-300">
+                                <AlertTriangle className="w-2.5 h-2.5 text-amber-600" />
+                                <span>Needs Admin Review</span>
+                              </span>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </td>
@@ -730,6 +739,21 @@ export default function GemstoneAdminView() {
 
             {/* Modal Form Body */}
             <form onSubmit={handleSaveProduct} className="flex-1 overflow-y-auto p-6 space-y-4">
+              {/* Administrator Review Banner */}
+              {formData.specifications?.adminReviewNotice && (
+                <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-300 text-amber-900 text-xs flex items-start gap-2.5 mb-2">
+                  <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                  <div>
+                    <span className="font-bold uppercase tracking-wide text-[10px] text-amber-800 block">
+                      Administrator Verification & Review Required
+                    </span>
+                    <p className="mt-0.5 text-stone-700 leading-relaxed font-sans">
+                      {formData.specifications.adminReviewNotice}
+                    </p>
+                  </div>
+                </div>
+              )}
+
               {/* TAB 1: BASIC INFO */}
               {activeTab === 'basic' && (
                 <div className="space-y-4">
@@ -1181,8 +1205,41 @@ export default function GemstoneAdminView() {
 
                   <div className="p-4 rounded-xl bg-stone-50 border border-stone-200 space-y-3">
                     <h5 className="font-bold text-xs text-stone-800">
-                      Gemological Laboratory Certification
+                      Gemological Laboratory Certification & Authenticity
                     </h5>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pb-2 border-b border-stone-200">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={formData.certification?.certified ?? false}
+                          onChange={e => setFormData(prev => ({
+                            ...prev,
+                            certification: { ...(prev.certification || { labName: '', natural: false }), certified: e.target.checked }
+                          }))}
+                          className="w-3.5 h-3.5 accent-amber-600 rounded"
+                        />
+                        <span className="text-xs font-semibold text-stone-800">
+                          Lab Certified (Official Certificate Issued)
+                        </span>
+                      </label>
+
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={formData.certification?.natural ?? false}
+                          onChange={e => setFormData(prev => ({
+                            ...prev,
+                            certification: { ...(prev.certification || { labName: '', certified: false }), natural: e.target.checked }
+                          }))}
+                          className="w-3.5 h-3.5 accent-amber-600 rounded"
+                        />
+                        <span className="text-xs font-semibold text-stone-800">
+                          Natural Origin Confirmed (Not Lab-Grown or Synthetic)
+                        </span>
+                      </label>
+                    </div>
+
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
                         <label className="text-[10px] text-stone-500 block">Testing Lab</label>
@@ -1191,8 +1248,9 @@ export default function GemstoneAdminView() {
                           value={formData.certification?.labName || ''}
                           onChange={e => setFormData(prev => ({
                             ...prev,
-                            certification: { ...(prev.certification || { certified: true, natural: true }), labName: e.target.value }
+                            certification: { ...(prev.certification || { certified: false, natural: false }), labName: e.target.value }
                           }))}
+                          placeholder="e.g. Govt. Approved Gemological Testing Lab"
                           className="w-full px-2 py-1 text-xs bg-white rounded border border-stone-200"
                         />
                       </div>
@@ -1203,8 +1261,9 @@ export default function GemstoneAdminView() {
                           value={formData.certification?.treatment || ''}
                           onChange={e => setFormData(prev => ({
                             ...prev,
-                            certification: { ...(prev.certification || { certified: true, natural: true, labName: '' }), treatment: e.target.value }
+                            certification: { ...(prev.certification || { certified: false, natural: false, labName: '' }), treatment: e.target.value }
                           }))}
+                          placeholder="e.g. 100% Natural, Unheated & Untreated"
                           className="w-full px-2 py-1 text-xs bg-white rounded border border-stone-200"
                         />
                       </div>

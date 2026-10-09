@@ -399,7 +399,7 @@ export const INITIAL_GEMSTONES_CATALOGUE: GemstoneProduct[] = [
   {
     id: 'gem-diamond',
     slug: 'diamond-heera',
-    name: 'Natural Vedic Diamond / White Zircon',
+    name: 'Vedic Diamond / White Zircon (Pending Material Confirmation)',
     hindiName: 'Heera (हीरा)',
     category: 'Diamond',
     planetaryRuler: 'Venus (Shukra Dev)',
@@ -430,7 +430,10 @@ export const INITIAL_GEMSTONES_CATALOGUE: GemstoneProduct[] = [
       energizationStatus: 'Shukra Gayatri & Mahalakshmi Mantra Abhimantrit',
       metalRecommendation: 'Platinum, White Gold or Silver',
       wearingFinger: 'Middle or Little Finger of Right Hand',
-      wearingDayMuhurat: 'Friday Morning at Sunrise'
+      wearingDayMuhurat: 'Friday Morning at Sunrise',
+      pricingVerificationStatus: 'UNVERIFIED_DRAFT_PRICE',
+      materialIdentityStatus: 'AMBIGUOUS_UNVERIFIED',
+      adminReviewNotice: 'MATERIAL IDENTITY AMBIGUITY: Diamond (Heera) and White Zircon (Safed Jarkan) are distinct gemological materials with differing astrological and monetary values. Administrator must inspect physical stock to confirm whether this item is Natural Diamond or White Zircon. Product name, specifications, pricing, and certificate must be corrected prior to publishing.'
     },
     variants: [
       {
@@ -710,7 +713,7 @@ export const INITIAL_GEMSTONES_CATALOGUE: GemstoneProduct[] = [
     benefit: 'Stimulates artistic creativity, marital bliss, and luxury. Highly effective substitute for Diamond to channel Venusian grace.',
     shortDescription: 'Prismatic natural Australian Opal radiating rainbow fire for creative brilliance, romance, and financial ease.',
     description: 'Natural Australian Opal is the premier Vedic alternative to Diamond for strengthening Venus (Shukra). Its mesmerizing play of iridescent colors awakens the wearer’s creative spark, softens marital discord, and attracts luxury and aesthetic abundance.',
-    images: ['/gemstone-assets/diamond.jpg'],
+    images: [],
     price: 6800,
     compareAtPrice: 8200,
     sku: 'LEO-OPL-01',
@@ -733,7 +736,10 @@ export const INITIAL_GEMSTONES_CATALOGUE: GemstoneProduct[] = [
       energizationStatus: 'Shukra Vedic Consecration',
       metalRecommendation: 'Pure Silver or White Gold',
       wearingFinger: 'Middle or Little Finger of Right Hand',
-      wearingDayMuhurat: 'Friday Morning at Sunrise'
+      wearingDayMuhurat: 'Friday Morning at Sunrise',
+      pricingVerificationStatus: 'UNVERIFIED_DRAFT_PRICE',
+      imageVerificationStatus: 'PENDING_UPLOAD',
+      adminReviewNotice: 'PENDING ASSET UPLOAD: No authentic Opal photograph exists in project assets (do not use diamond.jpg). Upload verified Australian Opal photographs via Admin Panel before publishing.'
     },
     variants: [
       {

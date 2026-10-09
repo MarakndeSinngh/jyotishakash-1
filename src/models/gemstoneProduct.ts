@@ -18,6 +18,7 @@ export interface GemstoneCertification {
   certificateNo?: string;
   natural: boolean;
   treatment?: string;
+  verificationStatus?: string;
 }
 
 export interface GemstoneSpecifications {
@@ -30,6 +31,11 @@ export interface GemstoneSpecifications {
   metalRecommendation?: string;
   wearingFinger?: string;
   wearingDayMuhurat?: string;
+  pricingVerificationStatus?: string;
+  adminReviewNotice?: string;
+  materialIdentityStatus?: string;
+  imageVerificationStatus?: string;
+  [key: string]: any;
 }
 
 export interface GemstoneProduct {

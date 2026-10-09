@@ -30,13 +30,14 @@ import TestimonialsView from './TestimonialsView';
 import FacultyView from './FacultyView';
 import SettingsView from './SettingsView';
 import SEOManagerView from './SEOManagerView';
+import GemstoneAdminView from './GemstoneAdminView';
 
 interface AdminPortalProps {
   navigate: (path: string) => void;
   currentPath: string;
 }
 
-export type AdminTab = 'dashboard' | 'webinar' | 'programs' | 'media' | 'testimonials' | 'faculty' | 'settings' | 'seo';
+export type AdminTab = 'dashboard' | 'webinar' | 'programs' | 'media' | 'testimonials' | 'faculty' | 'gemstones' | 'settings' | 'seo';
 
 export default function AdminPortal({ navigate }: AdminPortalProps) {
   const [user, setUser] = useState<SupabaseUser | null>(null);
@@ -85,6 +86,7 @@ export default function AdminPortal({ navigate }: AdminPortalProps) {
     { id: 'media' as AdminTab, label: 'Media Library', icon: FolderKanban },
     { id: 'testimonials' as AdminTab, label: 'Testimonials', icon: Star },
     { id: 'faculty' as AdminTab, label: 'Faculty', icon: Users },
+    { id: 'gemstones' as AdminTab, label: 'Gemstone Products', icon: Sparkles },
     { id: 'seo' as AdminTab, label: 'SEO Manager', icon: Globe },
     { id: 'settings' as AdminTab, label: 'Settings', icon: Settings },
   ];
@@ -97,6 +99,8 @@ export default function AdminPortal({ navigate }: AdminPortalProps) {
         return <LiveWebinarView />;
       case 'programs':
         return <ProgramsView />;
+      case 'gemstones':
+        return <GemstoneAdminView />;
       case 'media':
         return (
           <div className="space-y-6">

@@ -43,6 +43,7 @@ import { getActiveBrand } from './config/cms';
 import { useAcademy } from './context/AcademyContext';
 import { useLanguage } from './context/LanguageContext';
 import { getSeoMetadata } from './config/seo';
+import { CartProvider } from './context/CartContext';
 
 export default function App() {
   const [currentPath, setCurrentPath] = useState(window.location.pathname);
@@ -101,7 +102,7 @@ export default function App() {
   const loadContent = async () => {
     setLoading(true);
     try {
-      if (currentPath === '/media' || currentPath === '/shorts' || currentPath === '/meditation' || currentPath.startsWith('/academy/')) {
+      if (currentPath === '/media' || currentPath === '/shorts' || currentPath === '/meditation' || currentPath.startsWith('/academy/') || currentPath.startsWith('/gemstones')) {
         setPage(null);
         setSections([]);
         setLoading(false);
@@ -210,10 +211,11 @@ export default function App() {
   }
 
   return (
-    <ErrorBoundary>
-      {currentPath.startsWith('/admin') ? (
-        <AdminPortal navigate={navigate} currentPath={currentPath} />
-      ) : (
+    <CartProvider>
+      <ErrorBoundary>
+        {currentPath.startsWith('/admin') ? (
+          <AdminPortal navigate={navigate} currentPath={currentPath} />
+        ) : (
         <>
       <Helmet>
         <title>{seo.title}</title>
@@ -338,7 +340,7 @@ export default function App() {
 
         {/* MAIN CONTENT */}
         <main className={`relative z-10 ${
-          currentPath === '/' || currentPath === '/gemstones' || currentPath === '/numerology' || currentPath === '/meditation' || currentPath === '/academy' || currentPath.startsWith('/academy/') || currentPath.startsWith('/programs') || currentPath === '/blogs' || currentPath === '/ai' || currentPath === '/ecosystem' || currentPath === '/contact' || currentPath === '/media' || currentPath === '/shorts'
+          currentPath === '/' || currentPath.startsWith('/gemstones') || currentPath === '/numerology' || currentPath === '/meditation' || currentPath === '/academy' || currentPath.startsWith('/academy/') || currentPath.startsWith('/programs') || currentPath === '/blogs' || currentPath === '/ai' || currentPath === '/ecosystem' || currentPath === '/contact' || currentPath === '/media' || currentPath === '/shorts'
             ? 'pt-0'
             : 'pt-24'
         }`}>
@@ -355,6 +357,8 @@ export default function App() {
               <BlogsPage key="blogs-page" navigate={navigate} />
             ) : currentPath.startsWith('/academy/') ? (
               <AcademyLandingPage key="academy-landing" navigate={navigate} />
+            ) : currentPath.startsWith('/gemstones') ? (
+              <GemstonesPage key="gemstones-page" navigate={navigate} currentPath={currentPath} />
             ) : (
               sections
                 .filter(s => s.isActive)
@@ -438,6 +442,7 @@ export default function App() {
       </motion.div>
         </>
       )}
-    </ErrorBoundary>
+      </ErrorBoundary>
+    </CartProvider>
   );
 }

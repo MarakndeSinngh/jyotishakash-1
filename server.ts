@@ -99,6 +99,71 @@ async function setupApp() {
     }
   });
 
+  // Dedicated SEO/Social sharing metadata handler for /gemstones and /gemstones/:slug
+  app.get(["/gemstones", "/gemstones/:slug"], async (req, res, next) => {
+    try {
+      let indexPath = "";
+      if (process.env.NODE_ENV === "production") {
+        indexPath = path.join(process.cwd(), "dist", "index.html");
+      } else {
+        indexPath = path.join(currentDirname, "index.html");
+      }
+
+      if (!fs.existsSync(indexPath)) {
+        indexPath = path.join(currentDirname, "index.html");
+      }
+
+      let html = fs.readFileSync(indexPath, "utf-8");
+
+      const slug = req.params.slug;
+      const title = slug 
+        ? `${slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())} | LEO Family Sacred Vedic Gemstones`
+        : "Discover Your Sacred Gemstone | LEO Family Occult School";
+      const desc = slug
+        ? `Authentic 100% natural, lab-certified ${slug.replace(/-/g, ' ')} energized with Vedic Pran Pratishtha rituals by LEO Family Occult School.`
+        : "Explore certified natural Vedic gemstones aligned with your planetary frequencies, energized under Raajeev Singh Chauhann & LEO Family masters.";
+      const currentUrl = `https://www.leofamily.online${req.path}`;
+      const imageUrl = "https://www.leofamily.online/gemstone-assets/ruby.jpg";
+
+      // Replace title and description
+      html = html.replace(/<title>.*?<\/title>/i, `<title>${title}</title>`);
+      html = html.replace(
+        /<meta name="description" content=".*?"\s*\/?>/i,
+        `<meta name="description" content="${desc}" />`
+      );
+
+      const gemstoneMetaTags = `
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="${title}" />
+    <meta property="og:description" content="${desc}" />
+    <meta property="og:url" content="${currentUrl}" />
+    <meta property="og:image" content="${imageUrl}" />
+    <meta property="og:image:secure_url" content="${imageUrl}" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:site_name" content="LEO FAMILY OCCULT SCHOOL" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="${title}" />
+    <meta name="twitter:description" content="${desc}" />
+    <meta name="twitter:image" content="${imageUrl}" />
+      `;
+
+      if (html.includes('</head>')) {
+        html = html.replace('</head>', `${gemstoneMetaTags}\n</head>`);
+      } else {
+        html += gemstoneMetaTags;
+      }
+
+      if (process.env.NODE_ENV !== "production" && viteInstance) {
+        html = await viteInstance.transformIndexHtml(req.url, html);
+      }
+
+      res.send(html);
+    } catch (err) {
+      next(err);
+    }
+  });
+
   if (process.env.NODE_ENV === "production") {
     const distPath = path.join(process.cwd(), "dist");
     app.use(express.static(distPath));

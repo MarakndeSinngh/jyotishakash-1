@@ -111,8 +111,24 @@ export const gemstoneProductRepository = {
     return () => window.removeEventListener(UPDATE_EVENT, callback);
   },
 
+  async checkDatabaseStatus(): Promise<{ connected: boolean; count: number; error?: string }> {
+    try {
+      const { data, count, error } = await supabase
+        .from('gemstone_products')
+        .select('id', { count: 'exact' })
+        .limit(1);
+
+      if (error) {
+        return { connected: false, count: 0, error: error.message };
+      }
+      return { connected: true, count: count ?? (data ? data.length : 0) };
+    } catch (err: any) {
+      return { connected: false, count: 0, error: err.message || 'Unknown database error' };
+    }
+  },
+
   async getAll(includeUnpublished = false): Promise<GemstoneProduct[]> {
-    // 1. Try Supabase first
+    // 1. Authoritative source of truth: Supabase database
     try {
       let query = supabase
         .from('gemstone_products')
@@ -132,10 +148,10 @@ export const gemstoneProductRepository = {
         return mapped;
       }
     } catch (err) {
-      // Supabase table not created yet or network issue: proceed to local resilient cache
+      // Supabase table pending migration or network issue: proceed to local resilient cache
     }
 
-    // 2. Resilient local storage cache fallback
+    // 2. Read-only fallback to verified baseline catalogue
     const local = getStoredCatalogue();
     if (!includeUnpublished) {
       return local.filter(p => p.isPublished);
@@ -217,71 +233,65 @@ export const gemstoneProductRepository = {
       updatedAt: new Date().toISOString()
     };
 
-    // Update local cache first for instant UI response
-    const local = getStoredCatalogue();
-    const updatedList = [...local.filter(p => p.id !== id), newProduct];
-    saveStoredCatalogue(updatedList);
+    // Authoritative database persistence check
+    const row = mapProductToRow(newProduct, false);
+    const { data, error } = await supabase.from('gemstone_products').insert([row]).select().maybeSingle();
 
-    // Try Supabase insert
-    try {
-      const row = mapProductToRow(newProduct, false);
-      const { data, error } = await supabase.from('gemstone_products').insert([row]).select().maybeSingle();
-      if (!error && data) {
-        return mapRowToProduct(data);
-      }
-    } catch (err) {
-      console.warn('[GemstoneRepo] Supabase insert skipped/failed:', err);
+    if (error) {
+      console.error('[GemstoneRepo] Supabase insert failed:', error);
+      throw new Error(`Database save failed: ${error.message} (Code: ${error.code || 'DB_ERROR'}). Ensure table 'gemstone_products' exists and admin user is authorized.`);
     }
 
-    return newProduct;
+    const savedProduct = data ? mapRowToProduct(data) : newProduct;
+
+    // Persist to local cache only after successful database save
+    const local = getStoredCatalogue();
+    const updatedList = [...local.filter(p => p.id !== id), savedProduct];
+    saveStoredCatalogue(updatedList);
+
+    return savedProduct;
   },
 
   async update(id: string, updates: Partial<GemstoneProduct>): Promise<GemstoneProduct> {
+    const rowUpdates = mapProductToRow(updates, true);
+    const { data, error } = await supabase
+      .from('gemstone_products')
+      .update(rowUpdates)
+      .eq('id', id)
+      .select()
+      .maybeSingle();
+
+    if (error) {
+      console.error('[GemstoneRepo] Supabase update failed:', error);
+      throw new Error(`Database update failed: ${error.message} (Code: ${error.code || 'DB_ERROR'}). Changes were not persisted to database.`);
+    }
+
     const local = getStoredCatalogue();
     const existingIndex = local.findIndex(p => p.id === id);
-    if (existingIndex === -1) {
-      throw new Error(`Gemstone product with ID ${id} not found.`);
+    const updatedProduct: GemstoneProduct = data
+      ? mapRowToProduct(data)
+      : ({ ...(local[existingIndex] || {}), ...updates, updatedAt: new Date().toISOString() } as GemstoneProduct);
+
+    if (existingIndex !== -1) {
+      local[existingIndex] = updatedProduct;
+    } else {
+      local.push(updatedProduct);
     }
-
-    const updatedProduct: GemstoneProduct = {
-      ...local[existingIndex],
-      ...updates,
-      updatedAt: new Date().toISOString()
-    };
-
-    local[existingIndex] = updatedProduct;
     saveStoredCatalogue([...local]);
-
-    // Try Supabase update
-    try {
-      const rowUpdates = mapProductToRow(updates, true);
-      const { data, error } = await supabase
-        .from('gemstone_products')
-        .update(rowUpdates)
-        .eq('id', id)
-        .select()
-        .maybeSingle();
-
-      if (!error && data) {
-        return mapRowToProduct(data);
-      }
-    } catch (err) {
-      console.warn('[GemstoneRepo] Supabase update skipped/failed:', err);
-    }
 
     return updatedProduct;
   },
 
   async delete(id: string): Promise<boolean> {
+    const { error } = await supabase.from('gemstone_products').delete().eq('id', id);
+    if (error) {
+      console.error('[GemstoneRepo] Supabase delete failed:', error);
+      throw new Error(`Database delete failed: ${error.message} (Code: ${error.code || 'DB_ERROR'}). Item was not removed from database.`);
+    }
+
     const local = getStoredCatalogue();
     const filtered = local.filter(p => p.id !== id);
     saveStoredCatalogue(filtered);
-
-    try {
-      await supabase.from('gemstone_products').delete().eq('id', id);
-    } catch (err) {
-      console.warn('[GemstoneRepo] Supabase delete skipped/failed:', err);
-    }
 
     return true;
   },

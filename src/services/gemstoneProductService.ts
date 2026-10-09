@@ -30,6 +30,10 @@ export const gemstoneProductService = {
     return gemstoneProductRepository.resetToDefault();
   },
 
+  async checkDatabaseStatus(): Promise<{ connected: boolean; count: number; error?: string }> {
+    return gemstoneProductRepository.checkDatabaseStatus();
+  },
+
   subscribe(callback: () => void): () => void {
     return gemstoneProductRepository.subscribe(callback);
   }

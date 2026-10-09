@@ -51,6 +51,7 @@ export default function GemstoneAdminView() {
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState<'all' | 'published' | 'draft'>('all');
   const [stockFilter, setStockFilter] = useState<'all' | 'in_stock' | 'out_of_stock'>('all');
+  const [dbStatus, setDbStatus] = useState<{ connected: boolean; count: number; error?: string } | null>(null);
 
   // Modal State
   const [modalOpen, setModalOpen] = useState(false);
@@ -93,8 +94,12 @@ export default function GemstoneAdminView() {
   const loadData = async () => {
     setLoading(true);
     try {
-      const data = await gemstoneProductService.getAllProducts(true);
+      const [data, status] = await Promise.all([
+        gemstoneProductService.getAllProducts(true),
+        gemstoneProductService.checkDatabaseStatus()
+      ]);
       setProducts(data);
+      setDbStatus(status);
     } catch (err) {
       console.error('Failed to load products for admin:', err);
     } finally {
@@ -187,7 +192,7 @@ export default function GemstoneAdminView() {
       showNotification(`${product.name} is now ${!product.isPublished ? 'Published' : 'Draft'}`);
       loadData();
     } catch (err: any) {
-      showNotification('Failed to update status', 'error');
+      showNotification(err.message || 'Failed to update status', 'error');
     }
   };
 
@@ -199,7 +204,7 @@ export default function GemstoneAdminView() {
       showNotification(`${product.name} stock status updated.`);
       loadData();
     } catch (err: any) {
-      showNotification('Failed to update stock', 'error');
+      showNotification(err.message || 'Failed to update stock', 'error');
     }
   };
 
@@ -211,7 +216,7 @@ export default function GemstoneAdminView() {
       showNotification(`${product.name} featured status updated.`);
       loadData();
     } catch (err: any) {
-      showNotification('Failed to update featured status', 'error');
+      showNotification(err.message || 'Failed to update featured status', 'error');
     }
   };
 
@@ -222,7 +227,7 @@ export default function GemstoneAdminView() {
       showNotification(`Product "${product.name}" deleted successfully.`);
       loadData();
     } catch (err: any) {
-      showNotification('Failed to delete product', 'error');
+      showNotification(err.message || 'Failed to delete product', 'error');
     }
   };
 
@@ -378,6 +383,40 @@ export default function GemstoneAdminView() {
           </button>
         </div>
       </div>
+
+      {/* Database Connection Notice */}
+      {dbStatus && !dbStatus.connected && (
+        <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-stone-800 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
+          <div className="flex items-start gap-3">
+            <span className="p-1.5 rounded-lg bg-amber-100 text-amber-800 font-bold shrink-0 text-sm">⚠️</span>
+            <div>
+              <p className="font-semibold text-stone-900">
+                Supabase Migration Notice: Table <code className="bg-amber-100 px-1 py-0.5 rounded text-amber-900 font-mono text-[11px]">public.gemstone_products</code> is not yet applied to the remote project.
+              </p>
+              <p className="text-stone-600 mt-0.5">
+                The public catalog is safely serving the baseline Vedic collection. Any administrative edits require running <code className="font-mono text-[11px] bg-stone-100 px-1 py-0.5 rounded">supabase/migrations/20261009_gemstone_catalogue.sql</code> in your Supabase SQL editor.
+              </p>
+            </div>
+          </div>
+          <span className="px-2.5 py-1 rounded-full bg-amber-200/80 text-amber-900 font-semibold text-[10px] uppercase tracking-wider shrink-0 self-start sm:self-center">
+            Pending Migration
+          </span>
+        </div>
+      )}
+
+      {dbStatus && dbStatus.connected && (
+        <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs flex items-center justify-between shadow-sm">
+          <div className="flex items-center gap-2.5">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="font-medium">
+              Supabase Database Connected: Authoritative production storage active (<strong className="font-bold">{dbStatus.count}</strong> products in database).
+            </span>
+          </div>
+          <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-semibold text-[10px] uppercase tracking-wider">
+            Live Database Synced
+          </span>
+        </div>
+      )}
 
       {/* Statistics Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">

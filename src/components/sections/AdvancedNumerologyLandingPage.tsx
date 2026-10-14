@@ -194,7 +194,7 @@ export default function AdvancedNumerologyLandingPage({ navigate }: AdvancedNume
   ];
 
   return (
-    <div className="min-h-screen bg-leo-ivory text-leo-text-primary pt-24 pb-24 relative overflow-hidden font-sans transition-colors duration-300">
+    <div className="min-h-screen bg-leo-ivory text-leo-text-primary pt-24 pb-36 sm:pb-32 relative overflow-hidden font-sans transition-colors duration-300">
       
       <div className="container mx-auto px-6 relative z-10 max-w-6xl">
         
@@ -718,6 +718,68 @@ export default function AdvancedNumerologyLandingPage({ navigate }: AdvancedNume
         </section>
 
       </div>
+
+      {/* ==================================================
+          PERSISTENT FLOATING CTA: PAY NOW TO ENROLL
+          Matches /academy/raajeev style, placement & responsive behavior
+          ================================================== */}
+      <motion.div
+        initial={{ y: 50, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.3, ease: 'easeOut' }}
+        className="fixed bottom-0 left-0 right-0 z-[990] bg-[#143D2E]/95 backdrop-blur-xl border-t border-[#C6A15B]/40 shadow-[0_-10px_35px_rgba(0,0,0,0.35)] py-3 px-4 sm:px-6 pointer-events-auto pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))]"
+      >
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-3 sm:gap-4">
+          
+          {/* Left Column: Avatar + Program Information */}
+          <div className="flex items-center gap-3 min-w-0">
+            <img
+              src="/assets/teachers/Raajeev.webp"
+              alt="Raajeev Singh Chauhann"
+              className="w-10 h-10 rounded-full object-cover border-2 border-[#C6A15B]/70 shadow-md shrink-0 hidden sm:block"
+            />
+            <div className="text-left min-w-0">
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#C6A15B] shrink-0">
+                  NAVRATRI SPECIAL • ₹995
+                </span>
+                <span className="hidden md:inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#143D2E] border border-[#C6A15B]/30 text-[#F7F5EE] text-[9px] font-mono tracking-tight">
+                  ✨ Live Masterclass + 1-Yr Access
+                </span>
+              </div>
+              <p className="text-xs sm:text-sm font-bold font-cinzel text-[#F7F5EE] truncate mt-0.5">
+                Advanced Vedic + Mobile Numerology
+              </p>
+            </div>
+          </div>
+
+          {/* Right Column: Pricing & PAY NOW TO ENROLL Button */}
+          <div className="flex items-center gap-3 sm:gap-4 shrink-0">
+            <div className="hidden lg:flex flex-col items-end">
+              <span className="text-sm font-extrabold font-cinzel text-[#C6A15B] leading-none">
+                ₹995 ONLY
+              </span>
+              <span className="text-[10px] text-[#F7F5EE]/70 line-through">
+                Value: Approx. ₹24,000
+              </span>
+            </div>
+
+            <a
+              href={RAZORPAY_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Pay now to enroll in the live batch"
+              className="group relative inline-flex items-center justify-center gap-2 px-5 sm:px-7 py-3 rounded-xl sm:rounded-full bg-gradient-to-r from-[#C6A15B] via-[#E5C378] to-[#C6A15B] text-[#143D2E] font-black text-xs sm:text-sm uppercase tracking-wider shadow-[0_0_20px_rgba(198,161,91,0.45)] hover:shadow-[0_0_30px_rgba(198,161,91,0.7)] hover:scale-[1.03] active:scale-95 transition-all duration-200 cursor-pointer shrink-0 focus:outline-none focus:ring-2 focus:ring-[#C6A15B] focus:ring-offset-2 focus:ring-offset-[#143D2E]"
+            >
+              <span className="relative z-10 font-black tracking-wider whitespace-nowrap">
+                PAY NOW TO ENROLL
+              </span>
+              <ArrowRight className="w-4 h-4 text-[#143D2E] relative z-10 group-hover:translate-x-1 transition-transform shrink-0" />
+            </a>
+          </div>
+
+        </div>
+      </motion.div>
     </div>
   );
 }

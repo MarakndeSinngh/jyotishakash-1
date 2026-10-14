@@ -210,15 +210,26 @@ const Navbar = ({ navigate, currentPath }: NavbarProps) => {
               href={consultLink}
               target="_blank"
               rel="noopener noreferrer"
-              className="btn-premium !rounded-xl !px-0 w-32 xl:w-36 h-10 text-[10px] xl:text-xs font-extrabold tracking-[0.12em] xl:tracking-[0.16em] shadow-lg hover:scale-[1.04] active:scale-95 transition-all duration-300 cursor-pointer uppercase whitespace-nowrap shrink-0 flex items-center justify-center text-center"
+              aria-label="Consult Now via WhatsApp"
+              className="btn-premium !rounded-xl !px-4 xl:!px-5 !py-0 w-auto min-w-[136px] xl:min-w-[148px] h-10 !text-[11px] xl:!text-xs !font-bold !tracking-[0.08em] xl:!tracking-[0.1em] shadow-md hover:shadow-lg hover:scale-[1.03] active:scale-[0.98] transition-all duration-200 cursor-pointer uppercase whitespace-nowrap shrink-0 !inline-flex items-center justify-center text-center text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
             >
-              {t('nav.consultNow', 'CONSULT NOW')}
+              <span>{t('nav.consultNow', 'CONSULT NOW')}</span>
             </a>
           </div>
 
           {/* MOBILE & TABLET CONTROLS */}
-          <div className="flex items-center gap-2 lg:hidden shrink-0">
+          <div className="flex items-center gap-2 sm:gap-3 lg:hidden shrink-0">
             <LanguageSelector isMobile />
+
+            <a
+              href={consultLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Consult Now via WhatsApp"
+              className="hidden sm:inline-flex items-center justify-center btn-premium !rounded-xl !px-3.5 sm:!px-4 !py-0 h-9 !text-[11px] !font-bold !tracking-[0.08em] shadow-md hover:shadow-lg hover:scale-[1.03] active:scale-[0.98] transition-all duration-200 cursor-pointer uppercase whitespace-nowrap text-white text-center focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+            >
+              <span>{t('nav.consultNow', 'CONSULT NOW')}</span>
+            </a>
 
             <button 
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -315,9 +326,10 @@ const Navbar = ({ navigate, currentPath }: NavbarProps) => {
                 href={consultLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn-premium w-full py-3.5 rounded-xl text-xs font-extrabold tracking-[0.2em] shadow-lg text-center cursor-pointer mt-3 uppercase block"
+                aria-label="Consult Now via WhatsApp"
+                className="btn-premium w-full !rounded-xl !px-4 !py-3.5 !text-xs !font-bold !tracking-[0.08em] shadow-md hover:shadow-lg active:scale-[0.98] transition-all duration-200 text-center cursor-pointer mt-3 uppercase !flex items-center justify-center text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
               >
-                {t('nav.consultNow', 'CONSULT NOW')}
+                <span>{t('nav.consultNow', 'CONSULT NOW')}</span>
               </a>
             </div>
           </motion.div>

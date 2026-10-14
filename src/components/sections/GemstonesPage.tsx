@@ -17,7 +17,8 @@ import {
   HelpCircle,
   MessageCircle,
   RefreshCw,
-  Filter
+  Filter,
+  ShieldAlert
 } from 'lucide-react';
 import { GemstoneProduct, GemstoneFilterState, GemstoneSortOption } from '../../models/gemstoneProduct';
 import { gemstoneProductService } from '../../services/gemstoneProductService';
@@ -78,6 +79,7 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
   });
 
   const [sortOption, setSortOption] = useState<GemstoneSortOption>('featured');
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   const { addToCart, isWishlisted, toggleWishlist, openCart, totalItems } = useCart();
 
@@ -88,9 +90,16 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
       setLoading(true);
       try {
         const data = await gemstoneProductService.getAllProducts(false);
-        if (isMounted) setProducts(data);
-      } catch (err) {
+        if (isMounted) {
+          setProducts(data);
+          setLoadError(null);
+        }
+      } catch (err: any) {
         console.error('Failed to load gemstone catalogue:', err);
+        if (isMounted) {
+          setProducts([]);
+          setLoadError(err?.message || 'Gemstone catalogue currently unavailable');
+        }
       } finally {
         if (isMounted) setLoading(false);
       }
@@ -567,6 +576,26 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
                 Loading Vedic Gemstone Catalogue...
               </p>
             </div>
+          ) : loadError ? (
+            <div className="p-12 text-center rounded-2xl bg-stone-950/40 border border-stone-800 space-y-3">
+              <ShieldAlert className="w-10 h-10 text-rose-500/80 mx-auto" />
+              <h4 className="font-cinzel text-lg font-bold text-stone-300">
+                Catalogue Currently Unavailable
+              </h4>
+              <p className="text-xs text-stone-500 max-w-sm mx-auto">
+                Our sacred gemstone registry is undergoing scheduled verification. Please check back shortly or consult with our Vedic advisors.
+              </p>
+            </div>
+          ) : products.length === 0 ? (
+            <div className="p-12 text-center rounded-2xl bg-stone-950/40 border border-stone-800 space-y-3">
+              <Sparkles className="w-10 h-10 text-amber-500/70 mx-auto" />
+              <h4 className="font-cinzel text-lg font-bold text-stone-300">
+                Sacred Gemstone Collection In Curation
+              </h4>
+              <p className="text-xs text-stone-500 max-w-md mx-auto">
+                All gemstone products are currently undergoing rigorous Vedic lab verification and authenticity appraisal before public release.
+              </p>
+            </div>
           ) : filteredProducts.length === 0 ? (
             <div className="p-12 text-center rounded-2xl bg-stone-950/40 border border-stone-800 space-y-3">
               <HelpCircle className="w-10 h-10 text-stone-600 mx-auto" />
@@ -623,11 +652,19 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
                       </button>
 
                       {/* Gemstone Image (Clean, unclipped, object-contain) */}
-                      <SmartImage
-                        src={resolveImagePath(stone.images[0] || stone.images?.[0] || '/gemstone-assets/ruby.jpg')}
-                        alt={stone.name}
-                        className="w-full h-full object-contain relative z-10 transition-transform duration-500 group-hover:scale-110"
-                      />
+                      {stone.images && stone.images.length > 0 && stone.images[0] ? (
+                        <SmartImage
+                          src={resolveImagePath(stone.images[0])}
+                          alt={stone.name}
+                          className="w-full h-full object-contain relative z-10 transition-transform duration-500 group-hover:scale-110"
+                        />
+                      ) : (
+                        <div className="flex flex-col items-center justify-center text-center p-4 z-10 text-stone-500">
+                          <Sparkles className="w-8 h-8 text-stone-600 mb-1" />
+                          <span className="text-[10px] font-cinzel text-stone-400">Photo Pending</span>
+                          <span className="text-[8px] text-stone-600">Verification</span>
+                        </div>
+                      )}
                     </div>
 
                     {/* Card Content */}
@@ -714,11 +751,18 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
                   >
                     <div className="flex items-center gap-4 w-full sm:w-auto">
                       <div className="w-24 h-24 rounded-xl bg-stone-900 shrink-0 p-2 overflow-hidden flex items-center justify-center">
-                        <SmartImage
-                          src={resolveImagePath(stone.images[0] || '/gemstone-assets/ruby.jpg')}
-                          alt={stone.name}
-                          className="w-full h-full object-contain"
-                        />
+                        {stone.images && stone.images.length > 0 && stone.images[0] ? (
+                          <SmartImage
+                            src={resolveImagePath(stone.images[0])}
+                            alt={stone.name}
+                            className="w-full h-full object-contain"
+                          />
+                        ) : (
+                          <div className="flex flex-col items-center justify-center text-center text-stone-500">
+                            <Sparkles className="w-5 h-5 text-stone-600 mb-0.5" />
+                            <span className="text-[8px] text-stone-500">Pending</span>
+                          </div>
+                        )}
                       </div>
                       <div className="min-w-0">
                         <div className="flex items-center gap-2">

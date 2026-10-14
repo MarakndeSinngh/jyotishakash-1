@@ -22,16 +22,20 @@ import {
   Award,
   AlertTriangle
 } from 'lucide-react';
-import { GemstoneProduct, GemstoneVariant } from '../../models/gemstoneProduct';
+import { GemstoneProduct, GemstoneVariant, ReviewIssue, getProductReviewIssues } from '../../models/gemstoneProduct';
 import { gemstoneProductService } from '../../services/gemstoneProductService';
 import { storageRepository } from '../../repositories/storageRepository';
 import SmartImage from '../sections/SmartImage';
 import { resolveImagePath } from '../../utils/imageHelper';
 
+export type { ReviewIssue };
+export { getProductReviewIssues };
+
 const AVAILABLE_CATEGORIES = [
   'Ruby', 'Natural Pearl', 'Red Coral', 'Emerald', 'Yellow Sapphire',
-  'Diamond', 'Blue Sapphire', 'Hessonite', 'Cat’s Eye', 'Opal'
+  'Diamond', 'Zircon', 'Blue Sapphire', 'Hessonite', 'Cat’s Eye', 'Opal'
 ];
+
 
 const AVAILABLE_PRESET_IMAGES = [
   '/gemstone-assets/ruby.jpg',
@@ -72,20 +76,20 @@ export default function GemstoneAdminView() {
     benefit: '',
     shortDescription: '',
     description: '',
-    images: ['/gemstone-assets/ruby.jpg'],
-    price: 10000,
-    compareAtPrice: 12000,
+    images: [],
+    price: undefined as any,
+    compareAtPrice: null,
     sku: '',
-    stockQuantity: 5,
-    inStock: true,
-    isPublished: true,
+    stockQuantity: 0,
+    inStock: false,
+    isPublished: false,
     isFeatured: false,
     specifications: {},
     certification: {
-      certified: true,
-      labName: 'Govt. Approved Gemological Testing Lab',
-      natural: true,
-      treatment: '100% Natural, Unheated & Untreated'
+      certified: false,
+      labName: '',
+      natural: false,
+      treatment: 'Pending Lab Verification'
     },
     variants: []
   });
@@ -133,26 +137,29 @@ export default function GemstoneAdminView() {
       benefit: '',
       shortDescription: '',
       description: '',
-      images: ['/gemstone-assets/ruby.jpg'],
-      price: 15000,
-      compareAtPrice: 18000,
+      images: [],
+      price: undefined as any,
+      compareAtPrice: null,
       sku: `LEO-${Date.now().toString().slice(-4)}`,
-      stockQuantity: 5,
-      inStock: true,
-      isPublished: true,
+      stockQuantity: 0,
+      inStock: false,
+      isPublished: false,
       isFeatured: false,
       specifications: {
-        origin: 'Natural Earth Mined',
-        shape: 'Oval Mixed Cut',
+        origin: 'Pending Verification',
+        shape: 'Pending Inspection',
         color: 'Natural',
-        metalRecommendation: 'Gold / Silver',
-        wearingFinger: 'Ring Finger'
+        metalRecommendation: 'Pending Astrological Assessment',
+        wearingFinger: 'Ring Finger',
+        pricingVerificationStatus: 'VERIFIED',
+        materialIdentityStatus: 'VERIFIED',
+        imageVerificationStatus: 'PENDING_UPLOAD'
       },
       certification: {
-        certified: true,
-        labName: 'Govt. Approved Gemological Testing Lab',
-        natural: true,
-        treatment: '100% Natural & Untreated'
+        certified: false,
+        labName: '',
+        natural: false,
+        treatment: 'Pending Lab Verification'
       },
       variants: []
     });
@@ -175,7 +182,12 @@ export default function GemstoneAdminView() {
         slug: `${product.slug}-copy-${Date.now().toString().slice(-4)}`,
         name: `${product.name} (Copy)`,
         sku: `${product.sku}-CPY`,
-        isPublished: false
+        isPublished: false,
+        inStock: false,
+        stockQuantity: 0,
+        certification: product.certification
+          ? { ...product.certification, certified: false }
+          : { certified: false, labName: '', natural: false, treatment: 'Pending Lab Verification' }
       };
       await gemstoneProductService.saveProduct(copy);
       showNotification(`Duplicated "${product.name}" successfully as draft.`);
@@ -186,6 +198,18 @@ export default function GemstoneAdminView() {
   };
 
   const handleTogglePublish = async (product: GemstoneProduct) => {
+    // If attempting to publish, enforce publication review safeguards
+    if (!product.isPublished) {
+      const issues = getProductReviewIssues(product);
+      if (issues.length > 0) {
+        showNotification(
+          `Cannot publish "${product.name}": Please resolve review items first (${issues.map(i => i.message).join('; ')}).`,
+          'error'
+        );
+        return;
+      }
+    }
+
     try {
       await gemstoneProductService.updateProduct(product.id, {
         isPublished: !product.isPublished
@@ -198,6 +222,11 @@ export default function GemstoneAdminView() {
   };
 
   const handleToggleStock = async (product: GemstoneProduct) => {
+    if (!product.inStock && Number(product.stockQuantity || 0) <= 0) {
+      showNotification(`Cannot mark "${product.name}" in stock because stock quantity is 0. Increase inventory first.`, 'error');
+      return;
+    }
+
     try {
       await gemstoneProductService.updateProduct(product.id, {
         inStock: !product.inStock
@@ -240,14 +269,28 @@ export default function GemstoneAdminView() {
     try {
       const asset = await storageRepository.uploadImage(file);
       const newImages = [...(formData.images || []), asset.url];
-      setFormData(prev => ({ ...prev, images: newImages }));
-      showNotification('Image uploaded to Supabase Storage successfully!');
+      setFormData(prev => ({
+        ...prev,
+        images: newImages,
+        specifications: {
+          ...(prev.specifications || {}),
+          imageVerificationStatus: 'PENDING_VERIFICATION'
+        }
+      }));
+      showNotification('Image uploaded. Verification status set to PENDING_VERIFICATION — administrator must verify before publishing.');
     } catch (err: any) {
       console.warn('Storage upload error, using local object URL fallback:', err);
       const localUrl = URL.createObjectURL(file);
       const newImages = [...(formData.images || []), localUrl];
-      setFormData(prev => ({ ...prev, images: newImages }));
-      showNotification('Image added to product gallery.');
+      setFormData(prev => ({
+        ...prev,
+        images: newImages,
+        specifications: {
+          ...(prev.specifications || {}),
+          imageVerificationStatus: 'PENDING_VERIFICATION'
+        }
+      }));
+      showNotification('Image added. Verification status set to PENDING_VERIFICATION — administrator must verify before publishing.');
     } finally {
       setUploadingImage(false);
     }
@@ -260,15 +303,42 @@ export default function GemstoneAdminView() {
       return;
     }
 
+    const priceNum = Number(formData.price);
+    if (formData.price === undefined || formData.price === null || isNaN(priceNum) || priceNum <= 0) {
+      showNotification('A valid positive selling price must be explicitly entered.', 'error');
+      return;
+    }
+
+    const stockQty = Math.max(0, Number(formData.stockQuantity) || 0);
+    const inStock = stockQty > 0 ? Boolean(formData.inStock) : false;
+
+    // Check publication safeguards if administrator is attempting to save as Published
+    if (formData.isPublished) {
+      const issues = getProductReviewIssues({
+        ...formData,
+        price: priceNum,
+        stockQuantity: stockQty,
+        inStock
+      });
+      if (issues.length > 0) {
+        showNotification(
+          `Cannot save as Published: ${issues.map(i => i.message).join('; ')}. Please resolve review items before publishing.`,
+          'error'
+        );
+        return;
+      }
+    }
+
     setSaving(true);
     try {
       const slug = formData.slug?.trim() || formData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
       const toSave = {
         ...formData,
         slug,
-        price: Number(formData.price) || 0,
+        price: priceNum,
         compareAtPrice: formData.compareAtPrice ? Number(formData.compareAtPrice) : null,
-        stockQuantity: Number(formData.stockQuantity) || 0
+        stockQuantity: stockQty,
+        inStock
       };
 
       if (editingProduct) {
@@ -387,20 +457,20 @@ export default function GemstoneAdminView() {
 
       {/* Database Connection Notice */}
       {dbStatus && !dbStatus.connected && (
-        <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-stone-800 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
+        <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-stone-800 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
           <div className="flex items-start gap-3">
-            <span className="p-1.5 rounded-lg bg-amber-100 text-amber-800 font-bold shrink-0 text-sm">⚠️</span>
+            <span className="p-1.5 rounded-lg bg-rose-100 text-rose-800 font-bold shrink-0 text-sm">⚠️</span>
             <div>
               <p className="font-semibold text-stone-900">
-                Supabase Migration Notice: Table <code className="bg-amber-100 px-1 py-0.5 rounded text-amber-900 font-mono text-[11px]">public.gemstone_products</code> is not yet applied to the remote project.
+                Supabase Connection Issue: Database table <code className="bg-rose-100 px-1 py-0.5 rounded text-rose-900 font-mono text-[11px]">public.gemstone_products</code> is unavailable or unreachable.
               </p>
               <p className="text-stone-600 mt-0.5">
-                The public catalog is safely serving the baseline Vedic collection. Any administrative edits require running <code className="font-mono text-[11px] bg-stone-100 px-1 py-0.5 rounded">supabase/migrations/20261009_gemstone_catalogue.sql</code> in your Supabase SQL editor.
+                {dbStatus.error ? `Error: ${dbStatus.error}. ` : ''}The public storefront has failed closed for safety (no unverified products are shown to customers). Any products listed in this administrative view are unpersisted local drafts and are NOT synced to Supabase until the database connection is resolved.
               </p>
             </div>
           </div>
-          <span className="px-2.5 py-1 rounded-full bg-amber-200/80 text-amber-900 font-semibold text-[10px] uppercase tracking-wider shrink-0 self-start sm:self-center">
-            Pending Migration
+          <span className="px-2.5 py-1 rounded-full bg-rose-200/80 text-rose-900 font-semibold text-[10px] uppercase tracking-wider shrink-0 self-start sm:self-center">
+            Database Disconnected
           </span>
         </div>
       )}
@@ -522,17 +592,25 @@ export default function GemstoneAdminView() {
                   </td>
                 </tr>
               ) : (
-                displayedProducts.map(product => (
+                displayedProducts.map(product => {
+                  const reviewIssues = getProductReviewIssues(product);
+                  return (
                   <tr key={product.id} className="hover:bg-stone-50/60 transition">
                     {/* Gemstone Image & Name */}
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-3">
                         <div className="w-12 h-12 rounded-xl bg-stone-100 border border-stone-200 shrink-0 overflow-hidden p-1 flex items-center justify-center">
-                          <SmartImage
-                            src={resolveImagePath(product.images?.[0] || '')}
-                            alt={product.name}
-                            className="w-full h-full object-contain"
-                          />
+                          {product.images && product.images.length > 0 && product.images[0] ? (
+                            <SmartImage
+                              src={resolveImagePath(product.images[0])}
+                              alt={product.name}
+                              className="w-full h-full object-contain"
+                            />
+                          ) : (
+                            <span className="text-[9px] text-stone-400 font-semibold text-center leading-tight">
+                              Pending Photo
+                            </span>
+                          )}
                         </div>
                         <div>
                           <div className="font-bold text-stone-900 font-cinzel">
@@ -541,11 +619,14 @@ export default function GemstoneAdminView() {
                           <div className="text-[11px] text-amber-700 font-medium">
                             {product.hindiName} ({product.category})
                           </div>
-                          {product.specifications?.adminReviewNotice && (
-                            <div className="mt-1">
-                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-50 text-amber-800 border border-amber-300">
+                          {reviewIssues.length > 0 && (
+                            <div className="mt-1 flex flex-wrap gap-1">
+                              <span
+                                className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-50 text-amber-800 border border-amber-300"
+                                title={reviewIssues.map(i => i.message).join(' | ')}
+                              >
                                 <AlertTriangle className="w-2.5 h-2.5 text-amber-600" />
-                                <span>Needs Admin Review</span>
+                                <span>{reviewIssues.length} Review {reviewIssues.length === 1 ? 'Item' : 'Items'} Pending</span>
                               </span>
                             </div>
                           )}
@@ -603,13 +684,23 @@ export default function GemstoneAdminView() {
                     <td className="py-3 px-4 text-center">
                       <button
                         onClick={() => handleTogglePublish(product)}
-                        className={`px-2.5 py-1 rounded-full text-[10px] font-bold transition ${
+                        title={
+                          !product.isPublished && reviewIssues.length > 0
+                            ? `Publication Blocked: ${reviewIssues.map(i => i.message).join('; ')}`
+                            : undefined
+                        }
+                        className={`px-2.5 py-1 rounded-full text-[10px] font-bold transition inline-flex items-center gap-1 ${
                           product.isPublished
                             ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100'
+                            : reviewIssues.length > 0
+                            ? 'bg-amber-50 text-amber-800 border border-amber-300 hover:bg-amber-100'
                             : 'bg-stone-100 text-stone-600 border border-stone-200 hover:bg-stone-200'
                         }`}
                       >
-                        {product.isPublished ? 'Published' : 'Draft'}
+                        {!product.isPublished && reviewIssues.length > 0 && (
+                          <AlertTriangle className="w-2.5 h-2.5 text-amber-600" />
+                        )}
+                        <span>{product.isPublished ? 'Published' : reviewIssues.length > 0 ? 'Review Needed' : 'Draft'}</span>
                       </button>
                     </td>
 
@@ -655,7 +746,8 @@ export default function GemstoneAdminView() {
                       </div>
                     </td>
                   </tr>
-                ))
+                );
+              })
               )}
             </tbody>
           </table>
@@ -741,22 +833,128 @@ export default function GemstoneAdminView() {
             <form onSubmit={handleSaveProduct} className="flex-1 overflow-y-auto p-6 space-y-4">
               {/* Administrator Review Banner */}
               {formData.specifications?.adminReviewNotice && (
-                <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-300 text-amber-900 text-xs flex items-start gap-2.5 mb-2">
-                  <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
-                  <div>
-                    <span className="font-bold uppercase tracking-wide text-[10px] text-amber-800 block">
-                      Administrator Verification & Review Required
-                    </span>
-                    <p className="mt-0.5 text-stone-700 leading-relaxed font-sans">
-                      {formData.specifications.adminReviewNotice}
-                    </p>
+                <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-300 text-amber-900 text-xs flex items-start justify-between gap-3 mb-2">
+                  <div className="flex items-start gap-2.5">
+                    <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                    <div>
+                      <span className="font-bold uppercase tracking-wide text-[10px] text-amber-800 block">
+                        Administrator Verification & Review Required
+                      </span>
+                      <p className="mt-0.5 text-stone-700 leading-relaxed font-sans">
+                        {formData.specifications.adminReviewNotice}
+                      </p>
+                    </div>
                   </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFormData(prev => ({
+                        ...prev,
+                        specifications: {
+                          ...(prev.specifications || {}),
+                          adminReviewNotice: ''
+                        }
+                      }));
+                      showNotification('Review notice marked as resolved.');
+                    }}
+                    className="px-2.5 py-1 text-[11px] font-semibold bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 rounded-lg transition shrink-0 inline-flex items-center gap-1"
+                    title="Clear this notice once review requirements have been verified"
+                  >
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>Mark Resolved</span>
+                  </button>
                 </div>
               )}
 
               {/* TAB 1: BASIC INFO */}
               {activeTab === 'basic' && (
                 <div className="space-y-4">
+                  {/* Material Identity Status & Resolution */}
+                  <div className="p-3.5 rounded-xl border border-stone-200 bg-stone-50 space-y-2.5">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                      <div>
+                        <span className="text-xs font-bold text-stone-800 block">
+                          Material Identity & Authenticity Status
+                        </span>
+                        <span className="text-[11px] text-stone-500">
+                          {formData.specifications?.materialIdentityStatus === 'AMBIGUOUS_UNVERIFIED'
+                            ? 'Ambiguous identity flagged (e.g. Diamond vs White Zircon). Administrator must confirm single gemstone material.'
+                            : 'Single gemstone material identity confirmed and verified.'}
+                        </span>
+                      </div>
+                      <select
+                        value={formData.specifications?.materialIdentityStatus || 'VERIFIED'}
+                        onChange={e => setFormData(prev => ({
+                          ...prev,
+                          specifications: {
+                            ...(prev.specifications || {}),
+                            materialIdentityStatus: e.target.value
+                          }
+                        }))}
+                        className="px-2.5 py-1 text-xs rounded-lg border border-stone-200 bg-white font-medium text-stone-800"
+                      >
+                        <option value="VERIFIED">Identity Confirmed (VERIFIED)</option>
+                        <option value="AMBIGUOUS_UNVERIFIED">Ambiguous / Pending Inspection</option>
+                      </select>
+                    </div>
+
+                    {/* Quick Resolution Buttons for Diamond / White Zircon ambiguity */}
+                    {(formData.specifications?.materialIdentityStatus === 'AMBIGUOUS_UNVERIFIED' ||
+                      ((formData.name || '').toLowerCase().includes('diamond') && (formData.name || '').toLowerCase().includes('zircon'))) && (
+                      <div className="pt-2 border-t border-stone-200">
+                        <span className="text-[11px] font-bold text-amber-800 block mb-1.5">
+                          Resolve Ambiguous Diamond / White Zircon Identity:
+                        </span>
+                        <div className="flex flex-wrap gap-2">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setFormData(prev => ({
+                                ...prev,
+                                name: 'Natural Vedic Diamond',
+                                hindiName: 'Heera (हीरा)',
+                                category: 'Diamond',
+                                specifications: {
+                                  ...(prev.specifications || {}),
+                                  materialIdentityStatus: 'VERIFIED',
+                                  adminReviewNotice: (prev.specifications?.adminReviewNotice || '').toLowerCase().includes('diamond')
+                                    ? ''
+                                    : prev.specifications?.adminReviewNotice
+                                }
+                              }));
+                              showNotification('Resolved identity: Confirmed as Natural Vedic Diamond (Heera).');
+                            }}
+                            className="px-2.5 py-1 text-xs rounded-lg bg-stone-900 text-white font-semibold hover:bg-stone-800 transition"
+                          >
+                            Confirm as Natural Diamond (Heera)
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setFormData(prev => ({
+                                ...prev,
+                                name: 'Natural White Zircon',
+                                hindiName: 'Safed Jarkan (सफेद जरकन)',
+                                category: 'Zircon',
+                                specifications: {
+                                  ...(prev.specifications || {}),
+                                  materialIdentityStatus: 'VERIFIED',
+                                  adminReviewNotice: (prev.specifications?.adminReviewNotice || '').toLowerCase().includes('diamond')
+                                    ? ''
+                                    : prev.specifications?.adminReviewNotice
+                                }
+                              }));
+                              showNotification('Resolved identity: Confirmed as Natural White Zircon (Safed Jarkan).');
+                            }}
+                            className="px-2.5 py-1 text-xs rounded-lg bg-amber-700 text-white font-semibold hover:bg-amber-800 transition"
+                          >
+                            Confirm as White Zircon (Safed Jarkan)
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="text-xs font-bold text-stone-700 block mb-1">
@@ -860,6 +1058,56 @@ export default function GemstoneAdminView() {
               {/* TAB 2: PRICING & STOCK */}
               {activeTab === 'pricing' && (
                 <div className="space-y-4">
+                  {/* Pricing Verification Status Control */}
+                  <div className="p-3.5 rounded-xl border border-stone-200 bg-stone-50 space-y-2">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                      <div>
+                        <span className="text-xs font-bold text-stone-800 block">
+                          Pricing Verification Status
+                        </span>
+                        <span className="text-[11px] text-stone-500">
+                          {formData.specifications?.pricingVerificationStatus === 'UNVERIFIED_DRAFT_PRICE'
+                            ? 'Unverified starter pricing flagged. Requires administrator approval before publication.'
+                            : 'Price verified and approved for live commercial sale.'}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <select
+                          value={formData.specifications?.pricingVerificationStatus || 'VERIFIED'}
+                          onChange={e => setFormData(prev => ({
+                            ...prev,
+                            specifications: {
+                              ...(prev.specifications || {}),
+                              pricingVerificationStatus: e.target.value
+                            }
+                          }))}
+                          className="px-2.5 py-1 text-xs rounded-lg border border-stone-200 bg-white font-medium text-stone-800"
+                        >
+                          <option value="VERIFIED">Price Verified & Approved</option>
+                          <option value="UNVERIFIED_DRAFT_PRICE">Unverified Starter Price</option>
+                        </select>
+                        {formData.specifications?.pricingVerificationStatus === 'UNVERIFIED_DRAFT_PRICE' && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setFormData(prev => ({
+                                ...prev,
+                                specifications: {
+                                  ...(prev.specifications || {}),
+                                  pricingVerificationStatus: 'VERIFIED'
+                                }
+                              }));
+                              showNotification('Selling price verified and approved.');
+                            }}
+                            className="px-2.5 py-1 text-xs rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold transition"
+                          >
+                            Approve Price
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="text-xs font-bold text-stone-700 block mb-1">
@@ -868,10 +1116,14 @@ export default function GemstoneAdminView() {
                       <input
                         type="number"
                         required
-                        min="0"
-                        value={formData.price ?? 0}
-                        onChange={e => setFormData(prev => ({ ...prev, price: Number(e.target.value) }))}
-                        className="w-full px-3 py-2 text-xs rounded-xl bg-stone-50 border border-stone-200 text-stone-900"
+                        min="1"
+                        value={formData.price !== undefined && formData.price !== null && formData.price !== 0 ? formData.price : ''}
+                        onChange={e => {
+                          const val = e.target.value === '' ? undefined : Number(e.target.value);
+                          setFormData(prev => ({ ...prev, price: val }));
+                        }}
+                        placeholder="e.g. 15000 (Required positive price)"
+                        className="w-full px-3 py-2 text-xs rounded-xl bg-stone-50 border border-stone-200 text-stone-900 focus:outline-none focus:border-amber-600 font-semibold"
                       />
                     </div>
 
@@ -911,42 +1163,92 @@ export default function GemstoneAdminView() {
                       <input
                         type="number"
                         min="0"
-                        value={formData.stockQuantity ?? 1}
-                        onChange={e => setFormData(prev => ({ ...prev, stockQuantity: Number(e.target.value) }))}
+                        value={formData.stockQuantity ?? 0}
+                        onChange={e => {
+                          const qty = Math.max(0, Number(e.target.value) || 0);
+                          setFormData(prev => ({
+                            ...prev,
+                            stockQuantity: qty,
+                            // Inventory safeguard: Automatically reset inStock to false if inventory reaches 0
+                            inStock: qty > 0 ? Boolean(prev.inStock) : false
+                          }));
+                        }}
                         className="w-full px-3 py-2 text-xs rounded-xl bg-stone-50 border border-stone-200 text-stone-900"
                       />
                     </div>
                   </div>
 
                   <div className="p-4 rounded-xl bg-stone-50 border border-stone-200 space-y-3">
-                    <label className="flex items-center gap-3 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={formData.inStock ?? true}
-                        onChange={e => setFormData(prev => ({ ...prev, inStock: e.target.checked }))}
-                        className="w-4 h-4 accent-amber-600 rounded"
-                      />
-                      <span className="text-xs font-bold text-stone-800">
-                        In Stock (Available for customer ordering)
-                      </span>
-                    </label>
+                    {/* In Stock toggle with inventory safeguard enforcement */}
+                    <div>
+                      <label className={`flex items-center gap-3 ${Number(formData.stockQuantity || 0) <= 0 ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'}`}>
+                        <input
+                          type="checkbox"
+                          disabled={Number(formData.stockQuantity || 0) <= 0}
+                          checked={Boolean(formData.inStock && Number(formData.stockQuantity || 0) > 0)}
+                          onChange={e => setFormData(prev => ({ ...prev, inStock: e.target.checked }))}
+                          className="w-4 h-4 accent-amber-600 rounded"
+                        />
+                        <div>
+                          <span className="text-xs font-bold text-stone-800 block">
+                            In Stock (Available for customer ordering)
+                          </span>
+                          {Number(formData.stockQuantity || 0) <= 0 && (
+                            <span className="text-[10px] text-rose-600 font-semibold block mt-0.5">
+                              Inventory Safeguard: Cannot mark product in stock when stock quantity is 0. Increase inventory units above.
+                            </span>
+                          )}
+                        </div>
+                      </label>
+                    </div>
+
+                    {/* Published status with real-time safeguard feedback */}
+                    <div>
+                      <label className="flex items-center gap-3 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={Boolean(formData.isPublished)}
+                          onChange={e => setFormData(prev => ({ ...prev, isPublished: e.target.checked }))}
+                          className="w-4 h-4 accent-amber-600 rounded"
+                        />
+                        <span className="text-xs font-bold text-stone-800">
+                          Published Publicly (Visible on /gemstones)
+                        </span>
+                      </label>
+
+                      {formData.isPublished && (() => {
+                        const issues = getProductReviewIssues({
+                          ...formData,
+                          price: Number(formData.price),
+                          stockQuantity: Number(formData.stockQuantity || 0),
+                          inStock: Boolean(formData.inStock && Number(formData.stockQuantity || 0) > 0)
+                        });
+                        if (issues.length > 0) {
+                          return (
+                            <div className="mt-2.5 p-3 rounded-xl bg-rose-50 border border-rose-300 text-rose-900 text-xs space-y-1">
+                              <span className="font-bold flex items-center gap-1.5 text-rose-700">
+                                <AlertTriangle className="w-3.5 h-3.5 text-rose-600 shrink-0" />
+                                <span>Publication Safeguard Block: {issues.length} review {issues.length === 1 ? 'item' : 'items'} must be resolved:</span>
+                              </span>
+                              <ul className="list-disc pl-5 space-y-0.5 text-[11px] text-rose-800">
+                                {issues.map((issue, idx) => (
+                                  <li key={idx}>{issue.message}</li>
+                                ))}
+                              </ul>
+                              <span className="block text-[10px] text-stone-500 italic mt-1">
+                                Resolving these items above or in other tabs will unlock publishing.
+                              </span>
+                            </div>
+                          );
+                        }
+                        return null;
+                      })()}
+                    </div>
 
                     <label className="flex items-center gap-3 cursor-pointer">
                       <input
                         type="checkbox"
-                        checked={formData.isPublished ?? true}
-                        onChange={e => setFormData(prev => ({ ...prev, isPublished: e.target.checked }))}
-                        className="w-4 h-4 accent-amber-600 rounded"
-                      />
-                      <span className="text-xs font-bold text-stone-800">
-                        Published Publicly (Visible on /gemstones)
-                      </span>
-                    </label>
-
-                    <label className="flex items-center gap-3 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={formData.isFeatured ?? false}
+                        checked={Boolean(formData.isFeatured)}
                         onChange={e => setFormData(prev => ({ ...prev, isFeatured: e.target.checked }))}
                         className="w-4 h-4 accent-amber-600 rounded"
                       />
@@ -961,6 +1263,60 @@ export default function GemstoneAdminView() {
               {/* TAB 3: IMAGES & MEDIA */}
               {activeTab === 'images' && (
                 <div className="space-y-4">
+                  {/* Image Verification Status Control */}
+                  <div className="p-3.5 rounded-xl border border-stone-200 bg-stone-50 space-y-2">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                      <div>
+                        <span className="text-xs font-bold text-stone-800 block">
+                          Image Verification Status
+                        </span>
+                        <span className="text-[11px] text-stone-500">
+                          {formData.specifications?.imageVerificationStatus === 'VERIFIED'
+                            ? 'Images explicitly verified and approved by administrator.'
+                            : formData.specifications?.imageVerificationStatus === 'PENDING_VERIFICATION'
+                            ? 'Image assigned but PENDING_VERIFICATION. An authorized administrator must explicitly confirm before publication.'
+                            : 'Pending image upload: Real gemstone photo required before publication.'}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <select
+                          value={formData.specifications?.imageVerificationStatus || (formData.images && formData.images.length > 0 ? 'PENDING_VERIFICATION' : 'PENDING_UPLOAD')}
+                          onChange={e => setFormData(prev => ({
+                            ...prev,
+                            specifications: {
+                              ...(prev.specifications || {}),
+                              imageVerificationStatus: e.target.value
+                            }
+                          }))}
+                          className="px-2.5 py-1 text-xs rounded-lg border border-stone-200 bg-white font-medium text-stone-800"
+                        >
+                          <option value="VERIFIED">VERIFIED (Administrator Confirmed)</option>
+                          <option value="PENDING_VERIFICATION">PENDING_VERIFICATION (Needs Admin Check)</option>
+                          <option value="PENDING_UPLOAD">PENDING_UPLOAD (No Photographs)</option>
+                        </select>
+                        {formData.images && formData.images.length > 0 && formData.specifications?.imageVerificationStatus !== 'VERIFIED' && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setFormData(prev => ({
+                                ...prev,
+                                specifications: {
+                                  ...(prev.specifications || {}),
+                                  imageVerificationStatus: 'VERIFIED'
+                                }
+                              }));
+                              showNotification('Product images explicitly confirmed & verified by administrator.');
+                            }}
+                            className="px-3 py-1.5 text-xs rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold transition flex items-center gap-1.5 shrink-0"
+                          >
+                            <CheckCircle2 className="w-3.5 h-3.5" />
+                            <span>Verify & Approve Image</span>
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
                   <div>
                     <label className="text-xs font-bold text-stone-700 block mb-1">
                       Upload New Image to Supabase Storage
@@ -994,7 +1350,16 @@ export default function GemstoneAdminView() {
                           onClick={() => {
                             const cur = formData.images || [];
                             if (!cur.includes(asset)) {
-                              setFormData(prev => ({ ...prev, images: [asset, ...cur] }));
+                              setFormData(prev => ({
+                                ...prev,
+                                images: [asset, ...cur],
+                                specifications: {
+                                  ...(prev.specifications || {}),
+                                  // Assigning an image puts it in PENDING_VERIFICATION until admin confirms
+                                  imageVerificationStatus: 'PENDING_VERIFICATION'
+                                }
+                              }));
+                              showNotification('Preset image assigned. Status set to PENDING_VERIFICATION — administrator must verify before publishing.');
                             }
                           }}
                           className="p-1 rounded-xl border border-stone-200 hover:border-amber-600 bg-stone-50 overflow-hidden text-center group"
@@ -1014,6 +1379,11 @@ export default function GemstoneAdminView() {
                       Current Product Gallery ({formData.images?.length || 0})
                     </label>
                     <div className="space-y-2">
+                      {(!formData.images || formData.images.length === 0) && (
+                        <p className="text-xs text-stone-400 italic p-3 rounded-xl bg-stone-50 border border-dashed border-stone-200">
+                          No photographs assigned. Select from verified preset assets above or enter a custom image path.
+                        </p>
+                      )}
                       {formData.images?.map((img, idx) => (
                         <div key={idx} className="flex items-center gap-3 p-2 rounded-xl bg-stone-50 border border-stone-200">
                           <img src={img} alt={`img-${idx}`} className="w-10 h-10 object-contain rounded-lg border bg-white" />
@@ -1023,7 +1393,14 @@ export default function GemstoneAdminView() {
                             onChange={e => {
                               const updated = [...(formData.images || [])];
                               updated[idx] = e.target.value;
-                              setFormData(prev => ({ ...prev, images: updated }));
+                              setFormData(prev => ({
+                                ...prev,
+                                images: updated,
+                                specifications: {
+                                  ...(prev.specifications || {}),
+                                  imageVerificationStatus: 'PENDING_VERIFICATION'
+                                }
+                              }));
                             }}
                             className="flex-1 px-3 py-1 text-xs rounded-lg bg-white border border-stone-200 font-mono text-[11px]"
                           />
@@ -1032,7 +1409,14 @@ export default function GemstoneAdminView() {
                             onClick={() => {
                               const updated = [...(formData.images || [])];
                               updated.splice(idx, 1);
-                              setFormData(prev => ({ ...prev, images: updated }));
+                              setFormData(prev => ({
+                                ...prev,
+                                images: updated,
+                                specifications: {
+                                  ...(prev.specifications || {}),
+                                  imageVerificationStatus: updated.length === 0 ? 'PENDING_UPLOAD' : prev.specifications?.imageVerificationStatus
+                                }
+                              }));
                             }}
                             className="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg"
                           >
@@ -1235,10 +1619,15 @@ export default function GemstoneAdminView() {
                           className="w-3.5 h-3.5 accent-amber-600 rounded"
                         />
                         <span className="text-xs font-semibold text-stone-800">
-                          Natural Origin Confirmed (Not Lab-Grown or Synthetic)
+                          Natural Origin Confirmed (Verified by Lab / Inspection)
                         </span>
                       </label>
                     </div>
+                    {(!formData.certification?.natural && !formData.certification?.certified) && (
+                      <p className="text-[11px] text-amber-700 bg-amber-50/60 p-2 rounded-lg border border-amber-200/60 font-sans">
+                        Note: Unchecked indicates natural status is <strong>Pending Gemological Verification</strong>. It does not designate this stone as synthetic or lab-grown.
+                      </p>
+                    )}
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>

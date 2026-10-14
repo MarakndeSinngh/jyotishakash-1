@@ -48,7 +48,7 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
         if (isMounted) {
           if (item) {
             setProduct(item);
-            setSelectedImage(item.images[0] || '/gemstone-assets/ruby.jpg');
+            setSelectedImage(item.images && item.images.length > 0 && item.images[0] ? item.images[0] : '');
             if (item.variants && item.variants.length > 0) {
               // select first in-stock variant or first variant
               const inStockVar = item.variants.find(v => v.inStock && v.stockQuantity > 0) || item.variants[0];
@@ -208,11 +208,19 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
             </div>
 
             {/* Main Product Image */}
-            <SmartImage
-              src={resolveImagePath(selectedImage)}
-              alt={product.name}
-              className="w-full h-full object-contain relative z-[5] transition-transform duration-500 group-hover:scale-105"
-            />
+            {selectedImage ? (
+              <SmartImage
+                src={resolveImagePath(selectedImage)}
+                alt={product.name}
+                className="w-full h-full object-contain relative z-[5] transition-transform duration-500 group-hover:scale-105"
+              />
+            ) : (
+              <div className="flex flex-col items-center justify-center text-center p-6 relative z-[5] text-stone-500">
+                <Sparkles className="w-16 h-16 text-stone-600 mb-3 animate-pulse" />
+                <span className="text-sm font-cinzel text-stone-300 font-semibold">Image Pending Verification</span>
+                <span className="text-xs text-stone-500 mt-1">Authentic photograph pending laboratory archival upload</span>
+              </div>
+            )}
           </div>
 
           {/* Thumbnail Strip */}
@@ -590,11 +598,18 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
                 className="p-4 rounded-2xl bg-stone-900/60 border border-stone-800 hover:border-amber-500/40 transition cursor-pointer group flex flex-col justify-between"
               >
                 <div className="aspect-video w-full rounded-xl bg-stone-950 overflow-hidden mb-3 p-2 flex items-center justify-center">
-                  <SmartImage
-                    src={resolveImagePath(rel.images[0] || '/gemstone-assets/ruby.jpg')}
-                    alt={rel.name}
-                    className="w-full h-full object-contain group-hover:scale-105 transition-transform"
-                  />
+                  {rel.images && rel.images.length > 0 && rel.images[0] ? (
+                    <SmartImage
+                      src={resolveImagePath(rel.images[0])}
+                      alt={rel.name}
+                      className="w-full h-full object-contain group-hover:scale-105 transition-transform"
+                    />
+                  ) : (
+                    <div className="flex flex-col items-center justify-center text-stone-500">
+                      <Sparkles className="w-6 h-6 text-stone-600 mb-1" />
+                      <span className="text-[10px] text-stone-500">Photo Pending</span>
+                    </div>
+                  )}
                 </div>
                 <div>
                   <div className="text-[11px] text-amber-400 uppercase font-semibold">

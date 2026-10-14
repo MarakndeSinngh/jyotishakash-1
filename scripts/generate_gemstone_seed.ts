@@ -151,14 +151,20 @@ INITIAL_GEMSTONES_CATALOGUE.forEach((p) => {
   sql += `)\nON CONFLICT (id) DO NOTHING;\n\n`;
 });
 
-sql += `-- Verify insertion count summary\n`;
-sql += `DO $$\n`;
-sql += `DECLARE\n`;
-sql += `  seeded_count INTEGER;\n`;
-sql += `BEGIN\n`;
-sql += `  SELECT COUNT(*) INTO seeded_count FROM public.gemstone_products;\n`;
-sql += `  RAISE NOTICE 'Gemstone catalogue seeding complete. Current total gemstone products in database: %', seeded_count;\n`;
-sql += `END $$;\n`;
+sql += `-- Verify insertion count summary
+DO $$
+DECLARE
+  seeded_count INTEGER;
+BEGIN
+  SELECT COUNT(*) INTO seeded_count FROM public.gemstone_products;
+  RAISE NOTICE 'Gemstone catalogue seeding complete. Current total gemstone products in database: %', seeded_count;
+END $$;
+
+-- Post-seed inspection query for Supabase SQL Editor:
+-- SELECT id, slug, name, hindi_name, category, is_published, in_stock, stock_quantity, images, display_order
+-- FROM public.gemstone_products
+-- ORDER BY display_order ASC;
+`;
 
 const outDir = path.resolve('supabase/seed');
 if (!fs.existsSync(outDir)) {

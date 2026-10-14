@@ -605,3 +605,8 @@ BEGIN
   SELECT COUNT(*) INTO seeded_count FROM public.gemstone_products;
   RAISE NOTICE 'Gemstone catalogue seeding complete. Current total gemstone products in database: %', seeded_count;
 END $$;
+
+-- Post-seed inspection query for Supabase SQL Editor:
+-- SELECT id, slug, name, hindi_name, category, is_published, in_stock, stock_quantity, images, display_order
+-- FROM public.gemstone_products
+-- ORDER BY display_order ASC;

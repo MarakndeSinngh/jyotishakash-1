@@ -143,11 +143,17 @@ export default function CartDrawer({ onNavigate }: CartDrawerProps) {
                       >
                         {/* Thumbnail */}
                         <div className="w-20 h-20 rounded-lg bg-stone-900 border border-stone-800 shrink-0 overflow-hidden flex items-center justify-center p-1">
-                          <SmartImage
-                            src={resolveImagePath(item.image)}
-                            alt={item.name}
-                            className="w-full h-full object-contain"
-                          />
+                          {item.image ? (
+                            <SmartImage
+                              src={resolveImagePath(item.image)}
+                              alt={item.name}
+                              className="w-full h-full object-contain"
+                            />
+                          ) : (
+                            <span className="text-[9px] text-stone-500 font-cinzel text-center">
+                              Pending Photo
+                            </span>
+                          )}
                         </div>
 
                         {/* Details */}

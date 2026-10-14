@@ -1,5 +1,4 @@
 import { GemstoneProduct } from '../models/gemstoneProduct';
-import { INITIAL_GEMSTONES_CATALOGUE } from '../data/gemstoneCatalogueData';
 import { supabase } from '../lib/supabaseClient';
 
 const STORAGE_KEY = 'leo_gemstone_catalogue_v1';
@@ -13,21 +12,19 @@ function broadcastChange() {
 }
 
 function getStoredCatalogue(): GemstoneProduct[] {
-  if (typeof window === 'undefined') return INITIAL_GEMSTONES_CATALOGUE;
+  if (typeof window === 'undefined') return [];
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_GEMSTONES_CATALOGUE));
-      return INITIAL_GEMSTONES_CATALOGUE;
-    }
-    const parsed = JSON.parse(raw);
-    if (Array.isArray(parsed) && parsed.length > 0) {
-      return parsed;
+    if (raw !== null) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) {
+        return parsed;
+      }
     }
   } catch (e) {
     console.warn('[GemstoneRepo] Error reading localStorage:', e);
   }
-  return INITIAL_GEMSTONES_CATALOGUE;
+  return [];
 }
 
 function saveStoredCatalogue(products: GemstoneProduct[]) {
@@ -52,19 +49,19 @@ function mapRowToProduct(row: any): GemstoneProduct {
     benefit: row.benefit || '',
     shortDescription: row.short_description || '',
     description: row.description || '',
-    images: Array.isArray(row.images) && row.images.length > 0 ? row.images : ['/gemstone-assets/ruby.jpg'],
+    images: Array.isArray(row.images) ? row.images : [],
     price: Number(row.price) || 0,
     compareAtPrice: row.compare_at_price ? Number(row.compare_at_price) : null,
     sku: row.sku || '',
     stockQuantity: Number(row.stock_quantity) || 0,
-    inStock: row.in_stock ?? true,
-    isPublished: row.is_published ?? true,
-    isFeatured: row.is_featured ?? false,
+    inStock: Boolean(row.in_stock),
+    isPublished: Boolean(row.is_published),
+    isFeatured: Boolean(row.is_featured),
     certification: typeof row.certification === 'object' && row.certification !== null ? row.certification : {
-      certified: true,
-      labName: 'Govt. Approved Gemological Testing Lab',
-      natural: true,
-      treatment: '100% Natural, Unheated & Untreated'
+      certified: false,
+      labName: '',
+      natural: false,
+      treatment: 'Pending Verification'
     },
     specifications: typeof row.specifications === 'object' && row.specifications !== null ? row.specifications : {},
     variants: Array.isArray(row.variants) ? row.variants : [],
@@ -87,11 +84,28 @@ function mapProductToRow(p: Partial<GemstoneProduct>, isUpdate = false): any {
   if (p.shortDescription !== undefined) row.short_description = p.shortDescription;
   if (p.description !== undefined) row.description = p.description;
   if (p.images !== undefined) row.images = p.images;
-  if (p.price !== undefined) row.price = Number(p.price);
+  if (p.price !== undefined) {
+    const num = Number(p.price);
+    if (isNaN(num) || num <= 0) {
+      throw new Error('Invalid product price: A valid positive price must be explicitly entered.');
+    }
+    row.price = num;
+  }
   if (p.compareAtPrice !== undefined) row.compare_at_price = p.compareAtPrice ? Number(p.compareAtPrice) : null;
   if (p.sku !== undefined) row.sku = p.sku;
-  if (p.stockQuantity !== undefined) row.stock_quantity = Number(p.stockQuantity);
-  if (p.inStock !== undefined) row.in_stock = Boolean(p.inStock);
+  if (p.stockQuantity !== undefined) {
+    row.stock_quantity = Math.max(0, Number(p.stockQuantity) || 0);
+    if (row.stock_quantity === 0) {
+      row.in_stock = false;
+    }
+  }
+  if (p.inStock !== undefined) {
+    if (row.stock_quantity !== undefined && row.stock_quantity <= 0) {
+      row.in_stock = false;
+    } else {
+      row.in_stock = Boolean(p.inStock);
+    }
+  }
   if (p.isPublished !== undefined) row.is_published = Boolean(p.isPublished);
   if (p.isFeatured !== undefined) row.is_featured = Boolean(p.isFeatured);
   if (p.certification !== undefined) row.certification = p.certification;
@@ -141,66 +155,93 @@ export const gemstoneProductRepository = {
 
       const { data, error } = await query;
 
-      if (!error && data && data.length > 0) {
+      if (!error && data !== null) {
         const mapped = data.map(mapRowToProduct);
-        // Sync local cache
+        // Sync local cache with authoritative DB response (even if empty [])
         saveStoredCatalogue(mapped);
         return mapped;
       }
+
+      if (error) {
+        console.error('[GemstoneRepo] Supabase error in getAll:', error);
+      }
     } catch (err) {
-      // Supabase table pending migration or network issue: proceed to local resilient cache
+      console.error('[GemstoneRepo] Error querying Supabase in getAll:', err);
     }
 
-    // 2. Read-only fallback to verified baseline catalogue
-    const local = getStoredCatalogue();
+    // On database/network errors, fail closed:
+    // Storefront must never display unverified starter inventory or bypass publication rules.
     if (!includeUnpublished) {
-      return local.filter(p => p.isPublished);
+      return [];
     }
-    return local;
+
+    // In Admin Panel only, return local cached drafts if present (safe for administration inspection)
+    return getStoredCatalogue();
   },
 
-  async getBySlug(slug: string): Promise<GemstoneProduct | null> {
+  async getBySlug(slug: string, includeUnpublished = false): Promise<GemstoneProduct | null> {
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from('gemstone_products')
         .select('*')
-        .eq('slug', slug)
-        .maybeSingle();
+        .eq('slug', slug);
 
-      if (!error && data) {
-        return mapRowToProduct(data);
+      if (!includeUnpublished) {
+        query = query.eq('is_published', true);
       }
+
+      const { data, error } = await query.maybeSingle();
+
+      if (!error) {
+        // Authoritative database result: null if no matching row exists
+        return data ? mapRowToProduct(data) : null;
+      }
+      console.error('[GemstoneRepo] Supabase error in getBySlug:', error);
     } catch (err) {
-      // Fallback
+      console.error('[GemstoneRepo] Error querying Supabase in getBySlug:', err);
     }
 
-    const local = getStoredCatalogue();
-    return local.find(p => p.slug === slug) || null;
+    // Fail closed: Never fallback to local starter catalogue to expose unpublished or deleted products
+    return null;
   },
 
-  async getById(id: string): Promise<GemstoneProduct | null> {
+  async getById(id: string, includeUnpublished = false): Promise<GemstoneProduct | null> {
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from('gemstone_products')
         .select('*')
-        .eq('id', id)
-        .maybeSingle();
+        .eq('id', id);
 
-      if (!error && data) {
-        return mapRowToProduct(data);
+      if (!includeUnpublished) {
+        query = query.eq('is_published', true);
       }
+
+      const { data, error } = await query.maybeSingle();
+
+      if (!error) {
+        // Authoritative database result: null if no matching row exists
+        return data ? mapRowToProduct(data) : null;
+      }
+      console.error('[GemstoneRepo] Supabase error in getById:', error);
     } catch (err) {
-      // Fallback
+      console.error('[GemstoneRepo] Error querying Supabase in getById:', err);
     }
 
-    const local = getStoredCatalogue();
-    return local.find(p => p.id === id) || null;
+    // Fail closed: Never fallback to local starter catalogue
+    return null;
   },
 
   async create(product: Partial<GemstoneProduct>): Promise<GemstoneProduct> {
+    if (product.price === undefined || product.price === null || isNaN(Number(product.price)) || Number(product.price) <= 0) {
+      throw new Error('Invalid product price: A valid positive price must be explicitly entered.');
+    }
+
     const id = product.id || `gem-${Date.now()}`;
     const slug = product.slug || (product.name ? product.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') : `gem-${Date.now()}`);
+    const stockQuantity = Math.max(0, Number(product.stockQuantity !== undefined ? product.stockQuantity : 0));
+    const inStock = stockQuantity > 0 ? Boolean(product.inStock) : false;
     
+    // Safe defaults: Draft (unpublished), unavailable (stock = 0), unverified certification, empty images if none provided
     const newProduct: GemstoneProduct = {
       id,
       slug,
@@ -212,22 +253,22 @@ export const gemstoneProductRepository = {
       benefit: product.benefit || '',
       shortDescription: product.shortDescription || '',
       description: product.description || '',
-      images: product.images && product.images.length > 0 ? product.images : ['/gemstone-assets/ruby.jpg'],
-      price: Number(product.price) || 0,
+      images: Array.isArray(product.images) ? product.images : [],
+      price: Number(product.price),
       compareAtPrice: product.compareAtPrice ? Number(product.compareAtPrice) : null,
       sku: product.sku || `LEO-${Date.now().toString().slice(-4)}`,
-      stockQuantity: product.stockQuantity !== undefined ? Number(product.stockQuantity) : 5,
-      inStock: product.inStock ?? true,
-      isPublished: product.isPublished ?? true,
-      isFeatured: product.isFeatured ?? false,
+      stockQuantity,
+      inStock,
+      isPublished: product.isPublished !== undefined ? Boolean(product.isPublished) : false,
+      isFeatured: Boolean(product.isFeatured),
       certification: product.certification || {
-        certified: true,
-        labName: 'Govt. Approved Gemological Testing Lab',
-        natural: true,
-        treatment: '100% Natural, Unheated & Untreated'
+        certified: false,
+        labName: '',
+        natural: false,
+        treatment: 'Pending Verification'
       },
       specifications: product.specifications || {},
-      variants: product.variants || [],
+      variants: Array.isArray(product.variants) ? product.variants : [],
       displayOrder: product.displayOrder || 99,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
@@ -253,6 +294,31 @@ export const gemstoneProductRepository = {
   },
 
   async update(id: string, updates: Partial<GemstoneProduct>): Promise<GemstoneProduct> {
+    if (updates.price !== undefined) {
+      const p = Number(updates.price);
+      if (isNaN(p) || p <= 0) {
+        throw new Error('Invalid product price: A valid positive price must be explicitly entered.');
+      }
+    }
+
+    if (updates.inStock === true) {
+      const local = getStoredCatalogue();
+      const existing = local.find(p => p.id === id);
+      const effectiveStock = updates.stockQuantity !== undefined ? Number(updates.stockQuantity) : (existing?.stockQuantity || 0);
+      if (effectiveStock <= 0) {
+        throw new Error(`Inventory safeguard: Cannot mark "${existing?.name || id}" as in stock when stock quantity is 0.`);
+      }
+    }
+
+    if (updates.stockQuantity !== undefined && Number(updates.stockQuantity) <= 0) {
+      if (updates.inStock === true) {
+        throw new Error('Inventory safeguard: Cannot mark product as in stock when stock quantity is 0 or less.');
+      }
+      if (updates.inStock === undefined) {
+        updates.inStock = false;
+      }
+    }
+
     const rowUpdates = mapProductToRow(updates, true);
     const { data, error } = await supabase
       .from('gemstone_products')
@@ -297,7 +363,7 @@ export const gemstoneProductRepository = {
   },
 
   async resetToDefault(): Promise<GemstoneProduct[]> {
-    saveStoredCatalogue(INITIAL_GEMSTONES_CATALOGUE);
-    return INITIAL_GEMSTONES_CATALOGUE;
+    saveStoredCatalogue([]);
+    return [];
   }
 };

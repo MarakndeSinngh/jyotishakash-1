@@ -63,8 +63,9 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [wishlist]);
 
   const addToCart = (product: GemstoneProduct, variant?: GemstoneVariant | null, quantity = 1): boolean => {
+    // Inventory and publication safeguard: out-of-stock or unpublished products cannot be ordered
     const isOut = variant ? !variant.inStock || variant.stockQuantity <= 0 : !product.inStock || product.stockQuantity <= 0;
-    if (isOut) {
+    if (!product.isPublished || isOut || quantity <= 0) {
       return false;
     }
 
@@ -89,7 +90,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
           slug: product.slug,
           name: product.name,
           hindiName: product.hindiName,
-          image: product.images[0] || '/gemstone-assets/ruby.jpg',
+          image: product.images && product.images.length > 0 && product.images[0] ? product.images[0] : '',
           price,
           compareAtPrice,
           quantity: Math.min(quantity, maxStock),

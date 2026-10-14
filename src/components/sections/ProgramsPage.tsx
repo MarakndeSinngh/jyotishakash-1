@@ -290,7 +290,7 @@ export default function ProgramsPage({ navigate }: ProgramsPageProps) {
                               href={course.paymentUrl || 'https://rzp.io/rzp/znXO15N'}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="px-3.5 py-2.5 bg-gradient-to-r from-amber-500 via-primary to-amber-600 hover:brightness-110 text-stone-950 text-xs font-extrabold tracking-wider uppercase rounded-xl transition-all duration-300 shadow-md flex items-center gap-1.5 cursor-pointer"
+                              className="px-3.5 py-2.5 bg-leo-emerald hover:bg-emerald-900 text-leo-ivory text-xs font-extrabold tracking-wider uppercase rounded-xl transition-all duration-300 shadow-md flex items-center gap-1.5 cursor-pointer"
                             >
                               <span>ENROLL — ₹995</span>
                             </a>
@@ -304,10 +304,10 @@ export default function ProgramsPage({ navigate }: ProgramsPageProps) {
                                   window.scrollTo(0, 0);
                                 }
                               }}
-                              className="px-3 py-2.5 bg-card hover:bg-surface border border-amber-400/40 text-amber-300 text-xs font-bold tracking-wider uppercase rounded-xl transition-all duration-300 flex items-center gap-1 cursor-pointer"
+                              className="px-3 py-2.5 bg-leo-card hover:bg-leo-surface border border-leo-border hover:border-leo-gold text-leo-emerald text-xs font-bold tracking-wider uppercase rounded-xl transition-all duration-300 flex items-center gap-1 cursor-pointer"
                             >
                               <span>Curriculum</span>
-                              <ArrowRight className="w-3 h-3" />
+                              <ArrowRight className="w-3 h-3 text-leo-gold" />
                             </button>
                           </div>
                         ) : (

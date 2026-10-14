@@ -28,6 +28,7 @@ import ProgramsPage from './components/sections/ProgramsPage';
 import BlogsPage from './components/sections/BlogsPage';
 import MeditationPage from './components/sections/MeditationPage';
 import AdvancedNumerologyLandingPage from './components/sections/AdvancedNumerologyLandingPage';
+import NavratriCoursePromotionBanner from './components/sections/NavratriCoursePromotionBanner';
 import AdminPortal from './components/admin/AdminPortal';
 import ErrorBoundary from './components/ErrorBoundary';
 import ThemeSelector from './components/ThemeSelector';
@@ -372,6 +373,7 @@ export default function App() {
                       return (
                         <React.Fragment key={idx}>
                           <HeroSection section={section} navigate={navigate} />
+                          <NavratriCoursePromotionBanner navigate={navigate} />
                           <TrustCredibilitySection />
                           {currentPath === '/' && (
                             <>

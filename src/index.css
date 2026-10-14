@@ -20,6 +20,16 @@
   --color-warning: var(--warning);
   --color-error: var(--error);
   
+  /* LEO Family Cohesive Navratri & Course Palette */
+  --color-leo-emerald: #143D2E;
+  --color-leo-ivory: #F7F5EE;
+  --color-leo-gold: #C6A15B;
+  --color-leo-card: #FFFFFF;
+  --color-leo-text-primary: #26352E;
+  --color-leo-text-secondary: #59665F;
+  --color-leo-surface: #E8F0E9;
+  --color-leo-border: #E3DED2;
+
   /* Fallbacks for backwards compatibility */
   --color-gold-bright: var(--gold-bright);
   --color-paper: var(--background);

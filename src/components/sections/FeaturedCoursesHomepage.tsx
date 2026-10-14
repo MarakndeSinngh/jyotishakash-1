@@ -237,18 +237,18 @@ export default function FeaturedCoursesHomepage({ navigate }: FeaturedCoursesHom
                           {course.description}
                         </p>
                         {/* Dual Course Curriculum Highlights */}
-                        <div className="p-2.5 rounded-xl bg-amber-950/20 border border-amber-500/20 text-[11px] text-stone-300 space-y-1">
-                          <p><strong className="text-amber-400">Course 1:</strong> Advanced Vedic Numerology (81 Combinations, Grid, Remedies)</p>
-                          <p><strong className="text-amber-400">Course 2:</strong> Super Advanced Mobile Numerology (Pairings, Rajyoga, Selection)</p>
+                        <div className="p-2.5 rounded-xl bg-leo-surface border border-leo-border text-[11px] text-leo-text-secondary space-y-1">
+                          <p><strong className="text-leo-emerald font-semibold">Course 1:</strong> Advanced Vedic Numerology (81 Combinations, Grid, Remedies)</p>
+                          <p><strong className="text-leo-emerald font-semibold">Course 2:</strong> Super Advanced Mobile Numerology (Pairings, Rajyoga, Selection)</p>
                         </div>
                         {/* Key Feature Highlights */}
-                        <div className="flex flex-wrap gap-x-2 gap-y-1 text-[10px] text-amber-300/90 font-medium">
+                        <div className="flex flex-wrap gap-x-2 gap-y-1 text-[10px] text-leo-emerald font-medium">
                           <span>All Classes Live</span>
-                          <span>•</span>
+                          <span className="text-leo-text-secondary">•</span>
                           <span>Live Q&A</span>
-                          <span>•</span>
+                          <span className="text-leo-text-secondary">•</span>
                           <span>2 Classes/Week</span>
-                          <span>•</span>
+                          <span className="text-leo-text-secondary">•</span>
                           <span>1-Year Access</span>
                         </div>
                       </div>
@@ -285,14 +285,14 @@ export default function FeaturedCoursesHomepage({ navigate }: FeaturedCoursesHom
                           href={course.paymentUrl || 'https://rzp.io/rzp/znXO15N'}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="py-3 bg-gradient-to-r from-amber-500 via-primary to-amber-600 hover:brightness-110 text-stone-950 font-extrabold uppercase tracking-wider text-[10px] rounded-xl transition-all text-center shadow-md cursor-pointer flex items-center justify-center gap-1"
+                          className="py-3 bg-leo-emerald hover:bg-emerald-900 text-leo-ivory font-extrabold uppercase tracking-wider text-[10px] rounded-xl transition-all text-center shadow-md cursor-pointer flex items-center justify-center gap-1"
                         >
                           <span>ENROLL NOW — ₹995</span>
                         </a>
                         <button
                           type="button"
                           onClick={() => handleNavigate('/courses/advanced-numerology-bundle')}
-                          className="py-3 bg-background hover:bg-card border border-amber-400/40 text-amber-300 hover:text-amber-200 font-bold uppercase tracking-wider text-[10px] rounded-xl transition-all flex items-center justify-center gap-1 cursor-pointer"
+                          className="py-3 bg-leo-card hover:bg-leo-surface border border-leo-border hover:border-leo-gold text-leo-emerald font-bold uppercase tracking-wider text-[10px] rounded-xl transition-all flex items-center justify-center gap-1 cursor-pointer"
                         >
                           <span>VIEW CURRICULUM</span>
                           <ArrowUpRight className="w-3.5 h-3.5" />

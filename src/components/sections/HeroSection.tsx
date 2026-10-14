@@ -109,30 +109,11 @@ const HeroSection: React.FC<HeroSectionProps> = ({ navigate }) => {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
-  const [bundleProgram, setBundleProgram] = useState<Program | null>(null);
-  const [activeSlide, setActiveSlide] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
-  const RAZORPAY_OFFER_URL = "https://rzp.io/rzp/znXO15N";
-
   useEffect(() => {
     facultyService.getAllFaculty()
       .then(setMentors)
       .catch(err => console.error('Failed to load active faculty in HeroSection:', err));
-
-    programService.getAllPrograms()
-      .then(progs => {
-        const bundle = progs.find(p => p.id === 'prog-navratri-numerology');
-        if (bundle) {
-          setBundleProgram(bundle);
-          if (bundle.campaignActive === false || bundle.visible === false) {
-            setActiveSlide(1);
-          }
-        }
-      })
-      .catch(err => console.error('Failed to load programs in HeroSection:', err));
   }, []);
-
-  const isCampaignActive = bundleProgram ? (bundleProgram.campaignActive !== false && bundleProgram.visible !== false) : true;
 
   const handleNavigate = (path: string) => {
     if (navigate) {
@@ -143,18 +124,6 @@ const HeroSection: React.FC<HeroSectionProps> = ({ navigate }) => {
       window.scrollTo(0, 0);
     }
   };
-
-  // Carousel auto-rotation: 7 seconds, pauses on hover/focus, respects prefers-reduced-motion
-  useEffect(() => {
-    if (isPaused || !isCampaignActive) return;
-    if (typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      return;
-    }
-    const timer = setInterval(() => {
-      setActiveSlide(prev => (prev === 0 ? 1 : 0));
-    }, 7000);
-    return () => clearInterval(timer);
-  }, [isPaused, isCampaignActive]);
 
   const trustLinks = [
     { name: "Main Website", icon: Globe, url: BrandRegistry.websites.main.url, label: "LEO Family Ecosystem" },
@@ -275,220 +244,59 @@ const HeroSection: React.FC<HeroSectionProps> = ({ navigate }) => {
         {/* 🔥 MAIN GRID */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-10 items-center my-auto">
           
-          {/* ==================== LEFT SIDE: CAMPAIGN HERO CAROUSEL ==================== */}
-          <div 
-            className="lg:col-span-5 flex flex-col text-left space-y-6"
-            onMouseEnter={() => setIsPaused(true)}
-            onMouseLeave={() => setIsPaused(false)}
-            onFocus={() => setIsPaused(true)}
-            onBlur={() => setIsPaused(false)}
-          >
+          {/* ==================== LEFT SIDE: LEO FAMILY PRIMARY HERO ==================== */}
+          <div className="lg:col-span-5 flex flex-col text-left space-y-6">
             
-            {/* CAROUSEL CONTROLS BAR */}
-            <div className="flex items-center justify-between pb-1">
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => setActiveSlide(0)}
-                  className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
-                    activeSlide === 0 ? 'w-8 bg-amber-400' : 'w-2.5 bg-stone-700 hover:bg-stone-500'
-                  }`}
-                  aria-label="Slide 1: Navratri Special Offer 2026"
-                  title="Navratri Special Offer 2026"
-                />
-                <button
-                  type="button"
-                  onClick={() => setActiveSlide(1)}
-                  className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
-                    activeSlide === 1 ? 'w-8 bg-primary' : 'w-2.5 bg-stone-700 hover:bg-stone-500'
-                  }`}
-                  aria-label="Slide 2: LEO Family Introduction"
-                  title="LEO Family Overview"
-                />
+            {/* Tagline / Eyebrow */}
+            <div className="inline-flex items-center gap-2.5 bg-surface/50 border border-primary/30 px-4 py-2 rounded-full w-fit backdrop-blur-md shadow-sm">
+              <div className="relative">
+                <Sparkles className="w-4 h-4 text-primary animate-pulse" />
+                <div className="absolute inset-0 bg-primary/30 blur-[4px] rounded-full animate-ping opacity-75" />
               </div>
-
-              <div className="flex items-center gap-1.5">
-                <button
-                  type="button"
-                  onClick={() => setActiveSlide(prev => (prev === 0 ? 1 : 0))}
-                  className="p-1.5 rounded-lg bg-surface/60 hover:bg-surface border border-border/40 text-text-secondary hover:text-text-primary transition cursor-pointer"
-                  aria-label="Previous slide"
-                  title="Previous slide"
-                >
-                  <ChevronLeft className="w-4 h-4" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveSlide(prev => (prev === 0 ? 1 : 0))}
-                  className="p-1.5 rounded-lg bg-surface/60 hover:bg-surface border border-border/40 text-text-secondary hover:text-text-primary transition cursor-pointer"
-                  aria-label="Next slide"
-                  title="Next slide"
-                >
-                  <ChevronRight className="w-4 h-4" />
-                </button>
-              </div>
+              <span className="text-[10px] sm:text-xs font-cinzel font-bold tracking-[0.25em] text-primary uppercase">
+                India's Leading Spiritual Ecosystem
+              </span>
             </div>
 
-            {/* SLIDE 1: NAVRATRI SPECIAL OFFER 2026 */}
-            {activeSlide === 0 ? (
-              <motion.div
-                key="slide-campaign"
-                initial={{ opacity: 0, x: -15 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 15 }}
-                transition={{ duration: 0.4 }}
-                className="space-y-6"
+            {/* HERO TITLE & SUBTITLE */}
+            <div className="space-y-4">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold font-cinzel tracking-tight leading-[1.1] text-text-primary">
+                LEO FAMILY
+              </h1>
+
+              {/* Subtitle */}
+              <div className="space-y-1 font-cinzel font-bold text-lg sm:text-xl text-amber-400">
+                <p>One Platform • Multiple Expert Mentors • One Mission</p>
+              </div>
+
+              {/* Description */}
+              <p className="text-text-secondary text-sm sm:text-base font-light leading-relaxed max-w-xl font-sans">
+                Discover authentic Numerology, Astrology, Vastu, Gemstones, Spiritual Science and AI-powered learning from India's leading experts under ONE unified organization.
+              </p>
+            </div>
+
+            {/* CTAs */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 pt-2">
+              <a
+                href={WHATSAPP_LINK}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group relative px-7 py-4 bg-primary text-background font-extrabold uppercase tracking-[0.15em] text-xs rounded-xl text-center shadow-lg transition-all hover:-translate-y-0.5 cursor-pointer hover:brightness-110 flex items-center justify-center gap-2"
+                style={{ boxShadow: '0 10px 25px rgba(212, 175, 55, 0.3)' }}
               >
-                {/* Campaign Badge */}
-                <div className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500/20 via-primary/20 to-amber-500/10 border border-amber-400/40 px-3.5 py-1.5 rounded-full w-fit backdrop-blur-md shadow-sm">
-                  <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
-                  <span className="text-[10px] sm:text-xs font-cinzel font-extrabold tracking-[0.2em] text-amber-300 uppercase">
-                    NAVRATRI SPECIAL OFFER 2026
-                  </span>
-                </div>
+                <span>Book Personal Consultation</span>
+                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+              </a>
 
-                {/* Course Heading & Supporting Copy */}
-                <div className="space-y-3">
-                  <h1 className="text-3xl sm:text-4xl lg:text-[2.65rem] font-extrabold font-cinzel tracking-tight leading-[1.15] text-text-primary">
-                    Advanced Vedic Numerology <br className="hidden sm:inline" />
-                    <span className="text-amber-400 font-cinzel">+ Super Advanced Mobile Numerology</span>
-                  </h1>
-
-                  <p className="text-text-secondary text-sm sm:text-base font-light leading-relaxed max-w-xl font-sans">
-                    Two advanced courses in one learning package. Master deep Vedic birth number science, the 81 cosmic combinations, and mobile number frequency alignments directly with master mentor Raajeev Singh Chauhann.
-                  </p>
-                </div>
-
-                {/* Pricing Banner & Schedule Note */}
-                <div className="p-4 rounded-2xl bg-amber-950/20 border border-amber-500/30 backdrop-blur-sm space-y-2">
-                  <div className="flex items-baseline gap-3">
-                    <span className="text-2xl sm:text-3xl font-extrabold font-cinzel text-amber-400">
-                      ₹995 ONLY
-                    </span>
-                    <span className="text-xs text-text-secondary font-sans line-through opacity-70">
-                      Combined Approx. Value: ₹24,000
-                    </span>
-                  </div>
-                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-stone-300">
-                    <span className="inline-flex items-center gap-1.5 text-amber-300/90 font-medium">
-                      <Radio className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
-                      All Classes Live (2/Week)
-                    </span>
-                    <span className="inline-flex items-center gap-1.5 text-stone-400">
-                      <Calendar className="w-3.5 h-3.5 text-amber-400/70" />
-                      11:00 AM–1:00 PM · Commencing 16 Nov
-                    </span>
-                  </div>
-                  <div className="text-[10px] text-amber-300/80 font-sans italic">
-                    *Commences 16 November. Batch year and campaign expiry flagged for admin confirmation.
-                  </div>
-                </div>
-
-                {/* Feature Highlights (Clean, unboxed typography) */}
-                <div className="grid grid-cols-2 gap-2 text-xs text-text-secondary font-medium pt-1">
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                    <span>Live Q&A with Mentor</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                    <span>1-Year Recording Access</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                    <span>Certificate of Completion</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                    <span>Portal & App Integration</span>
-                  </div>
-                </div>
-
-                {/* Action Buttons */}
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
-                  <a
-                    href={RAZORPAY_OFFER_URL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group relative px-6 py-3.5 bg-gradient-to-r from-amber-500 via-primary to-amber-600 hover:from-amber-400 hover:to-amber-500 text-stone-950 font-extrabold uppercase tracking-[0.15em] text-xs rounded-xl text-center shadow-lg transition-all hover:-translate-y-0.5 cursor-pointer flex items-center justify-center gap-2"
-                    style={{ boxShadow: '0 10px 25px rgba(212, 175, 55, 0.35)' }}
-                  >
-                    <span>ENROLL NOW — ₹995</span>
-                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-                  </a>
-
-                  <button
-                    type="button"
-                    onClick={() => handleNavigate('/courses/advanced-numerology-bundle')}
-                    className="group px-6 py-3.5 bg-card hover:bg-surface border border-amber-400/30 hover:border-amber-400 text-text-primary font-bold uppercase tracking-[0.15em] text-xs rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md"
-                  >
-                    <BookOpen className="w-4 h-4 text-amber-400" />
-                    <span>EXPLORE CURRICULUM</span>
-                  </button>
-                </div>
-              </motion.div>
-            ) : (
-              /* SLIDE 2: LEO FAMILY PLATFORM INTRODUCTION (Existing Brand Content) */
-              <motion.div
-                key="slide-brand"
-                initial={{ opacity: 0, x: 15 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -15 }}
-                transition={{ duration: 0.4 }}
-                className="space-y-6"
+              <button
+                type="button"
+                onClick={handleExploreAcademies}
+                className="group px-7 py-4 bg-card hover:bg-surface border border-primary/30 hover:border-primary text-text-primary font-bold uppercase tracking-[0.15em] text-xs rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md"
               >
-                {/* Tagline / Eyebrow */}
-                <div className="inline-flex items-center gap-2.5 bg-surface/50 border border-primary/30 px-4 py-2 rounded-full w-fit backdrop-blur-md shadow-sm">
-                  <div className="relative">
-                    <Sparkles className="w-4 h-4 text-primary animate-pulse" />
-                    <div className="absolute inset-0 bg-primary/30 blur-[4px] rounded-full animate-ping opacity-75" />
-                  </div>
-                  <span className="text-[10px] sm:text-xs font-cinzel font-bold tracking-[0.25em] text-primary uppercase">
-                    India's Leading Spiritual Ecosystem
-                  </span>
-                </div>
-
-                {/* HERO TITLE & SUBTITLE */}
-                <div className="space-y-4">
-                  <h2 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold font-cinzel tracking-tight leading-[1.1] text-text-primary">
-                    LEO FAMILY
-                  </h2>
-
-                  {/* Subtitle */}
-                  <div className="space-y-1 font-cinzel font-bold text-lg sm:text-xl text-amber-400">
-                    <p>One Platform • Multiple Expert Mentors • One Mission</p>
-                  </div>
-
-                  {/* Description */}
-                  <p className="text-text-secondary text-sm sm:text-base font-light leading-relaxed max-w-xl font-sans">
-                    Discover authentic Numerology, Astrology, Vastu, Gemstones, Spiritual Science and AI-powered learning from India's leading experts under ONE unified organization.
-                  </p>
-                </div>
-
-                {/* CTAs */}
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 pt-2">
-                  <a
-                    href={WHATSAPP_LINK}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group relative px-7 py-4 bg-primary text-background font-extrabold uppercase tracking-[0.15em] text-xs rounded-xl text-center shadow-lg transition-all hover:-translate-y-0.5 cursor-pointer hover:brightness-110 flex items-center justify-center gap-2"
-                    style={{ boxShadow: '0 10px 25px rgba(212, 175, 55, 0.3)' }}
-                  >
-                    <span>Book Personal Consultation</span>
-                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-                  </a>
-
-                  <button
-                    type="button"
-                    onClick={handleExploreAcademies}
-                    className="group px-7 py-4 bg-card hover:bg-surface border border-primary/30 hover:border-primary text-text-primary font-bold uppercase tracking-[0.15em] text-xs rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md"
-                  >
-                    <Compass className="w-4 h-4 text-primary" />
-                    <span>Explore Programs</span>
-                  </button>
-                </div>
-              </motion.div>
-            )}
+                <Compass className="w-4 h-4 text-primary" />
+                <span>Explore Programs</span>
+              </button>
+            </div>
 
             {/* FLOATING STATISTICS BADGES (Shared between both slides) */}
             <motion.div

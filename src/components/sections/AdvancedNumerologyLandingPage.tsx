@@ -9,20 +9,12 @@ import {
   BookOpen, 
   ArrowRight, 
   ShieldCheck, 
-  HelpCircle, 
   ChevronDown, 
   ChevronUp, 
-  Users, 
   Video, 
   Smartphone, 
-  Flame, 
   Compass, 
-  Star, 
-  ExternalLink,
-  Layers,
-  FileText,
-  Zap,
-  Globe
+  Radio
 } from 'lucide-react';
 import SmartImage from './SmartImage';
 
@@ -202,15 +194,8 @@ export default function AdvancedNumerologyLandingPage({ navigate }: AdvancedNume
   ];
 
   return (
-    <div className="min-h-screen bg-background text-text-primary pt-24 pb-24 relative overflow-hidden font-sans">
+    <div className="min-h-screen bg-leo-ivory text-leo-text-primary pt-24 pb-24 relative overflow-hidden font-sans transition-colors duration-300">
       
-      {/* Background Ambience */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
-        <div className="absolute top-[10%] left-[5%] w-[600px] h-[600px] bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.06)_0%,transparent_70%)]" />
-        <div className="absolute top-[40%] right-[5%] w-[600px] h-[600px] bg-[radial-gradient(circle_at_center,rgba(16,185,129,0.04)_0%,transparent_70%)]" />
-        <div className="absolute bottom-[10%] left-[15%] w-[500px] h-[500px] bg-[radial-gradient(circle_at_center,rgba(245,158,11,0.05)_0%,transparent_70%)]" />
-      </div>
-
       <div className="container mx-auto px-6 relative z-10 max-w-6xl">
         
         {/* Navigation Breadcrumb */}
@@ -218,15 +203,15 @@ export default function AdvancedNumerologyLandingPage({ navigate }: AdvancedNume
           <button
             type="button"
             onClick={() => handleNavigate('/')}
-            className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-text-secondary hover:text-primary transition-colors cursor-pointer"
+            className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-leo-text-secondary hover:text-leo-emerald transition-colors cursor-pointer"
           >
             <ArrowRight className="w-4 h-4 rotate-180" />
             <span>Home</span>
-            <span className="text-stone-600">/</span>
-            <span className="text-primary">Navratri Offer 2026</span>
+            <span className="text-leo-border">/</span>
+            <span className="text-leo-emerald font-semibold">Navratri Offer 2026</span>
           </button>
 
-          <span className="text-[10px] font-mono uppercase tracking-widest text-amber-400 bg-amber-400/10 border border-amber-400/30 px-3 py-1 rounded-full">
+          <span className="text-[10px] font-mono uppercase tracking-widest text-leo-emerald bg-leo-surface border border-leo-border px-3 py-1 rounded-full">
             Special Launch
           </span>
         </div>
@@ -234,85 +219,84 @@ export default function AdvancedNumerologyLandingPage({ navigate }: AdvancedNume
         {/* ========================================================================= */}
         {/* SECTION 1: HERO & ENROLLMENT CTA */}
         {/* ========================================================================= */}
-        <section className="relative py-8 md:py-12 border-b border-border/20">
+        <section className="relative py-8 md:py-12 border-b border-leo-border">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
             
             {/* Left Hero Details */}
             <div className="lg:col-span-7 space-y-6 text-left">
               
               {/* Badge */}
-              <div className="inline-flex items-center gap-2.5 bg-gradient-to-r from-amber-500/20 via-primary/20 to-amber-500/10 border border-amber-400/40 px-4 py-2 rounded-full w-fit backdrop-blur-md shadow-sm">
-                <Sparkles className="w-4 h-4 text-amber-400 animate-pulse" />
-                <span className="text-xs font-cinzel font-extrabold tracking-[0.25em] text-amber-300 uppercase">
+              <div className="inline-flex items-center gap-2 bg-leo-surface border border-leo-border px-3.5 py-1.5 rounded-full w-fit shadow-xs">
+                <Sparkles className="w-3.5 h-3.5 text-leo-gold shrink-0" />
+                <span className="text-xs font-cinzel font-extrabold tracking-[0.2em] text-leo-emerald uppercase">
                   NAVRATRI SPECIAL OFFER 2026
                 </span>
               </div>
 
               {/* Title */}
-              <h1 className="text-3xl sm:text-5xl lg:text-[2.85rem] font-extrabold font-cinzel tracking-tight leading-[1.15] text-text-primary">
+              <h1 className="text-3xl sm:text-5xl lg:text-[2.85rem] font-extrabold font-cinzel tracking-tight leading-[1.15] text-leo-emerald">
                 Advanced Vedic Numerology <br className="hidden sm:inline" />
-                <span className="text-amber-400 font-cinzel">+ Super Advanced Mobile Numerology</span>
+                <span className="text-leo-gold font-cinzel">+ Super Advanced Mobile Numerology</span>
               </h1>
 
               {/* Subtitle */}
-              <p className="text-base sm:text-lg text-text-secondary font-light leading-relaxed font-sans">
-                Two practitioner-grade masterclasses unified into one complete learning package. Taught live by founder <strong className="text-text-primary font-medium">Raajeev Singh Chauhann</strong> with real-time interactive Q&A.
+              <p className="text-base sm:text-lg text-leo-text-secondary font-normal leading-relaxed font-sans">
+                Two practitioner-grade masterclasses unified into one complete learning package. Taught live by founder <strong className="text-leo-text-primary font-medium">Raajeev Singh Chauhann</strong> with real-time interactive Q&A.
               </p>
 
               {/* Offer Price Highlight Box */}
-              <div className="p-5 rounded-2xl bg-card/90 border border-amber-400/35 backdrop-blur-md space-y-3 shadow-xl">
+              <div className="p-5 sm:p-6 rounded-3xl bg-leo-card border border-leo-border shadow-sm space-y-4">
                 <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-2">
                   <div>
-                    <span className="text-3xl sm:text-4xl font-extrabold font-cinzel text-amber-400">
+                    <span className="text-3xl sm:text-4xl font-extrabold font-cinzel text-leo-emerald">
                       ₹995 ONLY
                     </span>
-                    <span className="text-xs text-text-secondary block font-sans mt-0.5">
+                    <span className="text-xs text-leo-text-secondary block font-sans mt-0.5">
                       For both complete courses combined
                     </span>
                   </div>
                   <div className="text-left sm:text-right">
-                    <span className="text-xs text-text-secondary line-through opacity-75 block">
+                    <span className="text-xs text-leo-text-secondary line-through block">
                       Stated Combined Value: Approx. ₹24,000
                     </span>
-                    <span className="text-[11px] text-emerald-400 font-medium">
-                      Special Launch Access
+                    <span className="text-[11px] text-leo-emerald font-semibold uppercase tracking-wider">
+                      Navratri Special Launch
                     </span>
                   </div>
                 </div>
 
                 {/* Key Schedule & Highlights */}
-                <div className="pt-3 border-t border-border/20 grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-stone-300">
+                <div className="pt-3 border-t border-leo-border grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs text-leo-text-primary">
                   <div className="flex items-center gap-2">
-                    <Video className="w-4 h-4 text-emerald-400 shrink-0" />
+                    <Radio className="w-4 h-4 text-leo-emerald shrink-0" />
                     <span>All Classes Live (2 Classes/Week)</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-amber-400 shrink-0" />
+                    <Clock className="w-4 h-4 text-leo-gold shrink-0" />
                     <span>11:00 AM – 1:00 PM IST</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Calendar className="w-4 h-4 text-amber-400 shrink-0" />
+                    <Calendar className="w-4 h-4 text-leo-gold shrink-0" />
                     <span>Commencing 16 November</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Award className="w-4 h-4 text-emerald-400 shrink-0" />
+                    <Award className="w-4 h-4 text-leo-emerald shrink-0" />
                     <span>Certificate of Completion</span>
                   </div>
                 </div>
 
-                <div className="text-[10px] text-amber-300/80 font-sans italic pt-1">
+                <div className="text-[10px] text-leo-text-secondary font-sans italic pt-1">
                   * Note: Schedule commences 16 November (11:00 AM – 1:00 PM IST). Schedule year and campaign window are flagged for administrator confirmation.
                 </div>
               </div>
 
-              {/* CTAs */}
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 pt-2">
+              {/* CTAs: Emerald Primary + Card Secondary */}
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 pt-2">
                 <a
                   href={RAZORPAY_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-8 py-4 bg-gradient-to-r from-amber-500 via-primary to-amber-600 hover:from-amber-400 hover:to-amber-500 text-stone-950 font-extrabold uppercase tracking-[0.15em] text-xs sm:text-sm rounded-xl text-center shadow-lg transition-all hover:-translate-y-0.5 cursor-pointer flex items-center justify-center gap-2"
-                  style={{ boxShadow: '0 12px 30px rgba(212, 175, 55, 0.35)' }}
+                  className="px-8 py-4 bg-leo-emerald hover:bg-emerald-900 text-leo-ivory font-extrabold uppercase tracking-[0.15em] text-xs sm:text-sm rounded-xl text-center shadow-md transition-all hover:-translate-y-0.5 cursor-pointer flex items-center justify-center gap-2"
                 >
                   <span>ENROLL NOW — ₹995</span>
                   <ArrowRight className="w-4 h-4" />
@@ -321,9 +305,9 @@ export default function AdvancedNumerologyLandingPage({ navigate }: AdvancedNume
                 <button
                   type="button"
                   onClick={scrollToCurriculum}
-                  className="px-7 py-4 bg-card hover:bg-surface border border-border/40 hover:border-amber-400 text-text-primary font-bold uppercase tracking-[0.15em] text-xs rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md"
+                  className="px-7 py-4 bg-leo-card hover:bg-leo-surface border border-leo-border hover:border-leo-gold text-leo-emerald font-bold uppercase tracking-[0.15em] text-xs rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs"
                 >
-                  <BookOpen className="w-4 h-4 text-amber-400" />
+                  <BookOpen className="w-4 h-4 text-leo-gold" />
                   <span>View Curriculum</span>
                 </button>
               </div>
@@ -332,10 +316,10 @@ export default function AdvancedNumerologyLandingPage({ navigate }: AdvancedNume
 
             {/* Right Hero Mentor Showcase Card */}
             <div className="lg:col-span-5 flex justify-center">
-              <div className="w-full max-w-md bg-card/90 border border-amber-400/35 rounded-3xl p-6 backdrop-blur-md shadow-2xl flex flex-col items-center text-center space-y-4">
+              <div className="w-full max-w-md bg-leo-card border border-leo-border rounded-3xl p-6 sm:p-8 shadow-sm flex flex-col items-center text-center space-y-4">
                 
-                {/* Mentor Photo */}
-                <div className="relative w-40 h-40 sm:w-48 sm:h-48 rounded-full p-1.5 bg-gradient-to-tr from-primary via-amber-300 to-amber-600 shadow-xl overflow-hidden">
+                {/* Mentor Photo with Gold Gradient Ring */}
+                <div className="relative w-40 h-40 sm:w-48 sm:h-48 rounded-full p-1.5 bg-gradient-to-tr from-leo-emerald via-leo-gold to-leo-emerald shadow-lg overflow-hidden">
                   <SmartImage
                     src="/assets/teachers/Raajeev.webp"
                     alt="Raajeev Singh Chauhann"
@@ -345,34 +329,34 @@ export default function AdvancedNumerologyLandingPage({ navigate }: AdvancedNume
 
                 {/* Identity */}
                 <div>
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-amber-400 bg-amber-400/10 border border-amber-400/30 px-3 py-1 rounded-full">
-                    👑 Course Mentor & Founder
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-leo-emerald bg-leo-surface border border-leo-border px-3 py-1 rounded-full">
+                    Lead Mentor & Founder
                   </span>
-                  <h3 className="text-xl sm:text-2xl font-bold font-cinzel text-text-primary mt-2">
+                  <h3 className="text-xl sm:text-2xl font-bold font-cinzel text-leo-emerald mt-2">
                     Raajeev Singh Chauhann
                   </h3>
-                  <p className="text-xs text-text-secondary font-sans font-light mt-1">
-                    Founder, LEO Family Occult School · Master Occultist, Filmmaker & Spiritual Researcher
+                  <p className="text-xs text-leo-text-secondary font-sans mt-1">
+                    Founder, LEO Family Occult School · Master Occultist & Spiritual Researcher
                   </p>
                 </div>
 
                 {/* Mentor Stats */}
-                <div className="grid grid-cols-3 gap-2 w-full pt-3 border-t border-border/20 text-center">
-                  <div className="p-2 rounded-xl bg-surface/50 border border-border/20">
-                    <span className="text-base font-cinzel font-bold text-amber-400 block">20+</span>
-                    <span className="text-[9px] text-text-secondary uppercase tracking-wider block">Yrs Mastery</span>
+                <div className="grid grid-cols-3 gap-2 w-full pt-3 border-t border-leo-border text-center">
+                  <div className="p-2.5 rounded-xl bg-leo-surface border border-leo-border">
+                    <span className="text-base font-cinzel font-bold text-leo-emerald block">20+</span>
+                    <span className="text-[9px] text-leo-text-secondary uppercase tracking-wider block">Yrs Mastery</span>
                   </div>
-                  <div className="p-2 rounded-xl bg-surface/50 border border-border/20">
-                    <span className="text-base font-cinzel font-bold text-amber-400 block">100K+</span>
-                    <span className="text-[9px] text-text-secondary uppercase tracking-wider block">Students</span>
+                  <div className="p-2.5 rounded-xl bg-leo-surface border border-leo-border">
+                    <span className="text-base font-cinzel font-bold text-leo-emerald block">100K+</span>
+                    <span className="text-[9px] text-leo-text-secondary uppercase tracking-wider block">Students</span>
                   </div>
-                  <div className="p-2 rounded-xl bg-surface/50 border border-border/20">
-                    <span className="text-base font-cinzel font-bold text-amber-400 block">10+</span>
-                    <span className="text-[9px] text-text-secondary uppercase tracking-wider block">Countries</span>
+                  <div className="p-2.5 rounded-xl bg-leo-surface border border-leo-border">
+                    <span className="text-base font-cinzel font-bold text-leo-emerald block">10+</span>
+                    <span className="text-[9px] text-leo-text-secondary uppercase tracking-wider block">Countries</span>
                   </div>
                 </div>
 
-                <div className="text-[11px] text-stone-400 font-sans italic pt-1">
+                <div className="text-[11px] text-leo-text-secondary font-sans italic pt-1">
                   "Authentic occult knowledge is mathematical, practical, and transformative when understood through pure Vedic principles."
                 </div>
               </div>
@@ -384,46 +368,46 @@ export default function AdvancedNumerologyLandingPage({ navigate }: AdvancedNume
         {/* ========================================================================= */}
         {/* SECTION 2: NAVRATRI OFFER INTRODUCTION */}
         {/* ========================================================================= */}
-        <section className="py-16 border-b border-border/20">
-          <div className="max-w-3xl mx-auto text-center space-y-4 mb-12">
-            <span className="text-xs font-mono uppercase tracking-widest text-amber-400 bg-amber-400/10 border border-amber-400/30 px-3 py-1 rounded-full">
+        <section className="py-16 border-b border-leo-border">
+          <div className="max-w-3xl mx-auto text-center space-y-3 mb-12">
+            <span className="text-xs font-mono uppercase tracking-widest text-leo-emerald bg-leo-surface border border-leo-border px-3.5 py-1 rounded-full">
               The Dual Power Advantage
             </span>
-            <h2 className="text-2xl sm:text-4xl font-extrabold font-cinzel text-text-primary">
+            <h2 className="text-2xl sm:text-4xl font-extrabold font-cinzel text-leo-emerald">
               Why Vedic + Mobile Numerology Together?
             </h2>
-            <p className="text-sm sm:text-base text-text-secondary font-light leading-relaxed font-sans">
+            <p className="text-sm sm:text-base text-leo-text-secondary font-normal leading-relaxed font-sans">
               Your birth date provides the fixed cosmic blueprint given by the universe. Your mobile number provides the active, continuous daily vibration you broadcast to the world.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="p-6 sm:p-8 rounded-3xl bg-card border border-border/30 hover:border-amber-400/40 transition-all space-y-4">
-              <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center">
-                <Compass className="w-6 h-6 text-amber-400" />
+            <div className="p-6 sm:p-8 rounded-3xl bg-leo-card border border-leo-border shadow-xs hover:border-leo-gold/50 transition-all space-y-4">
+              <div className="w-12 h-12 rounded-2xl bg-leo-surface border border-leo-border flex items-center justify-center">
+                <Compass className="w-6 h-6 text-leo-emerald" />
               </div>
-              <h3 className="text-xl font-bold font-cinzel text-text-primary">
+              <h3 className="text-xl font-bold font-cinzel text-leo-emerald">
                 1. Advanced Vedic Numerology
               </h3>
-              <p className="text-sm text-text-secondary font-light leading-relaxed">
+              <p className="text-sm text-leo-text-secondary font-normal leading-relaxed">
                 Decode your innate destiny, psychic inclinations, master karmic numbers, and the complete 81 Psychic-Destiny combinations. Understand your favorable professions, relationship compatibility, signature alignment, and Vedic remedial yantras.
               </p>
-              <div className="text-xs font-mono text-amber-400 pt-2">
+              <div className="text-xs font-mono font-semibold text-leo-emerald pt-2">
                 11 Comprehensive Practical Modules
               </div>
             </div>
 
-            <div className="p-6 sm:p-8 rounded-3xl bg-card border border-border/30 hover:border-amber-400/40 transition-all space-y-4">
-              <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center">
-                <Smartphone className="w-6 h-6 text-emerald-400" />
+            <div className="p-6 sm:p-8 rounded-3xl bg-leo-card border border-leo-border shadow-xs hover:border-leo-gold/50 transition-all space-y-4">
+              <div className="w-12 h-12 rounded-2xl bg-leo-surface border border-leo-border flex items-center justify-center">
+                <Smartphone className="w-6 h-6 text-leo-emerald" />
               </div>
-              <h3 className="text-xl font-bold font-cinzel text-text-primary">
+              <h3 className="text-xl font-bold font-cinzel text-leo-emerald">
                 2. Super Advanced Mobile Numerology
               </h3>
-              <p className="text-sm text-text-secondary font-light leading-relaxed">
+              <p className="text-sm text-leo-text-secondary font-normal leading-relaxed">
                 Transform everyday digital communication into a tool for financial growth, authority, and tranquility. Learn special digit pairings, modified numbers, hostile frequencies to avoid, Rajyoga combinations, and exact mobile number selection.
               </p>
-              <div className="text-xs font-mono text-emerald-400 pt-2">
+              <div className="text-xs font-mono font-semibold text-leo-emerald pt-2">
                 11 High-Impact Applied Modules
               </div>
             </div>
@@ -433,27 +417,27 @@ export default function AdvancedNumerologyLandingPage({ navigate }: AdvancedNume
         {/* ========================================================================= */}
         {/* SECTIONS 3 & 4: COMPLETE CURRICULUM ACCORDION/TABS */}
         {/* ========================================================================= */}
-        <section id="curriculum-section" className="py-16 border-b border-border/20">
-          <div className="max-w-3xl mx-auto text-center space-y-4 mb-10">
-            <span className="text-xs font-mono uppercase tracking-widest text-primary bg-primary/10 border border-primary/25 px-3 py-1 rounded-full">
+        <section id="curriculum-section" className="py-16 border-b border-leo-border">
+          <div className="max-w-3xl mx-auto text-center space-y-3 mb-10">
+            <span className="text-xs font-mono uppercase tracking-widest text-leo-emerald bg-leo-surface border border-leo-border px-3.5 py-1 rounded-full">
               Exhaustive Course Syllabus
             </span>
-            <h2 className="text-2xl sm:text-4xl font-extrabold font-cinzel text-text-primary">
+            <h2 className="text-2xl sm:text-4xl font-extrabold font-cinzel text-leo-emerald">
               Full Program Curriculum
             </h2>
-            <p className="text-sm sm:text-base text-text-secondary font-light leading-relaxed">
+            <p className="text-sm sm:text-base text-leo-text-secondary font-normal leading-relaxed">
               Explore every topic covered across both masterclasses. No superficial overviews — every module is grounded in authentic Vedic science and practical real-world application.
             </p>
 
             {/* Course Switcher Tabs */}
-            <div className="flex justify-center gap-3 pt-4">
+            <div className="flex flex-wrap justify-center gap-3 pt-4">
               <button
                 type="button"
                 onClick={() => setActiveCourseTab('vedic')}
                 className={`px-6 py-3 rounded-xl text-xs sm:text-sm font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer ${
                   activeCourseTab === 'vedic'
-                    ? 'bg-amber-500 text-stone-950 font-extrabold shadow-lg scale-105'
-                    : 'bg-card border border-border/30 text-text-secondary hover:text-text-primary'
+                    ? 'bg-leo-emerald text-leo-ivory font-extrabold shadow-md scale-102'
+                    : 'bg-leo-card border border-leo-border text-leo-text-secondary hover:text-leo-emerald hover:border-leo-gold/40'
                 }`}
               >
                 Course 1: Vedic Numerology (11 Modules)
@@ -463,8 +447,8 @@ export default function AdvancedNumerologyLandingPage({ navigate }: AdvancedNume
                 onClick={() => setActiveCourseTab('mobile')}
                 className={`px-6 py-3 rounded-xl text-xs sm:text-sm font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer ${
                   activeCourseTab === 'mobile'
-                    ? 'bg-amber-500 text-stone-950 font-extrabold shadow-lg scale-105'
-                    : 'bg-card border border-border/30 text-text-secondary hover:text-text-primary'
+                    ? 'bg-leo-emerald text-leo-ivory font-extrabold shadow-md scale-102'
+                    : 'bg-leo-card border border-leo-border text-leo-text-secondary hover:text-leo-emerald hover:border-leo-gold/40'
                 }`}
               >
                 Course 2: Mobile Numerology (11 Modules)
@@ -477,19 +461,19 @@ export default function AdvancedNumerologyLandingPage({ navigate }: AdvancedNume
             {(activeCourseTab === 'vedic' ? vedicModules : mobileModules).map((item, index) => (
               <div
                 key={index}
-                className="p-5 rounded-2xl bg-card/80 border border-border/25 hover:border-amber-400/40 transition-all flex items-start gap-4"
+                className="p-5 rounded-2xl bg-leo-card border border-leo-border hover:border-leo-gold/50 shadow-xs transition-all flex items-start gap-4"
               >
-                <div className="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center shrink-0 text-amber-400 font-mono text-xs font-bold">
+                <div className="w-9 h-9 rounded-xl bg-leo-surface border border-leo-border flex items-center justify-center shrink-0 text-leo-emerald font-mono text-xs font-bold">
                   {index + 1}
                 </div>
                 <div className="space-y-1">
-                  <span className="text-[10px] font-mono uppercase tracking-widest text-amber-400 block">
+                  <span className="text-[10px] font-mono uppercase tracking-widest text-leo-gold block font-semibold">
                     {item.module}
                   </span>
-                  <h4 className="text-sm font-bold font-cinzel text-text-primary">
+                  <h4 className="text-sm font-bold font-cinzel text-leo-emerald">
                     {item.title}
                   </h4>
-                  <p className="text-xs text-text-secondary font-light font-sans leading-relaxed">
+                  <p className="text-xs text-leo-text-secondary font-normal font-sans leading-relaxed">
                     {item.description}
                   </p>
                 </div>
@@ -501,48 +485,48 @@ export default function AdvancedNumerologyLandingPage({ navigate }: AdvancedNume
         {/* ========================================================================= */}
         {/* SECTION 5: LIVE CLASSES & DIRECT Q&A */}
         {/* ========================================================================= */}
-        <section className="py-16 border-b border-border/20">
-          <div className="p-8 sm:p-12 rounded-3xl bg-gradient-to-br from-amber-950/20 via-card to-background border border-amber-500/30 backdrop-blur-md">
+        <section className="py-16 border-b border-leo-border">
+          <div className="p-8 sm:p-12 rounded-3xl bg-leo-card border border-leo-border shadow-sm">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
               <div className="lg:col-span-8 space-y-4">
-                <span className="text-xs font-mono uppercase tracking-widest text-emerald-400 bg-emerald-400/10 border border-emerald-400/30 px-3 py-1 rounded-full">
+                <span className="text-xs font-mono uppercase tracking-widest text-leo-emerald bg-leo-surface border border-leo-border px-3.5 py-1 rounded-full">
                   Interactive Learning
                 </span>
-                <h3 className="text-2xl sm:text-3xl font-bold font-cinzel text-text-primary">
+                <h3 className="text-2xl sm:text-3xl font-bold font-cinzel text-leo-emerald">
                   100% Live Classes with Direct Q&A in Every Session
                 </h3>
-                <p className="text-sm sm:text-base text-text-secondary font-light leading-relaxed font-sans">
+                <p className="text-sm sm:text-base text-leo-text-secondary font-normal leading-relaxed font-sans">
                   Unlike pre-recorded static video libraries, all sessions of this course bundle are conducted live. You get direct interaction with Raajeev Singh Chauhann, allowing you to ask real questions, analyze student chart examples, and solve doubts instantly.
                 </p>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 text-xs text-stone-300">
-                  <div className="p-3 rounded-xl bg-surface/40 border border-border/20">
-                    <strong className="text-amber-400 block font-cinzel text-sm">2 Classes / Week</strong>
-                    <span className="text-[11px] text-stone-400">Structured rhythm for deep absorption</span>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 text-xs text-leo-text-primary">
+                  <div className="p-3.5 rounded-xl bg-leo-surface border border-leo-border">
+                    <strong className="text-leo-emerald block font-cinzel text-sm">2 Classes / Week</strong>
+                    <span className="text-[11px] text-leo-text-secondary">Structured rhythm for deep absorption</span>
                   </div>
-                  <div className="p-3 rounded-xl bg-surface/40 border border-border/20">
-                    <strong className="text-amber-400 block font-cinzel text-sm">11:00 AM – 1:00 PM</strong>
-                    <span className="text-[11px] text-stone-400">2-hour intensive deep-dive classes</span>
+                  <div className="p-3.5 rounded-xl bg-leo-surface border border-leo-border">
+                    <strong className="text-leo-emerald block font-cinzel text-sm">11:00 AM – 1:00 PM</strong>
+                    <span className="text-[11px] text-leo-text-secondary">2-hour intensive deep-dive classes</span>
                   </div>
-                  <div className="p-3 rounded-xl bg-surface/40 border border-border/20">
-                    <strong className="text-amber-400 block font-cinzel text-sm">Commencing 16 Nov</strong>
-                    <span className="text-[11px] text-stone-400">Schedule year flagged for admin confirmation</span>
+                  <div className="p-3.5 rounded-xl bg-leo-surface border border-leo-border">
+                    <strong className="text-leo-emerald block font-cinzel text-sm">Commencing 16 Nov</strong>
+                    <span className="text-[11px] text-leo-text-secondary">Schedule year flagged for admin confirmation</span>
                   </div>
                 </div>
               </div>
 
-              <div className="lg:col-span-4 flex flex-col items-center justify-center p-6 rounded-2xl bg-surface/50 border border-border/30 text-center space-y-3">
-                <Sparkles className="w-10 h-10 text-amber-400 animate-pulse" />
-                <h4 className="font-cinzel font-bold text-base text-text-primary">
+              <div className="lg:col-span-4 flex flex-col items-center justify-center p-6 rounded-2xl bg-leo-surface border border-leo-border text-center space-y-3.5">
+                <Sparkles className="w-8 h-8 text-leo-gold" />
+                <h4 className="font-cinzel font-bold text-base text-leo-emerald">
                   Ready to Join the Live Batch?
                 </h4>
-                <p className="text-xs text-text-secondary font-light">
+                <p className="text-xs text-leo-text-secondary font-normal">
                   Direct enrollment via official Razorpay hosted checkout.
                 </p>
                 <a
                   href={RAZORPAY_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full py-3 bg-amber-500 hover:bg-amber-400 text-stone-950 font-extrabold uppercase tracking-wider text-xs rounded-xl transition text-center shadow-md cursor-pointer block"
+                  className="w-full py-3.5 bg-leo-emerald hover:bg-emerald-900 text-leo-ivory font-extrabold uppercase tracking-wider text-xs rounded-xl transition-all text-center shadow-md cursor-pointer block"
                 >
                   ENROLL NOW — ₹995
                 </a>
@@ -552,55 +536,55 @@ export default function AdvancedNumerologyLandingPage({ navigate }: AdvancedNume
         </section>
 
         {/* ========================================================================= */}
-        {/* SECTIONS 6 & 7: 1-YEAR RECORDING ACCESS & STUDENT PLATFORM */}
+        {/* SECTIONS 6 & 7: 1-YEAR RECORDING ACCESS & WHO IS THIS FOR */}
         {/* ========================================================================= */}
-        <section className="py-16 border-b border-border/20">
+        <section className="py-16 border-b border-leo-border">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
             <div className="space-y-4">
-              <span className="text-xs font-mono uppercase tracking-widest text-primary bg-primary/10 border border-primary/25 px-3 py-1 rounded-full">
+              <span className="text-xs font-mono uppercase tracking-widest text-leo-emerald bg-leo-surface border border-leo-border px-3.5 py-1 rounded-full">
                 Never Miss a Lesson
               </span>
-              <h2 className="text-2xl sm:text-3xl font-extrabold font-cinzel text-text-primary">
+              <h2 className="text-2xl sm:text-3xl font-extrabold font-cinzel text-leo-emerald">
                 1-Year Full Recording Access Across Web & Mobile App
               </h2>
-              <p className="text-sm text-text-secondary font-light leading-relaxed font-sans">
+              <p className="text-sm text-leo-text-secondary font-normal leading-relaxed font-sans">
                 Every live class is archived in crystal-clear high definition and uploaded to both the LEO Family student web portal and the official mobile application.
               </p>
-              <ul className="space-y-2.5 text-xs text-stone-300 pt-2">
+              <ul className="space-y-3 text-xs text-leo-text-primary pt-2">
                 <li className="flex items-center gap-2.5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <CheckCircle2 className="w-4 h-4 text-leo-emerald shrink-0" />
                   <span>Rewatch and review complex calculations at your own convenience.</span>
                 </li>
                 <li className="flex items-center gap-2.5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <CheckCircle2 className="w-4 h-4 text-leo-emerald shrink-0" />
                   <span>Access from any desktop, laptop, Android, or iOS device.</span>
                 </li>
                 <li className="flex items-center gap-2.5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <CheckCircle2 className="w-4 h-4 text-leo-emerald shrink-0" />
                   <span>Full 365 days of active recording library availability.</span>
                 </li>
                 <li className="flex items-center gap-2.5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <CheckCircle2 className="w-4 h-4 text-leo-emerald shrink-0" />
                   <span>Comprehensive downloadable reference materials and notes.</span>
                 </li>
               </ul>
             </div>
 
-            <div className="p-6 rounded-3xl bg-card border border-border/30 space-y-4">
-              <h3 className="text-lg font-bold font-cinzel text-text-primary">
+            <div className="p-6 sm:p-8 rounded-3xl bg-leo-card border border-leo-border shadow-xs space-y-4">
+              <h3 className="text-lg font-bold font-cinzel text-leo-emerald">
                 Who Is This Course Bundle For?
               </h3>
-              <div className="space-y-3 text-xs text-text-secondary font-light leading-relaxed">
-                <div className="p-3 rounded-xl bg-surface/40 border border-border/20">
-                  <strong className="text-text-primary block font-medium">Aspiring & Practicing Occultists</strong>
+              <div className="space-y-3 text-xs text-leo-text-secondary font-normal leading-relaxed">
+                <div className="p-3.5 rounded-xl bg-leo-surface border border-leo-border">
+                  <strong className="text-leo-emerald block font-semibold">Aspiring & Practicing Occultists</strong>
                   <span>Deepen your diagnostic accuracy, learn 81 combinations, and add high-demand Mobile Numerology to your consulting repertoire.</span>
                 </div>
-                <div className="p-3 rounded-xl bg-surface/40 border border-border/20">
-                  <strong className="text-text-primary block font-medium">Business Owners & Consultants</strong>
+                <div className="p-3.5 rounded-xl bg-leo-surface border border-leo-border">
+                  <strong className="text-leo-emerald block font-semibold">Business Owners & Consultants</strong>
                   <span>Select prosperous business names, optimize company SIM numbers, and align office addresses for commercial growth.</span>
                 </div>
-                <div className="p-3 rounded-xl bg-surface/40 border border-border/20">
-                  <strong className="text-text-primary block font-medium">Beginners & Seekers</strong>
+                <div className="p-3.5 rounded-xl bg-leo-surface border border-leo-border">
+                  <strong className="text-leo-emerald block font-semibold">Beginners & Seekers</strong>
                   <span>Understand the hidden numerical forces behind your relationships, health, and career trajectory without dogmatic superstition.</span>
                 </div>
               </div>
@@ -611,15 +595,15 @@ export default function AdvancedNumerologyLandingPage({ navigate }: AdvancedNume
         {/* ========================================================================= */}
         {/* SECTION 9: COMPLETE FAQ ACCORDION */}
         {/* ========================================================================= */}
-        <section className="py-16 border-b border-border/20">
-          <div className="max-w-3xl mx-auto text-center space-y-4 mb-12">
-            <span className="text-xs font-mono uppercase tracking-widest text-primary bg-primary/10 border border-primary/25 px-3 py-1 rounded-full">
+        <section className="py-16 border-b border-leo-border">
+          <div className="max-w-3xl mx-auto text-center space-y-3 mb-12">
+            <span className="text-xs font-mono uppercase tracking-widest text-leo-emerald bg-leo-surface border border-leo-border px-3.5 py-1 rounded-full">
               Got Questions?
             </span>
-            <h2 className="text-2xl sm:text-4xl font-extrabold font-cinzel text-text-primary">
+            <h2 className="text-2xl sm:text-4xl font-extrabold font-cinzel text-leo-emerald">
               Frequently Asked Questions
             </h2>
-            <p className="text-sm sm:text-base text-text-secondary font-light leading-relaxed">
+            <p className="text-sm sm:text-base text-leo-text-secondary font-normal leading-relaxed">
               Transparent answers regarding course access, schedules, certificates, and enrollment.
             </p>
           </div>
@@ -630,20 +614,20 @@ export default function AdvancedNumerologyLandingPage({ navigate }: AdvancedNume
               return (
                 <div
                   key={idx}
-                  className="rounded-2xl bg-card border border-border/30 overflow-hidden transition-colors"
+                  className="rounded-2xl bg-leo-card border border-leo-border overflow-hidden transition-colors shadow-xs"
                 >
                   <button
                     type="button"
                     onClick={() => setOpenFaqIndex(isOpen ? null : idx)}
-                    className="w-full p-5 text-left flex items-center justify-between gap-4 cursor-pointer hover:bg-surface/30 transition-colors"
+                    className="w-full p-5 text-left flex items-center justify-between gap-4 cursor-pointer hover:bg-leo-surface/50 transition-colors"
                   >
-                    <span className="font-cinzel font-bold text-sm sm:text-base text-text-primary">
+                    <span className="font-cinzel font-bold text-sm sm:text-base text-leo-emerald">
                       {faq.q}
                     </span>
                     {isOpen ? (
-                      <ChevronUp className="w-4 h-4 text-amber-400 shrink-0" />
+                      <ChevronUp className="w-4 h-4 text-leo-gold shrink-0" />
                     ) : (
-                      <ChevronDown className="w-4 h-4 text-stone-500 shrink-0" />
+                      <ChevronDown className="w-4 h-4 text-leo-text-secondary shrink-0" />
                     )}
                   </button>
                   <AnimatePresence>
@@ -654,7 +638,7 @@ export default function AdvancedNumerologyLandingPage({ navigate }: AdvancedNume
                         exit={{ height: 0, opacity: 0 }}
                         transition={{ duration: 0.2 }}
                       >
-                        <div className="px-5 pb-5 pt-1 text-xs sm:text-sm text-text-secondary font-light leading-relaxed border-t border-border/15">
+                        <div className="px-5 pb-5 pt-1 text-xs sm:text-sm text-leo-text-secondary font-normal leading-relaxed border-t border-leo-border/60">
                           {faq.a}
                         </div>
                       </motion.div>
@@ -670,31 +654,31 @@ export default function AdvancedNumerologyLandingPage({ navigate }: AdvancedNume
         {/* SECTION 10: FINAL ENROLLMENT CTA */}
         {/* ========================================================================= */}
         <section className="py-16">
-          <div className="max-w-4xl mx-auto p-8 sm:p-14 rounded-3xl bg-gradient-to-tr from-amber-950/30 via-card to-amber-900/20 border border-amber-400/40 text-center space-y-6 shadow-2xl relative overflow-hidden">
+          <div className="max-w-4xl mx-auto p-8 sm:p-14 rounded-3xl bg-leo-card border border-leo-border text-center space-y-6 shadow-md relative overflow-hidden">
             
-            {/* Background Glow */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+            {/* Top Accent line */}
+            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-leo-emerald via-leo-gold to-leo-emerald" />
 
-            <div className="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/30 px-3.5 py-1.5 rounded-full">
-              <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
-              <span className="text-[10px] sm:text-xs font-cinzel font-bold tracking-[0.2em] text-amber-300 uppercase">
+            <div className="inline-flex items-center gap-2 bg-leo-surface border border-leo-border px-3.5 py-1.5 rounded-full">
+              <Sparkles className="w-3.5 h-3.5 text-leo-gold" />
+              <span className="text-[10px] sm:text-xs font-cinzel font-bold tracking-[0.2em] text-leo-emerald uppercase">
                 Secure Your Spot in the Live Batch
               </span>
             </div>
 
-            <h2 className="text-3xl sm:text-5xl font-extrabold font-cinzel text-text-primary tracking-tight">
+            <h2 className="text-3xl sm:text-5xl font-extrabold font-cinzel text-leo-emerald tracking-tight">
               Begin Your Numerology Mastery Today
             </h2>
 
-            <p className="text-sm sm:text-base text-text-secondary max-w-2xl mx-auto font-light leading-relaxed font-sans">
-              Enroll in both <strong className="text-text-primary font-medium">Advanced Vedic Numerology</strong> and <strong className="text-text-primary font-medium">Super Advanced Mobile Numerology</strong> for ₹995.
+            <p className="text-sm sm:text-base text-leo-text-secondary max-w-2xl mx-auto font-normal leading-relaxed font-sans">
+              Enroll in both <strong className="text-leo-text-primary font-medium">Advanced Vedic Numerology</strong> and <strong className="text-leo-text-primary font-medium">Super Advanced Mobile Numerology</strong> for ₹995.
             </p>
 
-            <div className="flex flex-col items-center justify-center gap-2 pt-2">
-              <span className="text-3xl sm:text-4xl font-extrabold font-cinzel text-amber-400">
+            <div className="flex flex-col items-center justify-center gap-1.5 pt-2">
+              <span className="text-3xl sm:text-4xl font-extrabold font-cinzel text-leo-emerald">
                 ₹995 ONLY
               </span>
-              <span className="text-xs text-text-secondary line-through opacity-70">
+              <span className="text-xs text-leo-text-secondary line-through">
                 Combined Approximate Value: ₹24,000
               </span>
             </div>
@@ -704,8 +688,7 @@ export default function AdvancedNumerologyLandingPage({ navigate }: AdvancedNume
                 href={RAZORPAY_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full sm:w-auto px-10 py-4 bg-gradient-to-r from-amber-500 via-primary to-amber-600 hover:from-amber-400 hover:to-amber-500 text-stone-950 font-extrabold uppercase tracking-[0.15em] text-xs sm:text-sm rounded-xl text-center shadow-xl transition-all hover:-translate-y-0.5 cursor-pointer flex items-center justify-center gap-2"
-                style={{ boxShadow: '0 12px 30px rgba(212, 175, 55, 0.4)' }}
+                className="w-full sm:w-auto px-10 py-4 bg-leo-emerald hover:bg-emerald-900 text-leo-ivory font-extrabold uppercase tracking-[0.15em] text-xs sm:text-sm rounded-xl text-center shadow-md transition-all hover:-translate-y-0.5 cursor-pointer flex items-center justify-center gap-2"
               >
                 <span>ENROLL NOW — ₹995</span>
                 <ArrowRight className="w-4 h-4" />
@@ -714,15 +697,15 @@ export default function AdvancedNumerologyLandingPage({ navigate }: AdvancedNume
               <button
                 type="button"
                 onClick={() => handleNavigate('/programs')}
-                className="w-full sm:w-auto px-6 py-4 bg-surface hover:bg-card border border-border/40 text-text-secondary hover:text-text-primary text-xs font-bold uppercase tracking-wider rounded-xl transition cursor-pointer"
+                className="w-full sm:w-auto px-7 py-4 bg-leo-card hover:bg-leo-surface border border-leo-border hover:border-leo-gold text-leo-emerald text-xs font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-xs"
               >
                 View All Programs
               </button>
             </div>
 
-            <div className="pt-4 flex flex-wrap items-center justify-center gap-4 text-[11px] text-stone-400">
+            <div className="pt-4 flex flex-wrap items-center justify-center gap-4 text-[11px] text-leo-text-secondary">
               <span className="flex items-center gap-1.5">
-                <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                <ShieldCheck className="w-4 h-4 text-leo-emerald" />
                 Verified Razorpay Hosted Checkout
               </span>
               <span>•</span>

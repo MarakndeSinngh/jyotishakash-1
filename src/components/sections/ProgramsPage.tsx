@@ -12,7 +12,7 @@ interface ProgramsPageProps {
 
 // Centralized ID-based primary category mapping (No keyword matching)
 export const PROGRAM_CATEGORY_MAP: Record<string, string[]> = {
-  numerology: ['prog-1', 'prog-6'],
+  numerology: ['prog-1', 'prog-6', 'prog-navratri-numerology'],
   astrology: ['prog-2'],
   vastu: ['prog-3', 'prog-4'],
   name: ['prog-5'],
@@ -60,6 +60,11 @@ export default function ProgramsPage({ navigate }: ProgramsPageProps) {
   const filteredPrograms = programs.filter(prog => {
     if (!prog.visible) return false;
     if (selectedCategory === 'all') return true;
+
+    // Backward-compatible category property check
+    if (prog.category && prog.category.toLowerCase() === selectedCategory.toLowerCase()) {
+      return true;
+    }
 
     const allowedIds = PROGRAM_CATEGORY_MAP[selectedCategory] || [];
     return allowedIds.includes(prog.id);
@@ -255,11 +260,20 @@ export default function ProgramsPage({ navigate }: ProgramsPageProps) {
                       </div>
 
                       {/* Pricing & CTA */}
-                      <div className="pt-4 border-t border-border/20 flex items-center justify-between gap-4">
+                      <div className="pt-4 border-t border-border/20 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                         <div>
-                          <span className="text-[10px] uppercase tracking-wider text-text-secondary block">Tuition Fee</span>
+                          <span className="text-[10px] uppercase tracking-wider text-text-secondary block">
+                            {course.id === 'prog-navratri-numerology' ? 'Special Bundle Fee' : 'Tuition Fee'}
+                          </span>
                           <div className="flex items-center gap-2">
-                            {course.discountPrice ? (
+                            {course.id === 'prog-navratri-numerology' ? (
+                              <div className="flex flex-col">
+                                <span className="text-lg font-extrabold text-amber-400 font-cinzel">₹{course.price.toLocaleString()}</span>
+                                <span className="text-[10px] text-text-secondary line-through opacity-70">
+                                  Approx. Value: ₹{(course.approximateValue || 24000).toLocaleString()}
+                                </span>
+                              </div>
+                            ) : course.discountPrice ? (
                               <>
                                 <span className="text-base font-extrabold text-primary">₹{course.discountPrice.toLocaleString()}</span>
                                 <span className="text-xs text-text-secondary line-through">₹{course.price.toLocaleString()}</span>
@@ -270,15 +284,43 @@ export default function ProgramsPage({ navigate }: ProgramsPageProps) {
                           </div>
                         </div>
 
-                        <a
-                          href={`${WHATSAPP_LINK}?text=I am interested in enrolling for the program: ${encodeURIComponent(course.title)}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="px-4 py-2.5 bg-primary hover:bg-primary/90 text-background text-xs font-extrabold tracking-wider uppercase rounded-xl transition-all duration-300 shadow-md flex items-center gap-1.5 cursor-pointer group-hover:scale-105"
-                        >
-                          <span>Enroll Now</span>
-                          <ArrowRight className="w-3.5 h-3.5" />
-                        </a>
+                        {course.id === 'prog-navratri-numerology' || course.paymentUrl ? (
+                          <div className="flex items-center gap-2 shrink-0">
+                            <a
+                              href={course.paymentUrl || 'https://rzp.io/rzp/znXO15N'}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="px-3.5 py-2.5 bg-gradient-to-r from-amber-500 via-primary to-amber-600 hover:brightness-110 text-stone-950 text-xs font-extrabold tracking-wider uppercase rounded-xl transition-all duration-300 shadow-md flex items-center gap-1.5 cursor-pointer"
+                            >
+                              <span>ENROLL — ₹995</span>
+                            </a>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (navigate) navigate('/courses/advanced-numerology-bundle');
+                                else {
+                                  window.history.pushState({}, '', '/courses/advanced-numerology-bundle');
+                                  window.dispatchEvent(new PopStateEvent('popstate'));
+                                  window.scrollTo(0, 0);
+                                }
+                              }}
+                              className="px-3 py-2.5 bg-card hover:bg-surface border border-amber-400/40 text-amber-300 text-xs font-bold tracking-wider uppercase rounded-xl transition-all duration-300 flex items-center gap-1 cursor-pointer"
+                            >
+                              <span>Curriculum</span>
+                              <ArrowRight className="w-3 h-3" />
+                            </button>
+                          </div>
+                        ) : (
+                          <a
+                            href={`${WHATSAPP_LINK}?text=I am interested in enrolling for the program: ${encodeURIComponent(course.title)}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="px-4 py-2.5 bg-primary hover:bg-primary/90 text-background text-xs font-extrabold tracking-wider uppercase rounded-xl transition-all duration-300 shadow-md flex items-center gap-1.5 cursor-pointer group-hover:scale-105"
+                          >
+                            <span>Enroll Now</span>
+                            <ArrowRight className="w-3.5 h-3.5" />
+                          </a>
+                        )}
                       </div>
                     </div>
                   </motion.div>

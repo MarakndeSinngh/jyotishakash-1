@@ -15,10 +15,24 @@ import { WHATSAPP_LINK } from '../../constants/contacts';
 import { useContentEngine } from '../../hooks/useContentEngine';
 import SmartImage from './SmartImage';
 
-export default function FeaturedCoursesHomepage() {
+interface FeaturedCoursesHomepageProps {
+  navigate?: (path: string) => void;
+}
+
+export default function FeaturedCoursesHomepage({ navigate }: FeaturedCoursesHomepageProps = {}) {
   const { switchAcademy } = useAcademy();
   const [selectedTab, setSelectedTab] = useState<string>('all');
   const { data, loading, error } = useContentEngine({ type: 'homepage' });
+
+  const handleNavigate = (path: string) => {
+    if (navigate) {
+      navigate(path);
+    } else {
+      window.history.pushState({}, '', path);
+      window.dispatchEvent(new PopStateEvent('popstate'));
+      window.scrollTo(0, 0);
+    }
+  };
 
   const homepageData = data as any;
   const rawPrograms = homepageData?.featuredPrograms || [];
@@ -217,9 +231,32 @@ export default function FeaturedCoursesHomepage() {
                       {course.title}
                     </h3>
 
-                    <p className="text-text-secondary text-xs sm:text-sm font-light leading-relaxed line-clamp-3">
-                      {course.description}
-                    </p>
+                    {course.id === 'prog-navratri-numerology' || course.paymentUrl ? (
+                      <div className="space-y-2.5">
+                        <p className="text-text-secondary text-xs sm:text-sm font-light leading-relaxed">
+                          {course.description}
+                        </p>
+                        {/* Dual Course Curriculum Highlights */}
+                        <div className="p-2.5 rounded-xl bg-amber-950/20 border border-amber-500/20 text-[11px] text-stone-300 space-y-1">
+                          <p><strong className="text-amber-400">Course 1:</strong> Advanced Vedic Numerology (81 Combinations, Grid, Remedies)</p>
+                          <p><strong className="text-amber-400">Course 2:</strong> Super Advanced Mobile Numerology (Pairings, Rajyoga, Selection)</p>
+                        </div>
+                        {/* Key Feature Highlights */}
+                        <div className="flex flex-wrap gap-x-2 gap-y-1 text-[10px] text-amber-300/90 font-medium">
+                          <span>All Classes Live</span>
+                          <span>•</span>
+                          <span>Live Q&A</span>
+                          <span>•</span>
+                          <span>2 Classes/Week</span>
+                          <span>•</span>
+                          <span>1-Year Access</span>
+                        </div>
+                      </div>
+                    ) : (
+                      <p className="text-text-secondary text-xs sm:text-sm font-light leading-relaxed line-clamp-3">
+                        {course.description}
+                      </p>
+                    )}
                   </div>
 
                   {/* Pricing and Action */}
@@ -229,26 +266,58 @@ export default function FeaturedCoursesHomepage() {
                         <User className="w-3.5 h-3.5 text-primary" />
                         <span className="text-[11px] font-medium">{course.academyInstructor}</span>
                       </div>
-                      <span className="text-primary font-bold font-cinzel text-sm">{course.price ? `₹${course.price.toLocaleString()}` : "Inquire"}</span>
+                      <div className="text-right">
+                        <span className="text-primary font-bold font-cinzel text-sm block">
+                          {course.price ? `₹${course.price.toLocaleString()}` : "Inquire"}
+                        </span>
+                        {course.approximateValue && (
+                          <span className="text-[10px] text-text-secondary line-through opacity-70 block">
+                            Approx. Value: ₹{course.approximateValue.toLocaleString()}
+                          </span>
+                        )}
+                      </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-2.5">
-                      <a
-                        href={WHATSAPP_LINK}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="py-3 bg-primary hover:opacity-90 text-background font-extrabold uppercase tracking-wider text-[10px] rounded-xl transition-all text-center shadow-md cursor-pointer"
-                      >
-                        Enroll Now
-                      </a>
-                      <button
-                        onClick={() => switchAcademy(course.academySlug)}
-                        className="py-3 bg-background hover:bg-card border border-border/20 text-text-secondary hover:text-text-primary font-bold uppercase tracking-wider text-[10px] rounded-xl transition-all flex items-center justify-center gap-1 cursor-pointer"
-                      >
-                        <span>View Programs</span>
-                        <ArrowUpRight className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
+                    {/* Action Buttons: Bundle uses Razorpay + Curriculum, other courses preserve WhatsApp */}
+                    {course.id === 'prog-navratri-numerology' || course.paymentUrl ? (
+                      <div className="grid grid-cols-2 gap-2.5">
+                        <a
+                          href={course.paymentUrl || 'https://rzp.io/rzp/znXO15N'}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="py-3 bg-gradient-to-r from-amber-500 via-primary to-amber-600 hover:brightness-110 text-stone-950 font-extrabold uppercase tracking-wider text-[10px] rounded-xl transition-all text-center shadow-md cursor-pointer flex items-center justify-center gap-1"
+                        >
+                          <span>ENROLL NOW — ₹995</span>
+                        </a>
+                        <button
+                          type="button"
+                          onClick={() => handleNavigate('/courses/advanced-numerology-bundle')}
+                          className="py-3 bg-background hover:bg-card border border-amber-400/40 text-amber-300 hover:text-amber-200 font-bold uppercase tracking-wider text-[10px] rounded-xl transition-all flex items-center justify-center gap-1 cursor-pointer"
+                        >
+                          <span>VIEW CURRICULUM</span>
+                          <ArrowUpRight className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-2 gap-2.5">
+                        <a
+                          href={WHATSAPP_LINK}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="py-3 bg-primary hover:opacity-90 text-background font-extrabold uppercase tracking-wider text-[10px] rounded-xl transition-all text-center shadow-md cursor-pointer"
+                        >
+                          Enroll Now
+                        </a>
+                        <button
+                          type="button"
+                          onClick={() => switchAcademy(course.academySlug)}
+                          className="py-3 bg-background hover:bg-card border border-border/20 text-text-secondary hover:text-text-primary font-bold uppercase tracking-wider text-[10px] rounded-xl transition-all flex items-center justify-center gap-1 cursor-pointer"
+                        >
+                          <span>View Programs</span>
+                          <ArrowUpRight className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               </motion.div>

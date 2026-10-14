@@ -11,6 +11,13 @@ export interface Program {
   featured: boolean;
   visible: boolean;
   order: number;
+  category?: string;
+  paymentUrl?: string;
+  approximateValue?: number;
+  schedule?: string;
+  startDate?: string;
+  campaignActive?: boolean;
+  campaignEndDate?: string;
   createdAt?: string;
   updatedAt?: string;
 }

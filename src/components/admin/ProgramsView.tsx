@@ -41,6 +41,13 @@ export default function ProgramsView() {
     duration: '8 Weeks',
     price: 15000,
     discountPrice: 12000,
+    approximateValue: undefined,
+    category: 'numerology',
+    paymentUrl: '',
+    schedule: '',
+    startDate: '',
+    campaignActive: false,
+    campaignEndDate: '',
     featured: false,
     visible: true,
     order: 1
@@ -78,6 +85,13 @@ export default function ProgramsView() {
       duration: '8 Weeks',
       price: 15000,
       discountPrice: 12000,
+      approximateValue: undefined,
+      category: 'numerology',
+      paymentUrl: '',
+      schedule: '',
+      startDate: '',
+      campaignActive: false,
+      campaignEndDate: '',
       featured: false,
       visible: true,
       order: programs.length + 1
@@ -131,6 +145,13 @@ export default function ProgramsView() {
           duration: formData.duration || '8 Weeks',
           price: Number(formData.price) || 10000,
           discountPrice: formData.discountPrice ? Number(formData.discountPrice) : undefined,
+          approximateValue: formData.approximateValue ? Number(formData.approximateValue) : undefined,
+          category: formData.category || 'numerology',
+          paymentUrl: formData.paymentUrl || undefined,
+          schedule: formData.schedule || undefined,
+          startDate: formData.startDate || undefined,
+          campaignActive: Boolean(formData.campaignActive),
+          campaignEndDate: formData.campaignEndDate || undefined,
           featured: Boolean(formData.featured),
           visible: formData.visible !== false,
           order: Number(formData.order) || 1
@@ -397,6 +418,113 @@ export default function ProgramsView() {
                   placeholder="https://images.unsplash.com/..."
                   className="w-full px-4 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-900 focus:outline-none focus:border-amber-600"
                 />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1.5">
+                    Category
+                  </label>
+                  <select
+                    value={formData.category || 'numerology'}
+                    onChange={e => setFormData({ ...formData, category: e.target.value })}
+                    className="w-full px-4 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-medium text-stone-800 focus:outline-none focus:border-amber-600"
+                  >
+                    <option value="numerology">Numerology</option>
+                    <option value="astrology">Astrology</option>
+                    <option value="vastu">Vastu</option>
+                    <option value="name">Name Correction</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1.5">
+                    Stated Approximate Value (₹)
+                  </label>
+                  <input
+                    type="number"
+                    value={formData.approximateValue || ''}
+                    onChange={e => setFormData({ ...formData, approximateValue: e.target.value ? Number(e.target.value) : undefined })}
+                    placeholder="e.g. 24000 (Combined Value)"
+                    className="w-full px-4 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-900 focus:outline-none focus:border-amber-600"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1.5">
+                  Razorpay Hosted Payment URL
+                </label>
+                <input
+                  type="url"
+                  value={formData.paymentUrl || ''}
+                  onChange={e => setFormData({ ...formData, paymentUrl: e.target.value })}
+                  placeholder="https://rzp.io/rzp/znXO15N"
+                  className="w-full px-4 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-mono text-stone-900 focus:outline-none focus:border-amber-600"
+                />
+                <span className="text-[10px] text-stone-500 mt-1 block">
+                  If provided, enrollment buttons directly route to this Razorpay hosted checkout. Leave blank to use WhatsApp default.
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1.5">
+                    Class Schedule
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.schedule || ''}
+                    onChange={e => setFormData({ ...formData, schedule: e.target.value })}
+                    placeholder="e.g. 11:00 AM–1:00 PM (2 Live Classes/Week)"
+                    className="w-full px-4 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-900 focus:outline-none focus:border-amber-600"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1.5">
+                    Commencement Date
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.startDate || ''}
+                    onChange={e => setFormData({ ...formData, startDate: e.target.value })}
+                    placeholder="e.g. 16 November"
+                    className="w-full px-4 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-900 focus:outline-none focus:border-amber-600"
+                  />
+                </div>
+              </div>
+
+              {/* Campaign Highlight Configuration */}
+              <div className="p-3.5 rounded-xl bg-amber-50/70 border border-amber-200/70 space-y-2.5">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="campaignActiveProg"
+                    checked={Boolean(formData.campaignActive)}
+                    onChange={e => setFormData({ ...formData, campaignActive: e.target.checked })}
+                    className="rounded border-amber-300 text-amber-600 focus:ring-amber-500 w-4 h-4"
+                  />
+                  <label htmlFor="campaignActiveProg" className="text-xs font-bold text-amber-900 cursor-pointer">
+                    Campaign Active (Highlights in Homepage Hero Carousel)
+                  </label>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 items-center">
+                  <div>
+                    <label className="block text-[11px] font-semibold text-stone-700 mb-1">
+                      Campaign End Date / Expiry
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.campaignEndDate || ''}
+                      onChange={e => setFormData({ ...formData, campaignEndDate: e.target.value })}
+                      placeholder="Pending Administrator Confirmation"
+                      className="w-full px-3 py-1.5 bg-white border border-stone-200 rounded-lg text-xs text-stone-800 focus:outline-none focus:border-amber-600"
+                    />
+                  </div>
+                  <div className="text-[10px] text-amber-800 bg-amber-100/60 p-2 rounded-lg">
+                    ⚠️ Notice: Course document states "commencing 16 November", but does not specify schedule year. Year and expiry date are flagged for administrator confirmation rather than assumed.
+                  </div>
+                </div>
               </div>
 
               <div className="flex items-center gap-6 pt-2">

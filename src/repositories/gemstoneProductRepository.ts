@@ -239,6 +239,9 @@ export const gemstoneProductRepository = {
     const id = product.id || `gem-${Date.now()}`;
     const slug = product.slug || (product.name ? product.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') : `gem-${Date.now()}`);
     const stockQuantity = Math.max(0, Number(product.stockQuantity !== undefined ? product.stockQuantity : 0));
+    if (product.inStock && stockQuantity <= 0) {
+      throw new Error('Inventory safeguard: Cannot mark product as in stock when stock quantity is 0 or less.');
+    }
     const inStock = stockQuantity > 0 ? Boolean(product.inStock) : false;
     
     // Safe defaults: Draft (unpublished), unavailable (stock = 0), unverified certification, empty images if none provided

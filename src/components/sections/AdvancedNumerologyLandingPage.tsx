@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Sparkles, 
   CheckCircle2, 
@@ -10,13 +9,10 @@ import {
   ArrowRight, 
   ShieldCheck, 
   ChevronDown, 
-  ChevronUp, 
-  Video, 
-  Smartphone, 
   Compass, 
+  Smartphone,
   Radio
 } from 'lucide-react';
-import SmartImage from './SmartImage';
 
 interface AdvancedNumerologyLandingPageProps {
   navigate?: (path: string) => void;
@@ -24,8 +20,157 @@ interface AdvancedNumerologyLandingPageProps {
 
 const RAZORPAY_URL = "https://rzp.io/rzp/znXO15N";
 
+// Course 1: Advanced Vedic Numerology Modules (11 Modules)
+const VEDIC_MODULES = [
+  {
+    module: 'Module 1',
+    title: 'Psychic Numbers (Mulank) & Destiny Numbers (Bhagyank)',
+    description: 'Foundational calculations, core planetary vibrations, inner motivations, and external karmic direction.'
+  },
+  {
+    module: 'Module 2',
+    title: 'Master Numbers & Special Vibrations (11, 22, 33)',
+    description: 'Deconstructing master soul frequencies, karmic challenges, spiritual potential, and leadership indicators.'
+  },
+  {
+    module: 'Module 3',
+    title: 'Harmonic Number Compatibility Matrix',
+    description: 'Analytical evaluation of friendly, neutral, and hostile number relationships across personal and professional spheres.'
+  },
+  {
+    module: 'Module 4',
+    title: 'The Complete 81 Combinations Analysis',
+    description: 'Systematic study of all 81 Psychic-Destiny permutations, detailing behavioral tendencies, career peaks, and life obstacles.'
+  },
+  {
+    module: 'Module 5',
+    title: 'Repetitive & Missing Numbers',
+    description: 'Identifying excessive energetic buildup and planetary voids in birth charts to understand psychological patterns and hidden talents.'
+  },
+  {
+    module: 'Module 6',
+    title: 'The Authentic Vedic Grid (Loshu vs. Vedic Energy Mapping)',
+    description: 'Mapping the 9 planetary houses in the birth grid to analyze elemental balance, directional energies, and life planes.'
+  },
+  {
+    module: 'Module 7',
+    title: 'Profession & Career Path Analysis',
+    description: 'Aligning business partnerships, job sectors, and wealth creation avenues with ruling planetary numbers.'
+  },
+  {
+    module: 'Module 8',
+    title: 'Marriage & Relationship Compatibility',
+    description: 'Detailed synastry matching, timing of marriage, mitigating relationship discord, and harmony calculation.'
+  },
+  {
+    module: 'Module 9',
+    title: 'House & Property Number Science',
+    description: 'Calculating residential, apartment, and office address frequencies to create peace, stability, and commercial success.'
+  },
+  {
+    module: 'Module 10',
+    title: 'Signature & Name Science Analysis',
+    description: 'Crafting powerful personal and commercial signatures aligned with planetary geometry for growth and public recognition.'
+  },
+  {
+    module: 'Module 11',
+    title: 'Authentic Vedic Numerology Remedies',
+    description: 'Practical, non-dogmatic remedies including yantras, planetary mantra vibrations, color therapy, and lifestyle alignments.'
+  }
+];
+
+// Course 2: Super Advanced Mobile Numerology Modules (11 Modules)
+const MOBILE_MODULES = [
+  {
+    module: 'Module 1',
+    title: 'Telecommunication Vibrations & Everyday Digital Energy',
+    description: 'Understanding how continuous mobile frequencies shape our subconscious thoughts, conversations, and business negotiations.'
+  },
+  {
+    module: 'Module 2',
+    title: 'Special Number Pairings & Micro-Vibrations',
+    description: 'Detailed analysis of high-impact two-digit and three-digit pairs that either accelerate growth or trigger recurring setbacks.'
+  },
+  {
+    module: 'Module 3',
+    title: 'Modified Numbers & Digital Frequency Tuning',
+    description: 'Calculating total sums, compound intermediate values, and secret root numbers behind modern 10-digit SIM sequences.'
+  },
+  {
+    module: 'Module 4',
+    title: 'The Vedic Grid in Mobile Numerology',
+    description: 'Plotting mobile digits across the Vedic grid to locate energetic clusters, missing planes, and financial channels.'
+  },
+  {
+    module: 'Module 5',
+    title: '81 Combinations in Mobile Numbers',
+    description: 'Evaluating how your phone number interacts directly with your unique Psychic and Destiny numbers.'
+  },
+  {
+    module: 'Module 6',
+    title: 'Repetitive & Hostile Numbers in Phone Sequences',
+    description: 'Diagnosing conflicting digits that trigger financial depletion, health stress, or communication misunderstandings.'
+  },
+  {
+    module: 'Module 7',
+    title: 'Planetary Conjunctions in Mobile Sequences',
+    description: 'Analyzing planetary conjunctions (e.g., Sun-Mercury Budhaditya, Saturn-Rahu, Venus-Mercury) created by adjacent digits.'
+  },
+  {
+    module: 'Module 8',
+    title: 'Rajyoga Combinations in Mobile Numbers',
+    description: 'Identifying elite numerical sequences that attract authority, commercial success, financial windfalls, and leadership.'
+  },
+  {
+    module: 'Module 9',
+    title: 'Device Charging Directions & Sacred Placement',
+    description: 'Geographical placement and charging orientation to align electromagnetic device fields with positive Vastu directions.'
+  },
+  {
+    module: 'Module 10',
+    title: 'Colors, Covers, and Wallpaper Frequency Science',
+    description: 'Selecting mobile cases, screen wallpapers, and themes aligned with individual planetary rulers to channel prosperity.'
+  },
+  {
+    module: 'Module 11',
+    title: 'Strategic Mobile Number Selection Protocol',
+    description: 'A complete step-by-step checklist to select, verify, and activate the ultimate phone number for personal and business use.'
+  }
+];
+
+// FAQs from verified course document
+const FAQS = [
+  {
+    q: 'What is included in this Navratri Special Offer bundle?',
+    a: 'This bundle provides complete access to two comprehensive courses: (1) Advanced Vedic Numerology and (2) Super Advanced Mobile Numerology. Both are taught live by master mentor Raajeev Singh Chauhann for a single combined fee of ₹995.'
+  },
+  {
+    q: 'Are the classes pre-recorded or live?',
+    a: 'All sessions are conducted live. You will have the opportunity for real-time interactive learning and direct live Q&A with Raajeev Singh Chauhann during every class.'
+  },
+  {
+    q: 'What is the weekly schedule of the classes?',
+    a: 'Classes are held twice a week from 11:00 AM to 1:00 PM IST, commencing 16 November.'
+  },
+  {
+    q: 'What happens if I miss a live class?',
+    a: 'High-definition session recordings will be uploaded to both the LEO Family website portal and the official mobile application after each class. You receive 1 full year of unlimited on-demand recording access.'
+  },
+  {
+    q: 'Will I receive a certificate upon completion?',
+    a: 'Yes, an authentic Certificate of Completion will be awarded by LEO Family Occult School after you finish the course curriculum.'
+  },
+  {
+    q: 'Do I need prior knowledge of Numerology to join?',
+    a: 'No prior background is required. The curriculum methodically begins with core principles and elevates to professional consultant-level methods, making it accessible for dedicated beginners while profoundly valuable for practicing occultists.'
+  },
+  {
+    q: 'How do I complete enrollment?',
+    a: 'Click any "ENROLL NOW — ₹995" button to be redirected to our secure Razorpay payment gateway. After payment, you will receive immediate confirmation and student portal onboarding instructions.'
+  }
+];
+
 export default function AdvancedNumerologyLandingPage({ navigate }: AdvancedNumerologyLandingPageProps) {
-  const [activeCourseTab, setActiveCourseTab] = useState<'vedic' | 'mobile'>('vedic');
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
 
   const handleNavigate = (path: string) => {
@@ -43,160 +188,10 @@ export default function AdvancedNumerologyLandingPage({ navigate }: AdvancedNume
     if (el) el.scrollIntoView({ behavior: 'smooth' });
   };
 
-  // Course 1: Advanced Vedic Numerology Modules
-  const vedicModules = [
-    {
-      module: 'Module 1',
-      title: 'Psychic Numbers (Mulank) & Destiny Numbers (Bhagyank)',
-      description: 'Foundational calculations, core planetary vibrations, inner motivations, and external karmic direction.'
-    },
-    {
-      module: 'Module 2',
-      title: 'Master Numbers & Special Vibrations (11, 22, 33)',
-      description: 'Deconstructing master soul frequencies, karmic challenges, spiritual potential, and leadership indicators.'
-    },
-    {
-      module: 'Module 3',
-      title: 'Harmonic Number Compatibility Matrix',
-      description: 'Analytical evaluation of friendly, neutral, and hostile number relationships across personal and professional spheres.'
-    },
-    {
-      module: 'Module 4',
-      title: 'The Complete 81 Combinations Analysis',
-      description: 'Systematic study of all 81 Psychic-Destiny permutations, detailing behavioral tendencies, career peaks, and life obstacles.'
-    },
-    {
-      module: 'Module 5',
-      title: 'Repetitive & Missing Numbers',
-      description: 'Identifying excessive energetic buildup and planetary voids in birth charts to understand psychological patterns and hidden talents.'
-    },
-    {
-      module: 'Module 6',
-      title: 'The Authentic Vedic Grid (Loshu vs. Vedic Energy Mapping)',
-      description: 'Mapping the 9 planetary houses in the birth grid to analyze elemental balance, directional energies, and life planes.'
-    },
-    {
-      module: 'Module 7',
-      title: 'Profession & Career Path Analysis',
-      description: 'Aligning business partnerships, job sectors, and wealth creation avenues with ruling planetary numbers.'
-    },
-    {
-      module: 'Module 8',
-      title: 'Marriage & Relationship Compatibility',
-      description: 'Detailed synastry matching, timing of marriage, mitigating relationship discord, and harmony calculation.'
-    },
-    {
-      module: 'Module 9',
-      title: 'House & Property Number Science',
-      description: 'Calculating residential, apartment, and office address frequencies to create peace, stability, and commercial success.'
-    },
-    {
-      module: 'Module 10',
-      title: 'Signature & Name Science Analysis',
-      description: 'Crafting powerful personal and commercial signatures aligned with planetary geometry for growth and public recognition.'
-    },
-    {
-      module: 'Module 11',
-      title: 'Authentic Vedic Numerology Remedies',
-      description: 'Practical, non-dogmatic remedies including yantras, planetary mantra vibrations, color therapy, and lifestyle alignments.'
-    }
-  ];
-
-  // Course 2: Super Advanced Mobile Numerology Modules
-  const mobileModules = [
-    {
-      module: 'Module 1',
-      title: 'Telecommunication Vibrations & Everyday Digital Energy',
-      description: 'Understanding how continuous mobile frequencies shape our subconscious thoughts, conversations, and business negotiations.'
-    },
-    {
-      module: 'Module 2',
-      title: 'Special Number Pairings & Micro-Vibrations',
-      description: 'Detailed analysis of high-impact two-digit and three-digit pairs that either accelerate growth or trigger recurring setbacks.'
-    },
-    {
-      module: 'Module 3',
-      title: 'Modified Numbers & Digital Frequency Tuning',
-      description: 'Calculating total sums, compound intermediate values, and secret root numbers behind modern 10-digit SIM sequences.'
-    },
-    {
-      module: 'Module 4',
-      title: 'The Vedic Grid in Mobile Numerology',
-      description: 'Plotting mobile digits across the Vedic grid to locate energetic clusters, missing planes, and financial channels.'
-    },
-    {
-      module: 'Module 5',
-      title: '81 Combinations in Mobile Numbers',
-      description: 'Evaluating how your phone number interacts directly with your unique Psychic and Destiny numbers.'
-    },
-    {
-      module: 'Module 6',
-      title: 'Repetitive & Hostile Numbers in Phone Sequences',
-      description: 'Diagnosing conflicting digits that trigger financial depletion, health stress, or communication misunderstandings.'
-    },
-    {
-      module: 'Module 7',
-      title: 'Planetary Conjunctions in Mobile Sequences',
-      description: 'Analyzing planetary conjunctions (e.g., Sun-Mercury Budhaditya, Saturn-Rahu, Venus-Mercury) created by adjacent digits.'
-    },
-    {
-      module: 'Module 8',
-      title: 'Rajyoga Combinations in Mobile Numbers',
-      description: 'Identifying elite numerical sequences that attract authority, commercial success, financial windfalls, and leadership.'
-    },
-    {
-      module: 'Module 9',
-      title: 'Device Charging Directions & Sacred Placement',
-      description: 'Geographical placement and charging orientation to align electromagnetic device fields with positive Vastu directions.'
-    },
-    {
-      module: 'Module 10',
-      title: 'Colors, Covers, and Wallpaper Frequency Science',
-      description: 'Selecting mobile cases, screen wallpapers, and themes aligned with individual planetary rulers to channel prosperity.'
-    },
-    {
-      module: 'Module 11',
-      title: 'Strategic Mobile Number Selection Protocol',
-      description: 'A complete step-by-step checklist to select, verify, and activate the ultimate phone number for personal and business use.'
-    }
-  ];
-
-  // FAQs from supplied course document
-  const faqs = [
-    {
-      q: 'What is included in this Navratri Special Offer bundle?',
-      a: 'This bundle provides complete access to two comprehensive courses: (1) Advanced Vedic Numerology and (2) Super Advanced Mobile Numerology. Both are taught live by master mentor Raajeev Singh Chauhann for a single combined fee of ₹995.'
-    },
-    {
-      q: 'Are the classes pre-recorded or live?',
-      a: 'All sessions are conducted live. You will have the opportunity for real-time interactive learning and direct live Q&A with Raajeev Singh Chauhann during every class.'
-    },
-    {
-      q: 'What is the weekly schedule of the classes?',
-      a: 'Classes are held twice a week from 11:00 AM to 1:00 PM IST, commencing 16 November.'
-    },
-    {
-      q: 'What happens if I miss a live class?',
-      a: 'High-definition session recordings will be uploaded to both the LEO Family website portal and the official mobile application after each class. You receive 1 full year of unlimited on-demand recording access.'
-    },
-    {
-      q: 'Will I receive a certificate upon completion?',
-      a: 'Yes, an authentic Certificate of Completion will be awarded by LEO Family Occult School after you finish the course curriculum.'
-    },
-    {
-      q: 'Do I need prior knowledge of Numerology to join?',
-      a: 'No prior background is required. The curriculum methodically begins with core principles and elevates to professional consultant-level methods, making it accessible for dedicated beginners while profoundly valuable for practicing occultists.'
-    },
-    {
-      q: 'How do I complete enrollment?',
-      a: 'Click any "ENROLL NOW — ₹995" button to be redirected to our secure Razorpay payment gateway. After payment, you will receive immediate confirmation and student portal onboarding instructions.'
-    }
-  ];
-
   return (
     <div className="min-h-screen bg-leo-ivory text-leo-text-primary pt-24 pb-36 sm:pb-32 relative overflow-hidden font-sans transition-colors duration-300">
       
-      <div className="container mx-auto px-6 relative z-10 max-w-6xl">
+      <div className="container mx-auto px-4 sm:px-6 relative z-10 max-w-6xl">
         
         {/* Navigation Breadcrumb */}
         <div className="mb-6 flex items-center justify-between">
@@ -226,7 +221,7 @@ export default function AdvancedNumerologyLandingPage({ navigate }: AdvancedNume
             <div className="lg:col-span-7 space-y-6 text-left">
               
               {/* Badge */}
-              <div className="inline-flex items-center gap-2 bg-leo-surface border border-leo-border px-3.5 py-1.5 rounded-full w-fit shadow-xs">
+              <div className="inline-flex items-center gap-2 bg-leo-surface border border-leo-border px-3.5 py-1.5 rounded-full w-fit shadow-2xs">
                 <Sparkles className="w-3.5 h-3.5 text-leo-gold shrink-0" />
                 <span className="text-xs font-cinzel font-extrabold tracking-[0.2em] text-leo-emerald uppercase">
                   NAVRATRI SPECIAL OFFER 2026
@@ -305,7 +300,7 @@ export default function AdvancedNumerologyLandingPage({ navigate }: AdvancedNume
                 <button
                   type="button"
                   onClick={scrollToCurriculum}
-                  className="px-7 py-4 bg-leo-card hover:bg-leo-surface border border-leo-border hover:border-leo-gold text-leo-emerald font-bold uppercase tracking-[0.15em] text-xs rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs"
+                  className="px-7 py-4 bg-leo-card hover:bg-leo-surface border border-leo-border hover:border-leo-gold text-leo-emerald font-bold uppercase tracking-[0.15em] text-xs rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-2xs"
                 >
                   <BookOpen className="w-4 h-4 text-leo-gold" />
                   <span>View Curriculum</span>
@@ -314,15 +309,20 @@ export default function AdvancedNumerologyLandingPage({ navigate }: AdvancedNume
 
             </div>
 
-            {/* Right Hero Mentor Showcase Card */}
+            {/* Right Hero Mentor Showcase Card - Above the fold, prioritized loading */}
             <div className="lg:col-span-5 flex justify-center">
               <div className="w-full max-w-md bg-leo-card border border-leo-border rounded-3xl p-6 sm:p-8 shadow-sm flex flex-col items-center text-center space-y-4">
                 
-                {/* Mentor Photo with Gold Gradient Ring */}
-                <div className="relative w-40 h-40 sm:w-48 sm:h-48 rounded-full p-1.5 bg-gradient-to-tr from-leo-emerald via-leo-gold to-leo-emerald shadow-lg overflow-hidden">
-                  <SmartImage
+                {/* Mentor Photo with Gold Gradient Ring - Eager, High Priority LCP Image with explicit dimensions */}
+                <div className="relative w-40 h-40 sm:w-48 sm:h-48 rounded-full p-1.5 bg-gradient-to-tr from-leo-emerald via-leo-gold to-leo-emerald shadow-lg overflow-hidden shrink-0">
+                  <img
                     src="/assets/teachers/Raajeev.webp"
-                    alt="Raajeev Singh Chauhann"
+                    alt="Raajeev Singh Chauhann - Master Occultist & Founder"
+                    width={192}
+                    height={192}
+                    loading="eager"
+                    fetchPriority="high"
+                    decoding="async"
                     className="w-full h-full object-cover rounded-full"
                   />
                 </div>
@@ -382,7 +382,7 @@ export default function AdvancedNumerologyLandingPage({ navigate }: AdvancedNume
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="p-6 sm:p-8 rounded-3xl bg-leo-card border border-leo-border shadow-xs hover:border-leo-gold/50 transition-all space-y-4">
+            <div className="p-6 sm:p-8 rounded-3xl bg-leo-card border border-leo-border shadow-2xs hover:border-leo-gold/50 transition-all space-y-4">
               <div className="w-12 h-12 rounded-2xl bg-leo-surface border border-leo-border flex items-center justify-center">
                 <Compass className="w-6 h-6 text-leo-emerald" />
               </div>
@@ -397,7 +397,7 @@ export default function AdvancedNumerologyLandingPage({ navigate }: AdvancedNume
               </div>
             </div>
 
-            <div className="p-6 sm:p-8 rounded-3xl bg-leo-card border border-leo-border shadow-xs hover:border-leo-gold/50 transition-all space-y-4">
+            <div className="p-6 sm:p-8 rounded-3xl bg-leo-card border border-leo-border shadow-2xs hover:border-leo-gold/50 transition-all space-y-4">
               <div className="w-12 h-12 rounded-2xl bg-leo-surface border border-leo-border flex items-center justify-center">
                 <Smartphone className="w-6 h-6 text-leo-emerald" />
               </div>
@@ -415,70 +415,161 @@ export default function AdvancedNumerologyLandingPage({ navigate }: AdvancedNume
         </section>
 
         {/* ========================================================================= */}
-        {/* SECTIONS 3 & 4: COMPLETE CURRICULUM ACCORDION/TABS */}
+        {/* SECTIONS 3 & 4: UNIFIED FULL PROGRAM CURRICULUM CONTAINER */}
+        {/* Both courses displayed simultaneously in one single outer box */}
         {/* ========================================================================= */}
         <section id="curriculum-section" className="py-16 border-b border-leo-border">
-          <div className="max-w-3xl mx-auto text-center space-y-3 mb-10">
+          <div className="max-w-4xl mx-auto text-center space-y-3 mb-10">
             <span className="text-xs font-mono uppercase tracking-widest text-leo-emerald bg-leo-surface border border-leo-border px-3.5 py-1 rounded-full">
-              Exhaustive Course Syllabus
+              Exhaustive 22-Module Syllabus
             </span>
             <h2 className="text-2xl sm:text-4xl font-extrabold font-cinzel text-leo-emerald">
               Full Program Curriculum
             </h2>
             <p className="text-sm sm:text-base text-leo-text-secondary font-normal leading-relaxed">
-              Explore every topic covered across both masterclasses. No superficial overviews — every module is grounded in authentic Vedic science and practical real-world application.
+              Both complete masterclasses included in the ₹995 package. Explore all 22 modules simultaneously below — no tabs, no switching, and no hidden content.
             </p>
-
-            {/* Course Switcher Tabs */}
-            <div className="flex flex-wrap justify-center gap-3 pt-4">
-              <button
-                type="button"
-                onClick={() => setActiveCourseTab('vedic')}
-                className={`px-6 py-3 rounded-xl text-xs sm:text-sm font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer ${
-                  activeCourseTab === 'vedic'
-                    ? 'bg-leo-emerald text-leo-ivory font-extrabold shadow-md scale-102'
-                    : 'bg-leo-card border border-leo-border text-leo-text-secondary hover:text-leo-emerald hover:border-leo-gold/40'
-                }`}
-              >
-                Course 1: Vedic Numerology (11 Modules)
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveCourseTab('mobile')}
-                className={`px-6 py-3 rounded-xl text-xs sm:text-sm font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer ${
-                  activeCourseTab === 'mobile'
-                    ? 'bg-leo-emerald text-leo-ivory font-extrabold shadow-md scale-102'
-                    : 'bg-leo-card border border-leo-border text-leo-text-secondary hover:text-leo-emerald hover:border-leo-gold/40'
-                }`}
-              >
-                Course 2: Mobile Numerology (11 Modules)
-              </button>
-            </div>
           </div>
 
-          {/* Module List Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-5xl mx-auto">
-            {(activeCourseTab === 'vedic' ? vedicModules : mobileModules).map((item, index) => (
-              <div
-                key={index}
-                className="p-5 rounded-2xl bg-leo-card border border-leo-border hover:border-leo-gold/50 shadow-xs transition-all flex items-start gap-4"
-              >
-                <div className="w-9 h-9 rounded-xl bg-leo-surface border border-leo-border flex items-center justify-center shrink-0 text-leo-emerald font-mono text-xs font-bold">
-                  {index + 1}
-                </div>
-                <div className="space-y-1">
-                  <span className="text-[10px] font-mono uppercase tracking-widest text-leo-gold block font-semibold">
-                    {item.module}
-                  </span>
-                  <h4 className="text-sm font-bold font-cinzel text-leo-emerald">
-                    {item.title}
-                  </h4>
-                  <p className="text-xs text-leo-text-secondary font-normal font-sans leading-relaxed">
-                    {item.description}
+          {/* Unified Single Curriculum Box */}
+          <div className="bg-leo-card border border-leo-border rounded-3xl shadow-sm overflow-hidden">
+            
+            {/* Top Container Header */}
+            <div className="px-6 sm:px-8 py-5 bg-leo-surface border-b border-leo-border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-2.5">
+                <BookOpen className="w-5 h-5 text-leo-gold shrink-0" />
+                <span className="font-cinzel font-bold text-sm sm:text-base text-leo-emerald">
+                  Two Complete Courses · 22 Comprehensive Modules
+                </span>
+              </div>
+              <span className="text-xs font-mono font-bold text-leo-emerald bg-leo-card px-3 py-1 rounded-full border border-leo-border">
+                ₹995 All-Inclusive Package
+              </span>
+            </div>
+
+            {/* Side-by-side Columns on Desktop (lg:grid-cols-2) with Subtle Divider, Stacked Vertically on Mobile */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-leo-border">
+              
+              {/* Column 1: COURSE 1 — ADVANCED VEDIC NUMEROLOGY (11 MODULES) */}
+              <div className="p-6 sm:p-8 space-y-6">
+                
+                {/* Course 1 Heading & Summary */}
+                <div className="space-y-2 pb-4 border-b border-leo-border/80">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-leo-surface border border-leo-border text-leo-emerald text-[11px] font-mono font-bold uppercase tracking-wider">
+                      <Compass className="w-3.5 h-3.5 text-leo-gold shrink-0" />
+                      Course 1
+                    </span>
+                    <span className="text-xs font-mono font-bold text-leo-gold bg-leo-surface px-2.5 py-0.5 rounded-md border border-leo-border/60">
+                      11 Modules
+                    </span>
+                  </div>
+
+                  <h3 className="text-lg sm:text-xl font-bold font-cinzel text-leo-emerald leading-snug">
+                    COURSE 1 — ADVANCED VEDIC NUMEROLOGY (11 MODULES)
+                  </h3>
+
+                  <p className="text-xs sm:text-sm text-leo-text-secondary leading-relaxed font-sans">
+                    Master foundational planetary vibrations, 81 Psychic-Destiny permutations, the authentic Vedic Grid, relationship matching, career guidance, and remedies.
                   </p>
                 </div>
+
+                {/* All 11 Modules of Course 1 */}
+                <div className="space-y-3">
+                  {VEDIC_MODULES.map((item, index) => (
+                    <div
+                      key={`vedic-${index}`}
+                      className="p-4 rounded-2xl bg-leo-surface/60 hover:bg-leo-surface border border-leo-border/70 hover:border-leo-gold/50 shadow-2xs transition-all flex items-start gap-3.5"
+                    >
+                      <div className="w-8 h-8 rounded-xl bg-leo-card border border-leo-border flex items-center justify-center shrink-0 text-leo-emerald font-mono text-xs font-bold shadow-2xs mt-0.5">
+                        {index + 1}
+                      </div>
+                      <div className="space-y-1 min-w-0 flex-1">
+                        <span className="text-[10px] font-mono uppercase tracking-widest text-leo-gold block font-bold">
+                          {item.module}
+                        </span>
+                        <h4 className="text-sm font-bold font-cinzel text-leo-emerald leading-snug">
+                          {item.title}
+                        </h4>
+                        <p className="text-xs text-leo-text-secondary font-normal font-sans leading-relaxed">
+                          {item.description}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
               </div>
-            ))}
+
+              {/* Column 2: COURSE 2 — SUPER ADVANCED MOBILE NUMEROLOGY (11 MODULES) */}
+              <div className="p-6 sm:p-8 space-y-6">
+                
+                {/* Course 2 Heading & Summary */}
+                <div className="space-y-2 pb-4 border-b border-leo-border/80">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-leo-surface border border-leo-border text-leo-emerald text-[11px] font-mono font-bold uppercase tracking-wider">
+                      <Smartphone className="w-3.5 h-3.5 text-leo-gold shrink-0" />
+                      Course 2
+                    </span>
+                    <span className="text-xs font-mono font-bold text-leo-gold bg-leo-surface px-2.5 py-0.5 rounded-md border border-leo-border/60">
+                      11 Modules
+                    </span>
+                  </div>
+
+                  <h3 className="text-lg sm:text-xl font-bold font-cinzel text-leo-emerald leading-snug">
+                    COURSE 2 — SUPER ADVANCED MOBILE NUMEROLOGY (11 MODULES)
+                  </h3>
+
+                  <p className="text-xs sm:text-sm text-leo-text-secondary leading-relaxed font-sans">
+                    Transform daily digital frequencies for financial growth and leadership. Discover digit pairings, modified frequencies, Rajyoga sequences, and number selection.
+                  </p>
+                </div>
+
+                {/* All 11 Modules of Course 2 */}
+                <div className="space-y-3">
+                  {MOBILE_MODULES.map((item, index) => (
+                    <div
+                      key={`mobile-${index}`}
+                      className="p-4 rounded-2xl bg-leo-surface/60 hover:bg-leo-surface border border-leo-border/70 hover:border-leo-gold/50 shadow-2xs transition-all flex items-start gap-3.5"
+                    >
+                      <div className="w-8 h-8 rounded-xl bg-leo-card border border-leo-border flex items-center justify-center shrink-0 text-leo-emerald font-mono text-xs font-bold shadow-2xs mt-0.5">
+                        {index + 1}
+                      </div>
+                      <div className="space-y-1 min-w-0 flex-1">
+                        <span className="text-[10px] font-mono uppercase tracking-widest text-leo-gold block font-bold">
+                          {item.module}
+                        </span>
+                        <h4 className="text-sm font-bold font-cinzel text-leo-emerald leading-snug">
+                          {item.title}
+                        </h4>
+                        <p className="text-xs text-leo-text-secondary font-normal font-sans leading-relaxed">
+                          {item.description}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+              </div>
+
+            </div>
+
+            {/* Bottom Inner Summary & Enrollment Bar */}
+            <div className="px-6 sm:px-8 py-5 bg-leo-surface/70 border-t border-leo-border flex flex-col sm:flex-row items-center justify-between gap-4">
+              <span className="text-xs text-leo-text-secondary text-center sm:text-left">
+                Both courses taught 100% Live by Raajeev Singh Chauhann with interactive Q&A in every session.
+              </span>
+              <a
+                href={RAZORPAY_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-6 py-2.5 bg-leo-emerald hover:bg-emerald-900 text-leo-ivory text-xs font-bold uppercase tracking-wider rounded-xl transition-all shadow-xs shrink-0 flex items-center gap-1.5"
+              >
+                <span>Enroll in Bundle — ₹995</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </a>
+            </div>
+
           </div>
         </section>
 
@@ -570,7 +661,7 @@ export default function AdvancedNumerologyLandingPage({ navigate }: AdvancedNume
               </ul>
             </div>
 
-            <div className="p-6 sm:p-8 rounded-3xl bg-leo-card border border-leo-border shadow-xs space-y-4">
+            <div className="p-6 sm:p-8 rounded-3xl bg-leo-card border border-leo-border shadow-2xs space-y-4">
               <h3 className="text-lg font-bold font-cinzel text-leo-emerald">
                 Who Is This Course Bundle For?
               </h3>
@@ -609,12 +700,12 @@ export default function AdvancedNumerologyLandingPage({ navigate }: AdvancedNume
           </div>
 
           <div className="max-w-3xl mx-auto space-y-3">
-            {faqs.map((faq, idx) => {
+            {FAQS.map((faq, idx) => {
               const isOpen = openFaqIndex === idx;
               return (
                 <div
                   key={idx}
-                  className="rounded-2xl bg-leo-card border border-leo-border overflow-hidden transition-colors shadow-xs"
+                  className="rounded-2xl bg-leo-card border border-leo-border overflow-hidden transition-colors shadow-2xs"
                 >
                   <button
                     type="button"
@@ -624,26 +715,14 @@ export default function AdvancedNumerologyLandingPage({ navigate }: AdvancedNume
                     <span className="font-cinzel font-bold text-sm sm:text-base text-leo-emerald">
                       {faq.q}
                     </span>
-                    {isOpen ? (
-                      <ChevronUp className="w-4 h-4 text-leo-gold shrink-0" />
-                    ) : (
-                      <ChevronDown className="w-4 h-4 text-leo-text-secondary shrink-0" />
-                    )}
+                    <ChevronDown className={`w-4 h-4 text-leo-gold shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
                   </button>
-                  <AnimatePresence>
-                    {isOpen && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        <div className="px-5 pb-5 pt-1 text-xs sm:text-sm text-leo-text-secondary font-normal leading-relaxed border-t border-leo-border/60">
-                          {faq.a}
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                  
+                  {isOpen && (
+                    <div className="px-5 pb-5 pt-1 text-xs sm:text-sm text-leo-text-secondary font-normal leading-relaxed border-t border-leo-border/60">
+                      {faq.a}
+                    </div>
+                  )}
                 </div>
               );
             })}
@@ -697,7 +776,7 @@ export default function AdvancedNumerologyLandingPage({ navigate }: AdvancedNume
               <button
                 type="button"
                 onClick={() => handleNavigate('/programs')}
-                className="w-full sm:w-auto px-7 py-4 bg-leo-card hover:bg-leo-surface border border-leo-border hover:border-leo-gold text-leo-emerald text-xs font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-xs"
+                className="w-full sm:w-auto px-7 py-4 bg-leo-card hover:bg-leo-surface border border-leo-border hover:border-leo-gold text-leo-emerald text-xs font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-2xs"
               >
                 View All Programs
               </button>
@@ -723,12 +802,7 @@ export default function AdvancedNumerologyLandingPage({ navigate }: AdvancedNume
           PERSISTENT FLOATING CTA: PAY NOW TO ENROLL
           Matches /academy/raajeev style, placement & responsive behavior
           ================================================== */}
-      <motion.div
-        initial={{ y: 50, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.3, ease: 'easeOut' }}
-        className="fixed bottom-0 left-0 right-0 z-[990] bg-[#143D2E]/95 backdrop-blur-xl border-t border-[#C6A15B]/40 shadow-[0_-10px_35px_rgba(0,0,0,0.35)] py-3 px-4 sm:px-6 pointer-events-auto pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))]"
-      >
+      <div className="fixed bottom-0 left-0 right-0 z-[990] bg-[#143D2E]/95 backdrop-blur-xl border-t border-[#C6A15B]/40 shadow-[0_-10px_35px_rgba(0,0,0,0.35)] py-3 px-4 sm:px-6 pointer-events-auto pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] transition-transform duration-300">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-3 sm:gap-4">
           
           {/* Left Column: Avatar + Program Information */}
@@ -736,6 +810,10 @@ export default function AdvancedNumerologyLandingPage({ navigate }: AdvancedNume
             <img
               src="/assets/teachers/Raajeev.webp"
               alt="Raajeev Singh Chauhann"
+              width={40}
+              height={40}
+              loading="lazy"
+              decoding="async"
               className="w-10 h-10 rounded-full object-cover border-2 border-[#C6A15B]/70 shadow-md shrink-0 hidden sm:block"
             />
             <div className="text-left min-w-0">
@@ -779,7 +857,7 @@ export default function AdvancedNumerologyLandingPage({ navigate }: AdvancedNume
           </div>
 
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 }

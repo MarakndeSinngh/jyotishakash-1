@@ -27,7 +27,9 @@ import AcademyLandingPage from './components/sections/AcademyLandingPage';
 import ProgramsPage from './components/sections/ProgramsPage';
 import BlogsPage from './components/sections/BlogsPage';
 import MeditationPage from './components/sections/MeditationPage';
-import AdvancedNumerologyLandingPage from './components/sections/AdvancedNumerologyLandingPage';
+const AdvancedNumerologyLandingPage = React.lazy(
+  () => import('./components/sections/AdvancedNumerologyLandingPage')
+);
 import NavratriCoursePromotionBanner from './components/sections/NavratriCoursePromotionBanner';
 import AdminPortal from './components/admin/AdminPortal';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -354,7 +356,18 @@ export default function App() {
             ) : currentPath === '/meditation' ? (
               <MeditationPage key="meditation-page" navigate={navigate} />
             ) : (currentPath.startsWith('/courses/advanced-numerology-bundle') || currentPath.startsWith('/programs/advanced-numerology-bundle') || currentPath === '/programs/prog-navratri-numerology') ? (
-              <AdvancedNumerologyLandingPage key="adv-numerology" navigate={navigate} />
+              <React.Suspense fallback={
+                <div className="min-h-screen bg-[#F7F5EE] flex items-center justify-center pt-24 pb-32">
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="w-8 h-8 rounded-full border-2 border-[#C6A15B]/30 border-t-[#143D2E] animate-spin" />
+                    <span className="text-xs font-cinzel font-bold tracking-widest text-[#143D2E] uppercase">
+                      Loading Masterclass...
+                    </span>
+                  </div>
+                </div>
+              }>
+                <AdvancedNumerologyLandingPage key="adv-numerology" navigate={navigate} />
+              </React.Suspense>
             ) : currentPath.startsWith('/programs') ? (
               <ProgramsPage key="programs-page" navigate={navigate} />
             ) : currentPath === '/blogs' ? (

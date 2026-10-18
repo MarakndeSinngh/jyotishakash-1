@@ -41,6 +41,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
 import Navbar from "./components/Navbar";
 import StickyFloatingCTA from "./components/StickyFloatingCTA";
+import FloatingConsultationCard from "./components/FloatingConsultationCard";
 import { THEME_COLORS } from './utils/themeColors';
 import { Sparkles } from 'lucide-react';
 import { getActiveBrand } from './config/cms';
@@ -341,6 +342,9 @@ export default function App() {
 
         {/* STICKY FLOATING CTA BAR (For Shaunak, Raajeev, Sannjoy Academy Programs) */}
         <StickyFloatingCTA currentPath={currentPath} />
+
+        {/* FLOATING PERSONAL CONSULTATION OFFER CARD & MODAL (Globally available on every route) */}
+        <FloatingConsultationCard currentPath={currentPath} />
 
         {/* MAIN CONTENT */}
         <main className={`relative z-10 ${

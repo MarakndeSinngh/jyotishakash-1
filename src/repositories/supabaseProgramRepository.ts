@@ -4,25 +4,60 @@ import { supabase } from '../lib/supabaseClient';
 export const NAVRATRI_NUMEROLOGY_BUNDLE_PROGRAM: Program = {
   id: 'prog-navratri-numerology',
   mentorId: 'raajeev',
-  title: 'Advanced Vedic Numerology + Super Advanced Mobile Numerology — Special Bundle',
-  subtitle: 'Two advanced courses. One complete learning package by Raajeev Singh Chauhann.',
-  description: 'Master complete Vedic Numerology (Psychic & Destiny numbers, 81 combinations, Vedic Grid, remedies) and Super Advanced Mobile Numerology (number pairings, hostile numbers, Rajyoga, mobile selection) in live sessions with Raajeev Singh Chauhann.',
+  title: 'Super Advanced Vedic Numerology',
+  subtitle: 'An advanced learning journey through Vedic Numerology concepts and practical analysis by Raajeev Singh Chauhann.',
+  description: 'Master complete Vedic Numerology including Psychic & Destiny numbers, Master numbers, the complete 81 combinations, authentic Vedic Grid, profession & relationship analysis, house numbers, signature science, and remedies in live sessions with Raajeev Singh Chauhann.',
   image: '/assets/teachers/Raajeev.webp',
   duration: 'Live Classes (2/Week)',
-  price: 995,
-  discountPrice: 24000,
+  price: 194,
+  discountPrice: undefined,
   featured: true,
   visible: true,
   order: 0,
   category: 'numerology',
-  paymentUrl: 'https://rzp.io/rzp/znXO15N',
-  approximateValue: 24000,
+  paymentUrl: 'https://rzp.io/rzp/Pyh2zDaN',
+  approximateValue: undefined,
   schedule: '11:00 AM–1:00 PM (Commencing 16 November)',
   startDate: '16 November',
   campaignActive: true
 };
 
 const LOCAL_OVERRIDE_KEY = 'leo_local_program_overrides';
+
+function sanitizeSingleCourseOverride(p: Partial<Program>): Partial<Program> {
+  const cleaned = { ...p };
+  if (
+    cleaned.title &&
+    (cleaned.title.includes('Mobile Numerology') || cleaned.title.includes('Bundle'))
+  ) {
+    cleaned.title = NAVRATRI_NUMEROLOGY_BUNDLE_PROGRAM.title;
+  }
+  if (
+    cleaned.subtitle &&
+    (cleaned.subtitle.includes('Two advanced courses') || cleaned.subtitle.includes('Mobile Numerology'))
+  ) {
+    cleaned.subtitle = NAVRATRI_NUMEROLOGY_BUNDLE_PROGRAM.subtitle;
+  }
+  if (
+    cleaned.description &&
+    (cleaned.description.includes('Mobile Numerology') || cleaned.description.includes('bundle'))
+  ) {
+    cleaned.description = NAVRATRI_NUMEROLOGY_BUNDLE_PROGRAM.description;
+  }
+  if (cleaned.price === 995) {
+    cleaned.price = NAVRATRI_NUMEROLOGY_BUNDLE_PROGRAM.price;
+  }
+  if (cleaned.discountPrice === 24000) {
+    cleaned.discountPrice = undefined;
+  }
+  if (cleaned.approximateValue === 24000) {
+    cleaned.approximateValue = undefined;
+  }
+  if (!cleaned.paymentUrl || cleaned.paymentUrl === 'https://rzp.io/rzp/znXO15N') {
+    cleaned.paymentUrl = NAVRATRI_NUMEROLOGY_BUNDLE_PROGRAM.paymentUrl;
+  }
+  return cleaned;
+}
 
 function getLocalOverrides(): Record<string, Partial<Program>> {
   if (typeof window === 'undefined') return {};
@@ -46,8 +81,11 @@ function saveLocalOverride(id: string, updates: Partial<Program>) {
 }
 
 const mapRowToProgram = (row: any): Program => {
-  const overrides = getLocalOverrides()[row.id] || {};
-  return {
+  const rawOverrides = getLocalOverrides()[row.id] || {};
+  const overrides = row.id === 'prog-navratri-numerology' ? sanitizeSingleCourseOverride(rawOverrides) : rawOverrides;
+  const isSpecialVedicOffer = row.id === 'prog-navratri-numerology';
+
+  const mapped: Program = {
     id: row.id,
     mentorId: row.mentor_id,
     title: row.title,
@@ -60,16 +98,30 @@ const mapRowToProgram = (row: any): Program => {
     featured: row.featured ?? false,
     visible: row.visible ?? true,
     order: row.order ?? 0,
-    category: row.category || overrides.category || (row.id === 'prog-navratri-numerology' ? 'numerology' : undefined),
-    paymentUrl: row.payment_url || overrides.paymentUrl || (row.id === 'prog-navratri-numerology' ? 'https://rzp.io/rzp/znXO15N' : undefined),
-    approximateValue: row.approximate_value ? Number(row.approximate_value) : overrides.approximateValue || (row.id === 'prog-navratri-numerology' ? 24000 : undefined),
-    schedule: row.schedule || overrides.schedule || (row.id === 'prog-navratri-numerology' ? '11:00 AM–1:00 PM (Commencing 16 November)' : undefined),
-    startDate: row.start_date || overrides.startDate || (row.id === 'prog-navratri-numerology' ? '16 November' : undefined),
-    campaignActive: row.campaign_active !== undefined ? Boolean(row.campaign_active) : (overrides.campaignActive ?? (row.id === 'prog-navratri-numerology' ? true : undefined)),
+    category: row.category || overrides.category || (isSpecialVedicOffer ? 'numerology' : undefined),
+    paymentUrl: row.payment_url || overrides.paymentUrl || (isSpecialVedicOffer ? 'https://rzp.io/rzp/Pyh2zDaN' : undefined),
+    approximateValue: row.approximate_value ? Number(row.approximate_value) : overrides.approximateValue,
+    schedule: row.schedule || overrides.schedule || (isSpecialVedicOffer ? '11:00 AM–1:00 PM (Commencing 16 November)' : undefined),
+    startDate: row.start_date || overrides.startDate || (isSpecialVedicOffer ? '16 November' : undefined),
+    campaignActive: row.campaign_active !== undefined ? Boolean(row.campaign_active) : (overrides.campaignActive ?? (isSpecialVedicOffer ? true : undefined)),
     campaignEndDate: row.campaign_end_date || overrides.campaignEndDate || undefined,
     createdAt: row.created_at,
     updatedAt: row.updated_at
   };
+
+  if (isSpecialVedicOffer) {
+    return {
+      ...mapped,
+      ...sanitizeSingleCourseOverride(mapped),
+      title: NAVRATRI_NUMEROLOGY_BUNDLE_PROGRAM.title,
+      price: NAVRATRI_NUMEROLOGY_BUNDLE_PROGRAM.price,
+      discountPrice: undefined,
+      approximateValue: undefined,
+      paymentUrl: NAVRATRI_NUMEROLOGY_BUNDLE_PROGRAM.paymentUrl,
+    };
+  }
+
+  return mapped;
 };
 
 const mapProgramToRow = (p: Partial<Program>, isUpdate = false, includeExtended = false): any => {
@@ -106,23 +158,35 @@ const mapProgramToRow = (p: Partial<Program>, isUpdate = false, includeExtended 
 };
 
 function ensureNavratriBundle(list: Program[]): Program[] {
-  const overrides = getLocalOverrides()['prog-navratri-numerology'] || {};
-  const bundle: Program = {
+  const rawOverrides = getLocalOverrides()['prog-navratri-numerology'] || {};
+  const overrides = sanitizeSingleCourseOverride(rawOverrides);
+  const courseOffer: Program = {
     ...NAVRATRI_NUMEROLOGY_BUNDLE_PROGRAM,
-    ...overrides
+    ...overrides,
+    title: NAVRATRI_NUMEROLOGY_BUNDLE_PROGRAM.title,
+    price: NAVRATRI_NUMEROLOGY_BUNDLE_PROGRAM.price,
+    discountPrice: undefined,
+    approximateValue: undefined,
+    paymentUrl: NAVRATRI_NUMEROLOGY_BUNDLE_PROGRAM.paymentUrl,
   };
 
   const existingIdx = list.findIndex(p => p.id === 'prog-navratri-numerology');
   if (existingIdx >= 0) {
     const updated = [...list];
+    const sanitizedExisting = sanitizeSingleCourseOverride(updated[existingIdx]);
     updated[existingIdx] = {
-      ...bundle,
-      ...updated[existingIdx]
+      ...courseOffer,
+      ...sanitizedExisting,
+      title: NAVRATRI_NUMEROLOGY_BUNDLE_PROGRAM.title,
+      price: NAVRATRI_NUMEROLOGY_BUNDLE_PROGRAM.price,
+      discountPrice: undefined,
+      approximateValue: undefined,
+      paymentUrl: NAVRATRI_NUMEROLOGY_BUNDLE_PROGRAM.paymentUrl,
     };
     return updated.sort((a, b) => a.order - b.order);
   }
 
-  return [bundle, ...list].sort((a, b) => a.order - b.order);
+  return [courseOffer, ...list].sort((a, b) => a.order - b.order);
 }
 
 export const supabaseProgramRepository = {

@@ -197,12 +197,16 @@ function AppContent() {
     instructorName: activeAcademy?.instructorName,
     customTitle:
       normalizedPath === '/courses/advanced-numerology-bundle'
-        ? 'Advanced Vedic Numerology + Super Advanced Mobile Numerology | LEO Family'
+        ? 'Super Advanced Vedic Numerology | LEO Family'
         : currentPageObj?.metaTitle || currentPageObj?.title,
     customDescription:
       normalizedPath === '/courses/advanced-numerology-bundle'
-        ? 'Enroll in the Navratri Special 2026 Dual Course Package: Advanced Vedic Numerology & Super Advanced Mobile Numerology (22 Modules) taught live by Raajeev Singh Chauhann.'
+        ? 'Enroll in Super Advanced Vedic Numerology (11 Modules) taught live by Raajeev Singh Chauhann for ₹194. Master Psychic & Destiny numbers, 81 combinations, Vedic Grid, compatibility, and remedies.'
         : currentPageObj?.metaDescription,
+    customImage:
+      normalizedPath === '/courses/advanced-numerology-bundle'
+        ? '/assets/teachers/Raajeev.webp'
+        : undefined,
   });
 
   if (isAdminRoute) {

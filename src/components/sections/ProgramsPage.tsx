@@ -263,15 +263,12 @@ export default function ProgramsPage({ navigate }: ProgramsPageProps) {
                       <div className="pt-4 border-t border-border/20 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                         <div>
                           <span className="text-[10px] uppercase tracking-wider text-text-secondary block">
-                            {course.id === 'prog-navratri-numerology' ? 'Special Bundle Fee' : 'Tuition Fee'}
+                            {course.id === 'prog-navratri-numerology' ? 'Complete Course Fee' : 'Tuition Fee'}
                           </span>
                           <div className="flex items-center gap-2">
                             {course.id === 'prog-navratri-numerology' ? (
                               <div className="flex flex-col">
                                 <span className="text-lg font-extrabold text-amber-400 font-cinzel">₹{course.price.toLocaleString()}</span>
-                                <span className="text-[10px] text-text-secondary line-through opacity-70">
-                                  Approx. Value: ₹{(course.approximateValue || 24000).toLocaleString()}
-                                </span>
                               </div>
                             ) : course.discountPrice ? (
                               <>
@@ -287,12 +284,12 @@ export default function ProgramsPage({ navigate }: ProgramsPageProps) {
                         {course.id === 'prog-navratri-numerology' || course.paymentUrl ? (
                           <div className="flex items-center gap-2 shrink-0">
                             <a
-                              href={course.paymentUrl || 'https://rzp.io/rzp/znXO15N'}
+                              href={course.paymentUrl || 'https://rzp.io/rzp/Pyh2zDaN'}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="px-3.5 py-2.5 bg-leo-emerald hover:bg-emerald-900 text-leo-ivory text-xs font-extrabold tracking-wider uppercase rounded-xl transition-all duration-300 shadow-md flex items-center gap-1.5 cursor-pointer"
                             >
-                              <span>ENROLL — ₹995</span>
+                              <span>ENROLL — ₹194</span>
                             </a>
                             <button
                               type="button"

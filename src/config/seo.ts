@@ -35,6 +35,7 @@ export const ROUTE_TITLE_MAP: Record<string, string> = {
   '/ecosystem': "Ecosystem | LEO Family",
   '/academy': "Programs | LEO Family",
   '/meditation': "Meditation Classes & Guided Meditation | Leo Family Occult School",
+  '/courses/advanced-numerology-bundle': "Super Advanced Vedic Numerology | LEO Family",
 };
 
 // Known Dedicated Instructor Page Titles

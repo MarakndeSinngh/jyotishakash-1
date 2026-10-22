@@ -129,6 +129,44 @@ async function setupApp() {
     }
   });
 
+  // Dedicated SEO/Social sharing metadata handler for /courses/advanced-numerology-bundle
+  app.get("/courses/advanced-numerology-bundle", async (req, res, next) => {
+    try {
+      let indexPath = "";
+      if (process.env.NODE_ENV === "production") {
+        indexPath = path.join(process.cwd(), "dist", "index.html");
+      } else {
+        indexPath = path.join(currentDirname, "index.html");
+      }
+
+      if (!fs.existsSync(indexPath)) {
+        indexPath = path.join(currentDirname, "index.html");
+      }
+
+      let html = fs.readFileSync(indexPath, "utf-8");
+
+      if (process.env.NODE_ENV !== "production" && viteInstance) {
+        html = await viteInstance.transformIndexHtml(req.originalUrl, html);
+      }
+
+      html = injectMetaTags(html, {
+        title: "Super Advanced Vedic Numerology | LEO Family",
+        description: "Enroll in Super Advanced Vedic Numerology (11 Modules) taught live by Raajeev Singh Chauhann for ₹194. Master Psychic & Destiny numbers, 81 combinations, Vedic Grid, compatibility, and remedies.",
+        url: "https://www.leofamily.online/courses/advanced-numerology-bundle",
+        image: "https://www.leofamily.online/assets/teachers/Raajeev.webp",
+        imageType: "image/webp",
+        imageAlt: "Super Advanced Vedic Numerology with Raajeev Singh Chauhann",
+        siteName: "LEO FAMILY OCCULT SCHOOL",
+        twitterTitle: "Super Advanced Vedic Numerology | LEO Family",
+        twitterDescription: "An advanced 11-module learning journey through Vedic Numerology concepts and practical analysis taught live by Raajeev Singh Chauhann — ₹194."
+      });
+
+      res.status(200).set({ "Content-Type": "text/html" }).send(html);
+    } catch (err) {
+      next(err);
+    }
+  });
+
   // Dedicated SEO/Social sharing metadata handler for /gemstones and /gemstones/:slug
   app.get(["/gemstones", "/gemstones/:slug"], async (req, res, next) => {
     try {

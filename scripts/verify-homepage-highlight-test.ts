@@ -66,21 +66,25 @@ function runTests() {
   // 4. Verify NavratriCoursePromotionBanner content & CTAs
   const bannerTsx = fs.readFileSync(path.join(process.cwd(), 'src/components/sections/NavratriCoursePromotionBanner.tsx'), 'utf-8');
   assert(
-    bannerTsx.includes('NAVRATRI SPECIAL OFFER 2026') &&
-    bannerTsx.includes('Advanced Vedic Numerology') &&
-    bannerTsx.includes('Super Advanced Mobile Numerology') &&
-    bannerTsx.includes('Two Advanced Courses. One Complete Learning Package.') &&
-    bannerTsx.includes('₹995 ONLY') &&
+    bannerTsx.includes('SPECIAL COURSE OFFER') &&
+    bannerTsx.includes('Super Advanced Vedic Numerology') &&
+    bannerTsx.includes('An advanced learning journey through Vedic Numerology concepts and practical analysis.') &&
+    bannerTsx.includes('₹194 ONLY') &&
+    bannerTsx.includes('ENROLL NOW — ₹194') &&
+    bannerTsx.includes('VIEW CURRICULUM') &&
     bannerTsx.includes('All Classes Live') &&
-    bannerTsx.includes('Live Q&A with Raajeev Singh Chauhann') &&
+    bannerTsx.includes('Live Q&amp;A with Raajeev Singh Chauhann') &&
     bannerTsx.includes('Two Live Classes Per Week') &&
     bannerTsx.includes('1-Year Course and Recording Access') &&
     bannerTsx.includes('Certificate of Completion') &&
-    bannerTsx.includes('https://rzp.io/rzp/znXO15N') &&
+    bannerTsx.includes('https://rzp.io/rzp/Pyh2zDaN') &&
     bannerTsx.includes('/courses/advanced-numerology-bundle') &&
-    bannerTsx.includes('/assets/teachers/Raajeev.webp'),
-    'Static banner contains all required copy, verified photo, and exact CTAs',
-    'All required features, pricing (₹995), Razorpay link and curriculum link verified'
+    bannerTsx.includes('/assets/teachers/Raajeev.webp') &&
+    !bannerTsx.includes('Mobile Numerology') &&
+    !bannerTsx.includes('995') &&
+    !bannerTsx.includes('24,000'),
+    'Static banner contains all required single-course copy, verified photo, and exact CTAs',
+    'All required features, pricing (₹194), Razorpay link (Pyh2zDaN) and curriculum link verified'
   );
 
   // 5. Verify static banner uses the cohesive color classes
@@ -98,34 +102,38 @@ function runTests() {
     'Palette classes applied consistently to background, borders, buttons, and text'
   );
 
-  // 6. Verify FeaturedCoursesHomepage bundle card styling and CTA separation
+  // 6. Verify FeaturedCoursesHomepage course card styling and CTA separation
   const featuredTsx = fs.readFileSync(path.join(process.cwd(), 'src/components/sections/FeaturedCoursesHomepage.tsx'), 'utf-8');
   assert(
     featuredTsx.includes("course.id === 'prog-navratri-numerology'") &&
     featuredTsx.includes("bg-leo-emerald") &&
     featuredTsx.includes("bg-leo-surface") &&
-    featuredTsx.includes("https://rzp.io/rzp/znXO15N") &&
+    featuredTsx.includes("https://rzp.io/rzp/Pyh2zDaN") &&
+    featuredTsx.includes("ENROLL NOW — ₹194") &&
     featuredTsx.includes("/courses/advanced-numerology-bundle") &&
-    featuredTsx.includes("WHATSAPP_LINK"),
-    'FeaturedCoursesHomepage retains bundle card with Razorpay CTA while preserving WhatsApp for other courses',
-    'Bundle uses Razorpay and Curriculum button; other programs route to WhatsApp'
+    featuredTsx.includes("WHATSAPP_LINK") &&
+    !featuredTsx.includes("Mobile Numerology"),
+    'FeaturedCoursesHomepage retains Super Advanced Vedic Numerology card with Razorpay CTA while preserving WhatsApp for other courses',
+    'Course uses Razorpay (Pyh2zDaN) and Curriculum button; other programs route to WhatsApp'
   );
 
-  // 7. Verify AdvancedNumerologyLandingPage preserves all syllabus modules
+  // 7. Verify AdvancedNumerologyLandingPage preserves all 11 Vedic syllabus modules and removes Mobile Numerology
   const landingPageTsx = fs.readFileSync(path.join(process.cwd(), 'src/components/sections/AdvancedNumerologyLandingPage.tsx'), 'utf-8');
   assert(
+    landingPageTsx.includes("Super Advanced Vedic Numerology") &&
     landingPageTsx.includes("Psychic Numbers (Mulank) & Destiny Numbers (Bhagyank)") &&
     landingPageTsx.includes("The Complete 81 Combinations Analysis") &&
     landingPageTsx.includes("Authentic Vedic Numerology Remedies") &&
-    landingPageTsx.includes("Telecommunication Vibrations & Everyday Digital Energy") &&
-    landingPageTsx.includes("Rajyoga Combinations in Mobile Numbers") &&
-    landingPageTsx.includes("Strategic Mobile Number Selection Protocol") &&
-    landingPageTsx.includes("100% Live Classes with Direct Q&A in Every Session") &&
-    landingPageTsx.includes("1-Year Full Recording Access Across Web & Mobile App") &&
+    landingPageTsx.includes("100% Live Classes with Direct Q&amp;A in Every Session") &&
+    landingPageTsx.includes("1-Year Full Recording Access Across Web &amp; Mobile App") &&
     landingPageTsx.includes("Frequently Asked Questions") &&
-    landingPageTsx.includes("https://rzp.io/rzp/znXO15N"),
-    'Dedicated course page preserves 100% of course content, 22 modules, FAQs, and CTAs',
-    'All modules and authentic facts strictly intact without invented claims'
+    landingPageTsx.includes("https://rzp.io/rzp/Pyh2zDaN") &&
+    landingPageTsx.includes("₹194") &&
+    !landingPageTsx.includes("Mobile Numerology") &&
+    !landingPageTsx.includes("995") &&
+    !landingPageTsx.includes("24,000"),
+    'Dedicated course page preserves 100% of 11 Vedic modules, FAQs, and ₹194 CTAs while removing Mobile Numerology bundle content',
+    'All 11 Vedic modules and authentic facts strictly intact without bundle references'
   );
 
   // 8. Verify AdvancedNumerologyLandingPage uses cohesive emerald/ivory/gold design
@@ -148,9 +156,11 @@ function runTests() {
   assert(
     programsPageTsx.includes("prog-navratri-numerology") &&
     programsPageTsx.includes("bg-leo-emerald") &&
+    programsPageTsx.includes("https://rzp.io/rzp/Pyh2zDaN") &&
+    programsPageTsx.includes("ENROLL — ₹194") &&
     programsPageTsx.includes("/courses/advanced-numerology-bundle") &&
     programsPageTsx.includes("WHATSAPP_LINK"),
-    'ProgramsPage retains bundle in All Programs & Numerology with matching button style',
+    'ProgramsPage retains Super Advanced Vedic Numerology in All Programs & Numerology with ₹194 button style',
     'Category mapping and dual action buttons validated'
   );
 

@@ -28,9 +28,9 @@ function runVerification() {
   const landingPageContent = fs.readFileSync(path.join(process.cwd(), 'src/components/sections/AdvancedNumerologyLandingPage.tsx'), 'utf-8');
   assert(
     landingPageContent.includes('fixed bottom-0 left-0 right-0 z-[990]') &&
-    landingPageContent.includes('PAY NOW TO ENROLL'),
-    'Floating CTA bar is fixed at bottom with high z-index (z-[990])',
-    'Matches /academy/raajeev fixed bottom placement and z-index'
+    landingPageContent.includes('PAY NOW TO ENROLL — ₹194'),
+    'Floating CTA bar is fixed at bottom with high z-index (z-[990]) and displays PAY NOW TO ENROLL — ₹194',
+    'Matches /academy/raajeev fixed bottom placement and z-index with updated ₹194 label'
   );
 
   // 2. Verify payment URL and safe target attributes
@@ -38,9 +38,9 @@ function runVerification() {
     landingPageContent.includes('href={RAZORPAY_URL}') &&
     landingPageContent.includes('target="_blank"') &&
     landingPageContent.includes('rel="noopener noreferrer"') &&
-    landingPageContent.includes('const RAZORPAY_URL = "https://rzp.io/rzp/znXO15N";'),
+    landingPageContent.includes('const RAZORPAY_URL = "https://rzp.io/rzp/Pyh2zDaN";'),
     'Clicking floating CTA opens exact Razorpay payment URL safely',
-    'href="https://rzp.io/rzp/znXO15N" with target="_blank" rel="noopener noreferrer"'
+    'href="https://rzp.io/rzp/Pyh2zDaN" with target="_blank" rel="noopener noreferrer"'
   );
 
   // 3. Verify existing course enrollment buttons continue working
@@ -87,13 +87,16 @@ function runVerification() {
     'Scope restricted to /courses/advanced-numerology-bundle in AdvancedNumerologyLandingPage'
   );
 
-  // 8. Verify all 11 Vedic and 11 Mobile modules preserved
+  // 8. Verify all 11 Vedic modules preserved and Mobile Numerology removed from this course offer
   assert(
+    landingPageContent.includes('Module 1') &&
     landingPageContent.includes('Module 11') &&
     landingPageContent.includes('Authentic Vedic Numerology Remedies') &&
-    landingPageContent.includes('Strategic Mobile Number Selection Protocol'),
-    'All 22 course syllabus modules, FAQs, and facts strictly preserved',
-    'Curriculum intact without alterations'
+    !landingPageContent.includes('Mobile Numerology') &&
+    !landingPageContent.includes('995') &&
+    !landingPageContent.includes('24,000'),
+    'All 11 Vedic Numerology syllabus modules preserved and bundle/Mobile Numerology claims removed',
+    'Single-course curriculum intact without bundle references'
   );
 
   console.log(`\n================================================================`);

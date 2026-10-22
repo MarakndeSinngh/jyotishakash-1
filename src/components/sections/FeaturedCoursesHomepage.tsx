@@ -236,16 +236,15 @@ export default function FeaturedCoursesHomepage({ navigate }: FeaturedCoursesHom
                         <p className="text-text-secondary text-xs sm:text-sm font-light leading-relaxed">
                           {course.description}
                         </p>
-                        {/* Dual Course Curriculum Highlights */}
+                        {/* Vedic Numerology Curriculum Highlights */}
                         <div className="p-2.5 rounded-xl bg-leo-surface border border-leo-border text-[11px] text-leo-text-secondary space-y-1">
-                          <p><strong className="text-leo-emerald font-semibold">Course 1:</strong> Advanced Vedic Numerology (81 Combinations, Grid, Remedies)</p>
-                          <p><strong className="text-leo-emerald font-semibold">Course 2:</strong> Super Advanced Mobile Numerology (Pairings, Rajyoga, Selection)</p>
+                          <p><strong className="text-leo-emerald font-semibold">11 Comprehensive Modules:</strong> Psychic &amp; Destiny Numbers, Master Numbers, 81 Combinations, Authentic Vedic Grid, Career, Compatibility, House &amp; Signature Science, and Remedies.</p>
                         </div>
                         {/* Key Feature Highlights */}
                         <div className="flex flex-wrap gap-x-2 gap-y-1 text-[10px] text-leo-emerald font-medium">
                           <span>All Classes Live</span>
                           <span className="text-leo-text-secondary">•</span>
-                          <span>Live Q&A</span>
+                          <span>Live Q&amp;A</span>
                           <span className="text-leo-text-secondary">•</span>
                           <span>2 Classes/Week</span>
                           <span className="text-leo-text-secondary">•</span>
@@ -270,7 +269,7 @@ export default function FeaturedCoursesHomepage({ navigate }: FeaturedCoursesHom
                         <span className="text-primary font-bold font-cinzel text-sm block">
                           {course.price ? `₹${course.price.toLocaleString()}` : "Inquire"}
                         </span>
-                        {course.approximateValue && (
+                        {course.approximateValue && course.id !== 'prog-navratri-numerology' && (
                           <span className="text-[10px] text-text-secondary line-through opacity-70 block">
                             Approx. Value: ₹{course.approximateValue.toLocaleString()}
                           </span>
@@ -278,16 +277,16 @@ export default function FeaturedCoursesHomepage({ navigate }: FeaturedCoursesHom
                       </div>
                     </div>
 
-                    {/* Action Buttons: Bundle uses Razorpay + Curriculum, other courses preserve WhatsApp */}
+                    {/* Action Buttons: Special course uses Razorpay + Curriculum, other courses preserve WhatsApp */}
                     {course.id === 'prog-navratri-numerology' || course.paymentUrl ? (
                       <div className="grid grid-cols-2 gap-2.5">
                         <a
-                          href={course.paymentUrl || 'https://rzp.io/rzp/znXO15N'}
+                          href={course.paymentUrl || 'https://rzp.io/rzp/Pyh2zDaN'}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="py-3 bg-leo-emerald hover:bg-emerald-900 text-leo-ivory font-extrabold uppercase tracking-wider text-[10px] rounded-xl transition-all text-center shadow-md cursor-pointer flex items-center justify-center gap-1"
                         >
-                          <span>ENROLL NOW — ₹995</span>
+                          <span>ENROLL NOW — ₹194</span>
                         </a>
                         <button
                           type="button"

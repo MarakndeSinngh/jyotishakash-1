@@ -445,7 +445,7 @@ export default function ProgramsView() {
                     type="number"
                     value={formData.approximateValue || ''}
                     onChange={e => setFormData({ ...formData, approximateValue: e.target.value ? Number(e.target.value) : undefined })}
-                    placeholder="e.g. 24000 (Combined Value)"
+                    placeholder="Optional"
                     className="w-full px-4 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-900 focus:outline-none focus:border-amber-600"
                   />
                 </div>
@@ -459,7 +459,7 @@ export default function ProgramsView() {
                   type="url"
                   value={formData.paymentUrl || ''}
                   onChange={e => setFormData({ ...formData, paymentUrl: e.target.value })}
-                  placeholder="https://rzp.io/rzp/znXO15N"
+                  placeholder="https://rzp.io/rzp/Pyh2zDaN"
                   className="w-full px-4 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-mono text-stone-900 focus:outline-none focus:border-amber-600"
                 />
                 <span className="text-[10px] text-stone-500 mt-1 block">

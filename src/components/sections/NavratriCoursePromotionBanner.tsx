@@ -20,7 +20,7 @@ interface NavratriCoursePromotionBannerProps {
   navigate?: (path: string) => void;
 }
 
-const RAZORPAY_URL = "https://rzp.io/rzp/znXO15N";
+const RAZORPAY_URL = "https://rzp.io/rzp/Pyh2zDaN";
 
 export default function NavratriCoursePromotionBanner({ navigate }: NavratriCoursePromotionBannerProps) {
   const [bundleProgram, setBundleProgram] = useState<Program | null>(null);
@@ -37,7 +37,7 @@ export default function NavratriCoursePromotionBanner({ navigate }: NavratriCour
           }
         }
       })
-      .catch(err => console.error('Failed to query bundle program state:', err));
+      .catch(err => console.error('Failed to query course program state:', err));
   }, []);
 
   if (!isVisible) {
@@ -76,25 +76,32 @@ export default function NavratriCoursePromotionBanner({ navigate }: NavratriCour
             {/* Left Content Column (7 cols) */}
             <div className="lg:col-span-7 space-y-6 text-left">
               
-              {/* Badge: NAVRATRI SPECIAL OFFER 2026 */}
+              {/* Badge: SPECIAL COURSE OFFER */}
               <div className="inline-flex items-center gap-2 bg-leo-surface border border-leo-border px-3.5 py-1.5 rounded-full shadow-sm">
                 <Sparkles className="w-3.5 h-3.5 text-leo-gold shrink-0" />
                 <span className="text-[11px] font-cinzel font-extrabold tracking-[0.2em] text-leo-emerald uppercase">
-                  NAVRATRI SPECIAL OFFER 2026
+                  SPECIAL COURSE OFFER
                 </span>
               </div>
 
               {/* Heading */}
               <div className="space-y-2">
                 <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold font-cinzel text-leo-emerald tracking-tight leading-[1.2]">
-                  Advanced Vedic Numerology <br className="hidden sm:inline" />
-                  <span className="text-leo-gold font-cinzel">+ Super Advanced Mobile Numerology</span>
+                  Super Advanced Vedic Numerology
                 </h2>
                 
                 {/* Supporting Copy */}
                 <p className="text-sm sm:text-base text-leo-text-secondary font-sans font-normal leading-relaxed">
-                  Two Advanced Courses. One Complete Learning Package.
+                  An advanced learning journey through Vedic Numerology concepts and practical analysis.
                 </p>
+              </div>
+
+              {/* Concise Summary of the Vedic Numerology Syllabus */}
+              <div className="p-3.5 sm:p-4 rounded-2xl bg-leo-surface/70 border border-leo-border text-xs text-leo-text-secondary leading-relaxed">
+                <span className="font-cinzel font-bold text-leo-emerald uppercase tracking-wider block mb-1">
+                  11-Module Vedic Numerology Syllabus Summary
+                </span>
+                Psychic &amp; Destiny Numbers (Mulank &amp; Bhagyank) · Master Numbers (11, 22, 33) · Harmonic Number Compatibility · The Complete 81 Combinations · Repetitive &amp; Missing Numbers · Authentic Vedic Grid · Profession &amp; Career Path · Marriage &amp; Relationship Compatibility · House &amp; Property Numbers · Signature &amp; Name Science · Authentic Vedic Remedies.
               </div>
 
               {/* Pricing Box & Schedule Detail */}
@@ -102,18 +109,18 @@ export default function NavratriCoursePromotionBanner({ navigate }: NavratriCour
                 <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-2">
                   <div>
                     <span className="text-3xl sm:text-4xl font-extrabold font-cinzel text-leo-emerald">
-                      ₹995 ONLY
+                      ₹194 ONLY
                     </span>
                     <span className="text-xs text-leo-text-secondary block font-sans mt-0.5">
-                      Single fee for both complete practitioner-grade masterclasses
+                      Complete course fee for the 11-module live masterclass
                     </span>
                   </div>
                   <div className="text-left sm:text-right">
-                    <span className="text-xs text-leo-text-secondary line-through block">
-                      Stated Combined Value: Approx. ₹24,000
+                    <span className="text-[11px] font-bold text-leo-emerald uppercase tracking-wider block">
+                      Special Course Offer
                     </span>
-                    <span className="text-[11px] font-bold text-leo-emerald uppercase tracking-wider">
-                      Navratri Special Launch
+                    <span className="text-xs text-leo-text-secondary block">
+                      11 Comprehensive Modules
                     </span>
                   </div>
                 </div>
@@ -135,7 +142,7 @@ export default function NavratriCoursePromotionBanner({ navigate }: NavratriCour
                 </div>
 
                 <div className="text-[10px] text-leo-text-secondary font-sans italic">
-                  * Note: Schedule commences 16 November (11:00 AM – 1:00 PM). Schedule year & campaign expiry flagged for admin confirmation.
+                  * Note: Schedule commences 16 November (11:00 AM – 1:00 PM). Schedule year &amp; campaign window flagged for admin confirmation.
                 </div>
               </div>
 
@@ -147,7 +154,7 @@ export default function NavratriCoursePromotionBanner({ navigate }: NavratriCour
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-leo-emerald shrink-0" />
-                  <span>Live Q&A with Raajeev Singh Chauhann</span>
+                  <span>Live Q&amp;A with Raajeev Singh Chauhann</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-leo-emerald shrink-0" />
@@ -171,7 +178,7 @@ export default function NavratriCoursePromotionBanner({ navigate }: NavratriCour
                   rel="noopener noreferrer"
                   className="px-8 py-4 bg-leo-emerald hover:bg-emerald-900 text-leo-ivory font-extrabold uppercase tracking-[0.15em] text-xs sm:text-sm rounded-xl text-center shadow-md transition-all hover:-translate-y-0.5 cursor-pointer flex items-center justify-center gap-2"
                 >
-                  <span>ENROLL NOW — ₹995</span>
+                  <span>ENROLL NOW — ₹194</span>
                   <ArrowRight className="w-4 h-4" />
                 </a>
 

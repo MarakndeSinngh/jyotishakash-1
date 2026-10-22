@@ -1,470 +1,474 @@
-import React, { useState, useEffect } from 'react';
-import { Page, Section, Service, Testimonial } from './types/cms';
+import React, { useState, useEffect, useCallback, Suspense } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { cmsService } from './services/cmsService';
 import { websiteSettingsService } from './services/websiteSettingsService';
+import { Page, Section, Service, Testimonial } from './types/cms';
 import { WebsiteSettings } from './models/websiteSettings';
+import { getSeoMetadata } from './config/seo';
+import { BrandRegistry } from './config/brandRegistry';
+import { useAcademy } from './context/AcademyContext';
+import { useLanguage } from './context/LanguageContext';
+import { CartProvider } from './context/CartContext';
+
+// Core Layout Components (Needed Immediately on Initial Load)
+import ErrorBoundary from './components/ErrorBoundary';
+import Navbar from './components/Navbar';
+import ThemeSelector from './components/ThemeSelector';
+
+// Homepage Primary Sections
 import HeroSection from './components/sections/HeroSection';
+import NavratriCoursePromotionBanner from './components/sections/NavratriCoursePromotionBanner';
 import TrustCredibilitySection from './components/sections/TrustCredibilitySection';
-import ServicesSection from './components/sections/ServicesSection';
-import TestimonialsSection from './components/sections/TestimonialsSection';
+import SuccessMetricsSection from './components/sections/SuccessMetricsSection';
 import MeetOurMentorsSection from './components/sections/MeetOurMentorsSection';
 import FeaturedCoursesHomepage from './components/sections/FeaturedCoursesHomepage';
+import AcademyComparisonMatrix from './components/sections/AcademyComparisonMatrix';
 import HomepageMediaAndWebinarSection from './components/sections/HomepageMediaAndWebinarSection';
 import DynamicTestimonialsHomepage from './components/sections/DynamicTestimonialsHomepage';
-import SuccessMetricsSection from './components/sections/SuccessMetricsSection';
 import HomepageCTASection from './components/sections/HomepageCTASection';
-import AboutSection from './components/sections/AboutSection';
-import EcosystemSection from './components/sections/EcosystemSection';
-import GemstonesPage from './components/sections/GemstonesPage';
-import NumerologyCalculator from './components/sections/NumerologyCalculator';
-import ContactSection from './components/sections/ContactSection';
-import CustomSection from './components/sections/CustomSection';
-import AcademySection from './components/sections/AcademySection';
-import AISpiritualSection from './components/sections/AISpiritualSection';
-import MediaCenterPage from './components/sections/MediaCenterPage';
-import ShortsPage from './components/sections/ShortsPage';
-import AcademyLandingPage from './components/sections/AcademyLandingPage';
-import ProgramsPage from './components/sections/ProgramsPage';
-import BlogsPage from './components/sections/BlogsPage';
-import MeditationPage from './components/sections/MeditationPage';
+import ServicesSection from './components/sections/ServicesSection';
+import TestimonialsSection from './components/sections/TestimonialsSection';
+
+// Lazy-loaded Route Pages & Non-Homepage Sections (Split into on-demand chunks)
+const AdminPortal = React.lazy(() => import('./components/admin/AdminPortal'));
+const AcademyLandingPage = React.lazy(() => import('./components/sections/AcademyLandingPage'));
 const AdvancedNumerologyLandingPage = React.lazy(
   () => import('./components/sections/AdvancedNumerologyLandingPage')
 );
-import NavratriCoursePromotionBanner from './components/sections/NavratriCoursePromotionBanner';
-import AdminPortal from './components/admin/AdminPortal';
-import ErrorBoundary from './components/ErrorBoundary';
-import ThemeSelector from './components/ThemeSelector';
-import { MediaPlayer } from './media/MediaPlayer';
-import { useTheme } from './components/ThemeContext';
-import SmartImage from './components/sections/SmartImage';
-import { AnimatePresence, motion } from 'framer-motion';
-import { Helmet } from 'react-helmet-async';
-import Navbar from "./components/Navbar";
-import StickyFloatingCTA from "./components/StickyFloatingCTA";
-import FloatingConsultationCard from "./components/FloatingConsultationCard";
-import { THEME_COLORS } from './utils/themeColors';
-import { Sparkles } from 'lucide-react';
-import { getActiveBrand } from './config/cms';
-import { useAcademy } from './context/AcademyContext';
-import { useLanguage } from './context/LanguageContext';
-import { getSeoMetadata } from './config/seo';
-import { CartProvider } from './context/CartContext';
+const ProgramsPage = React.lazy(() => import('./components/sections/ProgramsPage'));
+const BlogsPage = React.lazy(() => import('./components/sections/BlogsPage'));
+const MediaCenterPage = React.lazy(() => import('./components/sections/MediaCenterPage'));
+const MeditationPage = React.lazy(() => import('./components/sections/MeditationPage'));
+const ShortsPage = React.lazy(() => import('./components/sections/ShortsPage'));
+const GemstonesPage = React.lazy(() => import('./components/sections/GemstonesPage'));
+const AboutSection = React.lazy(() => import('./components/sections/AboutSection'));
+const NumerologyCalculator = React.lazy(() => import('./components/sections/NumerologyCalculator'));
+const AcademySection = React.lazy(() => import('./components/sections/AcademySection'));
+const AISpiritualSection = React.lazy(() => import('./components/sections/AISpiritualSection'));
+const EcosystemSection = React.lazy(() => import('./components/sections/EcosystemSection'));
+const ContactSection = React.lazy(() => import('./components/sections/ContactSection'));
+const CustomSection = React.lazy(() => import('./components/sections/CustomSection'));
 
-export default function App() {
-  const [currentPath, setCurrentPath] = useState(window.location.pathname);
-  const [page, setPage] = useState<Page | null>(null);
+// Lazy-loaded Optional Overlays & Drawers
+const CartDrawer = React.lazy(() => import('./components/cart/CartDrawer'));
+const FloatingConsultationCard = React.lazy(() => import('./components/FloatingConsultationCard'));
+const StickyFloatingCTA = React.lazy(() => import('./components/StickyFloatingCTA'));
+
+const STANDALONE_NON_CMS_ROUTES = new Set([
+  '/courses/advanced-numerology-bundle',
+  '/programs',
+  '/blogs',
+  '/media',
+  '/shorts',
+  '/meditation',
+]);
+
+function normalizePathname(rawPath: string): string {
+  const pathOnly = (rawPath || '/').split('?')[0].split('#')[0] || '/';
+  return pathOnly.length > 1 && pathOnly.endsWith('/') ? pathOnly.slice(0, -1) : pathOnly;
+}
+
+function isStandaloneNonCmsRoute(normalizedPath: string): boolean {
+  if (STANDALONE_NON_CMS_ROUTES.has(normalizedPath)) return true;
+  if (normalizedPath === '/admin' || normalizedPath.startsWith('/admin/')) return true;
+  if (normalizedPath === '/gemstones' || normalizedPath.startsWith('/gemstones/')) return true;
+  if (normalizedPath.startsWith('/academy/') && normalizedPath.split('/').filter(Boolean).length >= 2) {
+    return true;
+  }
+  return false;
+}
+
+function BrandedRouteLoadingFallback({ label = 'Loading Experience...' }: { label?: string }) {
+  return (
+    <div className="min-h-screen bg-leo-ivory text-leo-text-primary pt-28 pb-24 flex flex-col items-center justify-center gap-4 px-4">
+      <div className="w-10 h-10 border-4 border-leo-emerald border-t-leo-gold rounded-full animate-spin" />
+      <div className="text-center space-y-1">
+        <p className="font-cinzel font-bold text-sm uppercase tracking-[0.2em] text-leo-emerald">
+          LEO Family Occult School
+        </p>
+        <p className="text-xs text-leo-text-secondary font-sans">
+          {label}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function AppContent() {
+  const [currentPath, setCurrentPath] = useState<string>(() => normalizePathname(window.location.pathname || '/'));
+  const [pages, setPages] = useState<Page[]>([]);
   const [sections, setSections] = useState<Section[]>([]);
   const [services, setServices] = useState<Service[]>([]);
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
-  const [loading, setLoading] = useState(true);
-  const { theme, mode } = useTheme();
-  const currentColors = THEME_COLORS[theme][mode];
-  const [brand, setBrand] = useState(getActiveBrand());
   const [settings, setSettings] = useState<WebsiteSettings | null>(null);
-  const { activeAcademy } = useAcademy();
-  const { t, setLanguage } = useLanguage();
+  const [loading, setLoading] = useState<boolean>(() => !isStandaloneNonCmsRoute(normalizePathname(window.location.pathname || '/')));
 
-  useEffect(() => {
-    websiteSettingsService.getSettings().then(setSettings).catch(console.error);
+  const { activeAcademy, activeSlug } = useAcademy();
+  const { t } = useLanguage();
+
+  const normalizedPath = normalizePathname(currentPath);
+
+  const navigate = useCallback((path: string) => {
+    window.history.pushState({}, '', path);
+    setCurrentPath(normalizePathname(path));
+    window.dispatchEvent(new PopStateEvent('popstate'));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
-  const appBrandName = settings?.websiteName || brand.name;
-
-  // Keep brand configuration synchronized in real-time on path navigation
   useEffect(() => {
-    setBrand(getActiveBrand());
-    if (currentPath === '/') {
-      setLanguage('en');
-    }
-  }, [currentPath]);
-
-  // Centralized SEO Resolution
-  const seo = getSeoMetadata({
-    pathname: currentPath,
-    slug: activeAcademy?.slug,
-    instructorName: activeAcademy?.instructorName,
-    customTitle: page?.title,
-  });
-
-  useEffect(() => {
-    const handlePopState = () => setCurrentPath(window.location.pathname);
+    const handlePopState = () => {
+      setCurrentPath(normalizePathname(window.location.pathname || '/'));
+    };
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
-  const navigate = (path: string) => {
-    window.history.pushState({}, '', path);
-    setCurrentPath(path);
-    window.scrollTo(0, 0);
-  };
-
   useEffect(() => {
-    loadContent();
-    const timeout = setTimeout(() => setLoading(false), 5000);
-    return () => clearTimeout(timeout);
-  }, [currentPath]);
+    let isCancelled = false;
+    websiteSettingsService
+      .getSettings()
+      .then((data) => {
+        if (!isCancelled) setSettings(data);
+      })
+      .catch(console.error);
+    return () => {
+      isCancelled = true;
+    };
+  }, []);
 
-  const loadContent = async () => {
-    setLoading(true);
-    try {
-      if (currentPath === '/media' || currentPath === '/shorts' || currentPath === '/meditation' || currentPath.startsWith('/academy/') || currentPath.startsWith('/gemstones') || currentPath.startsWith('/courses')) {
-        setPage(null);
-        setSections([]);
-        setLoading(false);
-        return;
-      }
-      const isAcademyRoute = currentPath.startsWith('/academy');
-      const slug = currentPath === '/' ? 'home' : isAcademyRoute ? 'academy' : currentPath.replace('/', '');
-      const pages = await cmsService.getPages();
-      let currentPage = pages.find(p => p.slug === slug && p.isPublished);
-      if (!currentPage && isAcademyRoute) {
-        currentPage = pages.find(p => p.slug === 'academy');
-      }
+  // Load CMS data only for routes that consume generic CMS page sections/services/testimonials
+  useEffect(() => {
+    let isCancelled = false;
 
-      if (currentPage) {
-        setPage(currentPage);
-        const [secData, servData, testData] = await Promise.all([
-          cmsService.getSections(currentPage.slug),
-          cmsService.getServices(),
-          cmsService.getTestimonials()
-        ]);
-        setSections(secData);
-        setServices(servData);
-        setTestimonials(testData);
-      } else if (isAcademyRoute) {
-        setSections([{
-          id: 'sec_academy_fallback',
-          pageId: 'page_academy',
-          type: 'academy',
-          title: 'Academy',
-          order: 1,
-          isActive: true,
-          content: ''
-        }]);
-      }
-    } catch (error) {
-      console.error('Failed to load content:', error);
-    } finally {
+    if (isStandaloneNonCmsRoute(normalizedPath)) {
       setLoading(false);
+      return () => {
+        isCancelled = true;
+      };
     }
-  };
 
-  if (loading) {
-    const isMaharaja = theme === 'maharaja-gold' && mode === 'dark';
+    async function loadCmsContent() {
+      setLoading(true);
+      try {
+        const cleanSlug = normalizedPath === '/' ? 'home' : normalizedPath.replace(/^\/+|\/+$/g, '');
+        const [allPages, pageSections, allServices, allTestimonials] = await Promise.all([
+          cmsService.getPages(),
+          cmsService.getSections(cleanSlug),
+          cmsService.getServices(),
+          cmsService.getTestimonials(),
+        ]);
+
+        if (!isCancelled) {
+          setPages(allPages);
+          setSections(pageSections.filter((s) => s.isActive).sort((a, b) => a.order - b.order));
+          setServices(allServices);
+          setTestimonials(allTestimonials);
+        }
+      } catch (err) {
+        if (!isCancelled) {
+          console.error('Error loading CMS content:', err);
+        }
+      } finally {
+        if (!isCancelled) {
+          setLoading(false);
+        }
+      }
+    }
+
+    loadCmsContent();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [normalizedPath]);
+
+  const isAdminRoute = normalizedPath === '/admin' || normalizedPath.startsWith('/admin/');
+  const isAcademySubRoute = normalizedPath.startsWith('/academy/') && normalizedPath.split('/').filter(Boolean).length >= 2;
+  const isGemstoneRoute = normalizedPath === '/gemstones' || normalizedPath.startsWith('/gemstones/');
+  const shouldLoadStickyCTA = normalizedPath === '/meditation' || normalizedPath.startsWith('/academy/');
+
+  const currentPageObj = pages.find(
+    (p) => p.slug === (normalizedPath === '/' ? 'home' : normalizedPath.replace(/^\//, ''))
+  );
+
+  const seoMeta = getSeoMetadata({
+    pathname: normalizedPath,
+    slug: activeSlug,
+    instructorName: activeAcademy?.instructorName,
+    customTitle:
+      normalizedPath === '/courses/advanced-numerology-bundle'
+        ? 'Advanced Vedic Numerology + Super Advanced Mobile Numerology | LEO Family'
+        : currentPageObj?.metaTitle || currentPageObj?.title,
+    customDescription:
+      normalizedPath === '/courses/advanced-numerology-bundle'
+        ? 'Enroll in the Navratri Special 2026 Dual Course Package: Advanced Vedic Numerology & Super Advanced Mobile Numerology (22 Modules) taught live by Raajeev Singh Chauhann.'
+        : currentPageObj?.metaDescription,
+  });
+
+  if (isAdminRoute) {
     return (
-      <div 
-        className="min-h-screen flex items-center justify-center relative overflow-hidden"
-        style={{
-          backgroundColor: isMaharaja ? '#1C0F02' : 'var(--background)',
-        }}
-      >
-        {/* Background Image during loading for seamless transition */}
-        {!isMaharaja && (
-          <div className="absolute inset-0 z-0 opacity-30">
-            <SmartImage
-              src="/gemstone-assets/background.png"
-              alt="Loading Background"
-              className="w-full h-full object-cover"
-            />
-          </div>
-        )}
-        
-        {isMaharaja ? (
-          <div className="relative z-10 flex flex-col items-center gap-6">
-            <div className="relative w-20 h-20 flex items-center justify-center">
-              {/* Pulsing golden rings */}
-              <motion.div 
-                className="absolute inset-0 rounded-full border-2 border-[#A86E25]/30"
-                animate={{ scale: [1, 1.4, 1], opacity: [0.3, 0.8, 0.3] }}
-                transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-              />
-              <motion.div 
-                className="absolute inset-2 rounded-full border-2 border-[#C29B47]/50"
-                animate={{ scale: [1, 1.2, 1], opacity: [0.5, 1, 0.5] }}
-                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: 0.2 }}
-              />
-              {/* Shimmering Center Logo */}
-              <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-[#A86E25] to-[#E9C269] flex items-center justify-center shadow-lg relative overflow-hidden">
-                <Sparkles className="w-6 h-6 text-[#1C0F02]" />
-                <motion.div 
-                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full"
-                  animate={{ x: ['100%', '-100%'] }}
-                  transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
-                />
-              </div>
-            </div>
-            
-            <div className="text-center space-y-1">
-              <h2 className="font-cinzel text-base font-bold tracking-[0.25em] text-[#E9C269]">
-                MAHARAJA GOLD
-              </h2>
-              <p className="text-[10px] font-mono tracking-[0.3em] text-[#D4C4B7] uppercase animate-pulse">
-                Aligning Planetary Frequencies...
-              </p>
-            </div>
-          </div>
-        ) : (
-          <div className="relative z-10 flex flex-col items-center gap-4">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-            <p className="text-[10px] font-bold tracking-[0.3em] text-primary uppercase animate-pulse">
-              Loading {brand.name}...
-            </p>
-          </div>
-        )}
+      <div className="min-h-screen bg-background text-text-primary">
+        <Helmet>
+          <title>Admin Portal | {BrandRegistry.brand.name}</title>
+        </Helmet>
+        <Suspense fallback={<BrandedRouteLoadingFallback label="Loading Admin Control Center..." />}>
+          <AdminPortal navigate={navigate} currentPath={normalizedPath} />
+        </Suspense>
       </div>
     );
   }
 
-  return (
-    <CartProvider>
-      <ErrorBoundary>
-        {currentPath.startsWith('/admin') ? (
-          <AdminPortal navigate={navigate} currentPath={currentPath} />
-        ) : (
-        <>
-      <Helmet>
-        <title>{seo.title}</title>
-        <meta name="description" content={seo.description} />
-        <meta name="keywords" content="LEO Family, Numerology, Vedic Astrology, Vastu, Gemstones, Name Science, AI Spiritual Intelligence, Raajeev Singh Chauhann, Shaunak S. Patthak, Sannjoy Biswass" />
-        <meta property="og:title" content={seo.ogTitle} />
-        <meta property="og:description" content={seo.ogDescription} />
-        <meta property="og:image" content={seo.ogImage} />
-        <meta property="og:site_name" content={seo.siteName} />
-        <meta property="twitter:title" content={seo.twitterTitle} />
-        <meta property="twitter:description" content={seo.twitterDescription} />
-        <meta property="twitter:image" content={seo.twitterImage} />
-        <link rel="icon" type="image/jpeg" href={seo.favicon} />
-        <link rel="canonical" href={seo.canonical} />
-      </Helmet>
-      <motion.div 
-        className="min-h-screen relative font-sans text-text-primary"
-        style={{
-          "--primary": currentColors.primary,
-          "--secondary": currentColors.secondary,
-          "--accent": currentColors.accent,
-          "--background": currentColors.background,
-          "--surface": currentColors.surface,
-          "--card": currentColors.card,
-          "--text-primary": currentColors.textPrimary,
-          "--text-secondary": currentColors.textSecondary,
-          "--border": currentColors.border,
-          "--primary-rgb": currentColors.primaryRgb,
-        } as any}
-        animate={{
-          "--primary": currentColors.primary,
-          "--secondary": currentColors.secondary,
-          "--accent": currentColors.accent,
-          "--background": currentColors.background,
-          "--surface": currentColors.surface,
-          "--card": currentColors.card,
-          "--text-primary": currentColors.textPrimary,
-          "--text-secondary": currentColors.textSecondary,
-          "--border": currentColors.border,
-          "--primary-rgb": currentColors.primaryRgb,
-        } as any}
-        transition={{ duration: 0.8, ease: "easeInOut" }}
-      >
+  const renderMainContent = () => {
+    if (isAcademySubRoute) {
+      return (
+        <Suspense fallback={<BrandedRouteLoadingFallback label="Loading Academy Portal..." />}>
+          <AcademyLandingPage navigate={navigate} />
+        </Suspense>
+      );
+    }
 
-        {/* ✅ STATIC BACKGROUND FIX */}
-        <div className="fixed inset-0 -z-10 overflow-hidden">
-          {theme === 'maharaja-gold' && mode === 'dark' ? (
-            <div className="absolute inset-0 bg-gradient-to-br from-[#1C0F02] via-[#2B1704] to-[#3B2207]" />
-          ) : (
-            <SmartImage
-              src="/gemstone-assets/background.png"
-              alt="Background"
-              className="w-full h-full object-cover"
-            />
-          )}
-          {/* Subtle overlay to ensure text readability across all themes */}
-          <div className="absolute inset-0 bg-background/40 backdrop-blur-[2px]" />
-          <div className="absolute inset-0 bg-gradient-to-b from-white/10 via-transparent to-background/60" />
+    if (normalizedPath === '/courses/advanced-numerology-bundle') {
+      return (
+        <Suspense fallback={<BrandedRouteLoadingFallback label="Loading Course Curriculum..." />}>
+          <AdvancedNumerologyLandingPage navigate={navigate} />
+        </Suspense>
+      );
+    }
 
-          {/* Cinematic Effects */}
-          <div className="absolute inset-0 pointer-events-none">
-            {theme === 'maharaja-gold' && mode === 'dark' ? (
-              <>
-                {/* Maharaja Gold Soft Radial Center Glows */}
-                <motion.div 
-                  className="absolute top-[15%] left-[25%] w-[50%] h-[50%] rounded-full bg-[#7C5110]/25 blur-[120px]"
-                  animate={{
-                    x: [0, 15, -10, 0],
-                    y: [0, -20, 15, 0],
-                    scale: [1, 1.05, 0.95, 1],
-                  }}
-                  transition={{
-                    duration: 15,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                />
-                <motion.div 
-                  className="absolute bottom-[20%] right-[15%] w-[40%] h-[40%] rounded-full bg-[#A86E25]/10 blur-[100px]"
-                  animate={{
-                    x: [0, -10, 15, 0],
-                    y: [0, 15, -10, 0],
-                    scale: [1, 0.95, 1.05, 1],
-                  }}
-                  transition={{
-                    duration: 18,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                />
-              </>
-            ) : (
-              <>
-                <div className="floating-glow top-[10%] left-[20%] w-[40%] h-[40%] bg-primary/10" />
-                <div className="floating-glow bottom-[20%] right-[10%] w-[30%] h-[30%] bg-secondary/10" />
-              </>
-            )}
-            
-            {/* Dust Particles / Floating Bronze Particles */}
-            {[...Array(15)].map((_, i) => (
-              <div 
-                key={i} 
-                className="dust-particle" 
-                style={{ 
-                  left: `${Math.random() * 100}%`, 
-                  top: `${Math.random() * 100}%`,
-                  animationDelay: `${Math.random() * 15}s`,
-                  opacity: theme === 'maharaja-gold' ? 0.25 : (0.1 + Math.random() * 0.3),
-                  backgroundColor: theme === 'maharaja-gold' ? '#C29B47' : undefined,
-                  boxShadow: theme === 'maharaja-gold' ? '0 0 6px rgba(194,155,71,0.4)' : undefined,
-                }} 
-              />
-            ))}
-          </div>
+    if (normalizedPath === '/programs') {
+      return (
+        <Suspense fallback={<BrandedRouteLoadingFallback label="Loading Programs..." />}>
+          <ProgramsPage navigate={navigate} />
+        </Suspense>
+      );
+    }
+
+    if (normalizedPath === '/blogs') {
+      return (
+        <Suspense fallback={<BrandedRouteLoadingFallback label="Loading Spiritual Wisdom..." />}>
+          <BlogsPage navigate={navigate} />
+        </Suspense>
+      );
+    }
+
+    if (normalizedPath === '/media') {
+      return (
+        <Suspense fallback={<BrandedRouteLoadingFallback label="Loading Media Library..." />}>
+          <MediaCenterPage />
+        </Suspense>
+      );
+    }
+
+    if (normalizedPath === '/shorts') {
+      return (
+        <Suspense fallback={<BrandedRouteLoadingFallback label="Loading Spiritual Shorts..." />}>
+          <ShortsPage navigate={navigate} />
+        </Suspense>
+      );
+    }
+
+    if (normalizedPath === '/meditation') {
+      return (
+        <Suspense fallback={<BrandedRouteLoadingFallback label="Loading Meditation Sanctuary..." />}>
+          <MeditationPage navigate={navigate} />
+        </Suspense>
+      );
+    }
+
+    if (isGemstoneRoute) {
+      return (
+        <Suspense fallback={<BrandedRouteLoadingFallback label="Loading Sacred Gemstone Collection..." />}>
+          <GemstonesPage navigate={navigate} currentPath={normalizedPath} />
+        </Suspense>
+      );
+    }
+
+    if (normalizedPath === '/services') {
+      return (
+        <ServicesSection
+          section={{
+            pageId: 'services',
+            type: 'services',
+            title: 'Our Specialized Services',
+            subtitle: 'Unlock your true potential with our premium, results-driven consultations.',
+            order: 1,
+            isActive: true,
+          }}
+          services={services}
+        />
+      );
+    }
+
+    if (loading) {
+      return (
+        <div className="min-h-[60vh] flex items-center justify-center">
+          <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
         </div>
+      );
+    }
 
-        {/* NAVBAR */}
-        <Navbar navigate={navigate} currentPath={currentPath} />
-
-        {/* STICKY FLOATING CTA BAR (For Shaunak, Raajeev, Sannjoy Academy Programs) */}
-        <StickyFloatingCTA currentPath={currentPath} />
-
-        {/* FLOATING PERSONAL CONSULTATION OFFER CARD & MODAL (Globally available on every route) */}
-        <FloatingConsultationCard currentPath={currentPath} />
-
-        {/* MAIN CONTENT */}
-        <main className={`relative z-10 ${
-          currentPath === '/' || currentPath.startsWith('/gemstones') || currentPath === '/numerology' || currentPath === '/meditation' || currentPath === '/academy' || currentPath.startsWith('/academy/') || currentPath.startsWith('/programs') || currentPath.startsWith('/courses') || currentPath === '/blogs' || currentPath === '/ai' || currentPath === '/ecosystem' || currentPath === '/contact' || currentPath === '/media' || currentPath === '/shorts'
-            ? 'pt-0'
-            : 'pt-24'
-        }`}>
-          <AnimatePresence mode="wait">
-            {currentPath === '/media' ? (
-              <MediaCenterPage key="media-center" />
-            ) : currentPath === '/shorts' ? (
-              <ShortsPage key="shorts-page" navigate={navigate} />
-            ) : currentPath === '/meditation' ? (
-              <MeditationPage key="meditation-page" navigate={navigate} />
-            ) : (currentPath.startsWith('/courses/advanced-numerology-bundle') || currentPath.startsWith('/programs/advanced-numerology-bundle') || currentPath === '/programs/prog-navratri-numerology') ? (
-              <React.Suspense fallback={
-                <div className="min-h-screen bg-[#F7F5EE] flex items-center justify-center pt-24 pb-32">
-                  <div className="flex flex-col items-center gap-3">
-                    <div className="w-8 h-8 rounded-full border-2 border-[#C6A15B]/30 border-t-[#143D2E] animate-spin" />
-                    <span className="text-xs font-cinzel font-bold tracking-widest text-[#143D2E] uppercase">
-                      Loading Masterclass...
-                    </span>
-                  </div>
-                </div>
-              }>
-                <AdvancedNumerologyLandingPage key="adv-numerology" navigate={navigate} />
-              </React.Suspense>
-            ) : currentPath.startsWith('/programs') ? (
-              <ProgramsPage key="programs-page" navigate={navigate} />
-            ) : currentPath === '/blogs' ? (
-              <BlogsPage key="blogs-page" navigate={navigate} />
-            ) : currentPath.startsWith('/academy/') ? (
-              <AcademyLandingPage key="academy-landing" navigate={navigate} />
-            ) : currentPath.startsWith('/gemstones') ? (
-              <GemstonesPage key="gemstones-page" navigate={navigate} currentPath={currentPath} />
-            ) : (
-              sections
-                .filter(s => s.isActive)
-                .sort((a, b) => a.order - b.order)
-                .map((section, idx) => {
-                  switch (section.type) {
-                    case 'hero':
-                      return (
-                        <React.Fragment key={idx}>
+    return (
+      <Suspense fallback={<BrandedRouteLoadingFallback />}>
+        <div>
+          {sections.map((section, index) => {
+            switch (section.type) {
+              case 'hero':
+                return (
+                  <React.Fragment key={section.id || index}>
                           <HeroSection section={section} navigate={navigate} />
                           <NavratriCoursePromotionBanner navigate={navigate} />
                           <TrustCredibilitySection />
-                          {currentPath === '/' && (
-                            <>
-                              <MeetOurMentorsSection />
-                              <FeaturedCoursesHomepage navigate={navigate} />
-                              <HomepageMediaAndWebinarSection />
-                            </>
-                          )}
-                        </React.Fragment>
-                      );
-                    case 'services':
-                      return <ServicesSection key={idx} section={section} services={services} />;
-                    case 'testimonials':
-                      return (
-                        <React.Fragment key={idx}>
-                          {currentPath === '/' ? (
-                            <>
-                              <DynamicTestimonialsHomepage testimonials={testimonials} />
-                              <SuccessMetricsSection />
-                              <HomepageCTASection />
-                            </>
-                          ) : (
-                            <TestimonialsSection section={section} testimonials={testimonials} />
-                          )}
-                        </React.Fragment>
-                      );
-                    case 'about':
-                      return <AboutSection key={idx} section={section} />;
-                    case 'ecosystem':
-                      return <EcosystemSection key={idx} />;
-                    case 'gemstones':
-                      return <GemstonesPage key={idx} />;
-                    case 'numerology':
-                      return <NumerologyCalculator key={idx} />;
-                    case 'academy':
-                      return <AcademySection key={idx} />;
-                    case 'ai':
-                      return <AISpiritualSection key={idx} />;
-                    case 'contact':
-                      return <ContactSection key={idx} />;
-                    case 'custom':
-                      return <CustomSection key={idx} section={section} />;
-                    default:
-                      return null;
-                  }
-                })
-            )}
-          </AnimatePresence>
-        </main>
+                          <SuccessMetricsSection />
+                          <MeetOurMentorsSection />
+                          <FeaturedCoursesHomepage navigate={navigate} />
+                          <AcademyComparisonMatrix />
+                          <HomepageMediaAndWebinarSection />
+                          <DynamicTestimonialsHomepage testimonials={testimonials} />
+                          <HomepageCTASection />
+                  </React.Fragment>
+                );
+              case 'services':
+                return <ServicesSection key={section.id || index} section={section} services={services} />;
+              case 'testimonials':
+                return <TestimonialsSection key={section.id || index} section={section} testimonials={testimonials} />;
+              case 'about':
+                return <AboutSection key={section.id || index} section={section} />;
+              case 'gemstones':
+                return <GemstonesPage key={section.id || index} navigate={navigate} currentPath={normalizedPath} />;
+              case 'numerology':
+                return <NumerologyCalculator key={section.id || index} />;
+              case 'academy':
+                return <AcademySection key={section.id || index} />;
+              case 'ai':
+                return <AISpiritualSection key={section.id || index} />;
+              case 'ecosystem':
+                return <EcosystemSection key={section.id || index} />;
+              case 'contact':
+                return <ContactSection key={section.id || index} />;
+              case 'custom':
+                return <CustomSection key={section.id || index} section={section} />;
+              default:
+                return null;
+            }
+          })}
+        </div>
+      </Suspense>
+    );
+  };
 
-        <MediaPlayer />
-        <ThemeSelector />
+  const brandName = settings?.websiteName || BrandRegistry.brand.name;
+  const footerLinks = BrandRegistry.navigation.footer;
 
-        {/* FOOTER */}
-        <footer className="bg-card/85 backdrop-blur-md py-16 text-center text-sm text-text-secondary border-t border-border/40 transition-colors duration-300">
-          <div className="max-w-7xl mx-auto px-6">
-            <div className="flex flex-col items-center gap-6">
-              <div className="flex items-center gap-2">
-                <img src={settings?.logoUrl || "/gemstone-assets/logo.jpg"} alt={appBrandName} className="h-8 w-8 rounded-full object-cover grayscale opacity-50" />
-                <span className="font-semibold tracking-[0.3em] text-[10px] font-cinzel text-text-secondary uppercase">
-                  {appBrandName}
+  return (
+    <div className="min-h-screen flex flex-col bg-background text-text-primary selection:bg-primary/20 selection:text-primary overflow-x-hidden">
+      <Helmet>
+        <title>{seoMeta.title}</title>
+        <meta name="description" content={seoMeta.description} />
+        <meta property="og:title" content={seoMeta.ogTitle} />
+        <meta property="og:description" content={seoMeta.ogDescription} />
+        <meta property="og:image" content={seoMeta.ogImage} />
+        <meta property="twitter:title" content={seoMeta.twitterTitle} />
+        <meta property="twitter:description" content={seoMeta.twitterDescription} />
+        <meta property="twitter:image" content={seoMeta.twitterImage} />
+        <link rel="canonical" href={seoMeta.canonical} />
+      </Helmet>
+
+      <Navbar navigate={navigate} currentPath={normalizedPath} />
+
+      <main className="flex-1 pt-16">
+        {renderMainContent()}
+      </main>
+
+      {!isAcademySubRoute && (
+        <footer className="bg-card border-t border-border/20 py-14 px-6 text-text-secondary relative z-10">
+          <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-10 pb-10 border-b border-border/15">
+            <div className="md:col-span-5 space-y-4">
+              <div
+                onClick={() => navigate('/')}
+                className="flex items-center gap-3 cursor-pointer group w-fit"
+              >
+                <img
+                  src={settings?.logoUrl || BrandRegistry.assets.logos.light}
+                  alt={brandName}
+                  className="w-10 h-10 rounded-full object-cover border border-primary/30"
+                />
+                <span className="font-bold font-cinzel tracking-widest text-base text-primary uppercase">
+                  {brandName}
                 </span>
               </div>
-              <p className="text-[10px] tracking-widest uppercase opacity-60 text-text-secondary">
-                {settings?.footerCopyright || `© ${new Date().getFullYear()} ${appBrandName}. All rights reserved.`}
+              <p className="text-xs leading-relaxed max-w-md text-text-secondary">
+                {BrandRegistry.brand.description}
               </p>
             </div>
+
+            <div className="md:col-span-4 space-y-3">
+              <h4 className="text-xs font-bold uppercase tracking-widest text-text-primary font-cinzel">
+                {t('footer.quickLinks', 'Quick Links')}
+              </h4>
+              <ul className="grid grid-cols-2 gap-2 text-xs">
+                {footerLinks.map((item, idx) => (
+                  <li key={idx}>
+                    <button
+                      onClick={() => navigate(item.path)}
+                      className="hover:text-primary transition-colors cursor-pointer text-left"
+                    >
+                      {item.label}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="md:col-span-3 space-y-3">
+              <h4 className="text-xs font-bold uppercase tracking-widest text-text-primary font-cinzel">
+                {t('footer.contact', 'Contact')}
+              </h4>
+              <ul className="space-y-2 text-xs">
+                <li>{BrandRegistry.organization.generalPhone}</li>
+                <li>{BrandRegistry.organization.businessEmail}</li>
+                <li>{BrandRegistry.organization.businessHours}</li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="max-w-7xl mx-auto pt-6 flex flex-col sm:flex-row items-center justify-between text-xs gap-4">
+            <p>
+              © {new Date().getFullYear()} {brandName}. {t('footer.rightsReserved', 'All rights reserved.')}
+            </p>
+            <button
+              onClick={() => navigate('/admin')}
+              className="text-[11px] text-text-secondary/60 hover:text-primary transition-colors cursor-pointer"
+            >
+              Admin Portal
+            </button>
           </div>
         </footer>
-
-      </motion.div>
-        </>
       )}
-      </ErrorBoundary>
-    </CartProvider>
+
+      {isGemstoneRoute && (
+        <Suspense fallback={null}>
+          <CartDrawer onNavigate={navigate} />
+        </Suspense>
+      )}
+      <Suspense fallback={null}>
+        <FloatingConsultationCard currentPath={normalizedPath} />
+      </Suspense>
+      {shouldLoadStickyCTA && (
+        <Suspense fallback={null}>
+          <StickyFloatingCTA currentPath={normalizedPath} />
+        </Suspense>
+      )}
+      <ThemeSelector />
+    </div>
+  );
+}
+
+export default function App() {
+  return (
+    <ErrorBoundary>
+      <CartProvider>
+        <AppContent />
+      </CartProvider>
+    </ErrorBoundary>
   );
 }

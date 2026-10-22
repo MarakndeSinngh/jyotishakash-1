@@ -1,0 +1,3593 @@
+import React, { useState, useRef } from 'react';
+import { useLanguage } from '../i18n';
+import { CompleteNumerologyProfile } from '../core/types';
+import { calculateKuaNumber, KuaProfile } from '../core/kuaEngine';
+import { deriveExpertConsultationDossier, ExpertConsultationDossier } from '../core/expertConsultationEngine';
+import { analyzeCrossPatterns, PersonalizedPatternDossier } from '../core/crossPatternEngine';
+import { AdvancedInsightEngine, AdvancedInsightDossier, AdvancedInsight } from '../core/advancedInsightEngine';
+import { buildLocalizedExpertDossier, getPlanetName, getLocalizedNumberMeaning, getLocalized81Yoga, getLocalizedPlane, getLocalizedPersonalYear, LocalizedPersonalYear } from '../i18n/dynamicContent';
+import { calculatePersonalYearNumber } from '../core/luckyDatesEngine';
+import { sumDigits, reduceToDigit } from '../core/numerologyEngine';
+import { parseIndianDate } from '../utils/dateUtils';
+import { formatLocalizedDate, getProfileIsolationKey } from '../utils/localeUtils';
+import { PersonalDetails, DOBAnalysis, NameAnalysis, MobileAnalysis, remediesAdvice } from '../types';
+import {
+  Sparkles,
+  Compass,
+  Phone,
+  User,
+  Heart,
+  Briefcase,
+  Shield,
+  Activity,
+  Calendar,
+  Layers,
+  Award,
+  ChevronRight,
+  Download,
+  Printer,
+  Info,
+  CheckCircle2,
+  AlertTriangle,
+  Clock,
+  Home,
+  FileText,
+  Target,
+  PenTool,
+  Check,
+  TrendingUp,
+  Star,
+  Car,
+  Baby,
+  MessageSquare,
+  Send,
+  ThumbsUp
+} from 'lucide-react';
+import { jsPDF } from 'jspdf';
+import html2canvas from 'html2canvas';
+import { BrandLogo } from './BrandLogo';
+import { useReportAccess } from '../hooks/useReportAccess';
+import { ReportPaywallModal } from './ReportPaywallModal';
+import { ReportAccessGate } from './ReportAccessGate';
+import { ReportAccessService } from '../services/reportAccessService';
+import { Lock, Unlock, Gift } from 'lucide-react';
+
+interface MasterReportUnifiedProps {
+  profile: CompleteNumerologyProfile;
+  personalDetails: PersonalDetails;
+  dobData?: DOBAnalysis;
+  nameData?: NameAnalysis;
+  mobileData?: MobileAnalysis;
+  remedies?: remediesAdvice;
+}
+
+export const MasterReportUnified: React.FC<MasterReportUnifiedProps> = ({
+  profile,
+  personalDetails,
+  dobData,
+  nameData,
+  mobileData,
+  remedies
+}) => {
+  const { language } = useLanguage();
+  const [activeSection, setActiveSection] = useState<string>('executive-summary');
+  const [pdfGenerating, setPdfGenerating] = useState<boolean>(false);
+  const reportRef = useRef<HTMLDivElement>(null);
+
+  // Date formatting helpers ensuring Indian DD/MM/YYYY standard
+  const formatToIndianDate = (dateStr?: string) => {
+    if (!dateStr) return '—';
+    if (dateStr.includes('/')) return dateStr;
+    const parts = dateStr.split('-');
+    if (parts.length === 3) {
+      if (parts[0].length === 4) {
+        return `${parts[2].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[0]}`;
+      }
+    }
+    return dateStr;
+  };
+
+  const formattedDOB = formatToIndianDate(personalDetails?.dob || profile?.identity?.dob || '');
+  const formattedReportDate = formatLocalizedDate(new Date(), language);
+
+  // Extract core entities from unified profile
+  const {
+    identity,
+    coreNumbers,
+    loshu,
+    vastu,
+    medical,
+    nameNumerology,
+    vedicDasha,
+    mobileAnalysis,
+    interpretations,
+    personality,
+    career,
+    finance,
+    relationship,
+    combination81,
+    actionPlan90Day
+  } = profile;
+
+  // Grid references
+  const birthGrid = loshu.birthGrid || {};
+  const enhancedGrid = loshu.enhancedGrid?.flatGrid || {};
+  const presentNums = loshu.enhancedGrid?.effectivePresentDigits || [];
+  const missingNums = loshu.enhancedGrid?.effectiveMissingDigits || [];
+  const repeatedNums = loshu.repetition || [];
+  const planes = loshu.planes || [];
+  const arrows = loshu.arrows || [];
+
+  // Active Personal Year & Multi-Year Calculations
+  const [activePyTab, setActivePyTab] = useState<'CURRENT' | 'UPCOMING' | 'NEXT_2' | 'TIMELINE'>('CURRENT');
+  const currentYear = new Date().getFullYear();
+  const nextYear = currentYear + 1;
+  const next2Year = currentYear + 2;
+  const prevYear = currentYear - 1;
+
+  const dobStr = personalDetails?.dob || profile?.identity?.dob || `${new Date().getFullYear()}-01-01`;
+  const parsedDob = parseIndianDate(dobStr);
+  const birthDay = parsedDob?.day || 1;
+  const birthMonth = parsedDob?.month || 1;
+  const birthDaySum = sumDigits(birthDay);
+  const birthMonthSum = sumDigits(birthMonth);
+
+  const currentPY = calculatePersonalYearNumber(dobStr, currentYear);
+  const nextPY = calculatePersonalYearNumber(dobStr, nextYear);
+  const next2PY = calculatePersonalYearNumber(dobStr, next2Year);
+  const prevPY = calculatePersonalYearNumber(dobStr, prevYear);
+  const personalYearVal = currentPY;
+
+  const currentPYForecast = React.useMemo(() => {
+    return getLocalizedPersonalYear(currentPY, currentYear, language);
+  }, [currentPY, currentYear, language]);
+
+  const nextPYForecast = React.useMemo(() => {
+    return getLocalizedPersonalYear(nextPY, nextYear, language);
+  }, [nextPY, nextYear, language]);
+
+  const next2PYForecast = React.useMemo(() => {
+    return getLocalizedPersonalYear(next2PY, next2Year, language);
+  }, [next2PY, next2Year, language]);
+
+  const prevPYForecast = React.useMemo(() => {
+    return getLocalizedPersonalYear(prevPY, prevYear, language);
+  }, [prevPY, prevYear, language]);
+
+  // Resolve Kua profile safely from unified profile or existing core Kua engine
+  const kuaProfile: KuaProfile = React.useMemo(() => {
+    if (profile?.kua && typeof profile.kua === 'object' && (profile.kua as any).kuaNumber) {
+      return profile.kua as KuaProfile;
+    }
+    if ((profile?.vastu as any)?.kua && typeof (profile.vastu as any).kua === 'object') {
+      return (profile.vastu as any).kua as KuaProfile;
+    }
+    const safeDobStr = personalDetails?.dob || profile?.identity?.dob || `${new Date().getFullYear()}-01-01`;
+    const parsed = parseIndianDate(safeDobStr);
+    const birthYear = parsed?.year || (safeDobStr ? new Date(safeDobStr).getFullYear() : new Date().getFullYear());
+    const gender = (personalDetails?.gender || profile?.identity?.gender || 'MALE') as 'MALE' | 'FEMALE' | 'OTHER';
+    return calculateKuaNumber(birthYear, gender);
+  }, [profile?.kua, profile?.vastu, personalDetails?.dob, personalDetails?.gender, profile?.identity]);
+
+  // Derived expert consultation sections from single source of truth profile
+  const expertDossier: ExpertConsultationDossier = React.useMemo(() => {
+    return deriveExpertConsultationDossier(profile);
+  }, [profile]);
+
+  const localizedDossier = React.useMemo(() => {
+    return buildLocalizedExpertDossier(profile, language);
+  }, [profile, language]);
+
+  // Derived cross-pattern analysis from unified profile
+  const patternDossier: PersonalizedPatternDossier = React.useMemo(() => {
+    return analyzeCrossPatterns(profile);
+  }, [profile]);
+
+  // Phase 7: Advanced Insight Dossier & Explainability Engine
+  const advancedInsightDossier: AdvancedInsightDossier = React.useMemo(() => {
+    return AdvancedInsightEngine.generateDossier(profile);
+  }, [profile]);
+
+  const [selectedProvenanceInsight, setSelectedProvenanceInsight] = useState<AdvancedInsight | null>(null);
+  const [showDebugProvenanceModal, setShowDebugProvenanceModal] = useState<boolean>(false);
+
+  // Phase 10: Feedback & Quality Rating Loop State
+  const [feedbackRating, setFeedbackRating] = useState<number>(5);
+  const [feedbackClarity, setFeedbackClarity] = useState<string>('crystal_clear');
+  const [feedbackActionability, setFeedbackActionability] = useState<string>('highly_actionable');
+  const [feedbackText, setFeedbackText] = useState<string>('');
+  const [feedbackSubmitting, setFeedbackSubmitting] = useState<boolean>(false);
+  const [feedbackSubmitted, setFeedbackSubmitted] = useState<boolean>(false);
+  const [feedbackError, setFeedbackError] = useState<string | null>(null);
+
+  const handleFeedbackSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setFeedbackSubmitting(true);
+    setFeedbackError(null);
+    try {
+      const isolationKey = getProfileIsolationKey({
+        name: personalDetails?.name || profile?.identity?.fullName || '',
+        dob: personalDetails?.dob || profile?.identity?.dob || '',
+        mobile: personalDetails?.mobile || profile?.identity?.mobile || ''
+      });
+      const res = await ReportAccessService.submitFeedback({
+        reportType: 'MASTER_REPORT',
+        profileKey: isolationKey,
+        rating: feedbackRating,
+        clarity: feedbackClarity,
+        actionability: feedbackActionability,
+        feedbackText: feedbackText.trim()
+      });
+      if (res.success) {
+        setFeedbackSubmitted(true);
+      } else {
+        setFeedbackError(res.error || 'Feedback recorded');
+        setFeedbackSubmitted(true);
+      }
+    } catch {
+      setFeedbackSubmitted(true);
+    } finally {
+      setFeedbackSubmitting(false);
+    }
+  };
+
+  // Saved Signature, Vehicle, Business, Marriage & Child Audit state from localStorage
+  const [savedSigAudit, setSavedSigAudit] = useState<any>(null);
+  const [savedVehicleAudit, setSavedVehicleAudit] = useState<any>(null);
+  const [savedBusinessAudit, setSavedBusinessAudit] = useState<any>(null);
+  const [savedMarriageAudit, setSavedMarriageAudit] = useState<any>(null);
+  const [savedChildReport, setSavedChildReport] = useState<any>(null);
+  const [savedLuckyDatesReport, setSavedLuckyDatesReport] = useState<any>(null);
+
+  React.useEffect(() => {
+    const primaryName = personalDetails?.name || profile?.identity?.fullName || '';
+    const primaryDob = personalDetails?.dob || profile?.identity?.dob || '';
+    const primaryMobile = personalDetails?.mobile || profile?.identity?.mobile || '';
+    const primaryGender = personalDetails?.gender || profile?.identity?.gender || '';
+    const currentKey = getProfileIsolationKey({
+      name: primaryName,
+      dob: primaryDob,
+      mobile: primaryMobile
+    });
+    // The specialist modules historically used name + DOB + gender (without mobile),
+    // so check that key too; always validate the report's owner before accepting it.
+    const specialistKey = getProfileIsolationKey({
+      name: primaryName,
+      dob: formatToIndianDate(primaryDob),
+      gender: primaryGender
+    });
+    const specialistIsoKey = getProfileIsolationKey({
+      name: primaryName,
+      dob: primaryDob,
+      gender: primaryGender
+    });
+
+    const normalizeName = (value: unknown) => String(value ?? '').trim().toLocaleLowerCase().replace(/\s+/g, ' ');
+    const normalizeDob = (value: unknown) => {
+      const parts = String(value ?? '').match(/\d+/g) || [];
+      if (parts.length !== 3) return '';
+      let year = '', month = '', day = '';
+      if (parts[0].length === 4) {
+        [year, month, day] = parts;
+      } else {
+        [day, month, year] = parts;
+      }
+      if (year.length !== 4 || !month || !day) return '';
+      return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+    };
+    const samePrimaryPerson = (name: unknown, dob: unknown) => {
+      const candidateName = normalizeName(name);
+      const candidateDob = normalizeDob(dob);
+      return Boolean(
+        candidateName && candidateDob &&
+        candidateName === normalizeName(primaryName) &&
+        candidateDob === normalizeDob(primaryDob)
+      );
+    };
+    const candidateKeys = (baseKey: string) => Array.from(new Set([
+      `${baseKey}_${currentKey}`,
+      `${baseKey}_${specialistKey}`,
+      `${baseKey}_${specialistIsoKey}`,
+      baseKey
+    ]));
+    const readMatching = (baseKey: string, isValid: (value: any) => boolean) => {
+      for (const key of candidateKeys(baseKey)) {
+        try {
+          const stored = localStorage.getItem(key);
+          if (!stored) continue;
+          const parsed = JSON.parse(stored);
+          if (isValid(parsed)) return parsed;
+        } catch (error) {
+          console.error(`Unable to read ${baseKey} report:`, error);
+        }
+      }
+      return null;
+    };
+
+    // These optional reports are included only when a real result exists for the
+    // current client and the relevant subject-specific inputs were supplied.
+    const signature = readMatching('leofamily_saved_signature_audit', item =>
+      typeof item?.image === 'string' && item.image.length > 100 &&
+      Boolean(item?.auditResult) && item?.analysisSource === 'gemini-image-analysis-v1' && item?.imageAnalyzed === true && samePrimaryPerson(item?.name, item?.dob)
+    );
+    setSavedSigAudit(signature);
+
+    const vehicle = readMatching('leofamily_saved_vehicle_audit', item => {
+      const report = item?.report;
+      return Boolean(
+        report?.originalRegistration?.trim() &&
+        samePrimaryPerson(report?.ownerProfile?.name, report?.ownerProfile?.dob) &&
+        report?.chaldean && typeof report.chaldean.totalCompound === 'number' &&
+        typeof report.chaldean.totalRoot === 'number'
+      );
+    });
+    setSavedVehicleAudit(vehicle);
+
+    const business = readMatching('leofamily_saved_business_audit', item => {
+      const report = item?.report;
+      return Boolean(
+        report?.entity?.businessName?.trim() &&
+        samePrimaryPerson(report?.entity?.ownerName, report?.entity?.ownerDob) &&
+        report?.chaldean && typeof report.chaldean.totalCompound === 'number' &&
+        typeof report.chaldean.totalRoot === 'number'
+      );
+    });
+    setSavedBusinessAudit(business);
+
+    const marriage = readMatching('leofamily_saved_synastry_audit', item => {
+      const report = item?.report;
+      const personA = report?.personA;
+      const personB = report?.personB;
+      return Boolean(
+        samePrimaryPerson(personA?.name, personA?.dob || personA?.standardDOB) &&
+        normalizeName(personB?.name) && normalizeDob(personB?.dob || personB?.standardDOB) &&
+        typeof report?.overallHarmonyScore === 'number' &&
+        report?.sevenLayers
+      );
+    });
+    setSavedMarriageAudit(marriage);
+
+    const child = readMatching('leofamily_child_lucky_names_report', item => {
+      const childInfo = item?.report?.childInfo;
+      // Prefer the explicit parent profile key when present. Only legacy records
+      // without a key may fall back to a name + DOB match.
+      const parentLinked = item?.parentProfileKey
+        ? item.parentProfileKey === currentKey
+        : samePrimaryPerson(item?.parentName, item?.parentDob);
+      return Boolean(
+        childInfo?.name?.trim() && normalizeDob(childInfo?.dob || childInfo?.standardDob) &&
+        parentLinked
+      );
+    });
+    setSavedChildReport(child);
+
+    // Existing lucky-date reports remain profile-checked, but they are not treated
+    // as optional subject modules (e.g. child, vehicle, or business analyses).
+    const luckyDates = readMatching('leofamily_lucky_dates_finder_report', item => {
+      if (item?.profileKey && (item.profileKey === currentKey || item.profileKey === specialistKey || item.profileKey === specialistIsoKey)) return true;
+      return samePrimaryPerson(item?.birthProfile?.name, item?.birthProfile?.dob || item?.birthProfile?.standardDob);
+    });
+    setSavedLuckyDatesReport(luckyDates);
+  }, [profile, personalDetails]);
+
+  // 5-Pillar Structured Category Definition for 32 Master Chapters
+  const [selectedPillar, setSelectedPillar] = useState<'ALL' | 'CORE' | 'CAREER' | 'RELATIONSHIPS' | 'VASTU' | 'ACTION'>('ALL');
+
+  const reportPillars = [
+    { id: 'ALL', label: 'All Chapters (सम्पूर्ण 32)', range: '01–32' },
+    { id: 'CORE', label: '1. Core Foundation', range: '01–09', targetId: 'sec-01' },
+    { id: 'CAREER', label: '2. Career & Finance', range: '10–15', targetId: 'sec-10' },
+    { id: 'RELATIONSHIPS', label: '3. Relationships & Personal', range: '16–21', targetId: 'sec-13' },
+    { id: 'VASTU', label: '4. Occult, Vastu & Dasha', range: '22–28', targetId: 'sec-22' },
+    { id: 'ACTION', label: '5. Action Plan & Remedies', range: '29–32', targetId: 'sec-30' },
+  ];
+
+  // Quick navigation menu items mapped to 5 pillars
+  const navItems = [
+    { id: 'sec-cover', pillar: 'CORE', label: '00. Cover Page & Snapshot', icon: <Sparkles className="w-3.5 h-3.5" /> },
+    { id: 'sec-01', pillar: 'CORE', label: '01. Executive Summary', icon: <Sparkles className="w-3.5 h-3.5" /> },
+    { id: 'sec-02', pillar: 'CORE', label: '02. Core Numbers & Synthesis', icon: <User className="w-3.5 h-3.5" /> },
+    { id: 'sec-03', pillar: 'CORE', label: '03-07. Lo Shu & Grids', icon: <Compass className="w-3.5 h-3.5" /> },
+    { id: 'sec-08', pillar: 'CORE', label: '08-09. Planes & Arrows', icon: <Layers className="w-3.5 h-3.5" /> },
+    { id: 'sec-10', pillar: 'CAREER', label: '10-12. 81 Yogas & Archetype', icon: <Award className="w-3.5 h-3.5" /> },
+    { id: 'sec-13', pillar: 'CAREER', label: '13-17. Psychological & Life Domains', icon: <Briefcase className="w-3.5 h-3.5" /> },
+    { id: 'sec-18', pillar: 'RELATIONSHIPS', label: '18. Mobile Numerology (81 Pairs)', icon: <Phone className="w-3.5 h-3.5" /> },
+    { id: 'sec-19', pillar: 'RELATIONSHIPS', label: '19-21. Name (Chaldean & Pythagorean)', icon: <FileText className="w-3.5 h-3.5" /> },
+    { id: 'sec-22', pillar: 'VASTU', label: '22-24. Numero Vastu & Kua', icon: <Home className="w-3.5 h-3.5" /> },
+    { id: 'sec-25', pillar: 'VASTU', label: '25-27. Personal Year & Vedic Dasha', icon: <Calendar className="w-3.5 h-3.5" /> },
+    { id: 'sec-28', pillar: 'VASTU', label: '28. Traditional Wellness', icon: <Activity className="w-3.5 h-3.5" /> },
+    { id: 'sec-29', pillar: 'ACTION', label: '29. LeoFamily Signature Audit Pro', icon: <PenTool className="w-3.5 h-3.5" /> },
+    { id: 'sec-29b', pillar: 'ACTION', label: '29B. Vehicle Numerology Pro', icon: <Car className="w-3.5 h-3.5" /> },
+    { id: 'sec-29c', pillar: 'ACTION', label: '29C. Business Numerology Pro', icon: <Briefcase className="w-3.5 h-3.5" /> },
+    { id: 'sec-29d', pillar: 'ACTION', label: '29D. Marriage Synastry Pro', icon: <Heart className="w-3.5 h-3.5" /> },
+    { id: 'sec-29e', pillar: 'ACTION', label: '29E. Child Lucky Names Pro', icon: <Baby className="w-3.5 h-3.5" /> },
+    { id: 'sec-29f', pillar: 'ACTION', label: '29F. Lucky Dates Finder Pro', icon: <Calendar className="w-3.5 h-3.5" /> },
+    { id: 'sec-30', pillar: 'ACTION', label: '30. Consolidated Remedies & 90-Day Plan', icon: <Shield className="w-3.5 h-3.5" /> },
+    { id: 'sec-31', pillar: 'ACTION', label: '31. Final Consultation Summary', icon: <Target className="w-3.5 h-3.5" /> }
+  ];
+
+  const filteredNavItems = navItems.filter(item => {
+    if (selectedPillar === 'ALL') return true;
+    return item.pillar === selectedPillar;
+  });
+
+  const scrollToSection = (id: string) => {
+    setActiveSection(id);
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
+  // Upgraded High-Resolution Multi-Page PDF Export
+  const handleExportPDF = async () => {
+    if (!reportRef.current) return;
+    setPdfGenerating(true);
+    try {
+      const element = reportRef.current;
+      
+      // Smooth scroll to top to ensure complete render
+      window.scrollTo({ top: 0, behavior: 'instant' as any });
+
+      const canvas = await html2canvas(element, {
+        scale: 2, // High resolution crisp text rendering for print quality
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#FAF8F5',
+        windowWidth: 1200
+      });
+
+      const imgData = canvas.toDataURL('image/jpeg', 0.95);
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const imgWidth = 210;
+      const pageHeight = 297;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      let heightLeft = imgHeight;
+      let position = 0;
+
+      // First Page
+      pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight, undefined, 'FAST');
+      heightLeft -= pageHeight;
+
+      // Loop for subsequent pages
+      while (heightLeft > 0) {
+        position = -(imgHeight - heightLeft);
+        pdf.addPage();
+        pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight, undefined, 'FAST');
+        heightLeft -= pageHeight;
+      }
+
+      const safeName = (identity.fullName || 'Consultation').replace(/[^a-zA-Z0-9]/g, '_');
+      const todayDate = new Date().toISOString().slice(0, 10);
+      pdf.save(`LeoFamily_Master_Consultation_${safeName}_${todayDate}.pdf`);
+    } catch (err) {
+      console.error('PDF generation error:', err);
+    } finally {
+      setPdfGenerating(false);
+    }
+  };
+
+  const profileKey = getProfileIsolationKey({
+    name: personalDetails?.name || profile?.identity?.fullName || '',
+    dob: personalDetails?.dob || profile?.identity?.dob || '',
+    mobile: personalDetails?.mobile || profile?.identity?.mobile || ''
+  });
+
+  return (
+    <ReportAccessGate
+      reportType="MASTER_REPORT"
+      profileKey={profileKey}
+      profileName={identity.fullName}
+      mobile={identity.mobile}
+      title={language === 'hi' ? '32-अध्याय महा-परामर्श संपूर्ण रिपोर्ट' : '32-Section Master Consultation Dossier'}
+    >
+      <div className="space-y-8 animate-in fade-in duration-500 text-left">
+      {/* Top Banner with Action Controls */}
+      <div className="bg-white border border-[#E5E7EB] rounded-3xl p-6 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4 no-print">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="bg-[#D97706]/10 text-[#D97706] font-mono text-[10px] px-2.5 py-0.5 rounded-full border border-[#D97706]/20 font-bold uppercase tracking-wider">
+              LeoFamily Premium Consultation Dossier
+            </span>
+            <span className="text-xs text-[#6B7280] font-medium">32 Master Sections</span>
+          </div>
+          <h2 className="font-playfair text-2xl md:text-3xl font-bold text-[#1F2937]">
+            LeoFamily Master Numerology Consultation Report
+          </h2>
+          <p className="text-[#6B7280] text-xs mt-1">
+            Prepared specially for <strong>{identity.fullName}</strong> • DOB: {formattedDOB} • Mobile: {identity.mobile}
+          </p>
+        </div>
+
+        <div className="flex items-center gap-3 w-full md:w-auto">
+          <button
+            type="button"
+            onClick={() => window.print()}
+            title="Print report directly or save as high-quality PDF via browser print dialog"
+            className="flex-1 md:flex-initial inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl text-xs font-bold bg-[#FAF5EE] text-[#78350F] border border-[#FDE68A] hover:bg-[#FEF3C7] shadow-xs hover:shadow transition-all cursor-pointer group"
+          >
+            <Printer className="w-4 h-4 text-[#D97706] group-hover:scale-110 transition-transform" />
+            <span>Print Report</span>
+          </button>
+          <button
+            type="button"
+            onClick={handleExportPDF}
+            disabled={pdfGenerating}
+            className="flex-1 md:flex-initial inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-xs font-bold bg-[#D97706] hover:bg-[#B45309] text-white shadow-sm hover:shadow transition-all cursor-pointer disabled:opacity-50"
+          >
+            <Download className="w-4 h-4" />
+            <span>{pdfGenerating ? 'Generating Master PDF...' : 'Download Master PDF'}</span>
+          </button>
+        </div>
+      </div>
+
+      {/* 5-Pillar Category & Quick Jump Navigation Bar */}
+      <div className="bg-white border border-[#E5E7EB] rounded-3xl p-4 shadow-sm space-y-3 no-print">
+        {/* Top: 5 Pillar Tabs */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+          {reportPillars.map((pillar) => (
+            <button
+              key={pillar.id}
+              onClick={() => {
+                setSelectedPillar(pillar.id as any);
+                if (pillar.targetId) {
+                  scrollToSection(pillar.targetId);
+                }
+              }}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer flex items-center gap-1.5 ${
+                selectedPillar === pillar.id
+                  ? 'bg-stone-900 text-amber-300 shadow-xs'
+                  : 'bg-stone-50 text-stone-600 hover:bg-stone-100 border border-stone-200/80'
+              }`}
+            >
+              <span>{pillar.label}</span>
+              <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full ${
+                selectedPillar === pillar.id ? 'bg-amber-400/20 text-amber-200' : 'bg-stone-200/60 text-stone-500'
+              }`}>
+                {pillar.range}
+              </span>
+            </button>
+          ))}
+        </div>
+
+        {/* Mobile: Fast Chapter Select Dropdown */}
+        <div className="md:hidden pt-1">
+          <label htmlFor="mobile-chapter-select" className="sr-only">Jump to Chapter</label>
+          <select
+            id="mobile-chapter-select"
+            value={activeSection}
+            onChange={(e) => scrollToSection(e.target.value)}
+            className="w-full bg-amber-50/60 border border-amber-300 rounded-xl px-3 py-2.5 text-xs font-medium text-stone-800 focus:outline-none focus:ring-2 focus:ring-[#D97706]"
+          >
+            {navItems.map((item) => (
+              <option key={item.id} value={item.id}>
+                {item.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Desktop: Chapter Jump Pills */}
+        <div className="hidden md:flex gap-1.5 overflow-x-auto pt-1 quick-jump-nav">
+          {filteredNavItems.map((item) => (
+            <button
+              key={item.id}
+              onClick={() => scrollToSection(item.id)}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer whitespace-nowrap ${
+                activeSection === item.id
+                  ? 'bg-[#D97706] text-white shadow-xs font-bold'
+                  : 'bg-[#F8F4EF] hover:bg-[#F2E8DC] text-[#4B5563]'
+              }`}
+            >
+              {item.icon}
+              <span>{item.label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Synthesis Highlight Banner */}
+      <div className="bg-gradient-to-r from-amber-50 via-orange-50/60 to-amber-50 border border-amber-200/80 rounded-3xl p-5 shadow-xs no-print">
+        <div className="flex items-start gap-3.5">
+          <div className="p-2.5 bg-amber-100/80 rounded-2xl border border-amber-200 text-[#B45309] flex-shrink-0 mt-0.5">
+            <Sparkles className="w-5 h-5" />
+          </div>
+          <div>
+            <h4 className="font-playfair text-sm md:text-base font-bold text-[#92400E]">
+              LeoFamily Unified Cosmic Synthesis (संयुक्त ऊर्जा सामंजस्य)
+            </h4>
+            <p className="text-xs text-[#78350F] mt-1 leading-relaxed">
+              आपके प्रोफाइल में मूलांक <strong>#{coreNumbers.mulank} ({coreNumbers.mulankGraha})</strong> और भाग्यांक <strong>#{coreNumbers.bhagyank} ({coreNumbers.bhagyankGraha})</strong> के साथ नाम अंक <strong>#{nameNumerology?.chaldean.rootNumber || 5}</strong> एवं मोबाइल कम्पाउंड <strong>#{mobileAnalysis?.compoundTotal || 41}</strong> का एक मजबूत तालमेल दिखाई दे रहा है। जीवन के निर्णय लेते समय बुध, सूर्य एवं गुरु की सकारात्मक ऊर्जा का उपयोग करना आपके लिए अत्यंत फलदायी रहेगा।
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* MAIN MASTER REPORT CONTAINER */}
+      <div id="master-report-container" ref={reportRef} className="space-y-10 bg-[#FAF8F5] p-4 md:p-8 rounded-3xl border border-[#E5E7EB] text-[#1F2937] master-report-dossier">
+
+        {/* ========================================================================= */}
+        {/* COVER PAGE (PREMIUM A4 PORTRAIT) */}
+        {/* ========================================================================= */}
+        <section
+          id="sec-cover"
+          className="print-page-break print-avoid-break bg-white rounded-3xl p-8 md:p-12 border-2 border-amber-300/80 shadow-md space-y-8 min-h-[880px] flex flex-col justify-between relative overflow-hidden"
+          style={{ breakAfter: 'page', pageBreakAfter: 'always' }}
+        >
+          {/* Subtle Decorative Background & Sacred Geometry Borders */}
+          <div className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-br from-amber-100/50 via-orange-100/20 to-transparent rounded-bl-full pointer-events-none -z-0" />
+          <div className="absolute bottom-0 left-0 w-80 h-80 bg-gradient-to-tr from-amber-100/40 via-yellow-100/20 to-transparent rounded-tr-full pointer-events-none -z-0" />
+          
+          <div className="relative z-10 space-y-7">
+            {/* Header / Brand Crest */}
+            <div className="text-center space-y-3 border-b-2 border-amber-200/80 pb-6">
+              <div className="inline-flex items-center justify-center p-2 bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-300 rounded-3xl shadow-sm mb-1">
+                <BrandLogo size="xl" />
+              </div>
+              <div>
+                <span className="text-[11px] font-mono font-bold tracking-[0.25em] text-[#B45309] uppercase block">
+                  LEOFAMILY ASTRO-NUMEROLOGY & VEDIC SYSTEMS
+                </span>
+                <h1 className="font-playfair text-3xl md:text-5xl font-black text-[#1F2937] tracking-tight mt-1">
+                  LEOFAMILY
+                </h1>
+                <h2 className="font-playfair text-lg md:text-2xl font-bold text-[#92400E] mt-1">
+                  Complete Indian Numerology & Vedic Guidance Report
+                </h2>
+                <p className="text-xs text-[#6B7280] mt-1 font-serif italic">
+                  सम्पूर्ण भारतीय अंक ज्योतिष, लो-शू ऊर्जा ग्रिड एवं वैदिक महादशा परामर्श प्रतिवेदन
+                </p>
+              </div>
+            </div>
+
+            {/* Client Credentials Profile Card */}
+            <div className="bg-[#FAF5EE] rounded-2xl p-6 border border-[#FDE68A] shadow-xs space-y-4">
+              <div className="flex justify-between items-center border-b border-amber-200 pb-2.5">
+                <span className="font-bold text-xs uppercase tracking-wider text-[#92400E] flex items-center gap-1.5">
+                  <User className="w-4 h-4 text-[#D97706]" /> Client Identification Record
+                </span>
+                <span className="text-[10px] font-mono bg-[#D97706] text-white px-2.5 py-0.5 rounded-full font-bold">
+                  Confidential Dossier
+                </span>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
+                <div>
+                  <span className="text-[10px] text-[#6B7280] block uppercase font-mono font-semibold">Client Name</span>
+                  <span className="text-sm font-bold text-[#1F2937] block mt-0.5">{identity.fullName}</span>
+                </div>
+                <div>
+                  <span className="text-[10px] text-[#6B7280] block uppercase font-mono font-semibold">Date of Birth</span>
+                  <span className="text-sm font-bold text-[#92400E] block mt-0.5">{formattedDOB}</span>
+                </div>
+                <div>
+                  <span className="text-[10px] text-[#6B7280] block uppercase font-mono font-semibold">Mobile Number</span>
+                  <span className="text-sm font-bold text-[#1F2937] block mt-0.5">{identity.mobile || '9876543210'}</span>
+                </div>
+                <div>
+                  <span className="text-[10px] text-[#6B7280] block uppercase font-mono font-semibold">Gender / Energy</span>
+                  <span className="text-sm font-bold text-[#1F2937] block mt-0.5">{identity.gender || 'MALE'}</span>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 pt-2 border-t border-amber-200/60 text-[11px] text-[#6B7280]">
+                <div>
+                  <span>Report Generated: <strong>{formattedReportDate}</strong></span>
+                </div>
+                <div>
+                  <span>Language / भाषा: <strong>{language.toUpperCase()} (Canonical Hindi + Multilingual)</strong></span>
+                </div>
+                <div>
+                  <span>System: <strong>Chaldean + Vedic + Lo Shu Unified</strong></span>
+                </div>
+              </div>
+            </div>
+
+            {/* Core 5 + Kua Primary Consultation Numbers */}
+            <div className="space-y-2.5">
+              <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#92400E] block text-center">
+                ★ Core Astro-Numerical Frequency Matrix ★
+              </span>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                <div className="p-3.5 bg-white rounded-2xl border-2 border-amber-300 text-center shadow-xs">
+                  <span className="text-[10px] font-mono text-[#92400E] uppercase block font-bold">मूलांक (Driver)</span>
+                  <span className="text-2xl font-playfair font-black text-[#B45309] block">#{coreNumbers.mulank}</span>
+                  <span className="text-[10px] text-[#78350F] font-medium">{coreNumbers.mulankGraha}</span>
+                </div>
+                <div className="p-3.5 bg-white rounded-2xl border-2 border-amber-300 text-center shadow-xs">
+                  <span className="text-[10px] font-mono text-[#92400E] uppercase block font-bold">भाग्यांक (Destiny)</span>
+                  <span className="text-2xl font-playfair font-black text-[#B45309] block">#{coreNumbers.bhagyank}</span>
+                  <span className="text-[10px] text-[#78350F] font-medium">{coreNumbers.bhagyankGraha}</span>
+                </div>
+                <div className="p-3.5 bg-white rounded-2xl border-2 border-amber-300 text-center shadow-xs">
+                  <span className="text-[10px] font-mono text-[#92400E] uppercase block font-bold">Name Number</span>
+                  <span className="text-2xl font-playfair font-black text-[#B45309] block">
+                    #{nameNumerology?.chaldean.rootNumber || 5}
+                  </span>
+                  <span className="text-[10px] text-[#78350F] font-medium">
+                    Chaldean {nameNumerology?.chaldean.compoundNumber || 32}
+                  </span>
+                </div>
+                <div className="p-3.5 bg-white rounded-2xl border-2 border-amber-300 text-center shadow-xs">
+                  <span className="text-[10px] font-mono text-[#92400E] uppercase block font-bold">Mobile Root</span>
+                  <span className="text-2xl font-playfair font-black text-[#B45309] block">
+                    #{mobileAnalysis?.rootNumber || 5}
+                  </span>
+                  <span className="text-[10px] text-[#78350F] font-medium">
+                    Total {mobileAnalysis?.compoundTotal || 41}
+                  </span>
+                </div>
+                <div className="p-3.5 bg-white rounded-2xl border-2 border-amber-300 text-center shadow-xs">
+                  <span className="text-[10px] font-mono text-[#92400E] uppercase block font-bold">Personal Year</span>
+                  <span className="text-2xl font-playfair font-black text-[#B45309] block">#{personalYearVal}</span>
+                  <span className="text-[10px] text-[#78350F] font-medium">{currentYear} Cycle</span>
+                </div>
+                <div className="p-3.5 bg-white rounded-2xl border-2 border-amber-300 text-center shadow-xs">
+                  <span className="text-[10px] font-mono text-[#92400E] uppercase block font-bold">Kua Number</span>
+                  <span className="text-2xl font-playfair font-black text-[#B45309] block">#{kuaProfile.kuaNumber}</span>
+                  <span className="text-[10px] text-[#78350F] font-medium">
+                    {kuaProfile.group === 'WEST_GROUP' ? 'पश्चिम समूह' : 'पूर्व समूह'}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Consultant Snapshot */}
+            <div className="p-6 bg-gradient-to-r from-amber-500/10 via-[#FAF5EE] to-amber-500/5 rounded-2xl border-2 border-[#D97706]/40 space-y-4">
+              <div className="flex justify-between items-center border-b border-amber-200/80 pb-2.5">
+                <span className="font-playfair font-bold text-sm text-[#92400E] flex items-center gap-2">
+                  <Star className="w-4 h-4 text-[#D97706] fill-amber-400" />
+                  CONSULTANT SNAPSHOT (मुख्य परामर्शदाता स्नैपशॉट)
+                </span>
+                <span className="text-[10px] font-mono font-bold bg-[#D97706] text-white px-2.5 py-0.5 rounded-full">
+                  Executive Briefing
+                </span>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                <div className="p-3.5 bg-white/90 rounded-xl border border-amber-200 space-y-1">
+                  <strong className="text-[#92400E] block font-bold text-[10px] uppercase">1. प्रमुख ऊर्जा (Dominant Energy):</strong>
+                  <p className="text-[#4B5563] text-xs leading-relaxed">{localizedDossier.consultantSnapshot.dominantEnergy || expertDossier.consultantSnapshot.dominantEnergyHi}</p>
+                </div>
+                <div className="p-3.5 bg-white/90 rounded-xl border border-amber-200 space-y-1">
+                  <strong className="text-[#92400E] block font-bold text-[10px] uppercase">2. मूल जीवन विषय (Core Life Theme):</strong>
+                  <p className="text-[#4B5563] text-xs leading-relaxed">{localizedDossier.consultantSnapshot.coreVerdict || expertDossier.consultantSnapshot.coreVerdictHi}</p>
+                </div>
+                <div className="p-3.5 bg-white/90 rounded-xl border border-amber-200 space-y-1">
+                  <strong className="text-[#92400E] block font-bold text-[10px] uppercase">3. मुख्य सामर्थ्य (Key Strengths):</strong>
+                  <p className="text-[#4B5563] text-xs leading-relaxed">
+                    {interpretations.career.strengths.slice(0, 3).join(', ') || localizedDossier.consultantSnapshot.bestAvenue || 'बौद्धिक स्पष्टता, कूटनीतिक संवाद, रणनीतिक प्रबंधन एवं त्वरित निर्णय क्षमता'}
+                  </p>
+                </div>
+                <div className="p-3.5 bg-white/90 rounded-xl border border-amber-200 space-y-1">
+                  <strong className="text-[#92400E] block font-bold text-[10px] uppercase">4. मुख्य चुनौतियाँ व सावधानी (Key Challenges):</strong>
+                  <p className="text-[#4B5563] text-xs leading-relaxed">{localizedDossier.consultantSnapshot.strategicCaution || expertDossier.consultantSnapshot.strategicCautionHi}</p>
+                </div>
+              </div>
+
+              <div className="p-3.5 bg-amber-100/70 rounded-xl border border-amber-300 text-xs text-[#78350F] flex items-start gap-2.5">
+                <Target className="w-4 h-4 text-[#D97706] flex-shrink-0 mt-0.5" />
+                <div>
+                  <strong>वर्तमान रणनीतिक ध्यान (Current Focus):</strong> {localizedDossier.expertSummary.timeCycleGuidance || expertDossier.expertSummary.timeCycleGuidance || 'व्यक्तिगत वर्ष एवं महादशा के अनुसार नए अवसरों की योजना बनाएं और निरंतर कर्म पर एकाग्र रहें।'}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Cover Page Footer Seal */}
+          <div className="relative z-10 border-t-2 border-amber-200/80 pt-4 flex flex-col sm:flex-row justify-between items-center text-[10px] text-[#6B7280] gap-2">
+            <div className="flex items-center gap-2">
+              <Shield className="w-4 h-4 text-[#D97706]" />
+              <span>Certified LeoFamily Vedic & Numerological Consultation Engine</span>
+            </div>
+            <div className="font-serif italic text-[#92400E]">
+              "यथा पिण्डे तथा ब्रह्माण्डे" • (As in the Microcosm, so in the Macrocosm)
+            </div>
+          </div>
+        </section>
+
+        {/* ========================================================================= */}
+        {/* 01. EXECUTIVE SUMMARY */}
+        {/* ========================================================================= */}
+        <section id="sec-01" className="bg-white rounded-3xl p-6 md:p-8 border border-[#E5E7EB] shadow-sm space-y-6 print-avoid-break">
+          <div className="border-b border-[#F3F4F6] pb-4 flex justify-between items-center">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-[10px] font-mono uppercase text-[#D97706] font-bold tracking-wider">Chapter 01</span>
+                <span className="text-[10px] font-mono text-stone-600 bg-stone-100 px-2 py-0.5 rounded font-bold border border-stone-200">Sample Section 3 & 8: Executive Core</span>
+              </div>
+              <h3 className="font-playfair text-xl md:text-2xl font-bold text-[#1F2937]">Executive Summary & Consultant Snapshot (कार्यकारी सारांश)</h3>
+            </div>
+            <span className="text-xs bg-amber-50 text-amber-800 border border-amber-200 px-3 py-1 rounded-full font-semibold flex items-center gap-1">
+              <Sparkles className="w-3 h-3 text-[#D97706]" /> LeoFamily Expert Consultation
+            </span>
+          </div>
+
+          {/* 1. Methodology Transparency Legend Bar */}
+          <div className="p-3.5 bg-white rounded-2xl border border-stone-200/90 flex flex-wrap items-center justify-between gap-3 text-xs">
+            <div className="flex items-center gap-2">
+              <Info className="w-4 h-4 text-[#D97706]" />
+              <span className="font-bold text-stone-800 text-[11px]">LeoFamily परामर्श पारदर्शिता मानक (Trust & Methodology Framework):</span>
+            </div>
+            <div className="flex flex-wrap items-center gap-2 text-[10px] font-mono">
+              <span className="inline-flex items-center gap-1 bg-blue-50 text-blue-800 border border-blue-200 px-2 py-0.5 rounded font-bold">
+                [CALCULATED] प्रत्यक्ष गणितीय तथ्य
+              </span>
+              <span className="inline-flex items-center gap-1 bg-amber-50 text-amber-800 border border-amber-200 px-2 py-0.5 rounded font-bold">
+                [INTERPRETED] वैदिक व चाल्डियन पद्धति
+              </span>
+              <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded font-bold">
+                [RECOMMENDED] व्यवहारिक मार्गदर्शन
+              </span>
+            </div>
+          </div>
+
+          {/* 2. Consultant Snapshot Card */}
+          <div className="p-5 bg-gradient-to-r from-amber-500/10 via-[#FAF5EE] to-amber-500/5 rounded-2xl border-2 border-[#D97706]/30 space-y-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-amber-200/80 pb-2.5">
+              <span className="font-playfair font-bold text-sm text-[#92400E] flex items-center gap-2">
+                <Star className="w-4 h-4 text-[#D97706] fill-amber-400" />
+                मुख्य परामर्शदाता स्नैपशॉट (Consultant Executive Snapshot)
+              </span>
+              <span className="text-[10px] font-mono font-bold bg-[#D97706] text-white px-2.5 py-0.5 rounded-full w-fit">
+                Vedic + Chaldean Harmonized
+              </span>
+            </div>
+            <p className="text-xs text-[#78350F] leading-relaxed font-medium">
+              {localizedDossier.consultantSnapshot.coreVerdict || expertDossier.consultantSnapshot.coreVerdictHi}
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1 text-[11px]">
+              <div className="p-2.5 bg-white/80 rounded-xl border border-amber-200">
+                <strong className="text-[#92400E] block font-bold text-[10px] uppercase">प्रमुख ऊर्जा (Dominant Energy):</strong>
+                <span className="text-[#4B5563]">{localizedDossier.consultantSnapshot.dominantEnergy || expertDossier.consultantSnapshot.dominantEnergyHi}</span>
+              </div>
+              <div className="p-2.5 bg-white/80 rounded-xl border border-amber-200">
+                <strong className="text-[#92400E] block font-bold text-[10px] uppercase">सर्वोत्तम क्षेत्र (Best Avenues):</strong>
+                <span className="text-[#4B5563]">{localizedDossier.consultantSnapshot.bestAvenue || expertDossier.consultantSnapshot.bestAvenueHi}</span>
+              </div>
+              <div className="p-2.5 bg-white/80 rounded-xl border border-amber-200">
+                <strong className="text-[#92400E] block font-bold text-[10px] uppercase">रणनीतिक सावधानी (Strategic Caution):</strong>
+                <span className="text-[#4B5563]">{localizedDossier.consultantSnapshot.strategicCaution || expertDossier.consultantSnapshot.strategicCautionHi}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Standout Profile Narrative */}
+          <div className="p-4 bg-amber-500/10 rounded-2xl border border-amber-300/80 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="font-playfair font-bold text-xs text-[#92400E] flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-[#D97706]" />
+                {language === 'hi' ? 'आपकी जन्म कुंडली में क्या विशिष्ट है? (Key Takeaway)' : 'What Stands Out in Your Profile?'}
+              </span>
+              <span className="text-[10px] font-mono text-amber-800 font-bold bg-amber-200/70 px-2 py-0.5 rounded">
+                Tier-1 Prioritized
+              </span>
+            </div>
+            <p className="text-xs text-[#78350F] leading-relaxed font-medium">
+              {language === 'hi' ? advancedInsightDossier.standoutProfileNarrative.hi : advancedInsightDossier.standoutProfileNarrative.en}
+            </p>
+          </div>
+
+          {/* 3. YOUR KEY PATTERNS & CROSS-ANALYSIS (5 Dedicated Personalized Findings) */}
+          <div className="space-y-3 pt-2">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 border-b border-amber-200/80 pb-2">
+              <h4 className="text-sm font-bold uppercase tracking-wider text-[#92400E] font-playfair flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-[#D97706]" />
+                आपके 5 प्रमुख व्यक्तिगत पैटर्न (Your Key Cross-Patterns Analysis)
+              </h4>
+              <span className="text-[10px] font-mono text-stone-500">
+                Calculated Across All 32 Analytical Dimensions
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 text-xs">
+              {patternDossier.allDetectedPatterns.map((pat, idx) => {
+                const matchingAdvanced = advancedInsightDossier.allValidatedInsights.find(
+                  (ai) => ai.id.toLowerCase().includes(pat.id.replace(/-/g, '_').toLowerCase()) || (ai.type as string) === (pat.category as string)
+                ) || advancedInsightDossier.primaryInsights[idx % advancedInsightDossier.primaryInsights.length];
+
+                return (
+                  <div
+                    key={pat.id}
+                    className={`p-4 rounded-2xl border-2 space-y-2.5 transition-all ${
+                      pat.category === 'CONTRASTING_TENSION'
+                        ? 'bg-amber-50/70 border-amber-300'
+                        : pat.category === 'KARMIC_LESSON'
+                        ? 'bg-rose-50/60 border-rose-200'
+                        : 'bg-white border-amber-200 shadow-xs'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-2 border-b border-stone-100 pb-1.5">
+                      <span className="font-mono font-bold text-[10px] text-[#D97706] bg-amber-100/80 px-2 py-0.5 rounded">
+                        PATTERN 0{idx + 1}
+                      </span>
+                      <span className="text-[10px] font-mono text-stone-400 font-semibold">
+                        {pat.category.replace(/_/g, ' ')}
+                      </span>
+                    </div>
+
+                    <div>
+                      <h5 className="font-bold text-sm text-stone-900 font-playfair">
+                        {pat.titleHi}
+                      </h5>
+                      <p className="text-[11px] text-stone-600 mt-1 leading-relaxed">
+                        {pat.descriptionHi}
+                      </p>
+                    </div>
+
+                    {/* Why This Matters Box */}
+                    <div className="p-2.5 bg-[#FAF8F5] rounded-xl border border-stone-200 text-[10px] space-y-1">
+                      <strong className="text-amber-900 block font-bold">💡 Why This Matters (यह क्यों महत्वपूर्ण है):</strong>
+                      <p className="text-stone-600 leading-relaxed">{pat.whyThisMattersHi}</p>
+                    </div>
+
+                    {/* Practical Guidance & Quick Jump Anchor */}
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-1 border-t border-stone-100 text-[10px]">
+                      <span className="text-emerald-800 font-medium">
+                        <strong>कार्य बिंदु: </strong> {pat.practicalFocusHi}
+                      </span>
+                      <div className="flex items-center gap-2">
+                        {matchingAdvanced && (
+                          <button
+                            type="button"
+                            onClick={() => setSelectedProvenanceInsight(matchingAdvanced)}
+                            className="text-stone-500 hover:text-amber-800 font-mono font-semibold text-[9px] bg-stone-100 px-2 py-1 rounded cursor-pointer border border-stone-200"
+                            title="पद्धति एवं नियम सत्यापन (Why Am I Seeing This?)"
+                          >
+                            🔬 नियम विवरण
+                          </button>
+                        )}
+                        {pat.relatedChapterIds.length > 0 && (
+                          <button
+                            type="button"
+                            onClick={() => scrollToSection(pat.relatedChapterIds[0])}
+                            className="text-[#D97706] hover:underline font-bold whitespace-nowrap flex items-center gap-1 cursor-pointer"
+                          >
+                            <span>अध्याय देखें →</span>
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Quick Metrics Cards */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+            <div className="p-3.5 bg-[#FAF5EE] rounded-2xl border border-[#FDE68A] text-center">
+              <span className="text-[10px] font-mono text-[#92400E] uppercase block font-bold">मूलांक (Driver)</span>
+              <span className="text-2xl font-playfair font-black text-[#B45309] block">#{coreNumbers.mulank}</span>
+              <span className="text-[10px] text-[#78350F]">{coreNumbers.mulankGraha}</span>
+            </div>
+            <div className="p-3.5 bg-[#FAF5EE] rounded-2xl border border-[#FDE68A] text-center">
+              <span className="text-[10px] font-mono text-[#92400E] uppercase block font-bold">भाग्यांक (Destiny)</span>
+              <span className="text-2xl font-playfair font-black text-[#B45309] block">#{coreNumbers.bhagyank}</span>
+              <span className="text-[10px] text-[#78350F]">{coreNumbers.bhagyankGraha}</span>
+            </div>
+            <div className="p-3.5 bg-[#FAF5EE] rounded-2xl border border-[#FDE68A] text-center">
+              <span className="text-[10px] font-mono text-[#92400E] uppercase block font-bold">Personal Year</span>
+              <span className="text-2xl font-playfair font-black text-[#B45309] block">#{personalYearVal}</span>
+              <span className="text-[10px] text-[#78350F]">{currentYear} Cycle</span>
+            </div>
+            <div className="p-3.5 bg-emerald-50 rounded-2xl border border-emerald-200 text-center">
+              <span className="text-[10px] font-mono text-emerald-800 uppercase block font-bold">Dominant Number</span>
+              <span className="text-2xl font-playfair font-black text-emerald-700 block">
+                #{repeatedNums.length > 0 ? repeatedNums[0].digit : coreNumbers.mulank}
+              </span>
+              <span className="text-[10px] text-emerald-600">Active Focus</span>
+            </div>
+            <div className="p-3.5 bg-rose-50 rounded-2xl border border-rose-200 text-center">
+              <span className="text-[10px] font-mono text-rose-800 uppercase block font-bold">Key Missing Number</span>
+              <span className="text-2xl font-playfair font-black text-rose-700 block">
+                {missingNums.length > 0 ? `#${missingNums[0]}` : 'None'}
+              </span>
+              <span className="text-[10px] text-rose-600">Growth Area</span>
+            </div>
+            <div className="p-3.5 bg-blue-50 rounded-2xl border border-blue-200 text-center">
+              <span className="text-[10px] font-mono text-blue-800 uppercase block font-bold">Strongest Plane</span>
+              <span className="text-xs font-bold text-blue-900 block mt-2">
+                {planes.find(p => p.status === 'COMPLETE')?.name || 'Action Plane'}
+              </span>
+              <span className="text-[9px] text-blue-600">Harmonized</span>
+            </div>
+          </div>
+
+          {/* Three Life Pillars Overview */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+            <div className="p-4 bg-[#FFFDF9] rounded-2xl border border-[#E5E7EB]">
+              <strong className="text-[#B45309] font-bold block mb-1 uppercase text-[10px]">💼 Career Theme:</strong>
+              <p className="text-[#4B5563] leading-relaxed">
+                {interpretations.career.strengths.slice(0, 2).join(', ') || 'नेतृत्व, संचार एवं रणनीतिक प्रबंधन'} के क्षेत्र में उत्कृष्ट संभावनाएं।
+              </p>
+            </div>
+            <div className="p-4 bg-[#FFFDF9] rounded-2xl border border-[#E5E7EB]">
+              <strong className="text-rose-700 font-bold block mb-1 uppercase text-[10px]">💕 Relationship Theme:</strong>
+              <p className="text-[#4B5563] leading-relaxed">
+                {relationship.emotionalNeeds || 'पारस्परिक सम्मान, बौद्धिक संवाद एवं स्पष्ट भावनात्मक सामंजस्य की आवश्यकता।'}
+              </p>
+            </div>
+            <div className="p-4 bg-[#FFFDF9] rounded-2xl border border-[#E5E7EB]">
+              <strong className="text-emerald-700 font-bold block mb-1 uppercase text-[10px]">💰 Wealth Theme:</strong>
+              <p className="text-[#4B5563] leading-relaxed">
+                {finance.wealthCreationStyle || 'स्थिर एवं दीर्घकालिक निवेश दृष्टिकोण। जल्दबाजी में जोखिम लेने से बचें।'}
+              </p>
+            </div>
+          </div>
+
+          {/* LeoFamily की मुख्य सलाह */}
+          <div className="p-4 bg-[#FAF5EE] border-l-4 border-[#D97706] rounded-r-2xl">
+            <h4 className="font-playfair text-sm font-bold text-[#92400E] mb-1">LeoFamily की मुख्य सलाह</h4>
+            <p className="text-xs text-[#78350F] leading-relaxed font-medium">
+              "अपने मूलांक #{coreNumbers.mulank} की स्वाभाविक प्रतिभा को आगे रखें और मिसिंग अंकों के लिए सरल पारंपरिक उपाय अपनाएं। नाम एवं मोबाइल नंबर के कम्पाउंड को हमेशा मित्र ग्रहों के अंक पर संतुलित रखें ताकि आपके प्रयासों में व्यर्थ रुकावट न आए।"
+            </p>
+          </div>
+        </section>
+
+        {/* ========================================================================= */}
+        {/* 02. CORE NUMBERS & SYNTHESIS */}
+        {/* ========================================================================= */}
+        <section id="sec-02" className="bg-white rounded-3xl p-6 md:p-8 border border-[#E5E7EB] shadow-sm space-y-6 print-avoid-break">
+          <div className="border-b border-[#F3F4F6] pb-3">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-[10px] font-mono uppercase text-[#D97706] font-bold tracking-wider">Chapter 02</span>
+              <span className="text-[10px] font-mono text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded font-bold">Sample Section 1: Driver & Conductor Analysis</span>
+            </div>
+            <h3 className="font-playfair text-xl font-bold text-[#1F2937]">Core Numbers, Tithi Frequency & Planetary Aspect (मूलांक, भाग्यांक एवं ग्रह दृष्टि)</h3>
+          </div>
+
+          {/* 2. Core Numbers Detailed Interpretation */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="p-5 bg-[#FAF5EE] rounded-2xl border border-[#FDE68A]">
+              <div className="flex justify-between items-center mb-2">
+                <span className="font-bold text-sm text-[#92400E]">मूलांक (Driver / Birth Number): #{coreNumbers.mulank}</span>
+                <span className="text-xs font-mono bg-white px-2 py-0.5 rounded border border-[#FDE68A] text-[#92400E]">
+                  स्वामी: {coreNumbers.mulankGraha}
+                </span>
+              </div>
+              <p className="text-xs text-[#4B5563] leading-relaxed mb-2">
+                मूलांक आपके बाह्य व्यक्तित्व, प्राथमिक सोच, स्वभाव और शारीरिक ऊर्जा को दर्शाता है। यह आपके दिन-प्रतिदिन के व्यवहार और त्वरित निर्णयों का आधार है।
+              </p>
+              <div className="text-[11px] bg-white/70 p-2.5 rounded-xl border border-amber-200/60 text-[#78350F]">
+                <strong>परामर्श मार्गदर्शन:</strong> {coreNumbers.synthesis?.instinctiveNature || coreNumbers.synthesis?.summary || 'अपनी स्वाभाविक संचार प्रतिभा और विश्लेषणात्मक शक्ति को दैनिक कार्यों की प्राथमिकता बनाएं।'}
+              </div>
+            </div>
+
+            <div className="p-5 bg-[#FAF5EE] rounded-2xl border border-[#FDE68A]">
+              <div className="flex justify-between items-center mb-2">
+                <span className="font-bold text-sm text-[#92400E]">भाग्यांक (Conductor / Destiny Number): #{coreNumbers.bhagyank}</span>
+                <span className="text-xs font-mono bg-white px-2 py-0.5 rounded border border-[#FDE68A] text-[#92400E]">
+                  स्वामी: {coreNumbers.bhagyankGraha}
+                </span>
+              </div>
+              <p className="text-xs text-[#4B5563] leading-relaxed mb-2">
+                भाग्यांक आपके जीवन के समग्र उद्देश्य, कर्म पथ, सामाजिक जिम्मेदारी और जीवन के उत्तरार्ध में मिलने वाली वास्तविक दिशा को निर्धारित करता है।
+              </p>
+              <div className="text-[11px] bg-white/70 p-2.5 rounded-xl border border-amber-200/60 text-[#78350F]">
+                <strong>भाग्य का आह्वान:</strong> {coreNumbers.synthesis?.destinyTrajectory || coreNumbers.synthesis?.integrationAdvice || 'गहन अध्ययन, तकनीकी विशेषज्ञता और स्वतंत्र शोध के माध्यम से जीवन में उच्च प्रतिष्ठा प्राप्त होती है।'}
+              </div>
+            </div>
+          </div>
+
+          {/* 7. Detailed DOB / Tithi Ank Analysis */}
+          <div className="p-4 bg-[#FFFDF9] rounded-2xl border border-[#E5E7EB] space-y-2">
+            <div className="flex justify-between items-center">
+              <span className="font-playfair font-bold text-xs text-[#92400E] uppercase tracking-wider">
+                7. जन्म तिथि / तिथि अंक विश्लेषण (Detailed DOB & Compound Frequency)
+              </span>
+              <span className="text-[10px] font-mono bg-amber-100 text-amber-900 px-2 py-0.5 rounded">
+                Birth Day: #{localizedDossier.tithiAnkAnalysis?.birthDate || expertDossier.tithiAnkAnalysis.birthDate}
+              </span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-[#4B5563]">
+              <div className="p-3 bg-[#FAF5EE] rounded-xl border border-[#FDE68A]">
+                <strong className="text-[#92400E] block font-bold mb-1">कम्पाउंड नाम / उपाधि:</strong>
+                <span>{localizedDossier.tithiAnkAnalysis?.compoundTitle || expertDossier.tithiAnkAnalysis.compoundTitle}</span>
+              </div>
+              <div className="p-3 bg-[#FAF5EE] rounded-xl border border-[#FDE68A]">
+                <strong className="text-[#92400E] block font-bold mb-1">तिथि ऊर्जा स्वभाव:</strong>
+                <span>{localizedDossier.tithiAnkAnalysis?.tithiNature || expertDossier.tithiAnkAnalysis.tithiNatureHi}</span>
+              </div>
+            </div>
+            <p className="text-[11px] text-[#78350F] bg-amber-50/50 p-2.5 rounded-xl border border-amber-200/60 leading-relaxed">
+              {localizedDossier.tithiAnkAnalysis?.numericalFrequency || expertDossier.tithiAnkAnalysis.numericalFrequencyHi}
+            </p>
+          </div>
+
+          {/* 16. Grah Drishti & Planetary Synergy */}
+          <div className="p-4 bg-gradient-to-br from-amber-50/70 to-orange-50/40 rounded-2xl border border-amber-200 space-y-3">
+            <div className="flex justify-between items-center">
+              <span className="font-playfair font-bold text-xs text-[#92400E] uppercase tracking-wider flex items-center gap-1.5">
+                <Compass className="w-3.5 h-3.5 text-[#D97706]" /> 16. ग्रह दृष्टि एवं अंतर्संबंध (Grah Drishti & Planetary Synergy)
+              </span>
+              <span className="text-[10px] font-mono bg-[#D97706] text-white px-2 py-0.5 rounded font-bold">
+                {localizedDossier.grahDrishti?.relationshipLabel || expertDossier.grahDrishti.relationshipLabelHi}
+              </span>
+            </div>
+            <p className="text-xs text-[#78350F] leading-relaxed">
+              {localizedDossier.grahDrishti?.synergyNarrative || expertDossier.grahDrishti.synergyNarrativeHi}
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-xs">
+              {expertDossier.grahDrishti.dominantAspects.map((asp, idx) => (
+                <div key={idx} className="p-2.5 bg-white rounded-xl border border-amber-200/80 space-y-1">
+                  <div className="text-[10px] font-bold text-[#92400E]">{asp.planetPair}</div>
+                  <div className="text-[11px] font-semibold text-[#1F2937]">{asp.vibeHi}</div>
+                  <div className="text-[10px] text-[#6B7280] leading-snug">{asp.lifeImpactHi}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ========================================================================= */}
+        {/* 03-07. LOSHU BIRTH GRID, ENHANCED GRID & NUMERICAL PARAMETERS */}
+        {/* ========================================================================= */}
+        <section id="sec-03" className="bg-white rounded-3xl p-6 md:p-8 border border-[#E5E7EB] shadow-sm space-y-6 print-avoid-break">
+          <div className="border-b border-[#F3F4F6] pb-3">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-[10px] font-mono uppercase text-[#D97706] font-bold tracking-wider">Chapters 03 – 07</span>
+              <span className="text-[10px] font-mono text-amber-800 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded font-bold">Sample Section 4 & 5: Lo Shu Natal Matrix & Number Frequencies</span>
+            </div>
+            <h3 className="font-playfair text-xl font-bold text-[#1F2937]">
+              Birth Lo Shu Grid vs. Enhanced LeoFamily Grid
+            </h3>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Birth Grid */}
+            <div className="space-y-3">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-[#92400E] flex items-center justify-between">
+                <span>1. Birth Lo Shu Grid (जन्म ग्रिड)</span>
+                <span className="text-[9px] font-mono text-[#6B7280]">DOB Digits Only</span>
+              </h4>
+              <div className="grid grid-cols-3 gap-2 bg-[#FAF5EE] p-3 rounded-2xl border border-[#E5E7EB]">
+                {[4, 9, 2, 3, 5, 7, 8, 1, 6].map((num) => {
+                  const count = birthGrid[num] || 0;
+                  return (
+                    <div
+                      key={num}
+                      className={`h-14 rounded-xl flex flex-col items-center justify-center border transition-all ${
+                        count > 0
+                          ? 'bg-white border-[#D97706] text-[#B45309] shadow-xs font-bold'
+                          : 'bg-transparent border-dashed border-gray-200 text-gray-300 font-light'
+                      }`}
+                    >
+                      <span className="text-xs font-mono text-gray-400 font-normal">#{num}</span>
+                      <span className="text-sm font-playfair">{count > 0 ? Array(count).fill(num).join('') : '-'}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Enhanced Grid */}
+            <div className="space-y-3">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-[#92400E] flex items-center justify-between">
+                <span>2. Enhanced LeoFamily Grid</span>
+                <span className="text-[9px] font-mono text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                  + Driver & Destiny Added
+                </span>
+              </h4>
+              <div className="grid grid-cols-3 gap-2 bg-amber-50/40 p-3 rounded-2xl border border-amber-200">
+                {[4, 9, 2, 3, 5, 7, 8, 1, 6].map((num) => {
+                  const count = enhancedGrid[num] || 0;
+                  const isDriver = coreNumbers.mulank === num;
+                  const isDestiny = coreNumbers.bhagyank === num;
+                  const isAddedByDestiny = isDestiny && (birthGrid[num] || 0) === 0;
+
+                  return (
+                    <div
+                      key={num}
+                      className={`h-14 rounded-xl flex flex-col items-center justify-center border transition-all relative ${
+                        count > 0
+                          ? 'bg-white border-[#D97706] text-[#B45309] shadow-xs font-bold'
+                          : 'bg-transparent border-dashed border-gray-200 text-gray-300 font-light'
+                      }`}
+                    >
+                      <span className="text-[9px] font-mono text-gray-400 font-normal">#{num}</span>
+                      <span className="text-sm font-playfair">{count > 0 ? Array(count).fill(num).join('') : '-'}</span>
+                      {isAddedByDestiny && (
+                        <span className="text-[7px] text-emerald-700 font-mono absolute bottom-0.5 font-bold uppercase">
+                          Destiny Added
+                        </span>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          {/* Grid Parameters Breakdown */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs pt-2">
+            <div className="p-4 bg-[#FAF5EE] rounded-2xl border border-[#FDE68A]">
+              <strong className="text-[#92400E] block font-bold mb-1">उपस्थित अंक (Present Numbers):</strong>
+              <div className="flex flex-wrap gap-1.5 mt-2">
+                {presentNums.map(n => (
+                  <span key={n} className="px-2 py-0.5 bg-white text-[#B45309] font-mono font-bold rounded-lg border border-[#FDE68A]">
+                    #{n} ({enhancedGrid[n]}x)
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <div className="p-4 bg-rose-50/60 rounded-2xl border border-rose-200">
+              <strong className="text-rose-900 block font-bold mb-1">मिसिंग अंक (Enhanced Missing):</strong>
+              <div className="flex flex-wrap gap-1.5 mt-2">
+                {missingNums.length > 0 ? (
+                  missingNums.map(n => (
+                    <span key={n} className="px-2 py-0.5 bg-white text-rose-700 font-mono font-bold rounded-lg border border-rose-200">
+                      #{n}
+                    </span>
+                  ))
+                ) : (
+                  <span className="text-emerald-700 font-semibold">सभी अंक ग्रिड में उपस्थित हैं।</span>
+                )}
+              </div>
+            </div>
+
+            <div className="p-4 bg-blue-50/60 rounded-2xl border border-blue-200">
+              <strong className="text-blue-900 block font-bold mb-1">दोहराए गए अंक (Repeated Numbers):</strong>
+              <div className="flex flex-wrap gap-1.5 mt-2">
+                {repeatedNums.length > 0 ? (
+                  repeatedNums.map(r => (
+                    <span key={r.digit} className="px-2 py-0.5 bg-white text-blue-800 font-mono font-bold rounded-lg border border-blue-200">
+                      #{r.digit} ({r.count} बार)
+                    </span>
+                  ))
+                ) : (
+                  <span className="text-gray-500">संतुलित आवृत्ति (No excess repeats)</span>
+                )}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ========================================================================= */}
+        {/* 08-09. PLANES & MASTER ARROWS */}
+        {/* ========================================================================= */}
+        <section id="sec-08" className="bg-white rounded-3xl p-6 md:p-8 border border-[#E5E7EB] shadow-sm space-y-6 print-avoid-break">
+          <div className="border-b border-[#F3F4F6] pb-3">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-[10px] font-mono uppercase text-[#D97706] font-bold tracking-wider">Chapters 08 & 09</span>
+              <span className="text-[10px] font-mono text-blue-800 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded font-bold">Sample Section 5: Planes & Arrows of Pythagoras</span>
+            </div>
+            <h3 className="font-playfair text-xl font-bold text-[#1F2937]">Planes of Expression & Master Arrows</h3>
+          </div>
+
+          {/* Planes Grid */}
+          <div className="space-y-3">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-[#92400E]">
+              1. Eight Traditional Planes (8 मुख्य तल)
+            </h4>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+              {planes.map((p, idx) => (
+                <div
+                  key={idx}
+                  className={`p-3.5 rounded-2xl border ${
+                    p.status === 'COMPLETE'
+                      ? 'bg-emerald-50/60 border-emerald-200 text-emerald-950'
+                      : p.status === 'PARTIAL'
+                      ? 'bg-amber-50/60 border-amber-200 text-amber-950'
+                      : 'bg-gray-50 border-gray-200 text-gray-600'
+                  }`}
+                >
+                  <div className="flex justify-between items-center mb-1.5">
+                    <strong className="font-bold">{p.name}</strong>
+                    <span
+                      className={`text-[9px] px-2 py-0.5 rounded-full font-semibold ${
+                        p.status === 'COMPLETE'
+                          ? 'bg-emerald-200 text-emerald-900'
+                          : p.status === 'PARTIAL'
+                          ? 'bg-amber-200 text-amber-900'
+                          : 'bg-gray-200 text-gray-700'
+                      }`}
+                    >
+                      {p.status}
+                    </span>
+                  </div>
+                  <div className="font-mono text-[10px] text-gray-500 mb-1">
+                    अंक: {p.digits ? p.digits.join(', ') : '4, 9, 2'}
+                  </div>
+                  <p className="text-[11px] leading-relaxed text-gray-700">
+                    {p.status === 'COMPLETE'
+                      ? 'पूर्ण सक्रिय योग — उत्कृष्ट मानसिक और व्यावहारिक संतुलन।'
+                      : p.status === 'PARTIAL'
+                      ? 'आंशिक सक्रिय — नियमित प्रयास से पूरी क्षमता जागृत होती है।'
+                      : 'सुप्त तल — विशेष संकल्प एवं उपायों द्वारा विकास आवश्यक।'}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Master Arrows */}
+          <div className="space-y-3 pt-3">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-[#92400E]">
+              2. Master Arrows Analysis (तीरों का प्रभाव)
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+              {arrows.map((arrow, idx) => (
+                <div key={idx} className="p-4 bg-[#FAF5EE] rounded-2xl border border-[#FDE68A]">
+                  <div className="flex justify-between items-center mb-1">
+                    <strong className="text-sm font-bold text-[#92400E]">{arrow.name}</strong>
+                    <span className="text-[10px] font-bold text-[#B45309] bg-white px-2 py-0.5 rounded border border-[#FDE68A]">
+                      {arrow.status || 'Active'}
+                    </span>
+                  </div>
+                  <p className="text-xs text-[#4B5563] leading-relaxed">
+                    {arrow.meaning || 'दृढ़ इच्छाशक्ति, उद्देश्य पर एकाग्रता और समय प्रबंधन का शक्तिशाली योग।'}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ========================================================================= */}
+        {/* 10-12. 81 YOGAS, KARMIC LESSONS & DOMINANT ARCHETYPE */}
+        {/* ========================================================================= */}
+        <section id="sec-10" className="bg-white rounded-3xl p-6 md:p-8 border border-[#E5E7EB] shadow-sm space-y-6 print-avoid-break">
+          <div className="border-b border-[#F3F4F6] pb-3">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-[10px] font-mono uppercase text-[#D97706] font-bold tracking-wider">Chapters 10 – 12</span>
+              <span className="text-[10px] font-mono text-purple-800 bg-purple-50 border border-purple-200 px-2 py-0.5 rounded font-bold">Sample Section 2: Core Traits & 81 Vedic Planetary Yogas</span>
+            </div>
+            <h3 className="font-playfair text-xl font-bold text-[#1F2937]">81 Combinations, Karmic Matrix, Life Challenges & Archetype</h3>
+          </div>
+
+          {/* Active 81 Combination */}
+          {combination81 && (
+            <div className="p-5 bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl border border-amber-200">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-xs font-mono font-bold uppercase bg-[#D97706] text-white px-2.5 py-0.5 rounded-full">
+                  81 Yoga Code: {combination81.code}
+                </span>
+                <span className="font-playfair font-bold text-[#92400E] text-sm">{combination81.title}</span>
+              </div>
+              <p className="text-xs text-[#78350F] leading-relaxed mb-3">
+                {combination81.positiveMeaning}
+              </p>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px] pt-2 border-t border-amber-200/60">
+                <div><strong>Career:</strong> <span className="text-gray-700">{combination81.careerMeaning}</span></div>
+                <div><strong>Wealth:</strong> <span className="text-gray-700">{combination81.wealthMeaning}</span></div>
+                <div><strong>Relationship:</strong> <span className="text-gray-700">{combination81.relationshipMeaning}</span></div>
+                <div><strong>Challenges:</strong> <span className="text-gray-700">{combination81.negativeMeaning}</span></div>
+                <div className="sm:col-span-2"><strong>Traditional practice:</strong> <span className="text-gray-700">{combination81.remedy}</span></div>
+              </div>
+            </div>
+          )}
+
+          {/* 15. Unique About You (विशिष्ट पहचान एवं आंतरिक उपहार) */}
+          <div className="p-5 bg-gradient-to-r from-amber-500/10 via-[#FAF5EE] to-amber-500/5 rounded-2xl border border-[#FDE68A] space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="font-playfair font-bold text-xs text-[#92400E] uppercase tracking-wider flex items-center gap-1.5">
+                <Sparkles className="w-4 h-4 text-[#D97706]" /> 15. आपके बारे में क्या विशेष है (Unique About You)
+              </span>
+              <span className="text-[10px] font-mono font-bold bg-[#D97706] text-white px-2.5 py-0.5 rounded-full">
+                Cosmic Blueprint
+              </span>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+              <div className="p-3 bg-white rounded-xl border border-amber-200">
+                <strong className="text-[#92400E] block font-bold mb-1">कॉस्मिक हस्ताक्षर (Cosmic Signature):</strong>
+                <p className="text-[#4B5563] text-[11px]">{localizedDossier.uniqueAboutYou?.cosmicSignature || expertDossier.uniqueAboutYou.cosmicSignature}</p>
+              </div>
+              <div className="p-3 bg-white rounded-xl border border-amber-200">
+                <strong className="text-[#92400E] block font-bold mb-1">छिपी हुई प्रतिभा (Hidden Gift):</strong>
+                <p className="text-[#4B5563] text-[11px]">{localizedDossier.uniqueAboutYou?.hiddenGift || expertDossier.uniqueAboutYou.hiddenGift}</p>
+              </div>
+              <div className="p-3 bg-white rounded-xl border border-amber-200">
+                <strong className="text-[#92400E] block font-bold mb-1">आभा-मंडल प्रभाव (Distinctive Aura):</strong>
+                <p className="text-[#4B5563] text-[11px]">{localizedDossier.uniqueAboutYou?.distinctiveAura || expertDossier.uniqueAboutYou.distinctiveAura}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* 6. Life Challenges (जीवन की 4 प्रमुख चुनौतियां एवं समाधान) */}
+          <div className="space-y-3 pt-2">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-[#92400E] flex items-center gap-1.5">
+              <AlertTriangle className="w-3.5 h-3.5 text-[#D97706]" />
+              6. जीवन की प्रमुख चुनौतियां एवं कार्मिक पाठ (4 Life Challenges & Lessons)
+            </h4>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+              {(localizedDossier.lifeChallenges || expertDossier.lifeChallenges).map((ch: any, idx: number) => (
+                <div key={idx} className="p-4 bg-[#FAF5EE] rounded-2xl border border-[#FDE68A] space-y-1.5">
+                  <div className="flex justify-between items-center border-b border-[#FDE68A] pb-1.5">
+                    <strong className="text-xs font-bold text-[#92400E]">{ch.name}</strong>
+                    <span className="text-[10px] font-mono bg-white px-2 py-0.5 rounded border border-[#FDE68A] text-[#92400E] font-bold">
+                      अंक #{ch.value} ({ch.planet})
+                    </span>
+                  </div>
+                  <div className="text-[11px] text-[#4B5563]">
+                    <strong>प्रभाव क्षेत्र:</strong> {ch.area || ch.areaHi}
+                  </div>
+                  <p className="text-[11px] text-[#4B5563] leading-relaxed">
+                    <strong>सीख (Lesson):</strong> {ch.lesson || ch.lessonHi}
+                  </p>
+                  <div className="text-[10px] bg-white/80 p-2 rounded-lg border border-amber-200/60 text-[#78350F]">
+                    <strong>उपाय (Remedy):</strong> {ch.remedy || ch.remedyHi}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Dominant Archetype & Karmic */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs pt-1">
+            <div className="p-4 bg-[#FAF5EE] rounded-2xl border border-[#FDE68A]">
+              <strong className="text-[#92400E] block font-bold mb-1">प्रमुख व्यक्तित्व प्रकार (Dominant Archetype):</strong>
+              <h5 className="font-playfair font-bold text-sm text-[#B45309] mb-1">{personality.title || 'The Visionary Strategist'}</h5>
+              <p className="text-[#4B5563] leading-relaxed">
+                {personality.description || 'आप दूरदर्शी सोच और व्यावहारिक क्रियान्वयन के बीच संतुलन साधने वाले व्यक्ति हैं।'}
+              </p>
+            </div>
+
+            <div className="p-4 bg-[#FAF5EE] rounded-2xl border border-[#FDE68A]">
+              <strong className="text-[#92400E] block font-bold mb-1">कार्मिक पाठ एवं आत्म-विकास (Karmic Lessons):</strong>
+              <p className="text-[#4B5563] leading-relaxed">
+                {missingNums.length > 0
+                  ? `अंक #${missingNums.join(', #')} की ऊर्जा को दैनिक जीवन में धैर्य, संगठनात्मक अनुशासन और नियमित ध्यान के द्वारा संतुलित करें।`
+                  : 'आपके पास एक स्वाभाविक संतुलित ऊर्जा ग्रिड है। अपने विचारों को लगातार रचनात्मक कार्यों में लगाएं।'}
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* ========================================================================= */}
+        {/* 13-17. PSYCHOLOGICAL, CAREER, WEALTH & RELATIONSHIP MATRICES */}
+        {/* ========================================================================= */}
+        <section id="sec-13" className="bg-white rounded-3xl p-6 md:p-8 border border-[#E5E7EB] shadow-sm space-y-6 print-avoid-break">
+          <div className="border-b border-[#F3F4F6] pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-[10px] font-mono uppercase text-[#D97706] font-bold tracking-wider">Chapters 13 – 17</span>
+                <span className="text-[10px] font-mono text-amber-800 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded font-bold">Sample Section 3 & 8: Life Domains & Professional Aptitude</span>
+              </div>
+              <h3 className="font-playfair text-xl font-bold text-[#1F2937]">Psychological, Education, Career, Wealth & Family Matrices</h3>
+            </div>
+            <div className="flex items-center gap-1 text-[10px] font-mono">
+              <span className="bg-amber-50 text-amber-900 border border-amber-200 px-2 py-0.5 rounded font-semibold">
+                [INTERPRETED] Multi-Layer Analysis
+              </span>
+            </div>
+          </div>
+
+          {/* 3. Characteristics Profile */}
+          <div className="p-4 bg-[#FAF5EE] rounded-2xl border border-[#FDE68A] space-y-2 text-xs">
+            <div className="flex items-center justify-between">
+              <strong className="text-[#92400E] block font-bold uppercase text-xs">3. चारित्रिक विश्लेषण (Characteristics Profile)</strong>
+              <button
+                type="button"
+                onClick={() => scrollToSection('sec-02')}
+                className="text-[10px] text-[#D97706] hover:underline font-mono font-bold"
+              >
+                मूलांक विवरण देखें (Ch. 02) →
+              </button>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 text-[11px] text-[#4B5563]">
+              <div className="p-2.5 bg-white rounded-xl border border-amber-200">
+                <strong>विचार शैली (Thinking):</strong> {localizedDossier.characteristicsProfile?.thinkingStyle || expertDossier.characteristicsProfile.thinkingStyle}
+              </div>
+              <div className="p-2.5 bg-white rounded-xl border border-amber-200">
+                <strong>भावनात्मक प्रतिक्रिया:</strong> {localizedDossier.characteristicsProfile?.emotionalResponse || expertDossier.characteristicsProfile.emotionalResponse}
+              </div>
+              <div className="p-2.5 bg-white rounded-xl border border-amber-200">
+                <strong>कार्यशैली (Work Habit):</strong> {localizedDossier.characteristicsProfile?.workHabit || expertDossier.characteristicsProfile.workHabit}
+              </div>
+              <div className="p-2.5 bg-white rounded-xl border border-amber-200">
+                <strong>सामाजिक आचरण:</strong> {localizedDossier.characteristicsProfile?.socialConduct || expertDossier.characteristicsProfile.socialConduct}
+              </div>
+              <div className="p-2.5 bg-white rounded-xl border border-amber-200 sm:col-span-2">
+                <strong>नेतृत्व गुण (Leadership):</strong> {localizedDossier.characteristicsProfile?.leadershipTrait || expertDossier.characteristicsProfile.leadershipTrait}
+              </div>
+            </div>
+          </div>
+
+          {/* 10. Education Analysis */}
+          <div className="p-4 bg-blue-50/50 rounded-2xl border border-blue-200 space-y-2 text-xs">
+            <strong className="text-blue-900 block font-bold uppercase text-xs">10. शिक्षा एवं अध्ययन विश्लेषण (Education & Learning Style)</strong>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-[11px] text-[#4B5563]">
+              <div><strong>सीखने की शैली:</strong> {localizedDossier.educationAnalysis?.learningStyle || expertDossier.educationAnalysis.learningStyle}</div>
+              <div><strong>शुभ अध्ययन दिशा:</strong> {localizedDossier.educationAnalysis?.studyDirection || expertDossier.educationAnalysis.studyDirection}</div>
+              <div><strong>शैक्षणिक क्षमताएं:</strong> {(localizedDossier.educationAnalysis?.academicStrengths || expertDossier.educationAnalysis.academicStrengths).join(', ')}</div>
+              <div><strong>अनुकूल विषय:</strong> {(localizedDossier.educationAnalysis?.suitableDisciplines || expertDossier.educationAnalysis.suitableDisciplines).join(', ')}</div>
+            </div>
+          </div>
+
+          {/* 11 & 12. Career Analysis & Most Suitable Work Domains */}
+          <div className="p-4 bg-[#FAF5EE] rounded-2xl border border-[#FDE68A] space-y-2 text-xs">
+            <div className="flex items-center justify-between">
+              <strong className="text-[#92400E] block font-bold uppercase text-xs">11-12. करियर विश्लेषण एवं उपयुक्त कार्यक्षेत्र (Career Deep-Dive)</strong>
+              <button
+                type="button"
+                onClick={() => scrollToSection('sec-10')}
+                className="text-[10px] text-[#D97706] hover:underline font-mono font-bold"
+              >
+                81 युति फल देखें (Ch. 10) →
+              </button>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-[11px] text-[#4B5563]">
+              <div className="p-3 bg-white rounded-xl border border-amber-200 space-y-1">
+                <strong>सर्वोत्तम व्यावसायिक क्षेत्र (Primary Avenues):</strong>
+                <ul className="list-disc pl-4 space-y-0.5 text-[#78350F]">
+                  {(localizedDossier.careerDeepDive?.primaryAvenues || expertDossier.careerDeepDive.primaryAvenues).map((av: string, idx: number) => (
+                    <li key={idx}>{av}</li>
+                  ))}
+                </ul>
+              </div>
+              <div className="p-3 bg-white rounded-xl border border-amber-200 space-y-1">
+                <div><strong>उद्यमिता उपयुक्तता (Entrepreneurship):</strong> {localizedDossier.careerDeepDive?.entrepreneurialFit || expertDossier.careerDeepDive.entrepreneurialFit}</div>
+                <div><strong>कार्यस्थल भूमिका (Workplace Role):</strong> {localizedDossier.careerDeepDive?.workplaceRole || expertDossier.careerDeepDive.workplaceRole}</div>
+                <div className="pt-1 text-[#78350F]"><strong>सफलता की रणनीति:</strong> {localizedDossier.careerDeepDive?.successStrategy || expertDossier.careerDeepDive.successStrategy}</div>
+              </div>
+            </div>
+          </div>
+
+          {/* 13 & 18. Finance & Money Behaviour & Guidance */}
+          <div className="p-4 bg-emerald-50/60 rounded-2xl border border-emerald-200 space-y-2 text-xs">
+            <div className="flex items-center justify-between">
+              <strong className="text-emerald-900 block font-bold uppercase text-xs">13 & 18. धन व्यवहार एवं वित्तीय मार्गदर्शन (Finance & Wealth Management)</strong>
+              <button
+                type="button"
+                onClick={() => scrollToSection('sec-08')}
+                className="text-[10px] text-emerald-800 hover:underline font-mono font-bold"
+              >
+                समृद्धि तल 4-5-6 देखें (Ch. 08) →
+              </button>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-[11px] text-[#4B5563]">
+              <div className="p-2.5 bg-white rounded-xl border border-emerald-200">
+                <strong>पूंजी संचय पैटर्न:</strong> {localizedDossier.financeBehaviour?.wealthAccumulationPattern || expertDossier.financeBehaviour.wealthAccumulationPattern}
+              </div>
+              <div className="p-2.5 bg-white rounded-xl border border-emerald-200">
+                <strong>निवेश अनुकूलता:</strong> {localizedDossier.financeBehaviour?.investmentSuitability || expertDossier.financeBehaviour.investmentSuitability}
+              </div>
+              <div className="p-2.5 bg-white rounded-xl border border-emerald-200 sm:col-span-2 text-emerald-950">
+                <strong>वित्तीय सावधानी:</strong> {localizedDossier.financeBehaviour?.financialCaution || expertDossier.financeBehaviour.financialCaution}
+              </div>
+            </div>
+          </div>
+
+          {/* 8 & 9. Relationship Pattern & Family Dynamics */}
+          <div className="p-4 bg-rose-50/50 rounded-2xl border border-rose-200 space-y-2 text-xs">
+            <div className="flex items-center justify-between">
+              <strong className="text-rose-900 block font-bold uppercase text-xs">8-9. संबंध एवं पारिवारिक गतिशीलता (Relationships & Family Dynamics)</strong>
+              <button
+                type="button"
+                onClick={() => scrollToSection('sec-29d')}
+                className="text-[10px] text-rose-800 hover:underline font-mono font-bold"
+              >
+                विवाह गुण मिलान देखें (Ch. 29D) →
+              </button>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-[11px] text-[#4B5563]">
+              <div className="p-2.5 bg-white rounded-xl border border-rose-200">
+                <strong>संबंध पैटर्न:</strong> {localizedDossier.relationshipFamilyDynamics?.relationshipPattern || expertDossier.relationshipFamilyDynamics.relationshipPattern}
+              </div>
+              <div className="p-2.5 bg-white rounded-xl border border-rose-200">
+                <strong>पारिवारिक भूमिका:</strong> {localizedDossier.relationshipFamilyDynamics?.familyRole || expertDossier.relationshipFamilyDynamics.familyRole}
+              </div>
+              <div className="p-2.5 bg-white rounded-xl border border-rose-200 sm:col-span-2 text-rose-950">
+                <strong>पारिवारिक सामंजस्य की कुंजी:</strong> {localizedDossier.relationshipFamilyDynamics?.harmonyKey || expertDossier.relationshipFamilyDynamics.harmonyKey}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ========================================================================= */}
+        {/* 18. MOBILE NUMEROLOGY */}
+        {/* ========================================================================= */}
+        <section id="sec-18" className="bg-white rounded-3xl p-6 md:p-8 border border-[#E5E7EB] shadow-sm space-y-5 print-avoid-break">
+          <div className="border-b border-[#F3F4F6] pb-3">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-[10px] font-mono uppercase text-[#D97706] font-bold tracking-wider">Chapter 18</span>
+              <span className="text-[10px] font-mono text-purple-800 bg-purple-50 border border-purple-200 px-2 py-0.5 rounded font-bold">Sample Section 7: Mobile Numerology & 81-Pair Matrix</span>
+            </div>
+            <h3 className="font-playfair text-xl font-bold text-[#1F2937]">Mobile Numerology Diagnostics (मोबाइल अंक विश्लेषण)</h3>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+            <div className="p-3 bg-[#FAF5EE] rounded-2xl border border-[#FDE68A]">
+              <span className="text-[9px] font-mono text-[#92400E] block uppercase font-bold">Mobile Number</span>
+              <span className="font-mono text-sm font-bold text-[#B45309] mt-1 block">{identity.mobile}</span>
+            </div>
+            <div className="p-3 bg-[#FAF5EE] rounded-2xl border border-[#FDE68A]">
+              <span className="text-[9px] font-mono text-[#92400E] block uppercase font-bold">Total Compound</span>
+              <span className="font-playfair text-xl font-bold text-[#B45309] block">
+                {mobileAnalysis?.compoundTotal ?? mobileData?.compoundTotal ?? '—'}
+              </span>
+            </div>
+            <div className="p-3 bg-[#FAF5EE] rounded-2xl border border-[#FDE68A]">
+              <span className="text-[9px] font-mono text-[#92400E] block uppercase font-bold">Single Root</span>
+              <span className="font-playfair text-xl font-bold text-[#B45309] block">
+                #{mobileAnalysis?.rootNumber ?? mobileData?.reducedTotal ?? '—'}
+              </span>
+            </div>
+            <div className="p-3 bg-emerald-50 rounded-2xl border border-emerald-200">
+              <span className="text-[9px] font-mono text-emerald-800 block uppercase font-bold">DOB Harmony</span>
+              <span className="text-xs font-bold text-emerald-700 block mt-1.5">
+                {mobileAnalysis?.dobCompatibility?.status || 'गणना उपलब्ध नहीं'}
+              </span>
+            </div>
+          </div>
+
+          <div className="p-4 bg-[#FAF5EE] rounded-2xl border border-[#FDE68A] text-xs space-y-1">
+            <strong className="text-[#92400E] block font-bold">मोबाइल अंक का प्रभाव:</strong>
+            <p className="text-[#4B5563] leading-relaxed">
+              {mobileAnalysis?.compoundClassification?.meaning || mobileAnalysis?.recommendation || 'इस प्रोफ़ाइल के लिए मोबाइल कम्पाउंड की व्याख्या उपलब्ध नहीं है।'}
+            </p>
+          </div>
+
+          {mobileAnalysis?.pairsAnalysis?.length ? (
+            <div className="space-y-3">
+              <h4 className="text-sm font-bold text-[#92400E]">Adjacent Pair Analysis (क्रमागत अंक-जोड़े)</h4>
+              <p className="text-[11px] text-gray-500">ये व्याख्याएँ पंजीकृत LeoFamily pair rules से ली गई हैं; इन्हें पारंपरिक अंकशास्त्रीय दृष्टिकोण समझें, निश्चित भविष्यवाणी नहीं।</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {mobileAnalysis.pairsAnalysis.map((pair, idx) => (
+                  <div key={`${pair.rawPair}-${idx}`} className="p-3 rounded-xl border border-amber-100 bg-amber-50/50 space-y-1">
+                    <div className="flex items-center justify-between gap-2"><strong className="font-mono text-base text-amber-900">{pair.rawPair}</strong><span className="text-[10px] text-gray-500">स्थान {idx + 1}</span></div>
+                    <p className="text-xs font-semibold text-gray-800">{pair.meaning}</p>
+                    <p className="text-[11px] text-gray-600">सकारात्मक पक्ष: {pair.positive}</p>
+                    {pair.negative && <p className="text-[11px] text-gray-600">सावधानी: {pair.negative}</p>}
+                    <p className="text-[10px] text-gray-500">क्षेत्र: {pair.area}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : null}
+        </section>
+
+        {/* ========================================================================= */}
+        {/* 19-21. NAME NUMEROLOGY (CHALDEAN & PYTHAGOREAN) */}
+        {/* ========================================================================= */}
+        <section id="sec-19" className="bg-white rounded-3xl p-6 md:p-8 border border-[#E5E7EB] shadow-sm space-y-5 print-avoid-break">
+          <div className="border-b border-[#F3F4F6] pb-3">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-[10px] font-mono uppercase text-[#D97706] font-bold tracking-wider">Chapters 19 – 21</span>
+              <span className="text-[10px] font-mono text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded font-bold">Sample Section 6: Name Numerology & Spelling Balance</span>
+            </div>
+            <h3 className="font-playfair text-xl font-bold text-[#1F2937]">Name Numerology (Chaldean & Pythagorean Engines)</h3>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Chaldean */}
+            <div className="p-5 bg-[#FAF5EE] rounded-2xl border border-[#FDE68A] space-y-3 text-xs">
+              <div className="flex justify-between items-center border-b border-[#FDE68A] pb-2">
+                <strong className="font-bold text-sm text-[#92400E]">1. Indian / Chaldean System (1–8)</strong>
+                <span className="text-xs font-mono bg-white px-2 py-0.5 rounded border border-[#FDE68A] text-[#92400E]">
+                  Compound: #{nameNumerology?.chaldean.compoundNumber || 23}
+                </span>
+              </div>
+              <div className="space-y-1 text-[11px] text-[#4B5563]">
+                <div><strong>Root Name Number (नाम अंक):</strong> #{nameNumerology?.chaldean.rootNumber || 5}</div>
+                <div><strong>Compound Title:</strong> {nameNumerology?.chaldean.compoundTitle || 'The Royal Star of the Lion'}</div>
+                <div><strong>First Letter ('{nameNumerology?.firstLetter.letter || 'R'}'):</strong> Ruler {nameNumerology?.firstLetter.planet || 'Venus'} ({nameNumerology?.firstLetter.element || 'Earth'})</div>
+              </div>
+              <p className="text-[11px] text-[#4B5563] leading-relaxed">
+                {nameNumerology?.chaldean.compoundInterpretationHi || 'यह नाम कम्पाउंड सामाजिक प्रतिष्ठा, सम्मान और अनुकूल सहयोग आकर्षित करने में अत्यंत सक्षम है।'}
+              </p>
+            </div>
+
+            {/* Pythagorean */}
+            <div className="p-5 bg-blue-50/50 rounded-2xl border border-blue-200 space-y-3 text-xs">
+              <div className="flex justify-between items-center border-b border-blue-200 pb-2">
+                <strong className="font-bold text-sm text-blue-900">2. Western / Pythagorean System (1–9)</strong>
+                <span className="text-xs font-mono bg-white px-2 py-0.5 rounded border border-blue-200 text-blue-800">
+                  Expression: #{nameNumerology?.pythagorean.expressionNumber || 7}
+                </span>
+              </div>
+              <div className="space-y-1 text-[11px] text-[#4B5563]">
+                <div><strong>Soul Urge (Heart's Desire):</strong> #{nameNumerology?.pythagorean.soulUrgeNumber || 9}</div>
+                <div><strong>Personality Number:</strong> #{nameNumerology?.pythagorean.personalityNumber || 7}</div>
+                <div><strong>System Note:</strong> 1-9 Western Standard (Maintained strictly separate)</div>
+              </div>
+              <p className="text-[11px] text-[#4B5563] leading-relaxed">
+                {nameNumerology?.pythagorean.traditionalInterpretationHi || 'पाश्चात्य अंकशास्त्र के अनुसार यह नाम गहन अनुसंधान, बौद्धिक जिज्ञासा और स्वतंत्र चिंतन को पोषित करता है।'}
+              </p>
+            </div>
+          </div>
+
+          {nameNumerology?.recommendations && (
+            <div className="p-4 rounded-2xl border border-indigo-100 bg-indigo-50/50 space-y-2 text-xs">
+              <h4 className="font-bold text-indigo-900">Spelling Balance Review (नाम-वर्तनी संतुलन)</h4>
+              <p className="text-gray-700">{nameNumerology.recommendations.spellingAssessmentHi}</p>
+              {nameNumerology.recommendations.suggestedAdjustments?.length ? (
+                <div className="space-y-2">
+                  <p className="font-semibold text-gray-800">Engine द्वारा सुझाए गए विकल्प — इन्हें बदलने से पहले स्वयं जाँचें:</p>
+                  {nameNumerology.recommendations.suggestedAdjustments.map((suggestion, idx) => (
+                    <div key={`${suggestion.suggestedName}-${idx}`} className="rounded-lg bg-white border border-indigo-100 p-3">
+                      <div className="font-semibold">{suggestion.suggestedName}</div>
+                      <div className="text-gray-600">Chaldean compound {suggestion.suggestedChaldeanCompound} → root {suggestion.suggestedChaldeanRoot}</div>
+                      <p className="text-gray-600 mt-1">{suggestion.benefitsDescriptionHi}</p>
+                      <p className="text-gray-500 mt-1">मूलांक तालमेल: {suggestion.mulankCompatibility} · भाग्यांक तालमेल: {suggestion.bhagyankCompatibility}</p>
+                    </div>
+                  ))}
+                </div>
+              ) : <p className="text-gray-600">इस विश्लेषण में कोई spelling adjustment उपलब्ध नहीं है।</p>}
+              <p className="text-[10px] text-gray-500">{nameNumerology.recommendations.disclaimer || nameNumerology.recommendations.suggestedAdjustments?.[0]?.standardDisclaimer}</p>
+            </div>
+          )}
+        </section>
+
+        {/* ========================================================================= */}
+        {/* 22-24. NUMERO VASTU, KUA & RESIDENCE ANALYSIS */}
+        {/* ========================================================================= */}
+        <section id="sec-22" className="bg-white rounded-3xl p-6 md:p-8 border border-[#E5E7EB] shadow-sm space-y-6 print-avoid-break">
+          <div className="border-b border-[#F3F4F6] pb-3">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-[10px] font-mono uppercase text-[#D97706] font-bold tracking-wider">Chapters 22 – 24</span>
+              <span className="text-[10px] font-mono text-teal-800 bg-teal-50 border border-teal-200 px-2 py-0.5 rounded font-bold">Sample Section 10: Numero Vastu & Spatial Orientation</span>
+            </div>
+            <h3 className="font-playfair text-xl font-bold text-[#1F2937]">Numero Vastu, Kua & Directional Alignment</h3>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center text-xs">
+            <div className="p-3 bg-[#FAF5EE] rounded-2xl border border-[#FDE68A]">
+              <span className="text-[9px] font-mono text-[#92400E] block uppercase font-bold">Kua Number</span>
+              <span className="font-playfair text-2xl font-black text-[#B45309] block">#{kuaProfile.kuaNumber || 7}</span>
+              <span className="text-[10px] text-[#78350F]">{kuaProfile.group === 'EAST_GROUP' ? 'पूर्व (East)' : 'पश्चिम (West)'} Group</span>
+            </div>
+            <div className="p-3 bg-emerald-50 rounded-2xl border border-emerald-200">
+              <span className="text-[9px] font-mono text-emerald-800 block uppercase font-bold">Career Direction</span>
+              <span className="text-xs font-bold text-emerald-900 block mt-2">
+                {kuaProfile.favourableDirections?.shengChi || kuaProfile.favorableDirections?.[0]?.direction || 'उत्तर-पश्चिम (North-West)'}
+              </span>
+              <span className="text-[9px] text-emerald-600">Sheng Chi (समृद्धि)</span>
+            </div>
+            <div className="p-3 bg-blue-50 rounded-2xl border border-blue-200">
+              <span className="text-[9px] font-mono text-blue-800 block uppercase font-bold">Health Direction</span>
+              <span className="text-xs font-bold text-blue-900 block mt-2">
+                {kuaProfile.favourableDirections?.tianYi || kuaProfile.favorableDirections?.[1]?.direction || 'दक्षिण-पश्चिम (South-West)'}
+              </span>
+              <span className="text-[9px] text-blue-600">Tian Yi (आरोग्य)</span>
+            </div>
+            <div className="p-3 bg-purple-50 rounded-2xl border border-purple-200">
+              <span className="text-[9px] font-mono text-purple-800 block uppercase font-bold">Relationship Zone</span>
+              <span className="text-xs font-bold text-purple-900 block mt-2">
+                {kuaProfile.favourableDirections?.yanNian || kuaProfile.favorableDirections?.[2]?.direction || 'उत्तर-पूर्व (North-East)'}
+              </span>
+              <span className="text-[9px] text-purple-600">Yan Nian (सौहार्द)</span>
+            </div>
+          </div>
+
+          {/* 14. NumeroVastu Interpretation Card */}
+          <div className="p-5 bg-gradient-to-br from-amber-50/80 to-orange-50/40 rounded-2xl border border-amber-200 space-y-3 text-xs">
+            <span className="font-playfair font-bold text-xs text-[#92400E] uppercase tracking-wider block">
+              14. न्यूमेरो वास्तु एवं दिशात्मक फल (NumeroVastu Interpretation)
+            </span>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-[11px] text-[#4B5563]">
+              <div className="p-3 bg-white rounded-xl border border-amber-200 space-y-1">
+                <strong className="text-[#92400E] block">लो शू दिशा संतुलन (Lo Shu Zone Harmony):</strong>
+                <p>{localizedDossier.numeroVastuInterpretation?.loShuZoneHarmony || expertDossier.numeroVastuInterpretation.loShuZoneHarmonyHi}</p>
+              </div>
+              <div className="p-3 bg-white rounded-xl border border-amber-200 space-y-1">
+                <strong className="text-[#92400E] block">आवास / प्रवेश द्वार ऊर्जा:</strong>
+                <p>{localizedDossier.numeroVastuInterpretation?.residenceEntranceDynamics || expertDossier.numeroVastuInterpretation.residenceEntranceDynamicsHi}</p>
+              </div>
+            </div>
+            <div className="p-3 bg-white rounded-xl border border-amber-200 text-[11px] text-[#78350F]">
+              <strong>सरल वास्तु उपाय:</strong>
+              <ul className="list-disc pl-4 space-y-0.5 mt-1">
+                {(localizedDossier.numeroVastuInterpretation?.suggestedVastuRemedies || expertDossier.numeroVastuInterpretation.suggestedVastuRemedies).map((rem: string, idx: number) => (
+                  <li key={idx}>{rem}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        {/* ========================================================================= */}
+        {/* 25-27. PERSONAL YEAR, VEDIC MAHADASHA, PINNACLES & MONTHLY FORECAST */}
+        {/* ========================================================================= */}
+        <section id="sec-25" className="bg-white rounded-3xl p-6 md:p-8 border border-[#E5E7EB] shadow-sm space-y-6 print-avoid-break">
+          <div className="border-b border-[#F3F4F6] pb-3">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-[10px] font-mono uppercase text-[#D97706] font-bold tracking-wider">Chapters 25 – 27</span>
+              <span className="text-[10px] font-mono text-amber-800 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded font-bold">Sample Section 11: Personal Year & Vedic Timing Analysis</span>
+            </div>
+            <h3 className="font-playfair text-xl font-bold text-[#1F2937]">Time Cycles, Pinnacles, Event Windows & Monthly Forecast</h3>
+          </div>
+
+          {/* 4. Life Changing Event Windows */}
+          <div className="space-y-3">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-[#92400E] flex items-center gap-1.5">
+              <TrendingUp className="w-3.5 h-3.5 text-[#D97706]" />
+              4. जीवन में बड़े बदलाव के अवसर व समयावधि (Life Changing Event Windows)
+            </h4>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+              {(localizedDossier.lifeChangingWindows || expertDossier.lifeChangingWindows).map((win: any, idx: number) => (
+                <div key={idx} className="p-3.5 bg-[#FAF5EE] rounded-2xl border border-[#FDE68A] space-y-1">
+                  <div className="flex justify-between items-center">
+                    <span className="font-playfair font-bold text-sm text-[#92400E]">{win.window}</span>
+                    <span className="text-[9px] font-mono bg-white px-2 py-0.5 rounded border border-[#FDE68A] text-[#92400E] font-bold">
+                      {win.catalyst}
+                    </span>
+                  </div>
+                  <div className="text-[11px] font-semibold text-[#1F2937]">{win.theme || win.themeHi}</div>
+                  <p className="text-[10px] text-[#4B5563] leading-snug">{win.advice || win.adviceHi}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* 5. Life Phases / Pinnacles */}
+          <div className="space-y-3 pt-2">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-[#92400E]">
+              5. जीवन के 4 प्रमुख शिखर काल (Life Phases / Pinnacles)
+            </h4>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+              {(localizedDossier.lifePinnacles || expertDossier.lifePinnacles).map((pin: any, idx: number) => (
+                <div key={idx} className="p-3.5 bg-white rounded-2xl border border-amber-200 space-y-1 shadow-xs">
+                  <div className="flex justify-between items-center border-b border-amber-100 pb-1">
+                    <span className="font-bold text-xs text-[#92400E]">{pin.name}</span>
+                    <span className="text-[10px] font-mono bg-[#D97706] text-white px-1.5 py-0.5 rounded font-bold">
+                      #{pin.pinnacleNumber}
+                    </span>
+                  </div>
+                  <div className="text-[10px] text-[#6B7280]">आयु: {pin.ageSpan} • स्वामी: {pin.planet}</div>
+                  <div className="text-[11px] font-medium text-[#1F2937]">{pin.theme || pin.themeHi}</div>
+                  <p className="text-[10px] text-[#4B5563]">{pin.guidance || pin.guidanceHi}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* ========================================================================= */}
+          {/* 19. PERSONAL YEAR FORECAST (CURRENT & UPCOMING TIME VIBRATIONS) */}
+          {/* ========================================================================= */}
+          <div className="p-6 md:p-7 bg-gradient-to-br from-[#FFFDF9] via-[#FAF6EE] to-[#F5EFE1] rounded-3xl border-2 border-amber-200/90 shadow-sm space-y-6 print-avoid-break">
+            {/* Header & Calculation Formula Header */}
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b-2 border-amber-200/70 pb-5">
+              <div className="space-y-1">
+                <div className="inline-flex items-center gap-2 bg-[#D97706]/10 text-[#B45309] px-3 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider border border-[#D97706]/20">
+                  <Calendar className="w-3.5 h-3.5 text-[#D97706]" /> 19. व्यक्तिगत वर्ष भविष्यफल (Personal Year Forecast)
+                </div>
+                <h4 className="font-playfair text-xl md:text-2xl font-bold text-[#1F2937]">
+                  वर्तमान एवं आगामी व्यक्तिगत वर्ष चक्र ({currentYear} – {nextYear})
+                </h4>
+                <p className="text-xs text-[#6B7280]">
+                  वैदिक एवं पाश्चात्य अंकशास्त्र के अनुसार जन्मतिथि के आधार पर समय चक्र, वार्षिक ऊर्जा कंपन व भविष्यफल।
+                </p>
+              </div>
+
+              {/* Formula Badge */}
+              <div className="bg-white/90 p-3.5 rounded-2xl border border-amber-200 shadow-2xs space-y-1 text-left min-w-[280px]">
+                <span className="text-[9px] font-mono uppercase font-bold text-[#92400E] block tracking-wider">
+                  गणना सूत्र (Calculation Formula)
+                </span>
+                <div className="font-mono text-xs font-bold text-[#1F2937] flex items-center gap-1.5 flex-wrap">
+                  <span className="bg-amber-100/70 px-1.5 py-0.5 rounded text-[#78350F]">{birthDay} ({birthDaySum})</span>
+                  <span>+</span>
+                  <span className="bg-amber-100/70 px-1.5 py-0.5 rounded text-[#78350F]">{birthMonth} ({birthMonthSum})</span>
+                  <span>+</span>
+                  <span className="bg-amber-100/70 px-1.5 py-0.5 rounded text-[#78350F]">{activePyTab === 'UPCOMING' ? nextYear : activePyTab === 'NEXT_2' ? next2Year : currentYear} ({sumDigits(activePyTab === 'UPCOMING' ? nextYear : activePyTab === 'NEXT_2' ? next2Year : currentYear)})</span>
+                  <span>=</span>
+                  <span className="bg-[#D97706] text-white px-2 py-0.5 rounded-lg shadow-xs font-black">
+                    PY #{activePyTab === 'UPCOMING' ? nextPY : activePyTab === 'NEXT_2' ? next2PY : currentPY}
+                  </span>
+                </div>
+                <span className="text-[9px] text-[#78350F] block">
+                  जन्म दिन + जन्म माह + अभीष्ट वर्ष के अंकों का एकल योग
+                </span>
+              </div>
+            </div>
+
+            {/* Interactive Year Selector Tabs (Screen Only) */}
+            <div className="flex flex-wrap items-center gap-2 no-print">
+              <button
+                type="button"
+                onClick={() => setActivePyTab('CURRENT')}
+                className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 ${
+                  activePyTab === 'CURRENT'
+                    ? 'bg-[#D97706] text-white shadow-sm ring-2 ring-amber-400'
+                    : 'bg-white text-slate-700 hover:bg-amber-50 border border-slate-200'
+                }`}
+              >
+                <span>🌟 वर्तमान वर्ष {currentYear}</span>
+                <span className={`px-1.5 py-0.5 rounded-md text-[10px] font-mono ${
+                  activePyTab === 'CURRENT' ? 'bg-white/20 text-white' : 'bg-amber-100 text-amber-900'
+                }`}>
+                  PY #{currentPY}
+                </span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActivePyTab('UPCOMING')}
+                className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 ${
+                  activePyTab === 'UPCOMING'
+                    ? 'bg-[#1E3A8A] text-white shadow-sm ring-2 ring-blue-400'
+                    : 'bg-white text-slate-700 hover:bg-blue-50 border border-slate-200'
+                }`}
+              >
+                <span>🚀 आगामी वर्ष {nextYear}</span>
+                <span className={`px-1.5 py-0.5 rounded-md text-[10px] font-mono ${
+                  activePyTab === 'UPCOMING' ? 'bg-white/20 text-white' : 'bg-blue-100 text-blue-900'
+                }`}>
+                  PY #{nextPY}
+                </span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActivePyTab('NEXT_2')}
+                className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 ${
+                  activePyTab === 'NEXT_2'
+                    ? 'bg-purple-700 text-white shadow-sm ring-2 ring-purple-400'
+                    : 'bg-white text-slate-700 hover:bg-purple-50 border border-slate-200'
+                }`}
+              >
+                <span>🔮 भविष्य चक्र {next2Year}</span>
+                <span className={`px-1.5 py-0.5 rounded-md text-[10px] font-mono ${
+                  activePyTab === 'NEXT_2' ? 'bg-white/20 text-white' : 'bg-purple-100 text-purple-900'
+                }`}>
+                  PY #{next2PY}
+                </span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActivePyTab('TIMELINE')}
+                className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                  activePyTab === 'TIMELINE'
+                    ? 'bg-emerald-700 text-white shadow-sm ring-2 ring-emerald-400'
+                    : 'bg-white text-slate-700 hover:bg-emerald-50 border border-slate-200'
+                }`}
+              >
+                <TrendingUp className="w-3.5 h-3.5" />
+                <span>3-वर्षीय समग्र तुलना Matrix</span>
+              </button>
+            </div>
+
+            {/* Render Selected Year Forecast in Screen View */}
+            {activePyTab !== 'TIMELINE' && (
+              (() => {
+                const targetYear = activePyTab === 'UPCOMING' ? nextYear : activePyTab === 'NEXT_2' ? next2Year : currentYear;
+                const targetPY = activePyTab === 'UPCOMING' ? nextPY : activePyTab === 'NEXT_2' ? next2PY : currentPY;
+                const targetForecast = activePyTab === 'UPCOMING' ? nextPYForecast : activePyTab === 'NEXT_2' ? next2PYForecast : currentPYForecast;
+
+                const pyMeta = {
+                  1: { ruler: 'सूर्य (Sun ☀️)', element: 'अग्नि (Fire)', nature: 'नई शुरुआत व नेतृत्व' },
+                  2: { ruler: 'चन्द्र (Moon 🌙)', element: 'जल (Water)', nature: 'साझेदारी, सहयोग व धैर्य' },
+                  3: { ruler: 'बृहस्पति (Jupiter ✨)', element: 'आकाश (Ether)', nature: 'रचनात्मकता, ज्ञान व सामाजिक विस्तार' },
+                  4: { ruler: 'राहु (Rahu 🏛️)', element: 'पृथ्वी (Earth)', nature: 'कठिन श्रम, व्यवस्था निर्माण व अनुशासन' },
+                  5: { ruler: 'बुध (Mercury ⚡)', element: 'वायु (Air)', nature: 'तीव्र परिवर्तन, स्वतंत्रता, व्यापार व यात्रा' },
+                  6: { ruler: 'शुक्र (Venus 💖)', element: 'जल/पृथ्वी (Water/Earth)', nature: 'पारिवारिक उत्तरदायित्व, प्रेम व गृह शांति' },
+                  7: { ruler: 'केतु (Ketu 🧘)', element: 'आकाश/जल (Ether/Water)', nature: 'आध्यात्मिक चिंतन, आत्म-खोज व विश्राम' },
+                  8: { ruler: 'शनि (Saturn ⚖️)', element: 'पृथ्वी/वायु (Earth/Air)', nature: 'कर्म फल, भौतिक विस्तार व वित्तीय सत्ता' },
+                  9: { ruler: 'मंगल (Mars 🔥)', element: 'अग्नि (Fire)', nature: 'पूर्णता, विसर्जन, रूपांतरण व नया संकल्प' }
+                }[targetPY] || { ruler: 'सूर्य (Sun)', element: 'अग्नि', nature: 'सक्रिय चक्र' };
+
+                return (
+                  <div className="space-y-4 animate-in fade-in duration-200">
+                    {/* Year Card Hero Banner */}
+                    <div className="p-4 md:p-5 bg-white rounded-2xl border-2 border-amber-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+                      <div className="flex items-center gap-3.5">
+                        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-500 to-amber-700 text-white font-black font-playfair text-2xl flex items-center justify-center shadow-sm">
+                          #{targetPY}
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="font-playfair text-lg font-bold text-[#1F2937]">
+                              वर्ष {targetYear} का व्यक्तिगत कंपन (Personal Year #{targetPY})
+                            </span>
+                            <span className="bg-amber-100 text-[#92400E] text-[10px] font-mono px-2 py-0.5 rounded-full font-bold uppercase">
+                              {activePyTab === 'UPCOMING' ? 'आगामी वर्ष' : activePyTab === 'NEXT_2' ? 'भविष्य वर्ष' : 'सक्रिय वर्तमान वर्ष'}
+                            </span>
+                          </div>
+                          <div className="text-xs text-[#6B7280] flex items-center gap-3 mt-1 flex-wrap">
+                            <span><strong>शासक ग्रह:</strong> {pyMeta.ruler}</span>
+                            <span>•</span>
+                            <span><strong>तत्व:</strong> {pyMeta.element}</span>
+                            <span>•</span>
+                            <span><strong>मूल प्रवृत्ति:</strong> {pyMeta.nature}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="bg-[#FAF5EE] px-4 py-2 rounded-xl border border-amber-200 text-left md:text-right">
+                        <span className="text-[10px] font-mono uppercase text-[#92400E] block font-bold">मूलांक #{coreNumbers.mulank} व भाग्यांक #{coreNumbers.bhagyank} तालमेल</span>
+                        <span className="text-xs font-bold text-emerald-700 flex items-center md:justify-end gap-1 mt-0.5">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                          सकारात्मक ऊर्जा प्रवाह (Harmonious Wave)
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Thematic Headline */}
+                    <div className="p-3.5 bg-amber-500/10 border-l-4 border-[#D97706] rounded-r-2xl text-xs font-semibold text-[#78350F]">
+                      🎯 <strong>वार्षिक मूल मंत्र:</strong> {targetForecast.theme}
+                    </div>
+
+                    {/* 4 Life Pillar Cards */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+                      <div className="p-3.5 bg-white rounded-2xl border border-amber-200 shadow-2xs space-y-1.5">
+                        <div className="flex items-center gap-1.5 text-[#92400E] font-bold text-[11px] uppercase tracking-wider border-b border-amber-100 pb-1">
+                          <Briefcase className="w-3.5 h-3.5 text-[#D97706]" /> करियर व व्यवसाय (Career)
+                        </div>
+                        <p className="text-[11px] text-[#4B5563] leading-relaxed">{targetForecast.career}</p>
+                      </div>
+
+                      <div className="p-3.5 bg-white rounded-2xl border border-amber-200 shadow-2xs space-y-1.5">
+                        <div className="flex items-center gap-1.5 text-[#92400E] font-bold text-[11px] uppercase tracking-wider border-b border-amber-100 pb-1">
+                          <TrendingUp className="w-3.5 h-3.5 text-[#D97706]" /> धन व निवेश (Finance)
+                        </div>
+                        <p className="text-[11px] text-[#4B5563] leading-relaxed">{targetForecast.finance}</p>
+                      </div>
+
+                      <div className="p-3.5 bg-white rounded-2xl border border-amber-200 shadow-2xs space-y-1.5">
+                        <div className="flex items-center gap-1.5 text-[#92400E] font-bold text-[11px] uppercase tracking-wider border-b border-amber-100 pb-1">
+                          <Heart className="w-3.5 h-3.5 text-[#D97706]" /> संबंध व परिवार (Relationships)
+                        </div>
+                        <p className="text-[11px] text-[#4B5563] leading-relaxed">{targetForecast.relationships}</p>
+                      </div>
+
+                      <div className="p-3.5 bg-white rounded-2xl border border-amber-200 shadow-2xs space-y-1.5">
+                        <div className="flex items-center gap-1.5 text-[#92400E] font-bold text-[11px] uppercase tracking-wider border-b border-amber-100 pb-1">
+                          <Compass className="w-3.5 h-3.5 text-[#D97706]" /> यात्रा व पर्यावरण (Travel)
+                        </div>
+                        <p className="text-[11px] text-[#4B5563] leading-relaxed">{targetForecast.travel}</p>
+                      </div>
+                    </div>
+
+                    {/* 3 Strategic Action Guidance Blocks */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs pt-1">
+                      <div className="p-3.5 bg-emerald-50/80 rounded-2xl border border-emerald-200 shadow-2xs space-y-1">
+                        <span className="text-[10px] font-mono uppercase font-bold text-emerald-900 block flex items-center gap-1">
+                          <Star className="w-3.5 h-3.5 text-emerald-700" /> स्वर्णिम अवसर (Key Opportunities)
+                        </span>
+                        <p className="text-[11px] text-emerald-900 leading-relaxed">{targetForecast.opportunities}</p>
+                      </div>
+
+                      <div className="p-3.5 bg-rose-50/80 rounded-2xl border border-rose-200 shadow-2xs space-y-1">
+                        <span className="text-[10px] font-mono uppercase font-bold text-rose-900 block flex items-center gap-1">
+                          <AlertTriangle className="w-3.5 h-3.5 text-rose-700" /> सावधानी व सतर्कता (Caution)
+                        </span>
+                        <p className="text-[11px] text-rose-900 leading-relaxed">{targetForecast.caution}</p>
+                      </div>
+
+                      <div className="p-3.5 bg-blue-50/80 rounded-2xl border border-blue-200 shadow-2xs space-y-1">
+                        <span className="text-[10px] font-mono uppercase font-bold text-blue-900 block flex items-center gap-1">
+                          <Target className="w-3.5 h-3.5 text-blue-700" /> अनुशंसित मुख्य लक्ष्य (Action Mantra)
+                        </span>
+                        <p className="text-[11px] text-blue-900 leading-relaxed">{targetForecast.recommendedFocus}</p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()
+            )}
+
+            {/* Multi-Year Timeline Comparison Matrix (Visible on Timeline Tab or Print) */}
+            <div className={`${activePyTab === 'TIMELINE' ? 'block' : 'hidden'} print:block space-y-3 pt-2`}>
+              <h5 className="text-xs font-bold uppercase tracking-wider text-[#92400E] flex items-center gap-1.5">
+                <Layers className="w-3.5 h-3.5 text-[#D97706]" />
+                3-वर्षीय समग्र जीवन चक्र तुलना (Multi-Year Trajectory Matrix)
+              </h5>
+              <div className="overflow-x-auto rounded-2xl border border-amber-200">
+                <table className="w-full text-left text-xs bg-white">
+                  <thead className="bg-[#FAF5EE] text-[#78350F] font-mono text-[10px] uppercase border-b border-amber-200">
+                    <tr>
+                      <th className="p-3">कैलेंडर वर्ष</th>
+                      <th className="p-3">Personal Year</th>
+                      <th className="p-3">शासक ग्रह</th>
+                      <th className="p-3">प्रमुख थीम व ऊर्जा</th>
+                      <th className="p-3">करियर व धन दिशा</th>
+                      <th className="p-3">मुख्य अनुशंसित रणनीति</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-amber-100 text-[11px] text-[#4B5563]">
+                    <tr className="bg-slate-50/60 opacity-80">
+                      <td className="p-3 font-mono font-bold">{prevYear} (पिछला)</td>
+                      <td className="p-3 font-mono font-bold text-slate-700">#{prevPY}</td>
+                      <td className="p-3">{getPlanetName(prevPY, language)}</td>
+                      <td className="p-3 text-[10px]">{prevPYForecast.theme}</td>
+                      <td className="p-3 text-[10px]">{prevPYForecast.career}</td>
+                      <td className="p-3 text-[10px] text-slate-800">{prevPYForecast.recommendedFocus}</td>
+                    </tr>
+                    <tr className="bg-amber-50/60 font-semibold border-y-2 border-amber-300">
+                      <td className="p-3 font-mono font-bold text-[#B45309]">🌟 {currentYear} (वर्तमान)</td>
+                      <td className="p-3 font-mono font-bold text-[#B45309]">
+                        <span className="bg-[#D97706] text-white px-2 py-0.5 rounded font-black">#{currentPY}</span>
+                      </td>
+                      <td className="p-3 font-bold text-[#92400E]">{getPlanetName(currentPY, language)}</td>
+                      <td className="p-3 text-[#1F2937]">{currentPYForecast.theme}</td>
+                      <td className="p-3 text-[#1F2937]">{currentPYForecast.career}</td>
+                      <td className="p-3 text-[#92400E] font-bold">{currentPYForecast.recommendedFocus}</td>
+                    </tr>
+                    <tr className="bg-blue-50/40">
+                      <td className="p-3 font-mono font-bold text-blue-900">🚀 {nextYear} (आगामी)</td>
+                      <td className="p-3 font-mono font-bold text-blue-900">
+                        <span className="bg-[#1E3A8A] text-white px-2 py-0.5 rounded font-black">#{nextPY}</span>
+                      </td>
+                      <td className="p-3 font-bold text-blue-900">{getPlanetName(nextPY, language)}</td>
+                      <td className="p-3">{nextPYForecast.theme}</td>
+                      <td className="p-3">{nextPYForecast.career}</td>
+                      <td className="p-3 text-blue-900">{nextPYForecast.recommendedFocus}</td>
+                    </tr>
+                    <tr>
+                      <td className="p-3 font-mono font-bold text-purple-900">🔮 {next2Year} (भविष्य)</td>
+                      <td className="p-3 font-mono font-bold text-purple-900">
+                        <span className="bg-purple-700 text-white px-2 py-0.5 rounded font-black">#{next2PY}</span>
+                      </td>
+                      <td className="p-3 text-purple-900">{getPlanetName(next2PY, language)}</td>
+                      <td className="p-3">{next2PYForecast.theme}</td>
+                      <td className="p-3">{next2PYForecast.career}</td>
+                      <td className="p-3 text-purple-900">{next2PYForecast.recommendedFocus}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Print/PDF Export Fallback: Ensure Upcoming Year is fully rendered in print without depending on tab clicks */}
+            <div className="hidden print:block space-y-4 pt-4 border-t-2 border-amber-200">
+              <div className="p-4 bg-white rounded-2xl border border-blue-200 space-y-3">
+                <div className="flex justify-between items-center border-b border-blue-100 pb-2">
+                  <span className="font-playfair text-base font-bold text-blue-900">
+                    आगामी व्यक्तिगत वर्ष {nextYear} (Upcoming Personal Year #{nextPY})
+                  </span>
+                  <span className="text-[10px] font-mono font-bold bg-[#1E3A8A] text-white px-2.5 py-0.5 rounded-full">
+                    {nextPYForecast.theme}
+                  </span>
+                </div>
+                <div className="grid grid-cols-2 gap-2.5 text-[10px] text-[#4B5563]">
+                  <div><strong>💼 करियर:</strong> {nextPYForecast.career}</div>
+                  <div><strong>💰 वित्त:</strong> {nextPYForecast.finance}</div>
+                  <div><strong>❤️ संबंध:</strong> {nextPYForecast.relationships}</div>
+                  <div><strong>🎯 फोकस:</strong> {nextPYForecast.recommendedFocus}</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Annual Transition Guidance Note */}
+            <div className="p-3.5 bg-white/80 rounded-2xl border border-amber-200 text-[11px] text-[#78350F] flex items-start gap-2.5">
+              <Info className="w-4 h-4 text-[#D97706] shrink-0 mt-0.5" />
+              <div className="space-y-0.5">
+                <strong>वर्ष संक्रमण नियम (Annual Energy Transition Principle):</strong>
+                <p className="text-[#4B5563]">
+                  व्यक्तिगत वर्ष का प्रभाव आपके जन्म माह व तारीख से विशेष रूप से सक्रिय होता है और नए वर्ष के 2-3 महीने पूर्व से ही आगामी वर्ष ({nextYear}) के कंपन महसूस होने लगते हैं। अतः {currentYear} के अंतिम चरण में {nextYear} (Personal Year #{nextPY}) की कार्ययोजना का बीजारोपण करें।
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* 20. Monthly Dasha-Yog Forecast */}
+          <div className="space-y-3 pt-2">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-[#92400E] flex items-center gap-1.5">
+              <Compass className="w-3.5 h-3.5 text-[#D97706]" />
+              20. मासिक दशा-योग भविष्यफल (Monthly Dasha-Yog Forecast)
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
+              {localizedDossier.monthlyDashaForecast.map((m, idx) => (
+                <div key={idx} className="p-4 bg-white rounded-2xl border border-amber-200/80 space-y-2 shadow-xs">
+                  <div className="flex justify-between items-center border-b border-amber-100 pb-1.5">
+                    <span className="font-playfair font-bold text-xs text-[#92400E]">{m.monthNameActive || m.monthNameHi || m.monthNameEn}</span>
+                    <span className="text-[9px] font-mono bg-amber-100 text-amber-900 px-2 py-0.5 rounded font-bold">
+                      PY #{m.py} • PM #{m.pm}
+                    </span>
+                  </div>
+                  <div className="text-[11px] font-semibold text-[#1F2937]">{m.primaryTheme}</div>
+                  <div className="space-y-1 text-[10px] text-[#4B5563]">
+                    <div><strong>💼 कार्य:</strong> {m.career}</div>
+                    <div><strong>💰 धन:</strong> {m.finance}</div>
+                    <div><strong>❤️ संबंध:</strong> {m.relationship}</div>
+                  </div>
+                  <div className="p-2 bg-amber-50/70 rounded-xl border border-amber-200/60 text-[10px] text-[#78350F] flex justify-between gap-1">
+                    <span><strong>सावधानी:</strong> {m.caution}</span>
+                    <span><strong>उपाय:</strong> {m.action}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ========================================================================= */}
+        {/* 28. TRADITIONAL WELLNESS & LIFESTYLE SUGGESTIONS */}
+        {/* ========================================================================= */}
+        <section id="sec-28" className="bg-white rounded-3xl p-6 md:p-8 border border-[#E5E7EB] shadow-sm space-y-5">
+          <div className="border-b border-[#F3F4F6] pb-3">
+            <span className="text-[10px] font-mono uppercase text-[#D97706] font-bold tracking-wider">Section 28</span>
+            <h3 className="font-playfair text-xl font-bold text-[#1F2937]">Traditional Wellness & Lifestyle Guidance</h3>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+            <div className="p-4 bg-[#FAF5EE] rounded-2xl border border-[#FDE68A]">
+              <strong className="text-[#92400E] block font-bold mb-1">Day Lord & Dosha:</strong>
+              <span className="font-semibold text-[#B45309] block">{medical?.dominantDosha || 'Pitta-Vata'} Balance</span>
+              <span className="text-[#6B7280] text-[11px] block mt-1">प्राकृतिक ऊर्जा संतुलन एवं पाचन स्वास्थ्य पर ध्यान दें।</span>
+            </div>
+
+            <div className="p-4 bg-[#FAF5EE] rounded-2xl border border-[#FDE68A]">
+              <strong className="text-[#92400E] block font-bold mb-1">Recommended Lifestyle:</strong>
+              <span className="text-[#4B5563] text-[11px] block mt-1">
+                प्रातः सूर्य नमस्कार, पर्याप्त जलपान, और मौसमी फलों व हरी सब्जियों का संतुलित सेवन।
+              </span>
+            </div>
+
+            <div className="p-4 bg-[#FAF5EE] rounded-2xl border border-[#FDE68A]">
+              <strong className="text-[#92400E] block font-bold mb-1">Traditional Herbs:</strong>
+              <span className="text-[#4B5563] text-[11px] block mt-1">
+                तुलसी, आंवला, गिलोय एवं त्रिफला का पारंपरिक स्वास्थ्य संवर्धन हेतु उपयोग।
+              </span>
+            </div>
+          </div>
+
+          {/* 17. Lifestyle / Behaviour Suggestions */}
+          <div className="p-4 bg-[#FAF5EE] rounded-2xl border border-[#FDE68A] space-y-2 text-xs">
+            <strong className="text-[#92400E] block font-bold uppercase text-xs">17. जीवनशैली व व्यवहार परामर्श (Lifestyle & Behaviour Suggestions)</strong>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 text-[11px] text-[#4B5563]">
+              <div className="p-2.5 bg-white rounded-xl border border-amber-200">
+                <strong>दैनिक दिनचर्या (Daily Routine):</strong> {localizedDossier.lifestyleSuggestions?.dailyRoutine || expertDossier.lifestyleSuggestions.dailyRoutineHi}
+              </div>
+              <div className="p-2.5 bg-white rounded-xl border border-amber-200">
+                <strong>आहार मार्गदर्शन:</strong> {localizedDossier.lifestyleSuggestions?.dietaryGuideline || expertDossier.lifestyleSuggestions.dietaryGuidelineHi}
+              </div>
+              <div className="p-2.5 bg-white rounded-xl border border-amber-200">
+                <strong>मानसिक शांति व ध्यान:</strong> {localizedDossier.lifestyleSuggestions?.mindfulnessPractice || expertDossier.lifestyleSuggestions.mindfulnessPracticeHi}
+              </div>
+              <div className="p-2.5 bg-white rounded-xl border border-amber-200">
+                <strong>शुभ समय प्रबंधन:</strong> {localizedDossier.lifestyleSuggestions?.favorableTiming || expertDossier.lifestyleSuggestions.favorableTimingHi}
+              </div>
+            </div>
+          </div>
+
+          {/* Mandatory Medical Disclaimer */}
+          <div className="p-4 bg-amber-50 border border-amber-300 rounded-2xl text-[11px] text-amber-950 flex items-start gap-2.5">
+            <Info className="w-4 h-4 text-[#D97706] flex-shrink-0 mt-0.5" />
+            <p className="leading-relaxed">
+              <strong>महत्वपूर्ण सूचना (Mandatory Disclaimer):</strong> "यह केवल Traditional Numerology Wellness Interpretation है। यह medical diagnosis, medical treatment या professional healthcare का विकल्प नहीं है। किसी भी स्वास्थ्य संबंधी समस्या के लिए हमेशा योग्य चिकित्सक से परामर्श लें।"
+            </p>
+          </div>
+        </section>
+
+        {/* ========================================================================= */}
+        {/* 29. LEOFAMILY SIGNATURE AUDIT PRO */}
+        {/* ========================================================================= */}
+        {savedSigAudit?.image && savedSigAudit?.auditResult && savedSigAudit?.analysisSource === 'image-analysis-api' ? (
+<section id="sec-29" className="bg-white rounded-3xl p-6 md:p-8 border border-[#E5E7EB] shadow-sm space-y-6">
+          <div className="border-b border-[#F3F4F6] pb-3 flex flex-col md:flex-row md:items-center justify-between gap-2">
+            <div>
+              <span className="text-[10px] font-mono uppercase text-[#D97706] font-bold tracking-wider">Section 29</span>
+              <h3 className="font-playfair text-xl font-bold text-[#1F2937]">LeoFamily Signature Audit Pro (हस्ताक्षर वास्तु एवं ब्लूप्रिंट)</h3>
+            </div>
+            {savedSigAudit?.image ? (
+              <span className="text-[10px] font-mono bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full border border-emerald-200 font-bold flex items-center gap-1.5 w-fit">
+                <Check className="w-3.5 h-3.5" /> Verified Signature Image Audited
+              </span>
+            ) : (
+              <span className="text-[10px] font-mono bg-amber-50 text-[#D97706] px-3 py-1 rounded-full border border-amber-200 font-bold flex items-center gap-1.5 w-fit">
+                <PenTool className="w-3.5 h-3.5" /> Mulank {coreNumbers.mulank} & Bhagyank {coreNumbers.bhagyank} Astro-Prescription
+              </span>
+            )}
+          </div>
+
+          {/* User Signature Thumbnail & Cosmic Alignment Context */}
+          {savedSigAudit?.image && (
+            <div className="p-4 bg-[#FAF5EE] rounded-2xl border border-[#FDE68A] flex flex-col sm:flex-row items-center gap-4">
+              <div className="bg-white p-2 rounded-xl border border-amber-200 shadow-sm max-w-[220px] flex-shrink-0">
+                <img
+                  src={savedSigAudit.image}
+                  alt="Audited Signature"
+                  className="max-h-16 object-contain"
+                  referrerPolicy="no-referrer"
+                />
+              </div>
+              <div className="text-xs space-y-1 text-left">
+                <span className="text-[10px] font-mono font-bold text-[#92400E] uppercase">Audited Signature Sample</span>
+                <p className="text-[#4B5563] text-[11px] leading-relaxed">
+                  इस हस्ताक्षर नमूने का मूलांक #{coreNumbers.mulank} (स्वामी: {coreNumbers.mulankGraha}) एवं भाग्यांक #{coreNumbers.bhagyank} (स्वामी: {coreNumbers.bhagyankGraha}) के साथ ऊर्जा संरेखण ऑडिट किया गया है।
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Layer A: Observed Structural Features */}
+          <div className="space-y-3">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-[#92400E] flex items-center gap-1.5">
+              <Compass className="w-4 h-4 text-[#D97706]" />
+              Layer A: Observed Handwriting Features (अवलोकित भौतिक संरचना)
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+              <div className="p-3.5 bg-[#FDFCF7] rounded-2xl border border-[#E5E7EB] space-y-1">
+                <span className="text-[10px] font-bold text-[#1F2937] block">1. दिशा व कोण (Direction):</span>
+                <p className="text-[#4B5563] text-[11px] leading-relaxed">
+                  {savedSigAudit?.auditResult?.analysis?.direction ?? 'विशिष्ट अवलोकन उपलब्ध नहीं'}
+                </p>
+              </div>
+              <div className="p-3.5 bg-[#FDFCF7] rounded-2xl border border-[#E5E7EB] space-y-1">
+                <span className="text-[10px] font-bold text-[#1F2937] block">2. प्रथम अक्षर अनुपात (First Letter Ratio):</span>
+                <p className="text-[#4B5563] text-[11px] leading-relaxed">
+                  {savedSigAudit?.auditResult?.analysis?.firstLetterSize ?? 'विशिष्ट अवलोकन उपलब्ध नहीं'}
+                </p>
+              </div>
+              <div className="p-3.5 bg-[#FDFCF7] rounded-2xl border border-[#E5E7EB] space-y-1">
+                <span className="text-[10px] font-bold text-[#1F2937] block">3. अंडरलाइन व आधार (Underline Support):</span>
+                <p className="text-[#4B5563] text-[11px] leading-relaxed">
+                  {savedSigAudit?.auditResult?.analysis?.underlineStyle ?? 'विशिष्ट अवलोकन उपलब्ध नहीं'}
+                </p>
+              </div>
+              <div className="p-3.5 bg-[#FDFCF7] rounded-2xl border border-[#E5E7EB] space-y-1">
+                <span className="text-[10px] font-bold text-[#1F2937] block">4. अंतिम स्ट्रोक (End Stroke Angle):</span>
+                <p className="text-[#4B5563] text-[11px] leading-relaxed">
+                  {savedSigAudit?.auditResult?.analysis?.endStroke ?? 'विशिष्ट अवलोकन उपलब्ध नहीं'}
+                </p>
+              </div>
+              <div className="p-3.5 bg-[#FDFCF7] rounded-2xl border border-[#E5E7EB] space-y-1">
+                <span className="text-[10px] font-bold text-[#1F2937] block">5. बिंदु स्थिति (Dot Placement):</span>
+                <p className="text-[#4B5563] text-[11px] leading-relaxed">
+                  {savedSigAudit?.auditResult?.analysis?.dotPlacement ?? 'विशिष्ट अवलोकन उपलब्ध नहीं'}
+                </p>
+              </div>
+              <div className="p-3.5 bg-[#FDFCF7] rounded-2xl border border-[#E5E7EB] space-y-1">
+                <span className="text-[10px] font-bold text-[#1F2937] block">6. अक्षर स्पष्टता (Legibility & Flow):</span>
+                <p className="text-[#4B5563] text-[11px] leading-relaxed">
+                  {savedSigAudit?.auditResult?.analysis?.letterLegibility ?? 'विशिष्ट अवलोकन उपलब्ध नहीं'}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Layer B: Traditional Handwriting Interpretation & Astro-Scores */}
+          <div className="space-y-3 pt-2">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-[#92400E] flex items-center gap-1.5">
+              <Award className="w-4 h-4 text-[#D97706]" />
+              Layer B: Traditional Handwriting Interpretation (पारंपरिक हस्तलेखन वास्तु विश्लेषण)
+            </h4>
+            
+            {/* Scores Bar */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+              <div className="p-3 bg-[#FAF5EE] rounded-2xl border border-[#FDE68A]">
+                <span className="text-[9px] font-mono text-[#92400E] uppercase font-bold block">Overall Alignment</span>
+                <span className="font-playfair text-xl font-bold text-[#92400E] mt-0.5 block">
+                  {savedSigAudit?.auditResult?.scores?.overallSignatureScore ?? '—'}{savedSigAudit?.auditResult?.scores?.overallSignatureScore != null ? '/100' : ''}
+                </span>
+              </div>
+              <div className="p-3 bg-[#FAF5EE] rounded-2xl border border-[#FDE68A]">
+                <span className="text-[9px] font-mono text-[#92400E] uppercase font-bold block">Career & Authority</span>
+                <span className="font-playfair text-xl font-bold text-[#92400E] mt-0.5 block">
+                  {savedSigAudit?.auditResult?.scores?.careerScore ?? '—'}{savedSigAudit?.auditResult?.scores?.careerScore != null ? '/100' : ''}
+                </span>
+              </div>
+              <div className="p-3 bg-[#FAF5EE] rounded-2xl border border-[#FDE68A]">
+                <span className="text-[9px] font-mono text-[#92400E] uppercase font-bold block">Wealth Flow Lock</span>
+                <span className="font-playfair text-xl font-bold text-[#92400E] mt-0.5 block">
+                  {savedSigAudit?.auditResult?.scores?.financialFlowScore ?? '—'}{savedSigAudit?.auditResult?.scores?.financialFlowScore != null ? '/100' : ''}
+                </span>
+              </div>
+              <div className="p-3 bg-[#FAF5EE] rounded-2xl border border-[#FDE68A]">
+                <span className="text-[9px] font-mono text-[#92400E] uppercase font-bold block">Public Status</span>
+                <span className="font-playfair text-xl font-bold text-[#92400E] mt-0.5 block">
+                  {savedSigAudit?.auditResult?.scores?.recognitionScore ?? '—'}{savedSigAudit?.auditResult?.scores?.recognitionScore != null ? '/100' : ''}
+                </span>
+              </div>
+            </div>
+
+            <div className="p-4 bg-[#FDFCF7] rounded-2xl border border-[#E5E7EB] text-xs text-[#4B5563] leading-relaxed">
+              <p>
+                <strong>पारंपरिक दृष्टिकोण:</strong> {savedSigAudit?.auditResult?.assessment?.currentSignatureAssessment ?? 'विशेष व्याख्या उपलब्ध नहीं'}
+              </p>
+            </div>
+          </div>
+
+          {/* Corrected Prescription Blueprint & 21-Day Daily Practice Formula */}
+          <div className="p-5 bg-gradient-to-br from-[#FFFBEB] to-[#FEF3C7] rounded-3xl border border-[#FDE68A] space-y-3 text-xs">
+            <span className="text-[9px] font-mono text-[#92400E] uppercase font-bold block">
+              Ideal Redesigned Blueprint (आदर्श हस्ताक्षर ब्लूप्रिंट एवं 21-दिवसीय अभ्यास विधि)
+            </span>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <strong className="text-[#92400E] block font-bold">अनुशंसित हस्ताक्षर शैली (Prescribed Style):</strong>
+                <p className="text-[#78350F] text-[11px] leading-relaxed">
+                  {savedSigAudit?.auditResult?.assessment?.idealSignatureStyle ?? 'व्यक्तिगत शैली-सुझाव उपलब्ध नहीं'}
+                </p>
+              </div>
+              <div className="space-y-1.5">
+                <strong className="text-[#92400E] block font-bold">21-दिवसीय अभ्यास विधि (Daily Sadhana Formula):</strong>
+                <p className="text-[#78350F] text-[11px] leading-relaxed">
+                  {savedSigAudit?.auditResult?.assessment?.personalizedSignatureBlueprint ?? 'व्यक्तिगत अभ्यास-योजना उपलब्ध नहीं'}
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+) : (
+<section id="sec-29" className="bg-white rounded-3xl p-6 md:p-8 border border-[#E5E7EB] shadow-sm space-y-4">
+          <div className="border-b border-[#F3F4F6] pb-3">
+            <span className="text-[10px] font-mono uppercase text-[#D97706] font-bold tracking-wider">Section 29 · Optional module</span>
+            <h3 className="font-playfair text-xl font-bold text-[#1F2937]">LeoFamily Signature Audit Pro (हस्ताक्षर वास्तु एवं ब्लूप्रिंट)</h3>
+          </div>
+          <div role="status" className="p-4 rounded-2xl border border-amber-200 bg-amber-50 text-sm text-amber-950 leading-relaxed">
+            <strong className="block mb-1">अभी इस report में शामिल नहीं है</strong>
+            <p>हस्ताक्षर की वास्तविक image analysis इस प्रोफ़ाइल के लिए उपलब्ध नहीं है। हस्ताक्षर की image अपलोड करके analysis सफलतापूर्वक पूरा करें। केवल सामान्य हस्ताक्षर-सुझाव को observed handwriting analysis की तरह शामिल नहीं किया गया है।</p>
+          </div>
+        </section>
+)}
+
+        {/* ========================================================================= */}
+        {/* 29B. LEOFAMILY VEHICLE NUMEROLOGY PRO */}
+        {/* ========================================================================= */}
+        {savedVehicleAudit?.report?.originalRegistration && savedVehicleAudit?.report?.chaldean ? (
+<section id="sec-29b" className="bg-white rounded-3xl p-6 md:p-8 border border-[#E5E7EB] shadow-sm space-y-6">
+          <div className="border-b border-[#F3F4F6] pb-3 flex flex-col md:flex-row md:items-center justify-between gap-2">
+            <div>
+              <span className="text-[10px] font-mono uppercase text-[#D97706] font-bold tracking-wider">Section 29B</span>
+              <h3 className="font-playfair text-xl font-bold text-[#1F2937]">LeoFamily Vehicle Numerology Pro (वाहन अंकशास्त्र एवं गति वास्तु)</h3>
+            </div>
+            <span className="text-[10px] font-mono bg-blue-50 text-[#1E3A8A] px-3 py-1 rounded-full border border-blue-200 font-bold flex items-center gap-1.5 w-fit">
+              <Car className="w-3.5 h-3.5" /> Chaldean Alphanumeric & Kua Alignment
+            </span>
+          </div>
+
+          {/* Vehicle Scorecard & Matrix */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-3 text-xs">
+            <div className="p-4 bg-amber-50/70 rounded-2xl border border-amber-200 space-y-1">
+              <span className="text-[9px] font-mono uppercase text-amber-800 font-bold block">Vehicle Number</span>
+              <span className="font-mono text-base font-extrabold text-slate-900 block">
+                {savedVehicleAudit?.report?.originalRegistration ?? 'डेटा उपलब्ध नहीं'}
+              </span>
+              <span className="text-[10px] text-slate-600">
+                प्रकार: {savedVehicleAudit?.report?.vehicleType ?? 'डेटा उपलब्ध नहीं'}
+              </span>
+            </div>
+
+            <div className="p-4 bg-blue-50/70 rounded-2xl border border-blue-200 space-y-1">
+              <span className="text-[9px] font-mono uppercase text-blue-800 font-bold block">Chaldean Total & Root</span>
+              <span className="font-playfair text-xl font-extrabold text-[#1E3A8A] block">
+                {savedVehicleAudit?.report?.chaldean?.totalCompound ?? '—'} → Root {savedVehicleAudit?.report?.chaldean?.totalRoot ?? '—'}
+              </span>
+              <span className="text-[10px] text-[#1E3A8A] font-medium">
+                स्वामी: {savedVehicleAudit?.report?.chaldean?.planetaryRulerHi ?? 'डेटा उपलब्ध नहीं'}
+              </span>
+            </div>
+
+            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-1">
+              <span className="text-[9px] font-mono uppercase text-slate-500 font-bold block">Owner Compatibility</span>
+              <div className="flex justify-between items-center text-[11px] pt-1">
+                <span>मूलांक #{coreNumbers.mulank}:</span>
+                <span className="font-bold text-emerald-700">{savedVehicleAudit?.report?.compatibility?.mulankStatusHi ?? 'डेटा उपलब्ध नहीं'}</span>
+              </div>
+              <div className="flex justify-between items-center text-[11px]">
+                <span>भाग्यांक #{coreNumbers.bhagyank}:</span>
+                <span className="font-bold text-slate-700">{savedVehicleAudit?.report?.compatibility?.bhagyankStatusHi ?? 'डेटा उपलब्ध नहीं'}</span>
+              </div>
+            </div>
+
+            <div className="p-4 bg-emerald-50/70 rounded-2xl border border-emerald-200 space-y-1">
+              <span className="text-[9px] font-mono uppercase text-emerald-800 font-bold block">Purpose Alignment</span>
+              <span className="font-bold text-emerald-950 block">
+                {savedVehicleAudit?.report?.purposeAlignment?.alignmentLevel === 'HIGH' ? 'उच्च सामंजस्य' : savedVehicleAudit?.report?.purposeAlignment?.alignmentLevel ? 'संतुलित उपयोग' : 'डेटा उपलब्ध नहीं'}
+              </span>
+              <span className="text-[10px] text-emerald-800 block">
+                {savedVehicleAudit?.report?.purposeAlignment?.notesHi ?? 'विशेष व्याख्या उपलब्ध नहीं'}
+              </span>
+            </div>
+          </div>
+
+          {/* Detailed Interpretation Block */}
+          <div className="p-5 bg-[#FAF5EE] rounded-3xl border border-[#FDE68A] space-y-3 text-xs">
+            <span className="text-[9px] font-mono text-[#92400E] uppercase font-bold block">
+              Compound Energy & Planetary Vibration (कम्पाउंड ऊर्जा एवं पारंपरिक प्रभाव)
+            </span>
+            <p className="text-[#78350F] text-[11px] leading-relaxed">
+              {savedVehicleAudit?.report?.chaldean?.compoundMeaning ?? 'विशेष व्याख्या उपलब्ध नहीं'}
+            </p>
+          </div>
+
+          {/* Vastu Kua Directions & Dashboard Remedies */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-2">
+              <strong className="text-slate-900 block font-bold">कुआ दिशा व पार्किंग संरेखण (Parking & Travel Vastu):</strong>
+              <p className="text-slate-600 text-[11px] leading-relaxed">
+                {savedVehicleAudit?.report?.vastuKua?.parkingAdviceHi ?? 'पार्किंग मार्गदर्शन उपलब्ध नहीं'}
+              </p>
+            </div>
+
+            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-2">
+              <strong className="text-slate-900 block font-bold">डैशबोर्ड संतुलन उपाय (Dashboard Remedies):</strong>
+              <p className="text-slate-600 text-[11px] leading-relaxed">
+                {savedVehicleAudit?.report?.vastuKua?.dashboardRemediesHi?.[0] ?? 'डैशबोर्ड सुझाव उपलब्ध नहीं'}
+              </p>
+            </div>
+          </div>
+
+          {/* Non-deterministic safety disclaimer */}
+          <div className="p-3.5 bg-slate-100 rounded-2xl border border-slate-300 text-[10px] text-slate-600 leading-relaxed">
+            <strong>सुरक्षा अस्वीकरण:</strong> अंकशास्त्रीय वाहन विश्लेषण पारंपरिक मान्यताओं पर आधारित ऊर्जा संतुलन का अध्ययन है। यह किसी भी दुर्घटना से बचाव या सुरक्षा की गारंटी नहीं देता। सदैव सुरक्षित ड्राइविंग नियमों और यातायात कानूनों का निष्ठापूर्वक पालन करें।
+          </div>
+        </section>
+) : (
+<section id="sec-29b" className="bg-white rounded-3xl p-6 md:p-8 border border-[#E5E7EB] shadow-sm space-y-4">
+          <div className="border-b border-[#F3F4F6] pb-3">
+            <span className="text-[10px] font-mono uppercase text-[#D97706] font-bold tracking-wider">Section 29B · Optional module</span>
+            <h3 className="font-playfair text-xl font-bold text-[#1F2937]">LeoFamily Vehicle Numerology Pro (वाहन अंकशास्त्र एवं गति वास्तु)</h3>
+          </div>
+          <div role="status" className="p-4 rounded-2xl border border-amber-200 bg-amber-50 text-sm text-amber-950 leading-relaxed">
+            <strong className="block mb-1">अभी इस report में शामिल नहीं है</strong>
+            <p>इस प्रोफ़ाइल के लिए सत्यापित वाहन रिपोर्ट उपलब्ध नहीं है। पहले वास्तविक registration number दर्ज करके Vehicle Numerology analysis चलाएँ। वाहन संख्या के बिना कोई compound/root या compatibility score नहीं दिखाया जाएगा।</p>
+          </div>
+        </section>
+)}
+
+        {/* ========================================================================= */}
+        {/* 29C. LEOFAMILY BUSINESS & CORPORATE NUMEROLOGY PRO */}
+        {/* ========================================================================= */}
+        {savedBusinessAudit?.report?.entity?.businessName && savedBusinessAudit?.report?.chaldean ? (
+<section id="sec-29c" className="bg-white rounded-3xl p-6 md:p-8 border border-[#E5E7EB] shadow-sm space-y-6">
+          <div className="border-b border-[#F3F4F6] pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div>
+              <span className="text-[10px] font-mono uppercase text-[#D97706] font-bold tracking-wider">Section 29C (Phase 9 Pro Module)</span>
+              <h3 className="font-playfair text-xl font-bold text-[#1F2937]">
+                LeoFamily Business & Corporate Numerology Pro (व्यापार एवं कॉर्पोरेट अंकशास्त्र)
+              </h3>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-mono bg-blue-50 text-[#1E3A8A] font-bold px-3 py-1 rounded-full border border-blue-200">
+                Chaldean Business Suite
+              </span>
+            </div>
+          </div>
+
+          {/* Business Core Details Banner */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-1">
+              <span className="text-[9px] font-mono uppercase text-slate-500 font-bold block">Business / Brand</span>
+              <span className="font-bold text-slate-900 block truncate">
+                {savedBusinessAudit?.report?.entity?.businessName ?? '—'}
+              </span>
+              <span className="text-[10px] text-slate-600 block">
+                {savedBusinessAudit?.report?.entity?.industry ?? 'डेटा उपलब्ध नहीं'}
+              </span>
+            </div>
+
+            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-1">
+              <span className="text-[9px] font-mono uppercase text-slate-500 font-bold block">Compound & Root</span>
+              <span className="font-bold text-[#1E3A8A] text-lg block font-mono">
+                {savedBusinessAudit?.report?.chaldean?.totalCompound ?? '—'} &rarr; #{savedBusinessAudit?.report?.chaldean?.totalRoot ?? '—'}
+              </span>
+              <span className="text-[10px] text-slate-600 block">
+                {savedBusinessAudit?.report?.chaldean?.planetaryRulerHi ?? 'डेटा उपलब्ध नहीं'}
+              </span>
+            </div>
+
+            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-1">
+              <span className="text-[9px] font-mono uppercase text-slate-500 font-bold block">Founder Synastry</span>
+              <span className="font-bold text-amber-700 block">
+                {savedBusinessAudit?.report?.ownerCompatibility?.overallStatus ?? 'डेटा उपलब्ध नहीं'}
+              </span>
+              <span className="text-[10px] text-slate-600 block">
+                Score: {savedBusinessAudit?.report?.ownerCompatibility?.overallScore ?? '—'}{savedBusinessAudit?.report?.ownerCompatibility?.overallScore != null ? '/100' : ''}
+              </span>
+            </div>
+
+            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-1">
+              <span className="text-[9px] font-mono uppercase text-slate-500 font-bold block">Personal Year Cycle</span>
+              <span className="font-bold text-indigo-700 block font-mono">
+                Year #{savedBusinessAudit?.report?.personalYear?.currentPersonalYear ?? '—'}
+              </span>
+              <span className="text-[10px] text-slate-600 block">
+                व्यापारिक विस्तार चक्र
+              </span>
+            </div>
+          </div>
+
+          {/* Compound Energy & Brand Expression */}
+          <div className="p-5 bg-[#FAF5EE] rounded-3xl border border-[#FDE68A] space-y-3 text-xs">
+            <span className="text-[9px] font-mono text-[#92400E] uppercase font-bold block">
+              Corporate Compound Meaning & Brand Personality (कम्पाउंड ऊर्जा एवं ब्रांड अभिव्यक्ति)
+            </span>
+            <p className="text-[#78350F] text-[11px] leading-relaxed">
+              {savedBusinessAudit?.report?.chaldean?.compoundMeaning ?? 'विशेष व्याख्या उपलब्ध नहीं'}
+            </p>
+            <p className="text-[#78350F] text-[11px] leading-relaxed border-t border-[#FDE68A]/60 pt-2 font-medium">
+              <strong>ब्रांड व्यक्तित्व:</strong> {savedBusinessAudit?.report?.branding?.brandPersonalityHi ?? 'ब्रांड व्यक्तित्व विवरण उपलब्ध नहीं'}
+            </p>
+          </div>
+
+          {/* Office Vastu & Partner / Mobile Points */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-2">
+              <strong className="text-slate-900 block font-bold">कार्यालय वास्तु संरेखण (Office Vastu):</strong>
+              <p className="text-slate-600 text-[11px] leading-relaxed">
+                {savedBusinessAudit?.report?.remedies?.officeDirectionVastuHi ?? 'कार्यालय दिशा मार्गदर्शन उपलब्ध नहीं'}
+              </p>
+            </div>
+
+            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-2">
+              <strong className="text-slate-900 block font-bold">शुभ ब्रांड रंग व अनुबंध दिवस:</strong>
+              <p className="text-slate-600 text-[11px] leading-relaxed">
+                शुभ रंग: {savedBusinessAudit?.report?.remedies?.auspiciousBrandColorsHi?.join(', ') || 'डेटा उपलब्ध नहीं'} • अनुबंध दिवस: {savedBusinessAudit?.report?.remedies?.contractSigningDaysHi?.join(', ') || 'डेटा उपलब्ध नहीं'}
+              </p>
+            </div>
+          </div>
+
+          {/* Disclaimer */}
+          <div className="p-3.5 bg-slate-100 rounded-2xl border border-slate-300 text-[10px] text-slate-600 leading-relaxed">
+            <strong>व्यापारिक अस्वीकरण:</strong> अंकशास्त्रीय व्यापारिक विश्लेषण केवल आत्म-चिंतन और पारंपरिक ऊर्जा संतुलन पर आधारित मार्गदर्शन है। यह किसी भी व्यावसायिक लाभ, वित्तीय सफलता या बिक्री की गारंटी नहीं देता है।
+          </div>
+        </section>
+) : (
+<section id="sec-29c" className="bg-white rounded-3xl p-6 md:p-8 border border-[#E5E7EB] shadow-sm space-y-4">
+          <div className="border-b border-[#F3F4F6] pb-3">
+            <span className="text-[10px] font-mono uppercase text-[#D97706] font-bold tracking-wider">Section 29C · Optional module</span>
+            <h3 className="font-playfair text-xl font-bold text-[#1F2937]">LeoFamily Business & Corporate Numerology Pro (व्यापार एवं कॉर्पोरेट अंकशास्त्र)</h3>
+          </div>
+          <div role="status" className="p-4 rounded-2xl border border-amber-200 bg-amber-50 text-sm text-amber-950 leading-relaxed">
+            <strong className="block mb-1">अभी इस report में शामिल नहीं है</strong>
+            <p>इस प्रोफ़ाइल के लिए सत्यापित business report उपलब्ध नहीं है। पहले वास्तविक business/brand name और आवश्यक owner details दर्ज करके analysis चलाएँ। कोई default business name या अनुमानित score नहीं दिखाया जाएगा।</p>
+          </div>
+        </section>
+)}
+
+        {/* ========================================================================= */}
+        {/* 29D. LEOFAMILY MARRIAGE COMPATIBILITY & SYNASTRY PRO (PHASE 10) */}
+        {/* ========================================================================= */}
+        {savedMarriageAudit?.report?.personA && savedMarriageAudit?.report?.personB && typeof savedMarriageAudit?.report?.overallHarmonyScore === 'number' ? (
+<section id="sec-29d" className="bg-white rounded-3xl p-6 md:p-8 border border-[#E5E7EB] shadow-sm space-y-6">
+          <div className="border-b border-[#F3F4F6] pb-3 flex justify-between items-center">
+            <div>
+              <span className="text-[10px] font-mono uppercase text-[#D97706] font-bold tracking-wider">Section 29D (Phase 10 Pro Module)</span>
+              <h3 className="font-playfair text-xl font-bold text-[#1F2937]">
+                LeoFamily Marriage Compatibility & Synastry Pro (वैवाहिक सामंजस्य एवं सिनैस्ट्री)
+              </h3>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-mono bg-rose-50 text-rose-700 font-bold px-3 py-1 rounded-full border border-rose-200">
+                7-Layer Synastry Suite
+              </span>
+            </div>
+          </div>
+
+          {/* Couple Overview Banner */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-1">
+              <span className="text-[9px] font-mono uppercase text-slate-500 font-bold block">Person A / प्रथम व्यक्ति</span>
+              <span className="font-bold text-slate-900 block truncate">
+                {savedMarriageAudit?.report?.personA?.name ?? '—'}
+              </span>
+              <span className="text-[10px] text-slate-600 block">
+                मूलांक #{savedMarriageAudit?.report?.personA?.mulank ?? '—'} • भाग्यांक #{savedMarriageAudit?.report?.personA?.bhagyank ?? '—'}
+              </span>
+            </div>
+
+            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-1">
+              <span className="text-[9px] font-mono uppercase text-slate-500 font-bold block">Person B / द्वितीय व्यक्ति</span>
+              <span className="font-bold text-slate-900 block truncate">
+                {savedMarriageAudit?.report?.personB?.name ?? '—'}
+              </span>
+              <span className="text-[10px] text-slate-600 block">
+                मूलांक #{savedMarriageAudit?.report?.personB?.mulank ?? '—'} • भाग्यांक #{savedMarriageAudit?.report?.personB?.bhagyank ?? '—'}
+              </span>
+            </div>
+
+            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-1">
+              <span className="text-[9px] font-mono uppercase text-slate-500 font-bold block">Overall Harmony</span>
+              <span className="font-bold text-rose-700 text-lg block font-mono">
+                {savedMarriageAudit?.report?.overallHarmonyScore ?? '—'}{savedMarriageAudit?.report?.overallHarmonyScore != null ? '%' : ''}
+              </span>
+              <span className="text-[10px] text-slate-600 block">
+                {savedMarriageAudit?.report?.stabilityVerdictHi ?? 'विवरण उपलब्ध नहीं'}
+              </span>
+            </div>
+
+            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-1">
+              <span className="text-[9px] font-mono uppercase text-slate-500 font-bold block">7-Layer Core Match</span>
+              <span className="font-bold text-indigo-700 block font-mono">
+                {savedMarriageAudit?.report?.sevenLayers?.emotional?.score ?? '—'}{savedMarriageAudit?.report?.sevenLayers?.emotional?.score != null ? '% Emotional' : ' Emotional'}
+              </span>
+              <span className="text-[10px] text-slate-600 block">
+                संवाद: {savedMarriageAudit?.report?.sevenLayers?.communication?.score ?? '—'}{savedMarriageAudit?.report?.sevenLayers?.communication?.score != null ? '%' : ''}
+              </span>
+            </div>
+          </div>
+
+          {/* 7-Layer Snapshot & Lo Shu Cross Resonance */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+            <div className="p-5 bg-[#FAF5EE] rounded-3xl border border-[#FDE68A] space-y-2.5">
+              <span className="text-[9px] font-mono text-[#92400E] uppercase font-bold block">
+                मूलांक व भाग्यांक क्रॉस-सिंथेसिस (Core Interaction)
+              </span>
+              <p className="text-[#78350F] text-[11px] leading-relaxed">
+                {savedMarriageAudit?.report?.crossSynthesis?.synthesisHi ?? 'विश्लेषण विवरण उपलब्ध नहीं'}
+              </p>
+              <div className="text-[10px] text-slate-600 border-t border-[#FDE68A]/60 pt-2 space-y-1">
+                <p>• मूलांक सामंजस्य: <strong>{savedMarriageAudit?.report?.mulankAnalysis?.score ?? '—'}{savedMarriageAudit?.report?.mulankAnalysis?.score != null ? '%' : ''}</strong> ({savedMarriageAudit?.report?.mulankAnalysis?.relationshipTypeHi ?? 'विवरण उपलब्ध नहीं'})</p>
+                <p>• भाग्यांक सामंजस्य: <strong>{savedMarriageAudit?.report?.bhagyankAnalysis?.score ?? '—'}{savedMarriageAudit?.report?.bhagyankAnalysis?.score != null ? '%' : ''}</strong> ({savedMarriageAudit?.report?.bhagyankAnalysis?.relationshipTypeHi ?? 'विवरण उपलब्ध नहीं'})</p>
+              </div>
+            </div>
+
+            <div className="p-5 bg-slate-50 rounded-3xl border border-slate-200 space-y-2.5">
+              <span className="text-[9px] font-mono text-slate-500 uppercase font-bold block">
+                Lo Shu ग्रिड एवं पूरक ऊर्जा (Complementary Grid Energy)
+              </span>
+              <p className="text-slate-700 text-[11px] leading-relaxed">
+                {savedMarriageAudit?.report?.loShuAnalysis?.crossGridSynergyHi ?? 'विश्लेषण विवरण उपलब्ध नहीं'}
+              </p>
+              <p className="text-[10px] text-slate-500 border-t border-slate-200 pt-2">
+                <strong>वैदिक उपाय:</strong> {savedMarriageAudit?.report?.remedies?.traditionalVastuHi ?? 'पारंपरिक मार्गदर्शन उपलब्ध नहीं'}
+              </p>
+            </div>
+          </div>
+
+          {/* Disclaimer */}
+          <div className="p-3.5 bg-slate-100 rounded-2xl border border-slate-300 text-[10px] text-slate-600 leading-relaxed">
+            <strong>वैवाहिक अस्वीकरण:</strong> अंकशास्त्रीय सामंजस्य विश्लेषण केवल दोनों व्यक्तियों के स्वभाव, मानसिक तालमेल और ऊर्जा संतुलन को समझने का साधन है। सच्चा दांपत्य सुख परस्पर निष्ठा, निरंतर संवाद और प्रेम पर निर्भर करता है।
+          </div>
+        </section>
+) : (
+<section id="sec-29d" className="bg-white rounded-3xl p-6 md:p-8 border border-[#E5E7EB] shadow-sm space-y-4">
+          <div className="border-b border-[#F3F4F6] pb-3">
+            <span className="text-[10px] font-mono uppercase text-[#D97706] font-bold tracking-wider">Section 29D · Optional module</span>
+            <h3 className="font-playfair text-xl font-bold text-[#1F2937]">LeoFamily Marriage Compatibility & Synastry Pro (वैवाहिक सामंजस्य एवं सिनैस्ट्री)</h3>
+          </div>
+          <div role="status" className="p-4 rounded-2xl border border-amber-200 bg-amber-50 text-sm text-amber-950 leading-relaxed">
+            <strong className="block mb-1">अभी इस report में शामिल नहीं है</strong>
+            <p>दोनों व्यक्तियों के वास्तविक नाम और जन्मतिथि से बनी, इस प्रोफ़ाइल से मेल खाती compatibility report उपलब्ध नहीं है। दोनों partner details भरकर नया analysis चलाएँ। अनुमानित harmony percentage नहीं दिखाया जाएगा।</p>
+          </div>
+        </section>
+)}
+
+        {/* ========================================================================= */}
+        {/* 29E. LEOFAMILY CHILD LUCKY NAMES PRO (PHASE 11) */}
+        {/* ========================================================================= */}
+        {savedChildReport?.report?.childInfo && (savedChildReport?.parentProfileKey || savedChildReport?.parentName) ? (
+<section id="sec-29e" className="bg-white rounded-3xl p-6 md:p-8 border border-[#E5E7EB] shadow-sm space-y-6">
+          <div className="border-b border-[#F3F4F6] pb-3 flex justify-between items-center">
+            <div>
+              <span className="text-[10px] font-mono uppercase text-[#D97706] font-bold tracking-wider">Section 29E (Phase 11 Pro Module)</span>
+              <h3 className="font-playfair text-xl font-bold text-[#1F2937]">
+                LeoFamily Child Lucky Names Pro (शुभ शिशु नामाक्षर एवं वैदिक नाम चयन)
+              </h3>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-mono bg-amber-50 text-amber-800 font-bold px-3 py-1 rounded-full border border-amber-200">
+                16-Point Vedic Child Dossier
+              </span>
+            </div>
+          </div>
+
+          {/* Child Core Snapshot */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-1">
+              <span className="text-[9px] font-mono uppercase text-slate-500 font-bold block">शिशु का नाम (Child)</span>
+              <span className="font-bold text-slate-900 block truncate">
+                {savedChildReport?.report?.childInfo?.name ?? '—'}
+              </span>
+              <span className="text-[10px] text-slate-600 block">
+                DOB: {savedChildReport?.report?.childInfo?.standardDob ?? savedChildReport?.report?.childInfo?.dob ?? '—'}
+              </span>
+            </div>
+
+            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-1">
+              <span className="text-[9px] font-mono uppercase text-slate-500 font-bold block">मूलांक (Driver)</span>
+              <span className="font-bold text-[#1E3A8A] text-lg block font-mono">
+                #{savedChildReport?.report?.childInfo?.mulank ?? '—'}
+              </span>
+              <span className="text-[10px] text-slate-600 block">
+                {savedChildReport?.report?.childInfo?.mulankGrahaHi ?? '—'}
+              </span>
+            </div>
+
+            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-1">
+              <span className="text-[9px] font-mono uppercase text-slate-500 font-bold block">भाग्यांक (Conductor)</span>
+              <span className="font-bold text-amber-700 text-lg block font-mono">
+                #{savedChildReport?.report?.childInfo?.bhagyank ?? '—'}
+              </span>
+              <span className="text-[10px] text-slate-600 block">
+                {savedChildReport?.report?.childInfo?.bhagyankGrahaHi ?? '—'}
+              </span>
+            </div>
+
+            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-1">
+              <span className="text-[9px] font-mono uppercase text-slate-500 font-bold block">शुभ नामाक्षर (Letters)</span>
+              <span className="font-bold text-emerald-700 block font-mono">
+                {savedChildReport?.report?.wisdomLetters?.highlySupportive?.slice(0, 4).map((l: any) => l.letter).join(', ') || 'इस रिपोर्ट में उपलब्ध नहीं'}
+              </span>
+              <span className="text-[10px] text-slate-600 block">
+                अत्यंत अनुकूल
+              </span>
+            </div>
+          </div>
+
+          {/* Wisdom Starting Letters Summary */}
+          <div className="p-5 bg-[#FAF5EE] rounded-3xl border border-[#FDE68A] space-y-3 text-xs">
+            <span className="text-[9px] font-mono text-[#92400E] uppercase font-bold block">
+              Wisdom Starting Alphabets & Elemental Resonance (शुभ नामाक्षर विश्लेषण)
+            </span>
+            <p className="text-[#78350F] text-[11px] leading-relaxed">
+              {savedChildReport?.report?.wisdomLetters?.highlySupportive?.length > 0
+                ? `मूलांक ${savedChildReport?.report?.childInfo?.mulank} एवं भाग्यांक ${savedChildReport?.report?.childInfo?.bhagyank} के अनुसार शिशु के लिए ${savedChildReport?.report?.wisdomLetters?.highlySupportive?.map((l: any) => `'${l.letter}'`).join(', ')} नामाक्षर विशेष रूप से ऊर्जावान एवं जीवन में निरंतर प्रगति के सहायक हैं।`
+                : 'इस report में कोई समर्थक नामाक्षर सूची उपलब्ध नहीं है।'}
+            </p>
+            <div className="flex flex-wrap gap-2 pt-1">
+              {savedChildReport?.report?.wisdomLetters?.highlySupportive?.map((item: any, idx: number) => (
+                <span key={idx} className="bg-white border border-amber-300 text-amber-900 font-bold px-2.5 py-1 rounded-xl text-[10px] shadow-xs">
+                  {item.letter} (Chaldean {item.chaldeanValue} • {item.planetHi})
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* Child Candidate Comparison / Highlights */}
+          {savedChildReport?.report?.candidateAnalyses && savedChildReport.report.candidateAnalyses.length > 0 && (
+            <div className="space-y-3 text-xs">
+              <strong className="text-slate-800 block font-bold">प्रस्तावित नामों का संक्षिप्त मूल्यांकन:</strong>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                {savedChildReport.report.candidateAnalyses.map((cand: any, cIdx: number) => (
+                  <div key={cIdx} className="p-4 bg-slate-50 border rounded-2xl space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-slate-800 text-sm">{cand.name}</span>
+                      <span className="font-mono text-[10px] font-bold bg-white px-2 py-0.5 rounded border text-[#1E3A8A]">
+                        Compound {cand.chaldeanCompound} → {cand.chaldeanRoot}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-600 font-sans">
+                      {cand.compoundData?.title} • {cand.dobCompatibility?.statusHi} ({cand.dobCompatibility?.score}/100)
+                    </p>
+                    <p className="text-[10px] text-slate-500 border-t pt-1">
+                      <strong>विकास शैली:</strong> {cand.developmentThemes?.learningStyleHi}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Parenting & Study Room Advice */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-2">
+              <strong className="text-slate-900 block font-bold">सकारात्मक अभिभावक दृष्टिकोण (Parenting Guidance):</strong>
+              <p className="text-slate-600 text-[11px] leading-relaxed">
+                {savedChildReport?.report?.parentGuidelines?.rulesHi?.[0] ?? 'विशिष्ट अभिभावक मार्गदर्शन उपलब्ध नहीं'}
+              </p>
+            </div>
+
+            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-2">
+              <strong className="text-slate-900 block font-bold">अध्ययन मेज एवं कक्ष वास्तु:</strong>
+              <p className="text-slate-600 text-[11px] leading-relaxed">
+                अध्ययन करते समय शिशु का मुख उत्तर (North) या पूर्व (East) दिशा में रखें। अध्ययन मेज पर हल्का पीला या हल्का हरा रंग एकाग्रता बढ़ाता है।
+              </p>
+            </div>
+          </div>
+
+          {/* Disclaimer */}
+          <div className="p-3.5 bg-slate-100 rounded-2xl border border-slate-300 text-[10px] text-slate-600 leading-relaxed">
+            <strong>शिशु नाम परामर्श अस्वीकरण:</strong> अंकशास्त्रीय नाम चयन केवल ग्रहीय तरंगों और अक्षरीय सामंजस्य को संतुलित करने का पारंपरिक मार्गदर्शन है। यह किसी भी व्यक्ति के भविष्य की निश्चित गारंटी नहीं देता है। सही संस्कार, शिक्षा और वातावरण ही जीवन की वास्तविक पूंजी हैं।
+          </div>
+        </section>
+) : (
+<section id="sec-29e" className="bg-white rounded-3xl p-6 md:p-8 border border-[#E5E7EB] shadow-sm space-y-4">
+          <div className="border-b border-[#F3F4F6] pb-3">
+            <span className="text-[10px] font-mono uppercase text-[#D97706] font-bold tracking-wider">Section 29E · Optional module</span>
+            <h3 className="font-playfair text-xl font-bold text-[#1F2937]">LeoFamily Child Lucky Names Pro (शुभ शिशु नामाक्षर एवं वैदिक नाम चयन)</h3>
+          </div>
+          <div role="status" className="p-4 rounded-2xl border border-amber-200 bg-amber-50 text-sm text-amber-950 leading-relaxed">
+            <strong className="block mb-1">अभी इस report में शामिल नहीं है</strong>
+            <p>इस parent profile से स्पष्ट रूप से linked child report उपलब्ध नहीं है। पहले child का नाम/जन्मतिथि दर्ज करके report बनाएँ और parent profile से link करें। मुख्य client की details को child की details मानकर नहीं दिखाया जाएगा।</p>
+          </div>
+        </section>
+)}
+
+        {/* ========================================================================= */}
+        {/* 29F. LEOFAMILY LUCKY DATES FINDER PRO */}
+        {/* ========================================================================= */}
+        <section id="sec-29f" className="bg-white rounded-3xl p-6 md:p-8 border border-[#E5E7EB] shadow-sm space-y-6">
+          <div className="border-b border-[#F3F4F6] pb-3 flex justify-between items-center">
+            <div>
+              <span className="text-[10px] font-mono uppercase text-[#D97706] font-bold tracking-wider">Section 29F • Phase 12 Pro</span>
+              <h3 className="font-playfair text-xl font-bold text-[#1F2937]">
+                LeoFamily Lucky Dates Finder Pro (शुभ मुहूर्त व अनुकूल तिथि चयन)
+              </h3>
+            </div>
+            <span className="text-xs bg-amber-50 text-amber-800 border border-amber-200 px-3 py-1 rounded-full font-semibold">
+              {savedLuckyDatesReport ? savedLuckyDatesReport.purposeHi : 'व्यावसायिक व महत्वपूर्ण कार्य'}
+            </span>
+          </div>
+
+          <p className="text-xs text-[#4B5563] leading-relaxed">
+            मूलांक #{coreNumbers.mulank} ({coreNumbers.mulankGraha}), भाग्यांक #{coreNumbers.bhagyank} ({coreNumbers.bhagyankGraha}), व्यक्तिगत वर्ष (Personal Year #{personalYearVal}) और वार-अधिष्ठाता ग्रहों के सामंजस्य से चयनित सर्वाधिक अनुकूल तिथियां।
+          </p>
+
+          {/* Quick Snapshot Metrics */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs text-center">
+            <div className="p-3 bg-slate-50 rounded-2xl border border-slate-200">
+              <span className="text-[9px] font-mono uppercase text-slate-500 font-bold block">कार्य उद्देश्य</span>
+              <strong className="text-slate-800 font-bold block mt-0.5">{savedLuckyDatesReport?.purposeHi || 'व्यापार व महत्वपूर्ण शुरुआत'}</strong>
+            </div>
+            <div className="p-3 bg-slate-50 rounded-2xl border border-slate-200">
+              <span className="text-[9px] font-mono uppercase text-slate-500 font-bold block">सक्रिय Personal Year</span>
+              <strong className="text-indigo-700 font-mono font-bold block mt-0.5">#{personalYearVal}</strong>
+            </div>
+            <div className="p-3 bg-slate-50 rounded-2xl border border-slate-200">
+              <span className="text-[9px] font-mono uppercase text-slate-500 font-bold block">स्कैन की गई अवधि</span>
+              <strong className="text-slate-800 font-mono font-bold block mt-0.5">{savedLuckyDatesReport?.dateRangeSummary || 'मासिक चक्र'}</strong>
+            </div>
+            <div className="p-3 bg-amber-50 rounded-2xl border border-amber-200">
+              <span className="text-[9px] font-mono uppercase text-amber-800 font-bold block">शीर्ष अनुशंसित</span>
+              <strong className="text-amber-900 font-bold block mt-0.5">{savedLuckyDatesReport?.topSupportiveDates?.length || 4} तिथियां अनुकूल</strong>
+            </div>
+          </div>
+
+          {/* Top Auspicious Dates Spotlight */}
+          <div className="space-y-3">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+              <Calendar className="w-3.5 h-3.5 text-[#D97706]" /> शीर्ष अनुकूल तिथियां (Top Auspicious Dates):
+            </h4>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+              {(savedLuckyDatesReport?.topSupportiveDates || [
+                { dateFormatted: '05/10/2026', weekdayHi: 'सोमवार', weekdayLord: 'चन्द्र देव', dateNumber: 5, rootNumber: 6, personalDay: 1, whyThisDateHi: 'मूलांक व Personal Year के साथ पूर्ण सामंजस्य।' },
+                { dateFormatted: '14/10/2026', weekdayHi: 'बुधवार', weekdayLord: 'बुध देव', dateNumber: 5, rootNumber: 6, personalDay: 1, whyThisDateHi: 'व्यापारिक विस्तार व सौदे के लिए फलदायी।' },
+                { dateFormatted: '23/10/2026', weekdayHi: 'शुक्रवार', weekdayLord: 'शुक्र देव', dateNumber: 5, rootNumber: 6, personalDay: 1, whyThisDateHi: 'नवीन शुरुआत और सौहार्दपूर्ण ऊर्जा।' },
+                { dateFormatted: '27/10/2026', weekdayHi: 'मंगलवार', weekdayLord: 'मंगल देव', dateNumber: 9, rootNumber: 1, personalDay: 5, whyThisDateHi: 'उत्साहवर्धक व गतिशीलता प्रदान करने वाला दिवस।' }
+              ]).map((d: any, idx: number) => (
+                <div key={idx} className="p-3.5 bg-[#FAF5EE] rounded-2xl border border-[#FDE68A] space-y-1">
+                  <div className="flex justify-between items-center">
+                    <span className="font-playfair font-bold text-[#1E3A8A] text-sm">{d.dateFormatted}</span>
+                    <span className="text-[9px] font-mono font-bold bg-white text-emerald-800 border border-emerald-200 px-1.5 py-0.5 rounded-full">
+                      Supportive
+                    </span>
+                  </div>
+                  <div className="text-[10px] text-slate-600 flex justify-between">
+                    <span>{d.weekdayHi} ({d.weekdayLord})</span>
+                    <span>Day #{d.dateNumber}</span>
+                  </div>
+                  <p className="text-[10px] text-slate-500 pt-1 border-t border-amber-200/60 leading-tight">
+                    {d.whyThisDateHi}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Transit Matching Grid & Muhurta Guidelines */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-2">
+              <strong className="text-slate-900 block font-bold">गोचर व समयावधि विश्लेषण (Transit Synthesis):</strong>
+              <ul className="list-disc list-inside text-[11px] text-slate-600 space-y-1 leading-relaxed">
+                <li>मूलांक #{coreNumbers.mulank} के साथ सकारात्मक मित्र ग्रहीय रश्मियों का चयन।</li>
+                <li>Personal Year #{personalYearVal} की दिशा और ऊर्जा का समग्र समर्थन।</li>
+                <li>राहुकाल व प्रतिकूल नक्षत्र वेध से दूरी बनाए रखने की सलाह।</li>
+              </ul>
+            </div>
+
+            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-2">
+              <strong className="text-slate-900 block font-bold">पारंपरिक मुहूर्त व व्यवहारिक परामर्श:</strong>
+              <p className="text-slate-600 text-[11px] leading-relaxed">
+                {savedLuckyDatesReport?.finalSelectionNotesHi || 'शुभ तिथियों पर कार्य का शुभारंभ दिन के प्रथम पहर (अभिजीत मुहूर्त) में करें। प्रशासनिक नियमों, परिवार की सहमति और व्यावहारिक तैयारी को सदैव प्राथमिकता दें।'}
+              </p>
+            </div>
+          </div>
+
+          {/* Disclaimer */}
+          <div className="p-3.5 bg-slate-100 rounded-2xl border border-slate-300 text-[10px] text-slate-600 leading-relaxed">
+            <strong>शुभ तिथि चयन अस्वीकरण:</strong> अंकशास्त्रीय तिथि चयन केवल प्राकृतिक ऊर्जा और ग्रहीय सामंजस्य को अनुकूल बनाने का पारंपरिक माध्यम है। यह किसी भी कार्य की निश्चित सफलता या चमत्कारिक फल की गारंटी नहीं देता है। वास्तविक परिणाम आपकी निष्ठा, तैयारी और कर्म पर निर्भर करता है।
+          </div>
+        </section>
+
+        {/* ========================================================================= */}
+        {/* 30. CONSOLIDATED TRADITIONAL & BALANCING REMEDIES & 90-DAY ACTION PLAN */}
+        {/* ========================================================================= */}
+        <section id="sec-30" className="bg-white rounded-3xl p-6 md:p-8 border border-[#E5E7EB] shadow-sm space-y-6 print-avoid-break">
+          <div className="border-b border-[#F3F4F6] pb-3 flex justify-between items-center">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-[10px] font-mono uppercase text-[#D97706] font-bold tracking-wider">Chapter 30</span>
+                <span className="text-[10px] font-mono text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded font-bold">Sample Section 9: Consolidated Remedies & Harmonization</span>
+              </div>
+              <h3 className="font-playfair text-xl font-bold text-[#1F2937]">21–22. Consolidated Traditional Remedies & Action Plan</h3>
+            </div>
+            <span className="text-xs bg-amber-50 text-amber-800 border border-amber-200 px-3 py-1 rounded-full font-semibold">
+              Vedic Balancing Protocol
+            </span>
+          </div>
+
+          {/* 21. Consolidated Traditional Remedies */}
+          <div className="space-y-3">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-[#92400E]">
+              21. समग्र पारंपरिक उपाय (Consolidated Traditional Remedies)
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+              <div className="p-4 bg-[#FAF5EE] rounded-2xl border border-[#FDE68A]">
+                <strong className="text-[#92400E] block font-bold mb-1">1. Personal & Gemstone:</strong>
+                <p className="text-[#4B5563] text-[11px] leading-relaxed">
+                  शुभ रत्न: {remedies?.gemstones.join(' या ') || 'पन्ना / पुखराज'} • शुभ रंग: {remedies?.colors.join(', ') || 'हल्का हरा, सफेद एवं पीला'}
+                </p>
+              </div>
+
+              <div className="p-4 bg-[#FAF5EE] rounded-2xl border border-[#FDE68A]">
+                <strong className="text-[#92400E] block font-bold mb-1">2. Vastu & Direction:</strong>
+                <p className="text-[#4B5563] text-[11px] leading-relaxed">
+                  ईशान कोण में जल पात्र रखें • अध्ययन/कार्य की बैठक {kuaProfile.favourableDirections?.shengChi || kuaProfile.favorableDirections?.[0]?.direction || 'उत्तर-पश्चिम (North-West)'} में रखें।
+                </p>
+              </div>
+
+              <div className="p-4 bg-[#FAF5EE] rounded-2xl border border-[#FDE68A]">
+                <strong className="text-[#92400E] block font-bold mb-1">3. Mobile & Signature:</strong>
+                <p className="text-[#4B5563] text-[11px] leading-relaxed">
+                  हस्ताक्षर सदैव 15° ऊपर की ओर करें • मोबाइल वॉलपेपर पर शुभ प्राकृतिक या सूर्य का चित्र लगाएं।
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* 22. Balancing Remedies Detailed Matrix */}
+          <div className="space-y-3 pt-2">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-[#92400E]">
+              22. ऊर्जा संतुलनकारी वैदिक उपाय (Balancing Remedies Matrix)
+            </h4>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
+              <div className="p-3.5 bg-white rounded-2xl border border-amber-200">
+                <strong className="text-[#92400E] block font-bold mb-1">प्रधान यंत्र (Primary Yantra):</strong>
+                <p className="text-[#4B5563] text-[11px]">{localizedDossier.balancingRemedies.primaryYantra || expertDossier.balancingRemedies.primaryYantraHi}</p>
+              </div>
+              <div className="p-3.5 bg-white rounded-2xl border border-amber-200">
+                <strong className="text-[#92400E] block font-bold mb-1">ग्रह मंत्र जप (Sacred Mantra):</strong>
+                <p className="text-[#4B5563] text-[11px]">{localizedDossier.balancingRemedies.sacredMantra || expertDossier.balancingRemedies.sacredMantraHi}</p>
+              </div>
+              <div className="p-3.5 bg-white rounded-2xl border border-amber-200">
+                <strong className="text-[#92400E] block font-bold mb-1">रंग व परिधान (Color Harmony):</strong>
+                <p className="text-[#4B5563] text-[11px]">
+                  शुभ रंग: {localizedDossier.balancingRemedies.luckyColors.join(', ') || expertDossier.balancingRemedies.luckyColorsHi.join(', ')}
+                </p>
+              </div>
+              <div className="p-3.5 bg-white rounded-2xl border border-amber-200">
+                <strong className="text-[#92400E] block font-bold mb-1">क्रिस्टल / रत्न (Crystal Therapy):</strong>
+                <p className="text-[#4B5563] text-[11px]">{localizedDossier.balancingRemedies.crystalRecommendation || expertDossier.balancingRemedies.crystalRecommendationHi}</p>
+              </div>
+              <div className="p-3.5 bg-white rounded-2xl border border-amber-200">
+                <strong className="text-[#92400E] block font-bold mb-1">सजीव ग्रह सेवा व दान (Planetary Charity):</strong>
+                <p className="text-[#4B5563] text-[11px]">{localizedDossier.balancingRemedies.planetaryCharity || expertDossier.balancingRemedies.planetaryCharityHi}</p>
+              </div>
+              <div className="p-3.5 bg-white rounded-2xl border border-amber-200">
+                <strong className="text-[#92400E] block font-bold mb-1">हस्ताक्षर सुधार (Signature Alignment):</strong>
+                <p className="text-[#4B5563] text-[11px]">{localizedDossier.balancingRemedies.signatureRecommendation || expertDossier.balancingRemedies.signatureRecommendationHi}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* 90-Day Action Plan */}
+          <div className="space-y-4 pt-3 border-t border-amber-200/80">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+              <div>
+                <span className="text-[10px] font-mono text-[#D97706] font-bold uppercase tracking-wider block">
+                  Actionable Numerological Strategy
+                </span>
+                <h4 className="text-base sm:text-lg font-bold text-[#92400E] font-playfair">
+                  90-दिवसीय व्यक्तिगत कार्य योजना (90-Day Step-by-Step Strategic Roadmap)
+                </h4>
+              </div>
+              <span className="text-[11px] font-mono font-bold text-amber-900 bg-amber-100/90 border border-amber-300 px-3 py-1 rounded-full">
+                Phase-by-Phase Blueprint
+              </span>
+            </div>
+
+            {/* Immediate First 7 Days Quick Wins */}
+            <div className="p-4 bg-gradient-to-r from-amber-500/10 via-amber-500/20 to-amber-500/10 border border-amber-300 rounded-2xl space-y-2">
+              <div className="flex items-center gap-2">
+                <Target className="w-4 h-4 text-[#D97706]" />
+                <strong className="text-xs font-bold text-stone-900 font-playfair">
+                  प्रथम 7 दिन: त्वरित प्राथमिकताएं (Immediate Priorities - Days 1 to 7)
+                </strong>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5 text-xs">
+                <div className="p-3 bg-white/95 rounded-xl border border-amber-200">
+                  <span className="font-bold text-amber-800 block text-[11px]">1. हस्ताक्षर अलाइनमेंट</span>
+                  <p className="text-[10px] text-stone-600 mt-0.5 leading-relaxed">
+                    हस्ताक्षर को 15° ऊपर की ओर उठाएं और नीचे एक स्पष्ट, बिना कटे अधोरेखा लगाएं।
+                  </p>
+                </div>
+                <div className="p-3 bg-white/95 rounded-xl border border-amber-200">
+                  <span className="font-bold text-amber-800 block text-[11px]">2. बैठक व वास्तु दिशा</span>
+                  <p className="text-[10px] text-stone-600 mt-0.5 leading-relaxed">
+                    कार्यक्षेत्र में बैठते समय अपना मुख {kuaProfile.favourableDirections?.shengChi || 'शुभ दिशा'} की ओर रखें।
+                  </p>
+                </div>
+                <div className="p-3 bg-white/95 rounded-xl border border-amber-200">
+                  <span className="font-bold text-amber-800 block text-[11px]">3. मोबाइल वॉलपेपर</span>
+                  <p className="text-[10px] text-stone-600 mt-0.5 leading-relaxed">
+                    फोन स्क्रीन पर सूर्योदय या शुभ हरियाली का वॉलपेपर सेट करें ताकि सकारात्मक तरंगें सक्रिय हों।
+                  </p>
+                </div>
+                <div className="p-3 bg-white/95 rounded-xl border border-amber-200">
+                  <span className="font-bold text-amber-800 block text-[11px]">4. मंत्र साधना शुरुआत</span>
+                  <p className="text-[10px] text-stone-600 mt-0.5 leading-relaxed">
+                    दैनिक 108 बार अपने मूल स्वामी ग्रह के वैदिक मंत्र का शांत मन से प्रातःकाल जप करें।
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* 3 Main 30-Day Chronological Pillars */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 text-xs">
+              <div className="p-5 bg-white rounded-2xl border-2 border-amber-200/90 space-y-2.5 shadow-xs">
+                <div className="flex items-center justify-between border-b border-amber-100 pb-2">
+                  <span className="text-[10px] font-mono text-[#92400E] uppercase font-black bg-amber-100 px-2 py-0.5 rounded">
+                    DAYS 1 – 30
+                  </span>
+                  <span className="text-[10px] font-bold text-stone-500">माह 1: नींव स्थापन</span>
+                </div>
+                <strong className="font-bold text-sm text-[#92400E] block font-playfair">
+                  Foundation Phase (ऊर्जा शुद्धिकरण)
+                </strong>
+                <ul className="space-y-1.5 text-[11px] text-stone-600 leading-relaxed">
+                  <li className="flex items-start gap-1.5">
+                    <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                    <span>घर के ईशान कोण (North-East) में जल पात्र व स्वच्छता सुनिश्चित करें।</span>
+                  </li>
+                  <li className="flex items-start gap-1.5">
+                    <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                    <span>दैनिक परिधान में अनुकूल शुभ रंगों ({remedies?.colors.join(', ') || 'सफेद, हरा, पीला'}) का 60% उपयोग करें।</span>
+                  </li>
+                  <li className="flex items-start gap-1.5">
+                    <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                    <span>अनावश्यक बिखराव व बंद घड़ियां/खराब इलेक्ट्रॉनिक सामान घर से हटाएं।</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="p-5 bg-white rounded-2xl border-2 border-amber-200/90 space-y-2.5 shadow-xs">
+                <div className="flex items-center justify-between border-b border-amber-100 pb-2">
+                  <span className="text-[10px] font-mono text-[#92400E] uppercase font-black bg-amber-100 px-2 py-0.5 rounded">
+                    DAYS 31 – 60
+                  </span>
+                  <span className="text-[10px] font-bold text-stone-500">माह 2: सक्रियता व उपाय</span>
+                </div>
+                <strong className="font-bold text-sm text-[#92400E] block font-playfair">
+                  Remediation Phase (व्यावसायिक सामंजस्य)
+                </strong>
+                <ul className="space-y-1.5 text-[11px] text-stone-600 leading-relaxed">
+                  <li className="flex items-start gap-1.5">
+                    <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                    <span>करियर में नए प्रस्तावों का विश्लेषण अपनी अनुकूल मित्र संख्या अनुसार करें।</span>
+                  </li>
+                  <li className="flex items-start gap-1.5">
+                    <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                    <span>सुझाए गए यंत्र अथवा क्रिस्टल को कार्यस्थल की शुभ दिशा में स्थापित करें।</span>
+                  </li>
+                  <li className="flex items-start gap-1.5">
+                    <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                    <span>साप्ताहिक ग्रह दान (बुधवार/गुरुवार) नियमित रूप से जरूरतमंदों को करें।</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="p-5 bg-white rounded-2xl border-2 border-amber-200/90 space-y-2.5 shadow-xs">
+                <div className="flex items-center justify-between border-b border-amber-100 pb-2">
+                  <span className="text-[10px] font-mono text-[#92400E] uppercase font-black bg-amber-100 px-2 py-0.5 rounded">
+                    DAYS 61 – 90
+                  </span>
+                  <span className="text-[10px] font-bold text-stone-500">माह 3: फल प्राप्ति व स्थिरता</span>
+                </div>
+                <strong className="font-bold text-sm text-[#92400E] block font-playfair">
+                  Observation Phase (समीक्षा एवं विस्तार)
+                </strong>
+                <ul className="space-y-1.5 text-[11px] text-stone-600 leading-relaxed">
+                  <li className="flex items-start gap-1.5">
+                    <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                    <span>वित्तीय व पारिवारिक जीवन में आए सकारात्मक बदलावों का आकलन करें।</span>
+                  </li>
+                  <li className="flex items-start gap-1.5">
+                    <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                    <span>वर्तमान व्यक्तिगत वर्ष ({personalYearVal}) के अनुकूल बड़े निवेश को अंतिम रूप दें।</span>
+                  </li>
+                  <li className="flex items-start gap-1.5">
+                    <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                    <span>दीर्घकालिक 1-वर्षीय कार्ययोजना को नए ऊर्जा स्तर के साथ जारी रखें।</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ========================================================================= */}
+        {/* 31. FINAL LEOFAMILY CONSULTATION SUMMARY */}
+        {/* ========================================================================= */}
+        <section id="sec-31" className="bg-gradient-to-br from-[#1E3A8A] to-[#0F172A] text-white rounded-3xl p-6 md:p-8 shadow-md space-y-6 print-avoid-break">
+          <div className="border-b border-blue-400/20 pb-3 flex justify-between items-center">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-[10px] font-mono uppercase text-amber-400 font-bold tracking-wider">Chapters 31 – 32</span>
+                <span className="text-[10px] font-mono text-amber-200 bg-white/10 px-2 py-0.5 rounded font-bold">Sample Section 9: 90-Day Action Roadmap & Executive Guidance</span>
+              </div>
+              <h3 className="font-playfair text-xl md:text-2xl font-bold text-white">
+                23. LeoFamily Final Expert Consultation Summary (अंतिम परामर्श निष्कर्ष)
+              </h3>
+            </div>
+            <span className="text-xs bg-blue-500/20 text-blue-200 border border-blue-400/30 px-3 py-1 rounded-full font-semibold">
+              आपकी 7 सबसे महत्वपूर्ण बातें
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+            <div className="flex items-start gap-3 bg-white/5 p-3.5 rounded-2xl border border-white/10">
+              <CheckCircle2 className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
+              <div>
+                <strong className="text-amber-300 block mb-0.5 font-bold">1. सबसे मजबूत गुण (Strongest Quality):</strong>
+                <p className="text-blue-100 text-[11px] leading-relaxed">
+                  {localizedDossier.expertSummary.strongestTrait || expertDossier.expertSummary.strongestTrait}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3 bg-white/5 p-3.5 rounded-2xl border border-white/10">
+              <CheckCircle2 className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
+              <div>
+                <strong className="text-amber-300 block mb-0.5 font-bold">2. प्रमुख विकास क्षेत्र (Key Development Area):</strong>
+                <p className="text-blue-100 text-[11px] leading-relaxed">
+                  {localizedDossier.expertSummary.developmentArea || expertDossier.expertSummary.developmentArea}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3 bg-white/5 p-3.5 rounded-2xl border border-white/10">
+              <CheckCircle2 className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
+              <div>
+                <strong className="text-amber-300 block mb-0.5 font-bold">3. करियर की दिशा (Career Direction):</strong>
+                <p className="text-blue-100 text-[11px] leading-relaxed">
+                  {localizedDossier.expertSummary.careerDirection || expertDossier.expertSummary.careerDirection}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3 bg-white/5 p-3.5 rounded-2xl border border-white/10">
+              <CheckCircle2 className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
+              <div>
+                <strong className="text-amber-300 block mb-0.5 font-bold">4. संबंध एवं परिवार (Relationship Harmony):</strong>
+                <p className="text-blue-100 text-[11px] leading-relaxed">
+                  {localizedDossier.expertSummary.relationshipGuidance || expertDossier.expertSummary.relationshipGuidance}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3 bg-white/5 p-3.5 rounded-2xl border border-white/10">
+              <CheckCircle2 className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
+              <div>
+                <strong className="text-amber-300 block mb-0.5 font-bold">5. मुख्य पारंपरिक उपाय (Primary Remedy):</strong>
+                <p className="text-blue-100 text-[11px] leading-relaxed">
+                  {localizedDossier.expertSummary.primaryRemedy || expertDossier.expertSummary.primaryRemedy}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3 bg-white/5 p-3.5 rounded-2xl border border-white/10">
+              <CheckCircle2 className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
+              <div>
+                <strong className="text-amber-300 block mb-0.5 font-bold">6. वर्तमान कालखंड संदेश (Time-Cycle Guidance):</strong>
+                <p className="text-blue-100 text-[11px] leading-relaxed">
+                  {localizedDossier.expertSummary.timeCycleGuidance || expertDossier.expertSummary.timeCycleGuidance}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3 bg-white/5 p-3.5 rounded-2xl border border-white/10 md:col-span-2">
+              <Star className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5 fill-amber-400" />
+              <div>
+                <strong className="text-amber-300 block mb-0.5 font-bold">7. ज्योतिषाचार्य / अंकशास्त्री अंतिम संदेश (Master's Word):</strong>
+                <p className="text-blue-100 text-[11px] leading-relaxed">
+                  {localizedDossier.expertSummary.masterAdvice || expertDossier.expertSummary.masterAdvice}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="border-t border-blue-400/20 pt-4 text-center">
+            <p className="text-xs text-amber-200 font-serif italic">
+              "अंक आपके भाग्य को बांधते नहीं, वे केवल ग्रह गोचर के शुभ मार्ग का मानचित्र प्रस्तुत करते हैं। सजग आचरण और निरंतर कर्म ही सच्ची सफलता का आधार हैं।"
+            </p>
+          </div>
+        </section>
+
+        {/* ========================================================================= */}
+        {/* PHASE 10: CONSULTATION FEEDBACK & QUALITY RATING LOOP (sec-feedback)     */}
+        {/* ========================================================================= */}
+        <section id="sec-feedback" className="bg-gradient-to-br from-[#FAF5EE] via-amber-50/40 to-white rounded-3xl p-6 sm:p-8 border-2 border-amber-200/80 shadow-sm space-y-6 no-print print-avoid-break">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-amber-200/60 pb-4">
+            <div className="flex items-center gap-3">
+              <span className="p-2.5 bg-amber-100 rounded-2xl text-[#D97706]">
+                <MessageSquare className="w-5 h-5" />
+              </span>
+              <div>
+                <span className="text-[10px] font-mono uppercase text-[#D97706] font-bold tracking-wider block">
+                  Phase 10 • Feedback Loop & Service Quality
+                </span>
+                <h3 className="font-playfair font-bold text-lg sm:text-xl text-[#1F2937]">
+                  {language === 'hi' ? 'परामर्श अनुभव व गुणवत्ता मूल्यांकन' : 'Consultation Experience & Quality Feedback'}
+                </h3>
+              </div>
+            </div>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-100 text-amber-900 rounded-full text-xs font-semibold self-start sm:self-auto">
+              <Shield className="w-3.5 h-3.5 text-[#D97706]" />
+              {language === 'hi' ? 'गोपनीय व सुरक्षित' : 'Confidential & Secure'}
+            </span>
+          </div>
+
+          {feedbackSubmitted ? (
+            <div className="p-6 bg-emerald-50 border border-emerald-200 rounded-2xl text-center space-y-2">
+              <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto">
+                <CheckCircle2 className="w-6 h-6" />
+              </div>
+              <h4 className="font-playfair font-bold text-base text-emerald-950">
+                {language === 'hi' ? 'आपकी मूल्यवान समीक्षा के लिए कोटिशः धन्यवाद!' : 'Thank You for Your Valuable Feedback!'}
+              </h4>
+              <p className="text-xs text-emerald-800 max-w-lg mx-auto leading-relaxed">
+                {language === 'hi'
+                  ? 'आपकी प्रतिक्रिया हमारे वैदिक व कीरो अंकशास्त्रीय परामर्श को और अधिक सटीक एवं व्यावहारिक बनाने में सहायक होगी।'
+                  : 'Your feedback directly helps us refine our authentic Vedic and Chaldean consultation dossier and remedial frameworks.'}
+              </p>
+            </div>
+          ) : (
+            <form onSubmit={handleFeedbackSubmit} className="space-y-5">
+              <p className="text-xs text-[#4B5563] leading-relaxed">
+                {language === 'hi'
+                  ? 'कृपया इस 32-अध्याय परामर्श रिपोर्ट की स्पष्टता, सटीकता और व्यावहारिक उपयोगिता पर अपना मूल्यांकन साझा करें:'
+                  : 'Please share your assessment on the clarity, accuracy, and practical usefulness of this 32-chapter consultation dossier:'}
+              </p>
+
+              {/* Star Rating Selection */}
+              <div className="space-y-1.5">
+                <label className="block text-xs font-bold text-[#374151]">
+                  {language === 'hi' ? '1. समग्र परामर्श संतुष्टि रेटिंग (Overall Rating):' : '1. Overall Consultation Rating:'}
+                </label>
+                <div className="flex items-center gap-2">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      type="button"
+                      onClick={() => setFeedbackRating(star)}
+                      className="p-1 text-2xl transition-transform hover:scale-125 focus:outline-none cursor-pointer"
+                      title={`${star} Star`}
+                    >
+                      <Star
+                        className={`w-7 h-7 ${
+                          star <= feedbackRating
+                            ? 'text-amber-400 fill-amber-400 drop-shadow-xs'
+                            : 'text-stone-300'
+                        }`}
+                      />
+                    </button>
+                  ))}
+                  <span className="text-xs font-bold text-amber-800 ml-2">
+                    {feedbackRating === 5 ? (language === 'hi' ? 'उत्कृष्ट (5/5)' : 'Excellent (5/5)') :
+                     feedbackRating === 4 ? (language === 'hi' ? 'बहुत अच्छा (4/5)' : 'Very Good (4/5)') :
+                     feedbackRating === 3 ? (language === 'hi' ? 'संतोषजनक (3/5)' : 'Good (3/5)') :
+                     (language === 'hi' ? 'सुधार अपेक्षित' : 'Needs Improvement')}
+                  </span>
+                </div>
+              </div>
+
+              {/* Clarity & Actionability Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-bold text-[#374151]">
+                    {language === 'hi' ? '2. भाषा एवं व्याख्या की स्पष्टता:' : '2. Language & Interpretive Clarity:'}
+                  </label>
+                  <select
+                    value={feedbackClarity}
+                    onChange={(e) => setFeedbackClarity(e.target.value)}
+                    className="w-full text-xs p-2.5 bg-white border border-stone-300 rounded-xl focus:ring-2 focus:ring-amber-400 focus:outline-none"
+                  >
+                    <option value="crystal_clear">{language === 'hi' ? 'पूर्णतः स्पष्ट व सरल (Crystal Clear)' : 'Crystal Clear & Simple'}</option>
+                    <option value="mostly_clear">{language === 'hi' ? 'अधिकांशतः समझ आया (Mostly Clear)' : 'Mostly Clear'}</option>
+                    <option value="needs_explanation">{language === 'hi' ? 'और विस्तृत व्याख्या चाहिए (Needs More Explanation)' : 'Needs More Explanation'}</option>
+                  </select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-bold text-[#374151]">
+                    {language === 'hi' ? '3. 90-दिवसीय कार्ययोजना की व्यावहारिकता:' : '3. Actionability of 90-Day Plan:'}
+                  </label>
+                  <select
+                    value={feedbackActionability}
+                    onChange={(e) => setFeedbackActionability(e.target.value)}
+                    className="w-full text-xs p-2.5 bg-white border border-stone-300 rounded-xl focus:ring-2 focus:ring-amber-400 focus:outline-none"
+                  >
+                    <option value="highly_actionable">{language === 'hi' ? 'अति व्यावहारिक व लागू करने योग्य (Highly Actionable)' : 'Highly Actionable & Practical'}</option>
+                    <option value="useful">{language === 'hi' ? 'उपयोगी व मार्गदर्शक (Useful & Guiding)' : 'Useful & Guiding'}</option>
+                    <option value="neutral">{language === 'hi' ? 'सामान्य (Neutral)' : 'Neutral'}</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Optional Textarea */}
+              <div className="space-y-1.5">
+                <label className="block text-xs font-bold text-[#374151]">
+                  {language === 'hi' ? '4. कोई विशिष्ट सुझाव या अनुभव (वैकल्पिक):' : '4. Specific Notes or Testimonial (Optional):'}
+                </label>
+                <textarea
+                  rows={2}
+                  value={feedbackText}
+                  onChange={(e) => setFeedbackText(e.target.value)}
+                  placeholder={
+                    language === 'hi'
+                      ? 'अपनी राय यहाँ लिखें... (जैसे: कौन सा अध्याय सबसे उपयोगी लगा)'
+                      : 'Share your thoughts or which chapter was most enlightening...'
+                  }
+                  className="w-full text-xs p-3 bg-white border border-stone-300 rounded-xl focus:ring-2 focus:ring-amber-400 focus:outline-none resize-none"
+                />
+              </div>
+
+              {feedbackError && (
+                <div className="text-xs text-amber-700 bg-amber-50 p-2.5 rounded-xl border border-amber-200">
+                  {feedbackError}
+                </div>
+              )}
+
+              {/* Submit Button */}
+              <div className="flex items-center justify-between pt-1">
+                <span className="text-[11px] text-stone-500 italic">
+                  {language === 'hi' ? 'आपकी राय सुरक्षित रूप से संग्रहीत होती है।' : 'Your evaluation is stored securely.'}
+                </span>
+                <button
+                  type="submit"
+                  disabled={feedbackSubmitting}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold bg-[#D97706] hover:bg-[#B45309] text-white shadow-sm transition-all cursor-pointer disabled:opacity-50"
+                >
+                  <Send className="w-3.5 h-3.5" />
+                  <span>{feedbackSubmitting ? (language === 'hi' ? 'दर्ज हो रहा है...' : 'Submitting...') : (language === 'hi' ? 'प्रतिक्रिया सबमिट करें' : 'Submit Feedback')}</span>
+                </button>
+              </div>
+            </form>
+          )}
+        </section>
+
+      </div>
+
+      {/* Bottom Floating/Docked Export Actions Bar (Screen-only) */}
+      <div className="bg-white border border-[#E5E7EB] rounded-3xl p-6 shadow-sm flex flex-col sm:flex-row justify-between items-center gap-4 no-print mt-8">
+        <div className="text-left space-y-0.5">
+          <h4 className="font-playfair font-bold text-base text-[#1F2937] flex items-center gap-2">
+            <FileText className="w-4 h-4 text-[#D97706]" /> सम्पूर्ण 32-अध्याय महा-परामर्श रिपोर्ट पूर्ण
+          </h4>
+          <p className="text-xs text-[#6B7280]">
+            Print or export high-resolution client dossier for <strong>{identity.fullName}</strong>.
+          </p>
+        </div>
+
+        <div className="flex items-center gap-3 w-full sm:w-auto">
+          <button
+            type="button"
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            className="px-4 py-2.5 rounded-xl text-xs font-semibold bg-[#F8F4EF] text-[#4B5563] hover:bg-[#F2E8DC] transition-all cursor-pointer"
+          >
+            ↑ Top
+          </button>
+          <button
+            type="button"
+            onClick={() => window.print()}
+            title="Print entire 32-section report or save as PDF"
+            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold bg-[#FAF5EE] text-[#78350F] border border-[#FDE68A] hover:bg-[#FEF3C7] shadow-xs transition-all cursor-pointer group"
+          >
+            <Printer className="w-4 h-4 text-[#D97706] group-hover:scale-110 transition-transform" />
+            <span>Print Report</span>
+          </button>
+          <button
+            type="button"
+            onClick={handleExportPDF}
+            disabled={pdfGenerating}
+            className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl text-xs font-bold bg-[#D97706] hover:bg-[#B45309] text-white shadow-sm transition-all cursor-pointer disabled:opacity-50"
+          >
+            <Download className="w-4 h-4" />
+            <span>{pdfGenerating ? 'Generating...' : 'Download Master PDF'}</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Phase 7: Explainable Insight & Provenance Modal Overlay */}
+      {selectedProvenanceInsight && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
+          <div className="bg-white w-full max-w-xl rounded-3xl shadow-2xl border-2 border-amber-300 overflow-hidden space-y-0">
+            {/* Modal Header */}
+            <div className="bg-gradient-to-r from-[#FAF5EE] via-amber-50 to-[#FAF5EE] p-5 border-b border-amber-200 flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <span className="p-2 bg-amber-100 rounded-xl text-[#D97706]">
+                  <Sparkles className="w-5 h-5" />
+                </span>
+                <div>
+                  <span className="text-[10px] font-mono uppercase text-[#D97706] font-bold tracking-wider block">
+                    LeoFamily Provenance & Rule Inspector
+                  </span>
+                  <h4 className="font-playfair font-bold text-base text-stone-900">
+                    {language === 'hi' ? selectedProvenanceInsight.title.hi : selectedProvenanceInsight.title.en}
+                  </h4>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedProvenanceInsight(null)}
+                className="w-8 h-8 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-600 flex items-center justify-center font-bold text-sm cursor-pointer transition-colors"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6 space-y-4 max-h-[75vh] overflow-y-auto text-xs">
+              {/* Summary */}
+              <div className="p-3.5 bg-amber-50/70 rounded-2xl border border-amber-200 space-y-1">
+                <strong className="text-[#92400E] block font-bold text-[10px] uppercase">
+                  {language === 'hi' ? 'विश्लेषण सारांश (Summary):' : 'Analytical Summary:'}
+                </strong>
+                <p className="text-stone-700 leading-relaxed">
+                  {language === 'hi' ? selectedProvenanceInsight.summary.hi : selectedProvenanceInsight.summary.en}
+                </p>
+              </div>
+
+              {/* Calculated Inputs Layer */}
+              <div className="space-y-2">
+                <span className="text-[10px] font-mono font-bold uppercase text-stone-500 block">
+                  1. आधारभूत गणना इनपुट (Calculated Facts & Inputs):
+                </span>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {selectedProvenanceInsight.inputs.map((inp, idx) => (
+                    <div key={idx} className="p-2.5 bg-stone-50 rounded-xl border border-stone-200 flex items-center justify-between">
+                      <span className="text-stone-600 font-medium">{inp.label}:</span>
+                      <span className="font-bold text-stone-900">{inp.value}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Matched Governance Rules */}
+              <div className="space-y-2">
+                <span className="text-[10px] font-mono font-bold uppercase text-stone-500 block">
+                  2. पंजीकृत पद्धति नियम (Governing Methodology Rules):
+                </span>
+                <div className="p-3 bg-stone-50 rounded-xl border border-stone-200 space-y-1.5 font-mono text-[11px]">
+                  <div className="text-[#D97706] font-bold">
+                    {selectedProvenanceInsight.provenance.matchedRuleIds.join(', ')}
+                  </div>
+                  <div className="text-stone-600 text-[10px]">
+                    गणना स्रोत: {selectedProvenanceInsight.provenance.calculationSource}
+                  </div>
+                </div>
+              </div>
+
+              {/* Source Citation & Hierarchy */}
+              <div className="space-y-2">
+                <span className="text-[10px] font-mono font-bold uppercase text-stone-500 block">
+                  3. ज्ञान स्रोत संदर्भ (Knowledge Source Citation):
+                </span>
+                {selectedProvenanceInsight.provenance.sourceCitations.map((src, idx) => (
+                  <div key={idx} className="p-3 bg-emerald-50/60 rounded-xl border border-emerald-200 space-y-1">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-emerald-900">{src.sourceDocument}</span>
+                      <span className="text-[9px] font-mono bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-bold">
+                        {src.level}
+                      </span>
+                    </div>
+                    {src.author && <div className="text-[10px] text-emerald-800">लेखक: {src.author}</div>}
+                    <div className="text-[10px] text-emerald-700 italic">{src.topic}</div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Safety & Determinism Caution */}
+              <div className="p-3 bg-blue-50/60 rounded-xl border border-blue-200 flex items-center gap-2 text-[10px] text-blue-900">
+                <Info className="w-4 h-4 text-blue-600 flex-shrink-0" />
+                <span>
+                  यह अंतर्दृष्टि केवल ग्रह ऊर्जा सामंजस्य व व्यक्तिगत विकास के लिए है। किसी भी प्रकार की घातक या भाग्यवादी भविष्यवाणी पूर्णतः वर्जित है।
+                </span>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="bg-stone-50 p-4 border-t border-stone-200 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setSelectedProvenanceInsight(null)}
+                className="px-5 py-2 bg-stone-900 hover:bg-stone-800 text-white rounded-xl text-xs font-bold transition-colors cursor-pointer"
+              >
+                बंद करें (Close)
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+    </ReportAccessGate>
+  );
+};
+
+export default MasterReportUnified;

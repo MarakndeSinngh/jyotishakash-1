@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { X, Upload, FileSpreadsheet, AlertCircle, CheckCircle2, Download, ArrowRight, RefreshCw } from 'lucide-react';
-import { parseTestimonialFile, ImportValidationResult, ParsedTestimonialRow } from '../../utils/testimonialExcel';
+import type { ImportValidationResult, ParsedTestimonialRow } from '../../utils/testimonialExcel';
 import { supabaseTestimonialRepository } from '../../repositories/supabaseTestimonialRepository';
 
 interface TestimonialBulkImportProps {
@@ -51,6 +51,7 @@ export default function TestimonialBulkImport({
     setFile(selectedFile);
     try {
       setLoadingMessage('Reading and parsing file...');
+      const { parseTestimonialFile } = await import('../../utils/testimonialExcel');
       const result = await parseTestimonialFile(selectedFile, existingCodes);
       setValidationResult(result);
       setLoadingMessage(null);

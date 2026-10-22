@@ -4,7 +4,6 @@ import { Testimonial } from '../../types/cms';
 import { supabaseTestimonialRepository } from '../../repositories/supabaseTestimonialRepository';
 import TestimonialModal from './TestimonialModal';
 import TestimonialBulkImport from './TestimonialBulkImport';
-import { generateTestimonialTemplate } from '../../utils/testimonialExcel';
 
 export default function TestimonialsView() {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
@@ -156,7 +155,9 @@ export default function TestimonialsView() {
         </div>
         <div className="flex items-center gap-2.5 flex-wrap">
           <button
-            onClick={() => generateTestimonialTemplate()}
+            onClick={() => {
+              import('../../utils/testimonialExcel').then((m) => m.generateTestimonialTemplate());
+            }}
             className="px-4 py-2.5 bg-white hover:bg-stone-50 text-stone-800 border border-stone-200 rounded-xl text-xs font-medium shadow-sm transition-all inline-flex items-center gap-2"
           >
             <Download className="w-4 h-4 text-amber-600" />

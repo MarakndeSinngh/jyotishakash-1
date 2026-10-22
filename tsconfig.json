@@ -24,6 +24,8 @@
     "noEmit": true
   },
   "exclude": [
-    "supabase"
+    "supabase",
+    "public",
+    "dist"
   ]
 }

@@ -2,6 +2,8 @@ import React, { Component, ErrorInfo, ReactNode } from 'react';
 
 interface Props {
   children: ReactNode;
+  fallbackTitle?: string;
+  [key: string]: any;
 }
 
 interface State {

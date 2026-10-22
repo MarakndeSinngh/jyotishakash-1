@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../../context/LanguageContext';
 import { SupportedLanguage } from '../../i18n/translations';
 
-export const LanguageSelector: React.FC<{ isMobile?: boolean }> = ({ isMobile = false }) => {
+export const LanguageSelector: React.FC<{ isMobile?: boolean; variant?: string }> = ({ isMobile = false }) => {
   const { language, setLanguage, currentLanguageConfig, supportedLanguages } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -109,3 +109,6 @@ export const LanguageSelector: React.FC<{ isMobile?: boolean }> = ({ isMobile = 
     </div>
   );
 };
+
+export default LanguageSelector;
+

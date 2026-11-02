@@ -72,8 +72,8 @@ export default function GemstoneAdminView() {
     name: '',
     hindiName: '',
     slug: '',
-    category: 'Ruby',
-    planetaryRuler: 'The Sun (Surya Dev)',
+    category: '',
+    planetaryRuler: 'Not assigned — Vedic assessment pending',
     primaryDeity: '',
     benefit: '',
     shortDescription: '',
@@ -141,8 +141,8 @@ export default function GemstoneAdminView() {
       name: '',
       hindiName: '',
       slug: '',
-      category: 'Ruby',
-      planetaryRuler: 'The Sun',
+      category: '',
+      planetaryRuler: 'Not assigned — Vedic assessment pending',
       primaryDeity: '',
       benefit: '',
       shortDescription: '',
@@ -310,6 +310,10 @@ export default function GemstoneAdminView() {
     e.preventDefault();
     if (!formData.name?.trim()) {
       showNotification('Product English name is required', 'error');
+      return;
+    }
+    if (!formData.category?.trim()) {
+      showNotification('Select the correct gemstone category before saving.', 'error');
       return;
     }
 
@@ -1038,10 +1042,12 @@ export default function GemstoneAdminView() {
                         Category *
                       </label>
                       <select
-                        value={formData.category || 'Ruby'}
+                        required
+                        value={formData.category || ''}
                         onChange={e => setFormData(prev => ({ ...prev, category: e.target.value }))}
                         className="w-full px-3 py-2 text-xs rounded-xl bg-stone-50 border border-stone-200 text-stone-900"
                       >
+                        <option value="" disabled>Select gemstone category</option>
                         {AVAILABLE_CATEGORIES.map(cat => (
                           <option key={cat} value={cat}>{cat}</option>
                         ))}

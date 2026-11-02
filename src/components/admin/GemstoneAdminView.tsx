@@ -312,19 +312,34 @@ export default function GemstoneAdminView() {
       return;
     }
 
-    const priceNum = Number(formData.price);
-    if (formData.price === undefined || formData.price === null || isNaN(priceNum) || priceNum <= 0) {
-      showNotification('A valid positive selling price must be explicitly entered.', 'error');
+    const hasEnteredPrice = formData.price !== undefined
+      && formData.price !== null
+      && Number.isFinite(Number(formData.price))
+      && Number(formData.price) > 0;
+    if (!hasEnteredPrice && formData.isPublished) {
+      showNotification('A published product requires an explicitly entered and approved positive price.', 'error');
       return;
     }
 
+    // The database column is NOT NULL. For an unpriced draft only, store INR 1 as a
+    // non-sale sentinel and always mark it UNVERIFIED so it is never shown or orderable.
+    const priceNum = hasEnteredPrice ? Number(formData.price) : 1;
     const stockQty = Math.max(0, Number(formData.stockQuantity) || 0);
     const inStock = stockQty > 0 ? Boolean(formData.inStock) : false;
+    const specifications = { ...(formData.specifications || {}) };
+    const priceChanged = !editingProduct || (hasEnteredPrice && priceNum !== Number(editingProduct.price));
+    if (!hasEnteredPrice || priceChanged) {
+      specifications.pricingVerificationStatus = 'UNVERIFIED_DRAFT_PRICE';
+      specifications.priceNote = hasEnteredPrice
+        ? 'Price changed. Administrator approval is required before publication.'
+        : 'NO_COMMERCIAL_PRICE_SET — numeric 1 is a database placeholder only; enter a LEO-approved selling price before publication.';
+    }
 
-    // Check publication safeguards if administrator is attempting to save as Published
+    // Check publication safeguards against the effective draft/approved values.
     if (formData.isPublished) {
       const issues = getProductReviewIssues({
         ...formData,
+        specifications,
         price: priceNum,
         stockQuantity: stockQty,
         inStock
@@ -343,11 +358,13 @@ export default function GemstoneAdminView() {
       const slug = formData.slug?.trim() || formData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
       const toSave = {
         ...formData,
+        specifications,
         slug,
         price: priceNum,
         compareAtPrice: formData.compareAtPrice ? Number(formData.compareAtPrice) : null,
         stockQuantity: stockQty,
-        inStock
+        inStock,
+        isPublished: Boolean(formData.isPublished)
       };
 
       if (editingProduct) {
@@ -1085,7 +1102,7 @@ export default function GemstoneAdminView() {
                       </div>
                       <div className="flex items-center gap-2">
                         <select
-                          value={formData.specifications?.pricingVerificationStatus || 'VERIFIED'}
+                          value={formData.specifications?.pricingVerificationStatus || 'UNVERIFIED_DRAFT_PRICE'}
                           onChange={e => setFormData(prev => ({
                             ...prev,
                             specifications: {
@@ -1113,7 +1130,7 @@ export default function GemstoneAdminView() {
                             }}
                             className="px-2.5 py-1 text-xs rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold transition"
                           >
-                            Approve Price
+                            Approve Price & Variants
                           </button>
                         )}
                       </div>
@@ -1123,18 +1140,17 @@ export default function GemstoneAdminView() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="text-xs font-bold text-stone-700 block mb-1">
-                        Selling Price (₹ INR) *
+                        Selling Price (₹ INR)
                       </label>
                       <input
                         type="number"
-                        required
                         min="1"
                         value={formData.price !== undefined && formData.price !== null && formData.price !== 0 ? formData.price : ''}
                         onChange={e => {
                           const val = e.target.value === '' ? undefined : Number(e.target.value);
                           setFormData(prev => ({ ...prev, price: val }));
                         }}
-                        placeholder="e.g. 15000 (Required positive price)"
+                        placeholder="Leave blank for unpriced draft; enter approved selling price"
                         className="w-full px-3 py-2 text-xs rounded-xl bg-stone-50 border border-stone-200 text-stone-900 focus:outline-none focus:border-amber-600 font-semibold"
                       />
                     </div>

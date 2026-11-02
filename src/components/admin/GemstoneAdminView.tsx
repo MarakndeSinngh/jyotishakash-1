@@ -33,7 +33,9 @@ export { getProductReviewIssues };
 
 const AVAILABLE_CATEGORIES = [
   'Ruby', 'Natural Pearl', 'Red Coral', 'Emerald', 'Yellow Sapphire',
-  'Diamond', 'Zircon', 'Blue Sapphire', 'Hessonite', 'Cat’s Eye', 'Opal'
+  'Diamond', 'Zircon', 'Blue Sapphire', 'Hessonite', 'Cat’s Eye', 'Opal',
+  'Amethyst', 'Moonstone', 'Labradorite', 'Garnet', 'Carnelian', 'Turquoise',
+  'Citrine', 'Peridot', 'Lapis Lazuli', 'Tourmaline', 'Chalcedony', 'Amber'
 ];
 
 
@@ -84,7 +86,14 @@ export default function GemstoneAdminView() {
     inStock: false,
     isPublished: false,
     isFeatured: false,
-    specifications: {},
+    specifications: {
+      origin: 'Pending Verification',
+      color: 'Pending Verification',
+      pricingVerificationStatus: 'UNVERIFIED_DRAFT_PRICE',
+      materialIdentityStatus: 'PENDING_VERIFICATION',
+      imageVerificationStatus: 'PENDING_UPLOAD',
+      adminReviewNotice: 'New product draft: verify price, material identity, images, origin/treatment, certification, and physical stock before publication.'
+    },
     certification: {
       certified: false,
       labName: '',
@@ -148,12 +157,13 @@ export default function GemstoneAdminView() {
       specifications: {
         origin: 'Pending Verification',
         shape: 'Pending Inspection',
-        color: 'Natural',
+        color: 'Pending Verification',
         metalRecommendation: 'Pending Astrological Assessment',
-        wearingFinger: 'Ring Finger',
-        pricingVerificationStatus: 'VERIFIED',
-        materialIdentityStatus: 'VERIFIED',
-        imageVerificationStatus: 'PENDING_UPLOAD'
+        wearingFinger: '',
+        pricingVerificationStatus: 'UNVERIFIED_DRAFT_PRICE',
+        materialIdentityStatus: 'PENDING_VERIFICATION',
+        imageVerificationStatus: 'PENDING_UPLOAD',
+        adminReviewNotice: 'New product draft: verify price, material identity, images, origin/treatment, certification, and physical stock before publication.'
       },
       certification: {
         certified: false,
@@ -183,11 +193,20 @@ export default function GemstoneAdminView() {
         name: `${product.name} (Copy)`,
         sku: `${product.sku}-CPY`,
         isPublished: false,
+        isFeatured: false,
         inStock: false,
         stockQuantity: 0,
         certification: product.certification
-          ? { ...product.certification, certified: false }
-          : { certified: false, labName: '', natural: false, treatment: 'Pending Lab Verification' }
+          ? { ...product.certification, certified: false, natural: false, labName: '', treatment: 'Pending Verification' }
+          : { certified: false, labName: '', natural: false, treatment: 'Pending Verification' },
+        specifications: {
+          ...(product.specifications || {}),
+          pricingVerificationStatus: 'UNVERIFIED_DRAFT_PRICE',
+          materialIdentityStatus: 'PENDING_VERIFICATION',
+          imageVerificationStatus: product.images?.length ? 'PENDING_VERIFICATION' : 'PENDING_UPLOAD',
+          adminReviewNotice: 'Duplicate draft: re-verify actual stone identity, price, product photos, origin/treatment, certification, stock, and all variants before publication.'
+        },
+        variants: (product.variants || []).map(variant => ({ ...variant, inStock: false, stockQuantity: 0 }))
       };
       await gemstoneProductService.saveProduct(copy);
       showNotification(`Duplicated "${product.name}" successfully as draft.`);
@@ -279,18 +298,8 @@ export default function GemstoneAdminView() {
       }));
       showNotification('Image uploaded. Verification status set to PENDING_VERIFICATION — administrator must verify before publishing.');
     } catch (err: any) {
-      console.warn('Storage upload error, using local object URL fallback:', err);
-      const localUrl = URL.createObjectURL(file);
-      const newImages = [...(formData.images || []), localUrl];
-      setFormData(prev => ({
-        ...prev,
-        images: newImages,
-        specifications: {
-          ...(prev.specifications || {}),
-          imageVerificationStatus: 'PENDING_VERIFICATION'
-        }
-      }));
-      showNotification('Image added. Verification status set to PENDING_VERIFICATION — administrator must verify before publishing.');
+      console.error('Permanent gemstone image upload failed:', err);
+      showNotification(err.message || 'Image upload failed. No temporary browser-only image was saved. Check Supabase Storage access and retry.', 'error');
     } finally {
       setUploadingImage(false);
     }
@@ -364,13 +373,13 @@ export default function GemstoneAdminView() {
       name: '4.25 Ratti',
       carat: 3.89,
       ratti: 4.25,
-      origin: formData.specifications?.origin || 'Natural Mined',
-      shape: 'Oval',
-      price: formData.price || 15000,
-      compareAtPrice: formData.compareAtPrice || undefined,
+      origin: formData.specifications?.origin || 'Pending Verification',
+      shape: 'Pending Verification',
+      price: Number(formData.price) > 0 ? Number(formData.price) : 1,
+      compareAtPrice: undefined,
       sku: `${formData.sku || 'LEO'}-${Date.now().toString().slice(-3)}`,
-      inStock: true,
-      stockQuantity: 3
+      inStock: false,
+      stockQuantity: 0
     };
 
     setFormData(prev => ({
@@ -769,7 +778,7 @@ export default function GemstoneAdminView() {
                   {editingProduct ? 'Edit Gemstone Product' : 'Add New Vedic Gemstone'}
                 </h3>
                 <p className="text-xs text-stone-500">
-                  {editingProduct ? `Editing SKU: ${editingProduct.sku}` : 'Add a new certified stone to the e-commerce catalogue'}
+                  {editingProduct ? `Editing SKU: ${editingProduct.sku}` : 'Add a gemstone draft. Verify all details before publication.'}
                 </p>
               </div>
               <button
@@ -877,13 +886,15 @@ export default function GemstoneAdminView() {
                           Material Identity & Authenticity Status
                         </span>
                         <span className="text-[11px] text-stone-500">
-                          {formData.specifications?.materialIdentityStatus === 'AMBIGUOUS_UNVERIFIED'
-                            ? 'Ambiguous identity flagged (e.g. Diamond vs White Zircon). Administrator must confirm single gemstone material.'
-                            : 'Single gemstone material identity confirmed and verified.'}
+                          {formData.specifications?.materialIdentityStatus === 'VERIFIED'
+                            ? 'Material identity explicitly reviewed and confirmed.'
+                            : formData.specifications?.materialIdentityStatus === 'AMBIGUOUS_UNVERIFIED'
+                            ? 'Ambiguous identity flagged. Administrator must confirm the single material.'
+                            : 'Pending review: inspect the actual stone and confirm its material before publication.'}
                         </span>
                       </div>
                       <select
-                        value={formData.specifications?.materialIdentityStatus || 'VERIFIED'}
+                        value={formData.specifications?.materialIdentityStatus || 'PENDING_VERIFICATION'}
                         onChange={e => setFormData(prev => ({
                           ...prev,
                           specifications: {
@@ -893,6 +904,7 @@ export default function GemstoneAdminView() {
                         }))}
                         className="px-2.5 py-1 text-xs rounded-lg border border-stone-200 bg-white font-medium text-stone-800"
                       >
+                        <option value="PENDING_VERIFICATION">Pending Verification</option>
                         <option value="VERIFIED">Identity Confirmed (VERIFIED)</option>
                         <option value="AMBIGUOUS_UNVERIFIED">Ambiguous / Pending Inspection</option>
                       </select>
@@ -1066,9 +1078,9 @@ export default function GemstoneAdminView() {
                           Pricing Verification Status
                         </span>
                         <span className="text-[11px] text-stone-500">
-                          {formData.specifications?.pricingVerificationStatus === 'UNVERIFIED_DRAFT_PRICE'
-                            ? 'Unverified starter pricing flagged. Requires administrator approval before publication.'
-                            : 'Price verified and approved for live commercial sale.'}
+                          {formData.specifications?.pricingVerificationStatus === 'VERIFIED'
+                            ? 'Price explicitly reviewed and approved by an administrator.'
+                            : 'Draft/reference price only. Approve only after checking the actual purchase cost and intended selling price.'}
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
@@ -1273,9 +1285,11 @@ export default function GemstoneAdminView() {
                         <span className="text-[11px] text-stone-500">
                           {formData.specifications?.imageVerificationStatus === 'VERIFIED'
                             ? 'Images explicitly verified and approved by administrator.'
+                            : formData.specifications?.imageVerificationStatus === 'VERIFIED_PRESET'
+                            ? 'Legacy preset image is attached but not approved. Inspect it and explicitly approve it before publication.'
                             : formData.specifications?.imageVerificationStatus === 'PENDING_VERIFICATION'
-                            ? 'Image assigned but PENDING_VERIFICATION. An authorized administrator must explicitly confirm before publication.'
-                            : 'Pending image upload: Real gemstone photo required before publication.'}
+                            ? 'Image assigned but pending administrator inspection.'
+                            : 'Pending image upload: a genuine product photo is required before publication.'}
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
@@ -1292,6 +1306,7 @@ export default function GemstoneAdminView() {
                         >
                           <option value="VERIFIED">VERIFIED (Administrator Confirmed)</option>
                           <option value="PENDING_VERIFICATION">PENDING_VERIFICATION (Needs Admin Check)</option>
+                          <option value="VERIFIED_PRESET" disabled>VERIFIED_PRESET (Legacy — approval required)</option>
                           <option value="PENDING_UPLOAD">PENDING_UPLOAD (No Photographs)</option>
                         </select>
                         {formData.images && formData.images.length > 0 && formData.specifications?.imageVerificationStatus !== 'VERIFIED' && (
@@ -1676,7 +1691,7 @@ export default function GemstoneAdminView() {
                   className="px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-semibold text-xs transition flex items-center gap-2 disabled:opacity-50"
                 >
                   <Save className="w-4 h-4" />
-                  <span>{saving ? 'Saving...' : 'Save & Publish Live'}</span>
+                  <span>{saving ? 'Saving...' : 'Save Product'}</span>
                 </button>
               </div>
             </form>

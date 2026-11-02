@@ -1696,9 +1696,14 @@ export default function GemstoneAdminView() {
                         </span>
                       </label>
                     </div>
-                    {(!formData.certification?.natural && !formData.certification?.certified) && (
+                    {formData.certification?.naturalStatus === 'UNKNOWN' && (
                       <p className="text-[11px] text-amber-700 bg-amber-50/60 p-2 rounded-lg border border-amber-200/60 font-sans">
-                        Note: Unchecked indicates natural status is <strong>Pending Gemological Verification</strong>. It does not designate this stone as synthetic or lab-grown.
+                        Status is <strong>Pending Gemological Verification</strong>. Unknown does not mean synthetic or lab-grown.
+                      </p>
+                    )}
+                    {formData.certification?.naturalStatus === 'SYNTHETIC_CONFIRMED' && (
+                      <p className="text-[11px] text-blue-800 bg-blue-50 p-2 rounded-lg border border-blue-200 font-sans">
+                        Synthetic / lab-grown material is explicitly recorded. Do not use natural-origin wording in the product title or description.
                       </p>
                     )}
                     <div className="pt-2">

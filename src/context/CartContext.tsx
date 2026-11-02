@@ -65,7 +65,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const addToCart = (product: GemstoneProduct, variant?: GemstoneVariant | null, quantity = 1): boolean => {
     // Inventory, publication, and explicit price-approval safeguards.
     const isOut = variant ? !variant.inStock || variant.stockQuantity <= 0 : !product.inStock || product.stockQuantity <= 0;
-    const priceVerified = product.specifications?.pricingVerificationStatus === 'VERIFIED';
+    const priceVerified = product.specifications?.pricingVerificationStatus === 'VERIFIED'
+      && (!variant || variant.priceVerificationStatus === 'VERIFIED');
     if (!product.isPublished || !priceVerified || isOut || quantity <= 0) {
       return false;
     }

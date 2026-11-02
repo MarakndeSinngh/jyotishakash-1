@@ -21,6 +21,14 @@ export default function CartDrawer({ onNavigate }: CartDrawerProps) {
   const handleWhatsAppCheckout = async () => {
     if (items.length === 0 || isSubmittingOrder) return;
     setIsSubmittingOrder(true);
+    // Open a blank tab synchronously inside the click handler; some browsers block
+    // window.open after asynchronous Supabase validation.
+    const checkoutWindow = window.open('about:blank', '_blank');
+    if (!checkoutWindow) {
+      setIsSubmittingOrder(false);
+      window.alert('Please allow pop-ups for this site to continue to the WhatsApp order enquiry.');
+      return;
+    }
 
     try {
       // Cart items are localStorage snapshots. Revalidate each public product and variant
@@ -88,8 +96,9 @@ export default function CartDrawer({ onNavigate }: CartDrawerProps) {
       message += `\nPlease confirm final availability, taxes, shipping terms, and any optional energisation service before payment. This message is an enquiry, not a confirmed or paid order.`;
 
       const whatsappUrl = `https://wa.me/919953713176?text=${encodeURIComponent(message)}`;
-      window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+      checkoutWindow.location.href = whatsappUrl;
     } catch (err: any) {
+      checkoutWindow.close();
       window.alert(err?.message || 'Could not verify current product and inventory details. Please retry or contact LEO Family.');
     } finally {
       setIsSubmittingOrder(false);

@@ -104,19 +104,20 @@ function AppContent() {
 
   const normalizedPath = normalizePathname(currentPath);
 
-  // Keep the retired course URL safe for old links while redirecting visitors to the programs catalogue.
-  useEffect(() => {
-    if (normalizedPath === '/courses/advanced-numerology-bundle') {
-      navigate('/programs');
-    }
-  }, [normalizedPath, navigate]);
-
+  // Declare navigate before effects that invoke it to avoid a temporal-dead-zone runtime error.
   const navigate = useCallback((path: string) => {
     window.history.pushState({}, '', path);
     setCurrentPath(normalizePathname(path));
     window.dispatchEvent(new PopStateEvent('popstate'));
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
+
+  // Keep the retired course URL safe for old links while redirecting visitors to the programs catalogue.
+  useEffect(() => {
+    if (normalizedPath === '/courses/advanced-numerology-bundle') {
+      navigate('/programs');
+    }
+  }, [normalizedPath, navigate]);
 
   useEffect(() => {
     const handlePopState = () => {

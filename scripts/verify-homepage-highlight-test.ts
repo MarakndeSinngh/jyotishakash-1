@@ -82,13 +82,17 @@ function runTests() {
     'Existing Numerology program IDs remain in the category mapping'
   );
 
-  // 6. Old in-app course links redirect to the Programs page.
+  // 6. Old in-app course links redirect safely; navigate must be declared before the effect.
+  const navigateDeclarationIndex = app.indexOf('const navigate = useCallback');
+  const redirectEffectIndex = app.indexOf('// Keep the retired course URL safe');
   assert(
     app.includes("if (normalizedPath === '/courses/advanced-numerology-bundle')") &&
     app.includes("navigate('/programs')") &&
-    !app.includes('AdvancedNumerologyLandingPage'),
-    'Legacy course route no longer renders the retired landing page',
-    'Client-side visits to the old course URL are redirected to /programs'
+    !app.includes('AdvancedNumerologyLandingPage') &&
+    navigateDeclarationIndex >= 0 &&
+    redirectEffectIndex > navigateDeclarationIndex,
+    'Legacy course route redirects without a temporal-dead-zone error',
+    'navigate is initialized before the redirect useEffect invokes it'
   );
 
   // 7. Direct HTTP requests receive a temporary server-side redirect.

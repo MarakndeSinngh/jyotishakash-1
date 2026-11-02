@@ -98,6 +98,7 @@ export default function GemstoneAdminView() {
       certified: false,
       labName: '',
       natural: false,
+      naturalStatus: 'UNKNOWN',
       treatment: 'Pending Lab Verification'
     },
     variants: []
@@ -197,8 +198,8 @@ export default function GemstoneAdminView() {
         inStock: false,
         stockQuantity: 0,
         certification: product.certification
-          ? { ...product.certification, certified: false, natural: false, labName: '', treatment: 'Pending Verification' }
-          : { certified: false, labName: '', natural: false, treatment: 'Pending Verification' },
+          ? { ...product.certification, certified: false, natural: false, naturalStatus: 'UNKNOWN', labName: '', treatment: 'Pending Verification' }
+          : { certified: false, labName: '', natural: false, naturalStatus: 'UNKNOWN', treatment: 'Pending Verification' },
         specifications: {
           ...(product.specifications || {}),
           pricingVerificationStatus: 'UNVERIFIED_DRAFT_PRICE',

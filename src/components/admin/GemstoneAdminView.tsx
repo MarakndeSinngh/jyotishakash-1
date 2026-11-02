@@ -1137,6 +1137,17 @@ export default function GemstoneAdminView() {
                           <button
                             type="button"
                             onClick={() => {
+                              const basePrice = Number(formData.price);
+                              const hasCommercialPrice = Number.isFinite(basePrice) && basePrice > 0
+                                && !(basePrice === 1 && String(formData.specifications?.priceNote || '').includes('NO_COMMERCIAL_PRICE_SET'));
+                              const hasUnpricedVariant = (formData.variants || []).some(variant =>
+                                !Number.isFinite(Number(variant.price)) || Number(variant.price) <= 0
+                                || (Number(variant.price) === 1 && variant.priceVerificationStatus !== 'VERIFIED')
+                              );
+                              if (!hasCommercialPrice || hasUnpricedVariant) {
+                                showNotification('Enter actual LEO-approved prices for the base product and every variant before approving.', 'error');
+                                return;
+                              }
                               const confirmed = window.confirm('Have you checked the base selling price and every variant price against LEO Family purchase/sales records? Only approve if all displayed prices are correct.');
                               if (!confirmed) return;
                               setFormData(prev => ({
@@ -1169,7 +1180,9 @@ export default function GemstoneAdminView() {
                       <input
                         type="number"
                         min="1"
-                        value={formData.price !== undefined && formData.price !== null && formData.price !== 0 ? formData.price : ''}
+                        value={formData.specifications?.priceNote?.includes('NO_COMMERCIAL_PRICE_SET') && Number(formData.price) === 1
+                          ? ''
+                          : formData.price !== undefined && formData.price !== null && formData.price !== 0 ? formData.price : ''}
                         onChange={e => {
                           const val = e.target.value === '' ? undefined : Number(e.target.value);
                           setFormData(prev => ({ ...prev, price: val }));
@@ -1558,8 +1571,8 @@ export default function GemstoneAdminView() {
                               <label className="text-[10px] text-stone-500 block">Price (₹)</label>
                               <input
                                 type="number"
-                                value={v.price}
-                                onChange={e => handleUpdateVariant(i, { price: Number(e.target.value) })}
+                                value={Number(v.price) === 1 && v.priceVerificationStatus !== 'VERIFIED' ? '' : v.price}
+                                onChange={e => handleUpdateVariant(i, { price: e.target.value === '' ? 1 : Number(e.target.value) })}
                                 className="w-full px-2 py-1 text-xs bg-white rounded border border-stone-200 font-bold"
                               />
                             </div>

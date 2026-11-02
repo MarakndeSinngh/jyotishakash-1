@@ -133,8 +133,18 @@ export function getProductReviewIssues(product: Partial<GemstoneProduct>): Revie
       issues.push({ type: 'identity', message: 'Product title contains ambiguous dual identity' });
     }
   }
-  if (nameLower.includes('natural') && product.certification?.natural !== true) {
-    issues.push({ type: 'identity', message: 'A natural-origin claim requires confirmation from the physical stone or supporting documentation' });
+  const naturalStatus = product.certification?.naturalStatus || 'UNKNOWN';
+  if (naturalStatus === 'UNKNOWN') {
+    issues.push({ type: 'identity', message: 'Natural, treated, or synthetic/lab-grown status must be explicitly recorded before publication' });
+  }
+  if (naturalStatus === 'NATURAL_CONFIRMED' && product.certification?.natural !== true) {
+    issues.push({ type: 'identity', message: 'Natural status is marked confirmed but the natural-origin flag is not enabled' });
+  }
+  if (naturalStatus === 'SYNTHETIC_CONFIRMED' && product.certification?.natural !== false) {
+    issues.push({ type: 'identity', message: 'Synthetic/lab-grown status conflicts with the natural-origin flag' });
+  }
+  if (nameLower.includes('natural') && naturalStatus !== 'NATURAL_CONFIRMED') {
+    issues.push({ type: 'identity', message: 'A product described as natural requires explicit natural-origin confirmation' });
   }
 
   // 3. Image requirement: Photograph must exist AND be explicitly verified by administrator

@@ -1,0 +1,53 @@
+name: Gemstone Catalogue Quality Gates
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "src/data/gemstoneCatalogueData.ts"
+      - "src/models/gemstoneProduct.ts"
+      - "src/repositories/gemstoneProductRepository.ts"
+      - "src/services/gemstoneProductService.ts"
+      - "src/components/admin/GemstoneAdminView.tsx"
+      - "src/components/sections/GemstonesPage.tsx"
+      - "src/components/sections/GemstoneDetailPage.tsx"
+      - "src/components/cart/CartDrawer.tsx"
+      - "src/context/CartContext.tsx"
+      - "src/config/seo.ts"
+      - "server.ts"
+      - "scripts/**"
+      - "supabase/seed/**"
+      - "package.json"
+      - "package-lock.json"
+      - "tsconfig.json"
+      - "vite.config.ts"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: TypeScript, catalogue safety and production build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: TypeScript check
+        run: npm run lint
+
+      - name: Gemstone catalogue safety checks
+        run: npm run test:gemstones
+
+      - name: Production build
+        run: npm run build

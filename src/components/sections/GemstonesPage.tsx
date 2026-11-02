@@ -26,7 +26,6 @@ import { useCart } from '../../context/CartContext';
 import SmartImage from './SmartImage';
 import { resolveImagePath } from '../../utils/imageHelper';
 import GemstoneDetailPage from './GemstoneDetailPage';
-import CartDrawer from '../cart/CartDrawer';
 
 interface GemstonesPageProps {
   navigate?: (path: string) => void;
@@ -44,7 +43,19 @@ const CATEGORY_TABS = [
   { id: 'Blue Sapphire', label: 'Blue Sapphire', hindi: 'Neelam (नीलम)' },
   { id: 'Hessonite', label: 'Hessonite', hindi: 'Gomed (गोमेद)' },
   { id: 'Cat’s Eye', label: 'Cat’s Eye', hindi: 'Lehsunia (लहसुनिया)' },
-  { id: 'Opal', label: 'Opal', hindi: 'Opal (ओपल)' }
+  { id: 'Opal', label: 'Opal', hindi: 'Opal (ओपल)' },
+  { id: 'Amethyst', label: 'Amethyst', hindi: 'Jamunia (जामुनिया)' },
+  { id: 'Moonstone', label: 'Moonstone', hindi: 'Chandrakant (चंद्रकांत)' },
+  { id: 'Labradorite', label: 'Labradorite', hindi: 'लैब्राडोराइट' },
+  { id: 'Garnet', label: 'Garnet', hindi: 'Raktamani (रक्तमणि)' },
+  { id: 'Carnelian', label: 'Carnelian', hindi: 'Aqeeq (अकीक)' },
+  { id: 'Turquoise', label: 'Turquoise', hindi: 'Firoza (फ़िरोज़ा)' },
+  { id: 'Citrine', label: 'Citrine', hindi: 'Sunela (सुनेला)' },
+  { id: 'Peridot', label: 'Peridot', hindi: 'पेरिडॉट' },
+  { id: 'Lapis Lazuli', label: 'Lapis Lazuli', hindi: 'Lajward (लाजवर्द)' },
+  { id: 'Tourmaline', label: 'Tourmaline', hindi: 'टूरमलीन' },
+  { id: 'Chalcedony', label: 'Chalcedony', hindi: 'कैल्सेडोनी' },
+  { id: 'Amber', label: 'Amber', hindi: 'Kahruba (कहरूबा)' }
 ];
 
 export default function GemstonesPage({ navigate: externalNavigate, currentPath = '/gemstones' }: GemstonesPageProps) {
@@ -148,17 +159,15 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
         }
       }
 
-      // Availability
-      if (filters.availability === 'in_stock' && (!item.inStock || item.stockQuantity <= 0)) {
-        return false;
-      }
-      if (filters.availability === 'out_of_stock' && (item.inStock && item.stockQuantity > 0)) {
-        return false;
-      }
+      // Availability requires stock and an administrator-approved price.
+      const hasVerifiedPrice = item.specifications?.pricingVerificationStatus === 'VERIFIED';
+      const availableForOrder = item.inStock && item.stockQuantity > 0 && hasVerifiedPrice;
+      if (filters.availability === 'in_stock' && !availableForOrder) return false;
+      if (filters.availability === 'out_of_stock' && availableForOrder) return false;
 
-      // Price Range
-      if (item.price < filters.minPrice || item.price > filters.maxPrice) {
-        return false;
+      // Never apply price filters to numeric draft placeholders.
+      if (filters.minPrice > 0 || filters.maxPrice < 50000) {
+        if (!hasVerifiedPrice || item.price < filters.minPrice || item.price > filters.maxPrice) return false;
       }
 
       // Certification
@@ -188,6 +197,14 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
       return a.displayOrder - b.displayOrder;
     });
   }, [products, filters, sortOption]);
+
+  const availableOrigins = useMemo(
+    () => Array.from(new Set(products
+      .map(p => p.specifications?.origin)
+      .filter((value): value is string => Boolean(value) && value !== 'Pending Verification')
+    )).sort(),
+    [products]
+  );
 
   const activeFilterCount = useMemo(() => {
     let count = 0;
@@ -219,7 +236,6 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
     return (
       <div className="relative z-10">
         <GemstoneDetailPage slug={detailSlug} navigate={navigate} />
-        <CartDrawer onNavigate={navigate} />
       </div>
     );
   }
@@ -243,7 +259,7 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
         </h1>
 
         <p className="text-stone-300 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed mb-8">
-          Explore our gemstone collection and find the right stone for your spiritual journey. Every stone is certified natural, ethically sourced, and energized with authentic Vedic Pran Pratishtha.
+          Explore Vedic gemstones and popular gemstone varieties. Product photos, origin, laboratory documents, prices, and availability are shown only after individual product review.
         </p>
 
         <div className="flex flex-wrap items-center justify-center gap-4">
@@ -497,6 +513,16 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
                 />
                 <span>In Stock Only</span>
               </label>
+              <label className="flex items-center gap-2 cursor-pointer hover:text-stone-200">
+                <input
+                  type="radio"
+                  name="availability"
+                  checked={filters.availability === 'out_of_stock'}
+                  onChange={() => setFilters(p => ({ ...p, availability: 'out_of_stock' }))}
+                  className="accent-amber-500"
+                />
+                <span>Currently Unavailable</span>
+              </label>
             </div>
           </div>
 
@@ -551,7 +577,18 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
             </select>
           </div>
 
-          {/* Filter 4: Certification */}
+          {/* Filter 4: Origin */}
+          <div className="space-y-2 pt-3 border-t border-stone-800/80">
+            <label className="text-xs font-bold text-stone-300 uppercase tracking-wider block">Origin</label>
+            <select value={filters.origin} onChange={e => setFilters(p => ({ ...p, origin: e.target.value }))}
+              aria-label="Filter by verified origin"
+              className="w-full px-3 py-2 text-xs rounded-xl bg-stone-900 border border-stone-800 text-stone-300">
+              <option value="all">All Origins</option>
+              {availableOrigins.map(origin => <option key={origin} value={origin}>{origin}</option>)}
+            </select>
+          </div>
+
+          {/* Filter 5: Certification */}
           <div className="space-y-2 pt-3 border-t border-stone-800/80">
             <label className="flex items-center gap-2 cursor-pointer text-xs text-stone-300 hover:text-white">
               <input
@@ -593,7 +630,7 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
                 Sacred Gemstone Collection In Curation
               </h4>
               <p className="text-xs text-stone-500 max-w-md mx-auto">
-                All gemstone products are currently undergoing rigorous Vedic lab verification and authenticity appraisal before public release.
+                Our catalogue is being prepared. Products appear here after their individual details, photos, prices, and availability have been reviewed.
               </p>
             </div>
           ) : filteredProducts.length === 0 ? (
@@ -832,51 +869,24 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="p-5 rounded-2xl bg-stone-950/60 border border-stone-800/80 space-y-2.5">
-            <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
-              <Award className="w-5 h-5" />
-            </div>
-            <h4 className="font-cinzel font-bold text-sm text-stone-200">
-              100% Natural & Untreated
-            </h4>
-            <p className="text-xs text-stone-400 leading-relaxed">
-              Every stone is earth-mined with zero toxic glass-filling, artificial dyes, or harmful radioactive irradiations.
-            </p>
+            <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400"><Award className="w-5 h-5" /></div>
+            <h4 className="font-cinzel font-bold text-sm text-stone-200">Product Identity Review</h4>
+            <p className="text-xs text-stone-400 leading-relaxed">Material and natural-origin details appear only after the individual product record has been reviewed.</p>
           </div>
-
           <div className="p-5 rounded-2xl bg-stone-950/60 border border-stone-800/80 space-y-2.5">
-            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
-              <ShieldCheck className="w-5 h-5" />
-            </div>
-            <h4 className="font-cinzel font-bold text-sm text-stone-200">
-              Government Lab Tested
-            </h4>
-            <p className="text-xs text-stone-400 leading-relaxed">
-              Accompanied by an authentic Gemological Laboratory Certificate confirming chemical composition, refractive index, and origin.
-            </p>
+            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400"><ShieldCheck className="w-5 h-5" /></div>
+            <h4 className="font-cinzel font-bold text-sm text-stone-200">Certificate Transparency</h4>
+            <p className="text-xs text-stone-400 leading-relaxed">Laboratory and certificate details appear only when supporting documentation has been checked and recorded.</p>
           </div>
-
           <div className="p-5 rounded-2xl bg-stone-950/60 border border-stone-800/80 space-y-2.5">
-            <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
-              <Sparkles className="w-5 h-5" />
-            </div>
-            <h4 className="font-cinzel font-bold text-sm text-stone-200">
-              Pran Pratishtha Ritual
-            </h4>
-            <p className="text-xs text-stone-400 leading-relaxed">
-              Consecrated through ancient Vedic rituals and planetary Beej Mantras prior to dispatch to activate latent divine energies.
-            </p>
+            <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400"><Sparkles className="w-5 h-5" /></div>
+            <h4 className="font-cinzel font-bold text-sm text-stone-200">Vedic Guidance</h4>
+            <p className="text-xs text-stone-400 leading-relaxed">Personalised suitability and any energisation service are discussed with our team before an order is confirmed.</p>
           </div>
-
           <div className="p-5 rounded-2xl bg-stone-950/60 border border-stone-800/80 space-y-2.5">
-            <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
-              <CheckCircle2 className="w-5 h-5" />
-            </div>
-            <h4 className="font-cinzel font-bold text-sm text-stone-200">
-              Master Consultation
-            </h4>
-            <p className="text-xs text-stone-400 leading-relaxed">
-              Personally curated under the supervision of Founder Raajeev Singh Chauhann to match your personal Kundali frequencies.
-            </p>
+            <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400"><CheckCircle2 className="w-5 h-5" /></div>
+            <h4 className="font-cinzel font-bold text-sm text-stone-200">Order Confirmation</h4>
+            <p className="text-xs text-stone-400 leading-relaxed">Final price, stock, delivery terms, and optional services are confirmed with the customer before payment.</p>
           </div>
         </div>
       </section>
@@ -934,16 +944,26 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
                     <span>All</span>
                   </label>
                   <label className="flex items-center gap-2">
-                    <input
-                      type="radio"
-                      name="m_avail"
-                      checked={filters.availability === 'in_stock'}
-                      onChange={() => setFilters(p => ({ ...p, availability: 'in_stock' }))}
-                      className="accent-amber-500"
-                    />
+                    <input type="radio" name="m_avail" checked={filters.availability === 'in_stock'}
+                      onChange={() => setFilters(p => ({ ...p, availability: 'in_stock' }))} className="accent-amber-500" />
                     <span>In Stock Only</span>
                   </label>
+                  <label className="flex items-center gap-2">
+                    <input type="radio" name="m_avail" checked={filters.availability === 'out_of_stock'}
+                      onChange={() => setFilters(p => ({ ...p, availability: 'out_of_stock' }))} className="accent-amber-500" />
+                    <span>Currently Unavailable</span>
+                  </label>
                 </div>
+              </div>
+
+              {/* Origin */}
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-stone-300 uppercase">Origin</label>
+                <select value={filters.origin} onChange={e => setFilters(p => ({ ...p, origin: e.target.value }))}
+                  className="w-full px-3 py-2 rounded-xl bg-stone-900 border border-stone-800 text-stone-300 text-xs">
+                  <option value="all">All Origins</option>
+                  {availableOrigins.map(origin => <option key={origin} value={origin}>{origin}</option>)}
+                </select>
               </div>
 
               {/* Lab Certified */}
@@ -1000,7 +1020,6 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
       </div>
 
       {/* Cart Slide-out Drawer Component */}
-      <CartDrawer onNavigate={navigate} />
     </div>
   );
 }

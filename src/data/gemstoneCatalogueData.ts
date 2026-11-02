@@ -16,17 +16,23 @@ export const INITIAL_GEMSTONES_CATALOGUE: GemstoneProduct[] = [
     price: 15500,
     compareAtPrice: 18500,
     sku: 'LEO-RUB-01',
-    stockQuantity: 7,
-    inStock: true,
-    isPublished: true,
-    isFeatured: true,
+    stockQuantity: 0,
+    inStock: false,
+    isPublished: false,
+    isFeatured: false,
     certification: {
-      certified: true,
-      labName: 'Govt. Approved Gemological Testing Lab',
-      natural: true,
-      treatment: '100% Natural, Unheated & Untreated'
+      certified: false,
+      labName: '',
+      natural: false,
+      naturalStatus: 'UNKNOWN',
+      treatment: 'Pending gemological verification',
+      verificationStatus: 'PENDING_VERIFICATION'
     },
     specifications: {
+      pricingVerificationStatus: 'UNVERIFIED_DRAFT_PRICE',
+      materialIdentityStatus: 'PENDING_VERIFICATION',
+      imageVerificationStatus: 'PENDING_VERIFICATION',
+      adminReviewNotice: 'STARTER DRAFT: Existing descriptions, origin, weight, and price values are reference-only. Verify the actual physical stone, exact variety, treatment, origin, current price, authentic image, certificate, and stock before publication.',
       caratWeight: '4.25 Ratti / 3.89 Carat',
       origin: 'Old Burma (Myanmar)',
       shape: 'Oval Mixed Cut',
@@ -48,8 +54,9 @@ export const INITIAL_GEMSTONES_CATALOGUE: GemstoneProduct[] = [
         price: 12500,
         compareAtPrice: 14500,
         sku: 'LEO-RUB-325',
-        inStock: true,
-        stockQuantity: 3
+        inStock: false,
+        stockQuantity: 0,
+        priceVerificationStatus: 'UNVERIFIED_DRAFT_PRICE',
       },
       {
         id: 'var-rub-425',
@@ -61,8 +68,9 @@ export const INITIAL_GEMSTONES_CATALOGUE: GemstoneProduct[] = [
         price: 15500,
         compareAtPrice: 18500,
         sku: 'LEO-RUB-425',
-        inStock: true,
-        stockQuantity: 2
+        inStock: false,
+        stockQuantity: 0,
+        priceVerificationStatus: 'UNVERIFIED_DRAFT_PRICE',
       },
       {
         id: 'var-rub-550',
@@ -74,8 +82,9 @@ export const INITIAL_GEMSTONES_CATALOGUE: GemstoneProduct[] = [
         price: 19800,
         compareAtPrice: 23000,
         sku: 'LEO-RUB-550',
-        inStock: true,
-        stockQuantity: 2
+        inStock: false,
+        stockQuantity: 0,
+        priceVerificationStatus: 'UNVERIFIED_DRAFT_PRICE',
       }
     ],
     displayOrder: 1
@@ -95,17 +104,23 @@ export const INITIAL_GEMSTONES_CATALOGUE: GemstoneProduct[] = [
     price: 8500,
     compareAtPrice: 10500,
     sku: 'LEO-PRL-01',
-    stockQuantity: 12,
-    inStock: true,
-    isPublished: true,
-    isFeatured: true,
+    stockQuantity: 0,
+    inStock: false,
+    isPublished: false,
+    isFeatured: false,
     certification: {
-      certified: true,
-      labName: 'Govt. Approved Gemological Testing Lab',
-      natural: true,
-      treatment: '100% Natural South Sea / Basra Orient'
+      certified: false,
+      labName: '',
+      natural: false,
+      naturalStatus: 'UNKNOWN',
+      treatment: 'Pending gemological verification',
+      verificationStatus: 'PENDING_VERIFICATION'
     },
     specifications: {
+      pricingVerificationStatus: 'UNVERIFIED_DRAFT_PRICE',
+      materialIdentityStatus: 'PENDING_VERIFICATION',
+      imageVerificationStatus: 'PENDING_VERIFICATION',
+      adminReviewNotice: 'STARTER DRAFT: Existing descriptions, origin, weight, and price values are reference-only. Verify the actual physical stone, exact variety, treatment, origin, current price, authentic image, certificate, and stock before publication.',
       caratWeight: '5.50 Ratti / 5.03 Carat',
       origin: 'South Sea / Basra Grade',
       shape: 'Round Spherical',
@@ -127,8 +142,9 @@ export const INITIAL_GEMSTONES_CATALOGUE: GemstoneProduct[] = [
         price: 7200,
         compareAtPrice: 8900,
         sku: 'LEO-PRL-450',
-        inStock: true,
-        stockQuantity: 6
+        inStock: false,
+        stockQuantity: 0,
+        priceVerificationStatus: 'UNVERIFIED_DRAFT_PRICE',
       },
       {
         id: 'var-prl-550',
@@ -140,8 +156,9 @@ export const INITIAL_GEMSTONES_CATALOGUE: GemstoneProduct[] = [
         price: 8500,
         compareAtPrice: 10500,
         sku: 'LEO-PRL-550',
-        inStock: true,
-        stockQuantity: 4
+        inStock: false,
+        stockQuantity: 0,
+        priceVerificationStatus: 'UNVERIFIED_DRAFT_PRICE',
       },
       {
         id: 'var-prl-725',
@@ -153,8 +170,9 @@ export const INITIAL_GEMSTONES_CATALOGUE: GemstoneProduct[] = [
         price: 11900,
         compareAtPrice: 14000,
         sku: 'LEO-PRL-725',
-        inStock: true,
-        stockQuantity: 2
+        inStock: false,
+        stockQuantity: 0,
+        priceVerificationStatus: 'UNVERIFIED_DRAFT_PRICE',
       }
     ],
     displayOrder: 2
@@ -174,17 +192,23 @@ export const INITIAL_GEMSTONES_CATALOGUE: GemstoneProduct[] = [
     price: 9800,
     compareAtPrice: 12000,
     sku: 'LEO-CRL-01',
-    stockQuantity: 9,
-    inStock: true,
-    isPublished: true,
+    stockQuantity: 0,
+    inStock: false,
+    isPublished: false,
     isFeatured: false,
     certification: {
-      certified: true,
-      labName: 'Govt. Approved Gemological Testing Lab',
-      natural: true,
-      treatment: '100% Natural Organic Italian Coral'
+      certified: false,
+      labName: '',
+      natural: false,
+      naturalStatus: 'UNKNOWN',
+      treatment: 'Pending gemological verification',
+      verificationStatus: 'PENDING_VERIFICATION'
     },
     specifications: {
+      pricingVerificationStatus: 'UNVERIFIED_DRAFT_PRICE',
+      materialIdentityStatus: 'PENDING_VERIFICATION',
+      imageVerificationStatus: 'PENDING_VERIFICATION',
+      adminReviewNotice: 'STARTER DRAFT: Existing descriptions, origin, weight, and price values are reference-only. Verify the actual physical stone, exact variety, treatment, origin, current price, authentic image, certificate, and stock before publication.',
       caratWeight: '6.25 Ratti / 5.72 Carat',
       origin: 'Mediterranean (Italian)',
       shape: 'Capsule / Triangular Cabochon',
@@ -206,8 +230,9 @@ export const INITIAL_GEMSTONES_CATALOGUE: GemstoneProduct[] = [
         price: 8500,
         compareAtPrice: 10500,
         sku: 'LEO-CRL-525',
-        inStock: true,
-        stockQuantity: 4
+        inStock: false,
+        stockQuantity: 0,
+        priceVerificationStatus: 'UNVERIFIED_DRAFT_PRICE',
       },
       {
         id: 'var-crl-625',
@@ -219,8 +244,9 @@ export const INITIAL_GEMSTONES_CATALOGUE: GemstoneProduct[] = [
         price: 9800,
         compareAtPrice: 12000,
         sku: 'LEO-CRL-625',
-        inStock: true,
-        stockQuantity: 3
+        inStock: false,
+        stockQuantity: 0,
+        priceVerificationStatus: 'UNVERIFIED_DRAFT_PRICE',
       },
       {
         id: 'var-crl-750',
@@ -232,8 +258,9 @@ export const INITIAL_GEMSTONES_CATALOGUE: GemstoneProduct[] = [
         price: 12500,
         compareAtPrice: 15000,
         sku: 'LEO-CRL-750',
-        inStock: true,
-        stockQuantity: 2
+        inStock: false,
+        stockQuantity: 0,
+        priceVerificationStatus: 'UNVERIFIED_DRAFT_PRICE',
       }
     ],
     displayOrder: 3
@@ -253,17 +280,23 @@ export const INITIAL_GEMSTONES_CATALOGUE: GemstoneProduct[] = [
     price: 16800,
     compareAtPrice: 20500,
     sku: 'LEO-EMR-01',
-    stockQuantity: 6,
-    inStock: true,
-    isPublished: true,
-    isFeatured: true,
+    stockQuantity: 0,
+    inStock: false,
+    isPublished: false,
+    isFeatured: false,
     certification: {
-      certified: true,
-      labName: 'Govt. Approved Gemological Testing Lab',
-      natural: true,
-      treatment: '100% Natural, Traditional Cedar Wood Oil only'
+      certified: false,
+      labName: '',
+      natural: false,
+      naturalStatus: 'UNKNOWN',
+      treatment: 'Pending gemological verification',
+      verificationStatus: 'PENDING_VERIFICATION'
     },
     specifications: {
+      pricingVerificationStatus: 'UNVERIFIED_DRAFT_PRICE',
+      materialIdentityStatus: 'PENDING_VERIFICATION',
+      imageVerificationStatus: 'PENDING_VERIFICATION',
+      adminReviewNotice: 'STARTER DRAFT: Existing descriptions, origin, weight, and price values are reference-only. Verify the actual physical stone, exact variety, treatment, origin, current price, authentic image, certificate, and stock before publication.',
       caratWeight: '4.50 Ratti / 4.12 Carat',
       origin: 'Zambia (Kagem Mine)',
       shape: 'Octagonal Emerald Cut',
@@ -285,8 +318,9 @@ export const INITIAL_GEMSTONES_CATALOGUE: GemstoneProduct[] = [
         price: 13500,
         compareAtPrice: 16500,
         sku: 'LEO-EMR-350',
-        inStock: true,
-        stockQuantity: 3
+        inStock: false,
+        stockQuantity: 0,
+        priceVerificationStatus: 'UNVERIFIED_DRAFT_PRICE',
       },
       {
         id: 'var-emr-450',
@@ -298,8 +332,9 @@ export const INITIAL_GEMSTONES_CATALOGUE: GemstoneProduct[] = [
         price: 16800,
         compareAtPrice: 20500,
         sku: 'LEO-EMR-450',
-        inStock: true,
-        stockQuantity: 2
+        inStock: false,
+        stockQuantity: 0,
+        priceVerificationStatus: 'UNVERIFIED_DRAFT_PRICE',
       },
       {
         id: 'var-emr-575',
@@ -311,8 +346,9 @@ export const INITIAL_GEMSTONES_CATALOGUE: GemstoneProduct[] = [
         price: 24500,
         compareAtPrice: 29000,
         sku: 'LEO-EMR-575',
-        inStock: true,
-        stockQuantity: 1
+        inStock: false,
+        stockQuantity: 0,
+        priceVerificationStatus: 'UNVERIFIED_DRAFT_PRICE',
       }
     ],
     displayOrder: 4
@@ -332,17 +368,23 @@ export const INITIAL_GEMSTONES_CATALOGUE: GemstoneProduct[] = [
     price: 21000,
     compareAtPrice: 25000,
     sku: 'LEO-PUK-01',
-    stockQuantity: 8,
-    inStock: true,
-    isPublished: true,
-    isFeatured: true,
+    stockQuantity: 0,
+    inStock: false,
+    isPublished: false,
+    isFeatured: false,
     certification: {
-      certified: true,
-      labName: 'Govt. Approved Gemological Testing Lab',
-      natural: true,
-      treatment: '100% Natural, Completely Unheated'
+      certified: false,
+      labName: '',
+      natural: false,
+      naturalStatus: 'UNKNOWN',
+      treatment: 'Pending gemological verification',
+      verificationStatus: 'PENDING_VERIFICATION'
     },
     specifications: {
+      pricingVerificationStatus: 'UNVERIFIED_DRAFT_PRICE',
+      materialIdentityStatus: 'PENDING_VERIFICATION',
+      imageVerificationStatus: 'PENDING_VERIFICATION',
+      adminReviewNotice: 'STARTER DRAFT: Existing descriptions, origin, weight, and price values are reference-only. Verify the actual physical stone, exact variety, treatment, origin, current price, authentic image, certificate, and stock before publication.',
       caratWeight: '5.25 Ratti / 4.81 Carat',
       origin: 'Ceylon (Sri Lanka - Ratnapura)',
       shape: 'Cushion Mixed Cut',
@@ -364,8 +406,9 @@ export const INITIAL_GEMSTONES_CATALOGUE: GemstoneProduct[] = [
         price: 16500,
         compareAtPrice: 19500,
         sku: 'LEO-PUK-375',
-        inStock: true,
-        stockQuantity: 3
+        inStock: false,
+        stockQuantity: 0,
+        priceVerificationStatus: 'UNVERIFIED_DRAFT_PRICE',
       },
       {
         id: 'var-puk-525',
@@ -377,8 +420,9 @@ export const INITIAL_GEMSTONES_CATALOGUE: GemstoneProduct[] = [
         price: 21000,
         compareAtPrice: 25000,
         sku: 'LEO-PUK-525',
-        inStock: true,
-        stockQuantity: 3
+        inStock: false,
+        stockQuantity: 0,
+        priceVerificationStatus: 'UNVERIFIED_DRAFT_PRICE',
       },
       {
         id: 'var-puk-710',
@@ -390,8 +434,9 @@ export const INITIAL_GEMSTONES_CATALOGUE: GemstoneProduct[] = [
         price: 29500,
         compareAtPrice: 35000,
         sku: 'LEO-PUK-710',
-        inStock: true,
-        stockQuantity: 2
+        inStock: false,
+        stockQuantity: 0,
+        priceVerificationStatus: 'UNVERIFIED_DRAFT_PRICE',
       }
     ],
     displayOrder: 5
@@ -411,17 +456,23 @@ export const INITIAL_GEMSTONES_CATALOGUE: GemstoneProduct[] = [
     price: 32000,
     compareAtPrice: 38000,
     sku: 'LEO-HRA-01',
-    stockQuantity: 4,
-    inStock: true,
-    isPublished: true,
+    stockQuantity: 0,
+    inStock: false,
+    isPublished: false,
     isFeatured: false,
     certification: {
-      certified: true,
-      labName: 'Govt. Approved Gemological Testing Lab',
-      natural: true,
-      treatment: '100% Natural Earth-Mined Conflict-Free'
+      certified: false,
+      labName: '',
+      natural: false,
+      naturalStatus: 'UNKNOWN',
+      treatment: 'Pending gemological verification',
+      verificationStatus: 'PENDING_VERIFICATION'
     },
     specifications: {
+      pricingVerificationStatus: 'UNVERIFIED_DRAFT_PRICE',
+      materialIdentityStatus: 'PENDING_VERIFICATION',
+      imageVerificationStatus: 'PENDING_VERIFICATION',
+      adminReviewNotice: 'STARTER DRAFT: Existing descriptions, origin, weight, and price values are reference-only. Verify the actual physical stone, exact variety, treatment, origin, current price, authentic image, certificate, and stock before publication.',
       caratWeight: '1.15 Carat (VVS Clarity / E Color)',
       origin: 'Natural Earth Mined',
       shape: 'Round Brilliant Cut',
@@ -446,8 +497,9 @@ export const INITIAL_GEMSTONES_CATALOGUE: GemstoneProduct[] = [
         price: 24000,
         compareAtPrice: 28000,
         sku: 'LEO-HRA-075',
-        inStock: true,
-        stockQuantity: 2
+        inStock: false,
+        stockQuantity: 0,
+        priceVerificationStatus: 'UNVERIFIED_DRAFT_PRICE',
       },
       {
         id: 'var-hra-115',
@@ -459,8 +511,9 @@ export const INITIAL_GEMSTONES_CATALOGUE: GemstoneProduct[] = [
         price: 32000,
         compareAtPrice: 38000,
         sku: 'LEO-HRA-115',
-        inStock: true,
-        stockQuantity: 2
+        inStock: false,
+        stockQuantity: 0,
+        priceVerificationStatus: 'UNVERIFIED_DRAFT_PRICE',
       }
     ],
     displayOrder: 6
@@ -480,17 +533,23 @@ export const INITIAL_GEMSTONES_CATALOGUE: GemstoneProduct[] = [
     price: 24500,
     compareAtPrice: 29000,
     sku: 'LEO-NLM-01',
-    stockQuantity: 5,
-    inStock: true,
-    isPublished: true,
-    isFeatured: true,
+    stockQuantity: 0,
+    inStock: false,
+    isPublished: false,
+    isFeatured: false,
     certification: {
-      certified: true,
-      labName: 'Govt. Approved Gemological Testing Lab',
-      natural: true,
-      treatment: '100% Natural, Unheated Ceylon Sapphire'
+      certified: false,
+      labName: '',
+      natural: false,
+      naturalStatus: 'UNKNOWN',
+      treatment: 'Pending gemological verification',
+      verificationStatus: 'PENDING_VERIFICATION'
     },
     specifications: {
+      pricingVerificationStatus: 'UNVERIFIED_DRAFT_PRICE',
+      materialIdentityStatus: 'PENDING_VERIFICATION',
+      imageVerificationStatus: 'PENDING_VERIFICATION',
+      adminReviewNotice: 'STARTER DRAFT: Existing descriptions, origin, weight, and price values are reference-only. Verify the actual physical stone, exact variety, treatment, origin, current price, authentic image, certificate, and stock before publication.',
       caratWeight: '4.85 Ratti / 4.44 Carat',
       origin: 'Ceylon (Sri Lanka)',
       shape: 'Cushion Mixed Cut',
@@ -512,8 +571,9 @@ export const INITIAL_GEMSTONES_CATALOGUE: GemstoneProduct[] = [
         price: 18500,
         compareAtPrice: 22000,
         sku: 'LEO-NLM-350',
-        inStock: true,
-        stockQuantity: 2
+        inStock: false,
+        stockQuantity: 0,
+        priceVerificationStatus: 'UNVERIFIED_DRAFT_PRICE',
       },
       {
         id: 'var-nlm-485',
@@ -525,8 +585,9 @@ export const INITIAL_GEMSTONES_CATALOGUE: GemstoneProduct[] = [
         price: 24500,
         compareAtPrice: 29000,
         sku: 'LEO-NLM-485',
-        inStock: true,
-        stockQuantity: 2
+        inStock: false,
+        stockQuantity: 0,
+        priceVerificationStatus: 'UNVERIFIED_DRAFT_PRICE',
       },
       {
         id: 'var-nlm-650',
@@ -538,8 +599,9 @@ export const INITIAL_GEMSTONES_CATALOGUE: GemstoneProduct[] = [
         price: 34000,
         compareAtPrice: 40000,
         sku: 'LEO-NLM-650',
-        inStock: true,
-        stockQuantity: 1
+        inStock: false,
+        stockQuantity: 0,
+        priceVerificationStatus: 'UNVERIFIED_DRAFT_PRICE',
       }
     ],
     displayOrder: 7
@@ -559,17 +621,23 @@ export const INITIAL_GEMSTONES_CATALOGUE: GemstoneProduct[] = [
     price: 7800,
     compareAtPrice: 9500,
     sku: 'LEO-GOM-01',
-    stockQuantity: 10,
-    inStock: true,
-    isPublished: true,
+    stockQuantity: 0,
+    inStock: false,
+    isPublished: false,
     isFeatured: false,
     certification: {
-      certified: true,
-      labName: 'Govt. Approved Gemological Testing Lab',
-      natural: true,
-      treatment: '100% Natural, Unheated Hessonite'
+      certified: false,
+      labName: '',
+      natural: false,
+      naturalStatus: 'UNKNOWN',
+      treatment: 'Pending gemological verification',
+      verificationStatus: 'PENDING_VERIFICATION'
     },
     specifications: {
+      pricingVerificationStatus: 'UNVERIFIED_DRAFT_PRICE',
+      materialIdentityStatus: 'PENDING_VERIFICATION',
+      imageVerificationStatus: 'PENDING_VERIFICATION',
+      adminReviewNotice: 'STARTER DRAFT: Existing descriptions, origin, weight, and price values are reference-only. Verify the actual physical stone, exact variety, treatment, origin, current price, authentic image, certificate, and stock before publication.',
       caratWeight: '5.80 Ratti / 5.31 Carat',
       origin: 'Ceylon (Sri Lanka)',
       shape: 'Oval Mixed Cut',
@@ -591,8 +659,9 @@ export const INITIAL_GEMSTONES_CATALOGUE: GemstoneProduct[] = [
         price: 6500,
         compareAtPrice: 8000,
         sku: 'LEO-GOM-450',
-        inStock: true,
-        stockQuantity: 5
+        inStock: false,
+        stockQuantity: 0,
+        priceVerificationStatus: 'UNVERIFIED_DRAFT_PRICE',
       },
       {
         id: 'var-gom-580',
@@ -604,8 +673,9 @@ export const INITIAL_GEMSTONES_CATALOGUE: GemstoneProduct[] = [
         price: 7800,
         compareAtPrice: 9500,
         sku: 'LEO-GOM-580',
-        inStock: true,
-        stockQuantity: 3
+        inStock: false,
+        stockQuantity: 0,
+        priceVerificationStatus: 'UNVERIFIED_DRAFT_PRICE',
       },
       {
         id: 'var-gom-750',
@@ -617,8 +687,9 @@ export const INITIAL_GEMSTONES_CATALOGUE: GemstoneProduct[] = [
         price: 10500,
         compareAtPrice: 13000,
         sku: 'LEO-GOM-750',
-        inStock: true,
-        stockQuantity: 2
+        inStock: false,
+        stockQuantity: 0,
+        priceVerificationStatus: 'UNVERIFIED_DRAFT_PRICE',
       }
     ],
     displayOrder: 8
@@ -638,17 +709,23 @@ export const INITIAL_GEMSTONES_CATALOGUE: GemstoneProduct[] = [
     price: 11200,
     compareAtPrice: 13500,
     sku: 'LEO-CAT-01',
-    stockQuantity: 6,
-    inStock: true,
-    isPublished: true,
+    stockQuantity: 0,
+    inStock: false,
+    isPublished: false,
     isFeatured: false,
     certification: {
-      certified: true,
-      labName: 'Govt. Approved Gemological Testing Lab',
-      natural: true,
-      treatment: '100% Natural Chrysoberyl'
+      certified: false,
+      labName: '',
+      natural: false,
+      naturalStatus: 'UNKNOWN',
+      treatment: 'Pending gemological verification',
+      verificationStatus: 'PENDING_VERIFICATION'
     },
     specifications: {
+      pricingVerificationStatus: 'UNVERIFIED_DRAFT_PRICE',
+      materialIdentityStatus: 'PENDING_VERIFICATION',
+      imageVerificationStatus: 'PENDING_VERIFICATION',
+      adminReviewNotice: 'STARTER DRAFT: Existing descriptions, origin, weight, and price values are reference-only. Verify the actual physical stone, exact variety, treatment, origin, current price, authentic image, certificate, and stock before publication.',
       caratWeight: '4.75 Ratti / 4.35 Carat',
       origin: 'Orissa (India) / Ceylon',
       shape: 'Oval Cabochon with Sharp Chatoyancy',
@@ -670,8 +747,9 @@ export const INITIAL_GEMSTONES_CATALOGUE: GemstoneProduct[] = [
         price: 9200,
         compareAtPrice: 11000,
         sku: 'LEO-CAT-375',
-        inStock: true,
-        stockQuantity: 3
+        inStock: false,
+        stockQuantity: 0,
+        priceVerificationStatus: 'UNVERIFIED_DRAFT_PRICE',
       },
       {
         id: 'var-cat-475',
@@ -683,8 +761,9 @@ export const INITIAL_GEMSTONES_CATALOGUE: GemstoneProduct[] = [
         price: 11200,
         compareAtPrice: 13500,
         sku: 'LEO-CAT-475',
-        inStock: true,
-        stockQuantity: 2
+        inStock: false,
+        stockQuantity: 0,
+        priceVerificationStatus: 'UNVERIFIED_DRAFT_PRICE',
       },
       {
         id: 'var-cat-625',
@@ -696,8 +775,9 @@ export const INITIAL_GEMSTONES_CATALOGUE: GemstoneProduct[] = [
         price: 15800,
         compareAtPrice: 19000,
         sku: 'LEO-CAT-625',
-        inStock: true,
-        stockQuantity: 1
+        inStock: false,
+        stockQuantity: 0,
+        priceVerificationStatus: 'UNVERIFIED_DRAFT_PRICE',
       }
     ],
     displayOrder: 9
@@ -717,17 +797,23 @@ export const INITIAL_GEMSTONES_CATALOGUE: GemstoneProduct[] = [
     price: 6800,
     compareAtPrice: 8200,
     sku: 'LEO-OPL-01',
-    stockQuantity: 8,
-    inStock: true,
-    isPublished: true,
+    stockQuantity: 0,
+    inStock: false,
+    isPublished: false,
     isFeatured: false,
     certification: {
-      certified: true,
-      labName: 'Govt. Approved Gemological Testing Lab',
-      natural: true,
-      treatment: '100% Natural Australian Fire Opal'
+      certified: false,
+      labName: '',
+      natural: false,
+      naturalStatus: 'UNKNOWN',
+      treatment: 'Pending gemological verification',
+      verificationStatus: 'PENDING_VERIFICATION'
     },
     specifications: {
+      pricingVerificationStatus: 'UNVERIFIED_DRAFT_PRICE',
+      materialIdentityStatus: 'PENDING_VERIFICATION',
+      imageVerificationStatus: 'PENDING_UPLOAD',
+      adminReviewNotice: 'STARTER DRAFT: Existing descriptions, origin, weight, and price values are reference-only. Verify the actual physical stone, exact variety, treatment, origin, current price, authentic image, certificate, and stock before publication.',
       caratWeight: '5.20 Ratti / 4.76 Carat',
       origin: 'Coober Pedy (Australia)',
       shape: 'Oval Cabochon',
@@ -752,8 +838,9 @@ export const INITIAL_GEMSTONES_CATALOGUE: GemstoneProduct[] = [
         price: 5500,
         compareAtPrice: 6800,
         sku: 'LEO-OPL-420',
-        inStock: true,
-        stockQuantity: 4
+        inStock: false,
+        stockQuantity: 0,
+        priceVerificationStatus: 'UNVERIFIED_DRAFT_PRICE',
       },
       {
         id: 'var-opl-520',
@@ -765,8 +852,9 @@ export const INITIAL_GEMSTONES_CATALOGUE: GemstoneProduct[] = [
         price: 6800,
         compareAtPrice: 8200,
         sku: 'LEO-OPL-520',
-        inStock: true,
-        stockQuantity: 3
+        inStock: false,
+        stockQuantity: 0,
+        priceVerificationStatus: 'UNVERIFIED_DRAFT_PRICE',
       },
       {
         id: 'var-opl-750',
@@ -778,8 +866,9 @@ export const INITIAL_GEMSTONES_CATALOGUE: GemstoneProduct[] = [
         price: 9800,
         compareAtPrice: 12000,
         sku: 'LEO-OPL-750',
-        inStock: true,
-        stockQuantity: 1
+        inStock: false,
+        stockQuantity: 0,
+        priceVerificationStatus: 'UNVERIFIED_DRAFT_PRICE',
       }
     ],
     displayOrder: 10

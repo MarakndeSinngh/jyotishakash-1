@@ -24,23 +24,17 @@ let sql = `-- ==================================================================
 -- Migration / Seed: supabase/seed/20261010_gemstone_catalogue_seed.sql
 -- Target Table: public.gemstone_products
 --
--- AUDIT & COMPLIANCE REQUIREMENTS MET:
--- 1. Exact data from src/data/gemstoneCatalogueData.ts (9 Vedic gemstones + Opal).
--- 2. Fully unpublished by default: is_published = false.
--- 3. Inventory set to zero and unavailable: stock_quantity = 0, in_stock = false.
---    Variant inventory is also set to 0 and inStock = false to prevent ordering.
--- 4. Certification marked unverified: certified = false,
---    labName = 'Uncertified - Pending Gemological Laboratory Testing',
---    natural = false (unverified/pending),
---    treatment = 'Unverified - Laboratory evaluation required to determine natural origin and treatments'.
--- 5. Opal Image Corrected: diamond.jpg substitute removed; Opal images set to empty '{}'::text[]
---    pending administrator upload via Admin Panel.
--- 6. Diamond / White Zircon Material Ambiguity Resolved: Preserves id 'gem-diamond' and slug 'diamond-heera',
---    marks product name as pending material confirmation, adds explicit adminReviewNotice in specifications,
---    and keeps unpublished until administrator confirms material and corrects specifications.
--- 7. Starter prices flagged as unverified draft reference values for admin review.
--- 8. Safe & idempotent: ON CONFLICT (id) DO NOTHING (never overwrites admin edits).
--- 9. Zero destructive operations (no DROP, TRUNCATE, DELETE).
+-- AUDIT & COMPLIANCE REQUIREMENTS:
+-- 1. Source of truth: src/data/gemstoneCatalogueData.ts (10 original Vedic/Opal records + 12 popular variety candidates).
+-- 2. All seed records remain unpublished, zero-stock and unavailable; all variant inventory is zero.
+-- 3. Natural status is UNKNOWN until the physical stone or supporting documents are reviewed. UNKNOWN is not synthetic.
+-- 4. Product and variant prices are unverified reference values. New popular candidates use INR 1 only as a NOT NULL database sentinel;
+--    the sentinel is never shown as a customer price and cannot be approved as a commercial price.
+-- 5. Assigned images are PENDING_VERIFICATION; missing images are PENDING_UPLOAD. Opal keeps an empty image array.
+-- 6. Diamond / White Zircon preserves its stable ID and slug and stays explicitly ambiguous until physical stock is identified.
+-- 7. Popular candidates are not represented as LEO Family sales rankings.
+-- 8. Seed is idempotent: ON CONFLICT (id) DO NOTHING; administrator changes are never overwritten.
+-- 9. No destructive SQL or unrelated-table changes are generated.
 -- ==============================================================================
 
 DO $$
@@ -56,34 +50,39 @@ INITIAL_GEMSTONES_CATALOGUE.forEach((p) => {
     ...v,
     inStock: false,
     stockQuantity: 0,
-    priceNote: 'Draft starter price - Pending admin verification'
+    priceVerificationStatus: 'UNVERIFIED_DRAFT_PRICE'
   }));
 
   // Safe unverified certification semantics
   const safeCertification = {
     certified: false,
-    labName: 'Uncertified - Pending Gemological Laboratory Testing',
+    labName: '',
     natural: false,
-    treatment: 'Unverified - Laboratory evaluation required to determine natural origin and treatments',
-    verificationStatus: 'unverified'
+    naturalStatus: 'UNKNOWN',
+    treatment: 'Pending gemological verification',
+    verificationStatus: 'PENDING_VERIFICATION'
   };
 
   // Safe specifications with detailed review flags
-  let adminNotice = 'DRAFT SEED: Starter reference price, weight, and specifications only. Gemological laboratory certificate, actual physical piece dimensions, and market pricing must be verified by administrator before publishing.';
-  let imageStatus = 'VERIFIED_PRESET';
+  let adminNotice = p.specifications?.adminReviewNotice
+    || 'STARTER DRAFT: Description, origin, weight, and price values are references only. Verify the actual physical stone, material identity, treatments, origin, price, authentic photo, certificate, and stock before publication.';
+  let imageStatus = p.images && p.images.length > 0 ? 'PENDING_VERIFICATION' : 'PENDING_UPLOAD';
 
   if (p.id === 'gem-diamond') {
-    adminNotice = 'MATERIAL IDENTITY AMBIGUITY: Diamond (Heera) and White Zircon (Safed Jarkan) are distinct gemological materials with differing astrological and monetary values. Administrator must inspect physical stock to confirm whether this item is Natural Diamond or White Zircon. Product name, specifications, pricing, and certificate must be corrected prior to publishing.';
+    adminNotice = 'MATERIAL IDENTITY AMBIGUITY: Diamond (Heera) and White Zircon (Safed Jarkan) are distinct materials. Inspect physical stock and confirm one identity before changing the title, price, specifications, or publication status.';
   } else if (p.id === 'gem-opal') {
-    adminNotice = 'PENDING ASSET UPLOAD: No authentic Opal photograph exists in project assets (do not use diamond.jpg). Upload verified Australian Opal photographs via Admin Panel before publishing.';
+    adminNotice = 'PENDING ASSET UPLOAD: No verified Opal photograph is present in project assets. Keep images empty; upload a genuine product photo and approve it before publication.';
     imageStatus = 'PENDING_UPLOAD';
+  } else if (p.specifications?.catalogueResearchStatus === 'POPULAR_VARIETY_CANDIDATE_NOT_LEO_SALES_RANKING') {
+    adminNotice = p.specifications.adminReviewNotice
+      || 'POPULAR VARIETY CANDIDATE: This is not a verified LEO sales ranking. Confirm exact material/species, origin, treatment, quality, current price, photo, certificate, and stock before publication.';
   }
 
   const safeSpecifications = {
     ...(p.specifications || {}),
     pricingVerificationStatus: 'UNVERIFIED_DRAFT_PRICE',
+    materialIdentityStatus: p.id === 'gem-diamond' ? 'AMBIGUOUS_UNVERIFIED' : (p.specifications?.materialIdentityStatus || 'PENDING_VERIFICATION'),
     certificationStatus: 'PENDING_LAB_VERIFICATION',
-    authenticityGuarantee: 'UNVERIFIED_NO_LAB_CERTIFICATE',
     imageVerificationStatus: imageStatus,
     adminReviewNotice: adminNotice
   };
@@ -161,7 +160,7 @@ BEGIN
 END $$;
 
 -- Post-seed inspection query for Supabase SQL Editor:
--- SELECT id, slug, name, hindi_name, category, is_published, in_stock, stock_quantity, images, display_order
+-- SELECT id, slug, name, category, price, is_published, in_stock, stock_quantity, certification, specifications, variants, display_order
 -- FROM public.gemstone_products
 -- ORDER BY display_order ASC;
 `;
@@ -174,4 +173,5 @@ if (!fs.existsSync(outDir)) {
 const outFile = path.join(outDir, '20261010_gemstone_catalogue_seed.sql');
 fs.writeFileSync(outFile, sql, 'utf-8');
 console.log(`Generated SQL seed successfully at: ${outFile}`);
-console.log(`Total items seeded: ${INITIAL_GEMSTONES_CATALOGUE.length}`);
+console.log(`Total draft products generated: ${INITIAL_GEMSTONES_CATALOGUE.length}`);
+console.log('All products remain unpublished, out of stock, and unverified; this script generates SQL only and does not execute it.');

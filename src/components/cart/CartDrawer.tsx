@@ -16,10 +16,11 @@ export default function CartDrawer({ onNavigate }: CartDrawerProps) {
   const [customerPhone, setCustomerPhone] = useState('');
   const [customerCity, setCustomerCity] = useState('');
   const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [isSubmittingOrder, setIsSubmittingOrder] = useState(false);
 
   const handleWhatsAppCheckout = async () => {
-    if (items.length === 0 || isCheckingOut) return;
-    setIsCheckingOut(true);
+    if (items.length === 0 || isSubmittingOrder) return;
+    setIsSubmittingOrder(true);
 
     try {
       // Cart items are localStorage snapshots. Revalidate each public product and variant
@@ -91,7 +92,7 @@ export default function CartDrawer({ onNavigate }: CartDrawerProps) {
     } catch (err: any) {
       window.alert(err?.message || 'Could not verify current product and inventory details. Please retry or contact LEO Family.');
     } finally {
-      setIsCheckingOut(false);
+      setIsSubmittingOrder(false);
     }
   };
 
@@ -227,7 +228,7 @@ export default function CartDrawer({ onNavigate }: CartDrawerProps) {
                           {/* Price & Quantity */}
                           <div className="flex items-center justify-between mt-2 pt-2 border-t border-stone-800/60">
                             <span className="text-xs font-bold text-amber-300">
-                              ₹{(item.price * item.quantity).toLocaleString('en-IN')}
+                              Price rechecked before enquiry
                             </span>
                             <div className="flex items-center gap-1.5 bg-stone-900 border border-stone-800 rounded-lg p-0.5">
                               <button
@@ -255,11 +256,11 @@ export default function CartDrawer({ onNavigate }: CartDrawerProps) {
                     ))}
                   </div>
 
-                  {/* Spiritual Assurance Banner */}
+                  {/* Optional service disclosure */}
                   <div className="p-3 rounded-xl bg-amber-950/20 border border-amber-500/20 flex items-start gap-2.5 text-xs text-amber-300/90">
                     <ShieldCheck className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
                     <p className="leading-relaxed">
-                      Every gemstone includes personalized <strong className="text-amber-200">Pran Pratishtha & Mantra Energization</strong> sanctified by LEO Family masters.
+                      Vedic energisation, consultation, shipping, and insurance terms are confirmed individually with the LEO Family team before payment. They are not assumed to be included in the displayed product price.
                     </p>
                   </div>
 
@@ -308,22 +309,9 @@ export default function CartDrawer({ onNavigate }: CartDrawerProps) {
             {items.length > 0 && (
               <div className="p-5 border-t border-stone-800 bg-stone-950/90 space-y-3">
                 <div className="space-y-1.5 text-xs">
-                  <div className="flex justify-between text-stone-400">
-                    <span>Indicative subtotal (rechecked before enquiry)</span>
-                    <span className="text-stone-200 font-semibold">₹{subtotal.toLocaleString('en-IN')}</span>
-                  </div>
-                  <div className="flex justify-between text-stone-400">
-                    <span>Vedic energisation</span>
-                    <span className="text-stone-400 font-medium">Confirm separately</span>
-                  </div>
-                  <div className="flex justify-between text-stone-400">
-                    <span>Shipping & insurance</span>
-                    <span className="text-stone-400 font-medium">Confirm separately</span>
-                  </div>
-                  <div className="flex justify-between text-sm font-bold pt-2 border-t border-stone-800 text-stone-100">
-                    <span>Indicative total</span>
-                    <span className="text-amber-300 font-cinzel text-base">₹{subtotal.toLocaleString('en-IN')}</span>
-                  </div>
+                  <p className="text-stone-300 leading-relaxed">
+                    Current product prices and inventory are rechecked from the catalogue when you continue. LEO Family will confirm the final payable amount, taxes, shipping, insurance, and any optional services before payment.
+                  </p>
                 </div>
 
                 <button

@@ -114,7 +114,8 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
 
   const currentPrice = selectedVariant ? selectedVariant.price : product.price;
   const currentCompareAt = selectedVariant ? selectedVariant.compareAtPrice : product.compareAtPrice;
-  const isPriceVerified = product.specifications?.pricingVerificationStatus === 'VERIFIED';
+  const isPriceVerified = product.specifications?.pricingVerificationStatus === 'VERIFIED'
+    && (!selectedVariant || selectedVariant.priceVerificationStatus === 'VERIFIED');
   const currentInStock = isPriceVerified && (selectedVariant ? selectedVariant.inStock && selectedVariant.stockQuantity > 0 : product.inStock && product.stockQuantity > 0);
   const currentStockQty = selectedVariant ? selectedVariant.stockQuantity : product.stockQuantity;
   const currentSku = selectedVariant ? selectedVariant.sku : product.sku;
@@ -319,7 +320,7 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
                 </span>
               ) : (
                 <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-rose-950/80 text-rose-300 border border-rose-500/30">
-                  <span>Rare / Made to Order</span>
+                  <span>{isPriceVerified ? 'Currently unavailable' : 'Price pending review'}</span>
                 </span>
               )}
             </div>

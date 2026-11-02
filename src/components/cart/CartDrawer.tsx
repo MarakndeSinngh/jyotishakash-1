@@ -4,6 +4,7 @@ import { X, Trash2, Plus, Minus, ShoppingBag, ShieldCheck, Sparkles, MessageCirc
 import { useCart } from '../../context/CartContext';
 import SmartImage from '../sections/SmartImage';
 import { resolveImagePath } from '../../utils/imageHelper';
+import { gemstoneProductService } from '../../services/gemstoneProductService';
 
 interface CartDrawerProps {
   onNavigate?: (path: string) => void;
@@ -16,40 +17,79 @@ export default function CartDrawer({ onNavigate }: CartDrawerProps) {
   const [customerCity, setCustomerCity] = useState('');
   const [isCheckingOut, setIsCheckingOut] = useState(false);
 
-  const handleWhatsAppCheckout = () => {
-    if (items.length === 0) return;
+  const handleWhatsAppCheckout = async () => {
+    if (items.length === 0 || isCheckingOut) return;
+    setIsCheckingOut(true);
 
-    let message = `🙏 *Namaste LEO Family Occult School,*\n\nI would like to place an order for the following Sacred Vedic Gemstones from your collection:\n\n`;
+    try {
+      // Cart items are localStorage snapshots. Revalidate each public product and variant
+      // before quoting current prices or creating a WhatsApp order enquiry.
+      const currentProducts = await Promise.all(
+        items.map(item => gemstoneProductService.getProductById(item.productId, false))
+      );
+      const verifiedLines: Array<{
+        item: typeof items[number];
+        price: number;
+        sku: string;
+        variantName?: string;
+      }> = [];
 
-    items.forEach((item, index) => {
-      message += `*${index + 1}. ${item.name} (${item.hindiName})*\n`;
-      if (item.variantName) {
-        message += `   • Variant: ${item.variantName}\n`;
+      for (let index = 0; index < items.length; index++) {
+        const item = items[index];
+        const product = currentProducts[index];
+        if (!product || !product.isPublished) {
+          throw new Error(`${item.name} is no longer publicly available. Remove it from your cart and refresh the catalogue.`);
+        }
+        if (product.specifications?.pricingVerificationStatus !== 'VERIFIED') {
+          throw new Error(`The price for ${item.name} is awaiting administrator confirmation. Please contact LEO Family.`);
+        }
+
+        const variant = item.variantId
+          ? product.variants.find(candidate => candidate.id === item.variantId)
+          : null;
+        if (item.variantId && !variant) {
+          throw new Error(`The selected variant for ${item.name} is no longer available. Please revisit the product page.`);
+        }
+
+        const stock = variant ? variant.stockQuantity : product.stockQuantity;
+        const inStock = variant ? variant.inStock : product.inStock;
+        const price = variant ? variant.price : product.price;
+        const sku = variant ? variant.sku : product.sku;
+        if (!inStock || stock <= 0 || item.quantity > stock) {
+          throw new Error(`Current inventory for ${item.name} has changed. Please update the quantity or contact LEO Family.`);
+        }
+        if (!Number.isFinite(price) || price <= 0) {
+          throw new Error(`A valid current price is not available for ${item.name}.`);
+        }
+
+        verifiedLines.push({ item, price, sku, variantName: variant?.name });
       }
-      message += `   • SKU: ${item.sku}\n`;
-      message += `   • Quantity: ${item.quantity}\n`;
-      message += `   • Price: ₹${(item.price * item.quantity).toLocaleString('en-IN')}\n\n`;
-    });
 
-    message += `💰 *Total Amount:* ₹${subtotal.toLocaleString('en-IN')}\n`;
-    message += `✨ *Pran Pratishtha:* Included\n`;
-    message += `📦 *Delivery:* Insured Shipping Across India\n\n`;
+      const verifiedSubtotal = verifiedLines.reduce(
+        (sum, line) => sum + line.price * line.item.quantity,
+        0
+      );
+      let message = `🙏 *Namaste LEO Family Occult School,*\n\nI would like to place an order enquiry for the following gemstones:\n\n`;
 
-    if (customerName) {
-      message += `👤 *Customer Name:* ${customerName}\n`;
+      verifiedLines.forEach((line, index) => {
+        message += `*${index + 1}. ${line.item.name} (${line.item.hindiName})*\n`;
+        if (line.variantName) message += `   • Variant: ${line.variantName}\n`;
+        message += `   • SKU: ${line.sku}\n   • Quantity: ${line.item.quantity}\n   • Current unit price: ₹${line.price.toLocaleString('en-IN')}\n   • Line total: ₹${(line.price * line.item.quantity).toLocaleString('en-IN')}\n\n`;
+      });
+
+      message += `💰 *Indicative subtotal:* ₹${verifiedSubtotal.toLocaleString('en-IN')}\n\n`;
+      if (customerName) message += `👤 *Customer Name:* ${customerName}\n`;
+      if (customerPhone) message += `📱 *Contact Number:* ${customerPhone}\n`;
+      if (customerCity) message += `📍 *Delivery Location:* ${customerCity}\n`;
+      message += `\nPlease confirm final availability, taxes, shipping terms, and any optional energisation service before payment. This message is an enquiry, not a confirmed or paid order.`;
+
+      const whatsappUrl = `https://wa.me/919953713176?text=${encodeURIComponent(message)}`;
+      window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+    } catch (err: any) {
+      window.alert(err?.message || 'Could not verify current product and inventory details. Please retry or contact LEO Family.');
+    } finally {
+      setIsCheckingOut(false);
     }
-    if (customerPhone) {
-      message += `📱 *Contact Number:* ${customerPhone}\n`;
-    }
-    if (customerCity) {
-      message += `📍 *Delivery Location:* ${customerCity}\n`;
-    }
-
-    message += `\nPlease verify my birth chart compatibility and share official payment (UPI / Bank Transfer) details. Thank you!`;
-
-    const encoded = encodeURIComponent(message);
-    const whatsappUrl = `https://wa.me/919953713176?text=${encoded}`;
-    window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
   };
 
   return (
@@ -284,7 +324,7 @@ export default function CartDrawer({ onNavigate }: CartDrawerProps) {
                 </div>
 
                 <button
-                  onClick={handleWhatsAppCheckout}
+                  onClick={() => void handleWhatsAppCheckout()}
                   className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-emerald-950/50 hover:brightness-110 transition active:scale-[0.99]"
                 >
                   <MessageCircle className="w-4 h-4 fill-white text-emerald-600" />

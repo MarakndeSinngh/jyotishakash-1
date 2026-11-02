@@ -116,6 +116,11 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
   const currentCompareAt = selectedVariant ? selectedVariant.compareAtPrice : product.compareAtPrice;
   const isPriceVerified = product.specifications?.pricingVerificationStatus === 'VERIFIED'
     && (!selectedVariant || selectedVariant.priceVerificationStatus === 'VERIFIED');
+  const identityVerified = product.specifications?.materialIdentityStatus === 'VERIFIED'
+    && product.certification?.natural === true;
+  const verifiedOrigin = identityVerified && product.specifications?.origin && product.specifications.origin !== 'Pending Verification'
+    ? product.specifications.origin
+    : 'Pending verification';
   const currentInStock = isPriceVerified && (selectedVariant ? selectedVariant.inStock && selectedVariant.stockQuantity > 0 : product.inStock && product.stockQuantity > 0);
   const currentStockQty = selectedVariant ? selectedVariant.stockQuantity : product.stockQuantity;
   const currentSku = selectedVariant ? selectedVariant.sku : product.sku;
@@ -275,7 +280,7 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
           <div>
             <div className="flex items-center gap-2 mb-2">
               <span className="text-xs uppercase tracking-widest text-amber-400/90 font-cinzel font-semibold">
-                Sacred Vedic Gemstone
+                Gemstone Catalogue
               </span>
               <span className="text-stone-600">•</span>
               <span className="text-xs text-stone-400">SKU: {currentSku}</span>
@@ -320,7 +325,7 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
                 </span>
               ) : (
                 <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-rose-950/80 text-rose-300 border border-rose-500/30">
-                  <span>{isPriceVerified ? 'Currently unavailable' : 'Price pending review'}</span>
+                  <span>{!isPriceVerified ? 'Price pending review' : 'Currently unavailable'}</span>
                 </span>
               )}
             </div>
@@ -328,7 +333,9 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
 
           {/* Short Benefit Quote */}
           <p className="text-sm text-stone-300/90 leading-relaxed italic border-l-2 border-amber-500 pl-4 py-1">
-            "{product.benefit || product.shortDescription}"
+            "{identityVerified
+              ? (product.benefit || product.shortDescription)
+              : 'Product material identity, origin and natural status are awaiting review. Contact LEO Family for confirmed specifications.'}"
           </p>
 
           {/* Variant Selection (Carat / Origin / Weight) */}
@@ -499,7 +506,9 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
             <div className="pt-4 text-xs text-stone-300/90 leading-relaxed">
               {activeTab === 'benefits' && (
                 <div className="space-y-3">
-                  <p>{product.description}</p>
+                  <p>{identityVerified
+                    ? product.description
+                    : 'Detailed product information is being reviewed. Please contact LEO Family for confirmed material identity, natural or treated status, origin, dimensions, and certificate information.'}</p>
                   <div className="p-3 rounded-xl bg-stone-900 border border-stone-800 space-y-1.5">
                     <h5 className="font-bold text-amber-300 uppercase tracking-wider text-[11px]">
                       Product & tradition note
@@ -516,7 +525,7 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
                   <div className="grid grid-cols-2 gap-2">
                     <div className="p-2.5 rounded-lg bg-stone-900 border border-stone-800">
                       <span className="text-[10px] text-stone-500 block uppercase">Primary Origin</span>
-                      <span className="font-semibold text-stone-200">{product.specifications?.origin || 'Pending verification'}</span>
+                      <span className="font-semibold text-stone-200">{verifiedOrigin}</span>
                     </div>
                     <div className="p-2.5 rounded-lg bg-stone-900 border border-stone-800">
                       <span className="text-[10px] text-stone-500 block uppercase">Shape & Cut</span>
@@ -528,7 +537,7 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
                     </div>
                     <div className="p-2.5 rounded-lg bg-stone-900 border border-stone-800">
                       <span className="text-[10px] text-stone-500 block uppercase">Certification</span>
-                      <span className="font-semibold text-stone-200">{product.certification?.labName || 'Not supplied'}</span>
+                      <span className="font-semibold text-stone-200">{product.certification?.certified ? (product.certification.labName || 'Certificate details pending') : 'Not certified / pending'}</span>
                     </div>
                   </div>
                   <p className="text-[10px] text-stone-500 pt-1">
@@ -558,7 +567,7 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     <div className="p-2.5 rounded-lg bg-stone-900 border border-stone-800">
                       <span className="text-[10px] text-stone-500 block uppercase">Recommended Metal</span>
-                      <span className="font-semibold text-stone-200">{product.specifications?.metalRecommendation || 'Gold / Silver / Panchdhatu'}</span>
+                      <span className="font-semibold text-stone-200">{product.specifications?.metalRecommendation || 'Confirm during consultation'}</span>
                     </div>
                     <div className="p-2.5 rounded-lg bg-stone-900 border border-stone-800">
                       <span className="text-[10px] text-stone-500 block uppercase">Wearing Finger</span>

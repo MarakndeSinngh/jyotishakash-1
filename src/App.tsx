@@ -17,7 +17,6 @@ import ThemeSelector from './components/ThemeSelector';
 
 // Homepage Primary Sections
 import HeroSection from './components/sections/HeroSection';
-import NavratriCoursePromotionBanner from './components/sections/NavratriCoursePromotionBanner';
 import TrustCredibilitySection from './components/sections/TrustCredibilitySection';
 import SuccessMetricsSection from './components/sections/SuccessMetricsSection';
 import MeetOurMentorsSection from './components/sections/MeetOurMentorsSection';
@@ -32,9 +31,6 @@ import TestimonialsSection from './components/sections/TestimonialsSection';
 // Lazy-loaded Route Pages & Non-Homepage Sections (Split into on-demand chunks)
 const AdminPortal = React.lazy(() => import('./components/admin/AdminPortal'));
 const AcademyLandingPage = React.lazy(() => import('./components/sections/AcademyLandingPage'));
-const AdvancedNumerologyLandingPage = React.lazy(
-  () => import('./components/sections/AdvancedNumerologyLandingPage')
-);
 const ProgramsPage = React.lazy(() => import('./components/sections/ProgramsPage'));
 const BlogsPage = React.lazy(() => import('./components/sections/BlogsPage'));
 const MediaCenterPage = React.lazy(() => import('./components/sections/MediaCenterPage'));
@@ -107,6 +103,13 @@ function AppContent() {
   const { t } = useLanguage();
 
   const normalizedPath = normalizePathname(currentPath);
+
+  // Keep the retired course URL safe for old links while redirecting visitors to the programs catalogue.
+  useEffect(() => {
+    if (normalizedPath === '/courses/advanced-numerology-bundle') {
+      navigate('/programs');
+    }
+  }, [normalizedPath, navigate]);
 
   const navigate = useCallback((path: string) => {
     window.history.pushState({}, '', path);
@@ -195,18 +198,8 @@ function AppContent() {
     pathname: normalizedPath,
     slug: activeSlug,
     instructorName: activeAcademy?.instructorName,
-    customTitle:
-      normalizedPath === '/courses/advanced-numerology-bundle'
-        ? 'Super Advanced Vedic Numerology | LEO Family'
-        : currentPageObj?.metaTitle || currentPageObj?.title,
-    customDescription:
-      normalizedPath === '/courses/advanced-numerology-bundle'
-        ? 'Enroll in Super Advanced Vedic Numerology (11 Modules) taught live by Raajeev Singh Chauhann for ₹194. Master Psychic & Destiny numbers, 81 combinations, Vedic Grid, compatibility, and remedies.'
-        : currentPageObj?.metaDescription,
-    customImage:
-      normalizedPath === '/courses/advanced-numerology-bundle'
-        ? '/assets/teachers/Raajeev.webp'
-        : undefined,
+    customTitle: currentPageObj?.metaTitle || currentPageObj?.title,
+    customDescription: currentPageObj?.metaDescription,
   });
 
   if (isAdminRoute) {
@@ -232,11 +225,7 @@ function AppContent() {
     }
 
     if (normalizedPath === '/courses/advanced-numerology-bundle') {
-      return (
-        <Suspense fallback={<BrandedRouteLoadingFallback label="Loading Course Curriculum..." />}>
-          <AdvancedNumerologyLandingPage navigate={navigate} />
-        </Suspense>
-      );
+      return <BrandedRouteLoadingFallback label="This course is temporarily unavailable. Redirecting to all programs..." />;
     }
 
     if (normalizedPath === '/programs') {
@@ -320,7 +309,6 @@ function AppContent() {
                 return (
                   <React.Fragment key={section.id || index}>
                           <HeroSection section={section} navigate={navigate} />
-                          <NavratriCoursePromotionBanner navigate={navigate} />
                           <TrustCredibilitySection />
                           <SuccessMetricsSection />
                           <MeetOurMentorsSection />
@@ -454,9 +442,11 @@ function AppContent() {
           <CartDrawer onNavigate={navigate} />
         </Suspense>
       )}
-      <Suspense fallback={null}>
-        <FloatingConsultationCard currentPath={normalizedPath} />
-      </Suspense>
+      {normalizedPath !== '/' && (
+        <Suspense fallback={null}>
+          <FloatingConsultationCard currentPath={normalizedPath} />
+        </Suspense>
+      )}
       {shouldLoadStickyCTA && (
         <Suspense fallback={null}>
           <StickyFloatingCTA currentPath={normalizedPath} />

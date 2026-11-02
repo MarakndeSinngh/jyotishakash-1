@@ -1,4 +1,4 @@
-import { GemstoneProduct } from '../models/gemstoneProduct';
+import { GemstoneProduct, getProductReviewIssues } from '../models/gemstoneProduct';
 import { supabase } from '../lib/supabaseClient';
 
 const STORAGE_KEY = 'leo_gemstone_catalogue_v1';
@@ -157,25 +157,31 @@ export const gemstoneProductRepository = {
 
       if (!error && data !== null) {
         const mapped = data.map(mapRowToProduct);
-        // Sync local cache with authoritative DB response (even if empty [])
-        saveStoredCatalogue(mapped);
-        return mapped;
+        // The database publication flag is necessary but not sufficient: legacy rows
+        // may have been published before the explicit identity, price, and image review gates.
+        const visible = includeUnpublished
+          ? mapped
+          : mapped.filter(product => getProductReviewIssues(product).length === 0);
+        // Sync only the selected authoritative view. Public results never expose a
+        // previously published row whose verification metadata is missing or unresolved.
+        saveStoredCatalogue(visible);
+        return visible;
       }
 
       if (error) {
-        console.error('[GemstoneRepo] Supabase error in getAll:', error);
+        throw new Error(error.message || 'Supabase catalogue query failed');
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('[GemstoneRepo] Error querying Supabase in getAll:', err);
+      if (!includeUnpublished) {
+        // Fail closed while allowing the public page to distinguish a database outage from
+        // a genuinely empty published catalogue.
+        throw new Error(`Gemstone catalogue unavailable: ${err?.message || 'Database/network error'}`);
+      }
     }
 
-    // On database/network errors, fail closed:
-    // Storefront must never display unverified starter inventory or bypass publication rules.
-    if (!includeUnpublished) {
-      return [];
-    }
-
-    // In Admin Panel only, return local cached drafts if present (safe for administration inspection)
+    // Admin-only fallback: cached drafts may be inspected, but the disconnected
+    // status banner remains visible and the cache is never used for public reads.
     return getStoredCatalogue();
   },
 
@@ -193,8 +199,10 @@ export const gemstoneProductRepository = {
       const { data, error } = await query.maybeSingle();
 
       if (!error) {
-        // Authoritative database result: null if no matching row exists
-        return data ? mapRowToProduct(data) : null;
+        // Public access requires both published status and all explicit review gates.
+        if (!data) return null;
+        const product = mapRowToProduct(data);
+        return !includeUnpublished && getProductReviewIssues(product).length > 0 ? null : product;
       }
       console.error('[GemstoneRepo] Supabase error in getBySlug:', error);
     } catch (err) {
@@ -219,8 +227,10 @@ export const gemstoneProductRepository = {
       const { data, error } = await query.maybeSingle();
 
       if (!error) {
-        // Authoritative database result: null if no matching row exists
-        return data ? mapRowToProduct(data) : null;
+        // Public lookups fail closed for products with unresolved verification issues.
+        if (!data) return null;
+        const product = mapRowToProduct(data);
+        return !includeUnpublished && getProductReviewIssues(product).length > 0 ? null : product;
       }
       console.error('[GemstoneRepo] Supabase error in getById:', error);
     } catch (err) {
@@ -286,9 +296,12 @@ export const gemstoneProductRepository = {
       throw new Error(`Database save failed: ${error.message} (Code: ${error.code || 'DB_ERROR'}). Ensure table 'gemstone_products' exists and admin user is authorized.`);
     }
 
-    const savedProduct = data ? mapRowToProduct(data) : newProduct;
+    if (!data) {
+      throw new Error('Database save failed: Supabase did not return the inserted product row. No local success was recorded.');
+    }
+    const savedProduct = mapRowToProduct(data);
 
-    // Persist to local cache only after successful database save
+    // Persist to local cache only after confirmed database save
     const local = getStoredCatalogue();
     const updatedList = [...local.filter(p => p.id !== id), savedProduct];
     saveStoredCatalogue(updatedList);
@@ -301,15 +314,6 @@ export const gemstoneProductRepository = {
       const p = Number(updates.price);
       if (isNaN(p) || p <= 0) {
         throw new Error('Invalid product price: A valid positive price must be explicitly entered.');
-      }
-    }
-
-    if (updates.inStock === true) {
-      const local = getStoredCatalogue();
-      const existing = local.find(p => p.id === id);
-      const effectiveStock = updates.stockQuantity !== undefined ? Number(updates.stockQuantity) : (existing?.stockQuantity || 0);
-      if (effectiveStock <= 0) {
-        throw new Error(`Inventory safeguard: Cannot mark "${existing?.name || id}" as in stock when stock quantity is 0.`);
       }
     }
 
@@ -335,12 +339,13 @@ export const gemstoneProductRepository = {
       throw new Error(`Database update failed: ${error.message} (Code: ${error.code || 'DB_ERROR'}). Changes were not persisted to database.`);
     }
 
+    if (!data) {
+      throw new Error('Database update failed: No product row was returned. The record may not exist or the current user may not have permission. Local cache was not changed.');
+    }
+
+    const updatedProduct = mapRowToProduct(data);
     const local = getStoredCatalogue();
     const existingIndex = local.findIndex(p => p.id === id);
-    const updatedProduct: GemstoneProduct = data
-      ? mapRowToProduct(data)
-      : ({ ...(local[existingIndex] || {}), ...updates, updatedAt: new Date().toISOString() } as GemstoneProduct);
-
     if (existingIndex !== -1) {
       local[existingIndex] = updatedProduct;
     } else {
@@ -352,10 +357,18 @@ export const gemstoneProductRepository = {
   },
 
   async delete(id: string): Promise<boolean> {
-    const { error } = await supabase.from('gemstone_products').delete().eq('id', id);
+    const { data, error } = await supabase
+      .from('gemstone_products')
+      .delete()
+      .eq('id', id)
+      .select('id')
+      .maybeSingle();
     if (error) {
       console.error('[GemstoneRepo] Supabase delete failed:', error);
       throw new Error(`Database delete failed: ${error.message} (Code: ${error.code || 'DB_ERROR'}). Item was not removed from database.`);
+    }
+    if (!data?.id) {
+      throw new Error('Database delete failed: No matching product row was deleted. Local cache was not changed.');
     }
 
     const local = getStoredCatalogue();

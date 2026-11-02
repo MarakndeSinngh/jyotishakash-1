@@ -10,6 +10,7 @@ export interface GemstoneVariant {
   sku: string;
   inStock: boolean;
   stockQuantity: number;
+  priceVerificationStatus?: 'UNVERIFIED_DRAFT_PRICE' | 'VERIFIED';
 }
 
 export interface GemstoneCertification {
@@ -19,6 +20,7 @@ export interface GemstoneCertification {
   natural: boolean;
   treatment?: string;
   verificationStatus?: string;
+  naturalStatus?: 'UNKNOWN' | 'NATURAL_CONFIRMED' | 'SYNTHETIC_CONFIRMED';
 }
 
 export interface GemstoneSpecifications {
@@ -113,29 +115,45 @@ export function getProductReviewIssues(product: Partial<GemstoneProduct>): Revie
   const price = Number(product.price);
   if (product.price === undefined || product.price === null || isNaN(price) || price <= 0) {
     issues.push({ type: 'pricing', message: 'Valid positive price must be explicitly entered' });
-  } else if (product.specifications?.pricingVerificationStatus === 'UNVERIFIED_DRAFT_PRICE') {
-    issues.push({ type: 'pricing', message: 'Starter draft price requires verification' });
+  } else if (product.specifications?.pricingVerificationStatus !== 'VERIFIED') {
+    issues.push({ type: 'pricing', message: 'Selling price must be explicitly reviewed and approved by an administrator' });
+  }
+  if ((product.variants || []).some(variant => variant.priceVerificationStatus !== 'VERIFIED')) {
+    issues.push({ type: 'pricing', message: 'Every product variant price must also be reviewed and approved' });
   }
 
-  // 2. Material Identity Ambiguity (e.g. Diamond vs White Zircon)
-  if (product.specifications?.materialIdentityStatus === 'AMBIGUOUS_UNVERIFIED') {
-    issues.push({ type: 'identity', message: 'Material identity ambiguity must be resolved (Diamond vs White Zircon)' });
+  // 2. Material identity must be explicitly reviewed; ambiguous dual-material names are blocked.
+  const materialStatus = product.specifications?.materialIdentityStatus;
+  if (materialStatus !== 'VERIFIED') {
+    issues.push({ type: 'identity', message: 'Gemstone material identity is pending administrator verification' });
   }
   const nameLower = (product.name || '').toLowerCase();
   if (nameLower.includes('pending material confirmation') || (nameLower.includes('diamond') && nameLower.includes('white zircon'))) {
-    if (product.specifications?.materialIdentityStatus !== 'VERIFIED') {
+    if (materialStatus !== 'VERIFIED') {
       issues.push({ type: 'identity', message: 'Product title contains ambiguous dual identity' });
     }
+  }
+  const naturalStatus = product.certification?.naturalStatus || 'UNKNOWN';
+  if (naturalStatus === 'UNKNOWN') {
+    issues.push({ type: 'identity', message: 'Natural, treated, or synthetic/lab-grown status must be explicitly recorded before publication' });
+  }
+  if (naturalStatus === 'NATURAL_CONFIRMED' && product.certification?.natural !== true) {
+    issues.push({ type: 'identity', message: 'Natural status is marked confirmed but the natural-origin flag is not enabled' });
+  }
+  if (naturalStatus === 'SYNTHETIC_CONFIRMED' && product.certification?.natural !== false) {
+    issues.push({ type: 'identity', message: 'Synthetic/lab-grown status conflicts with the natural-origin flag' });
+  }
+  if (product.certification?.certified && !product.certification.labName?.trim()) {
+    issues.push({ type: 'identity', message: 'A lab-certified claim requires the actual testing laboratory name' });
+  }
+  if (nameLower.includes('natural') && naturalStatus !== 'NATURAL_CONFIRMED') {
+    issues.push({ type: 'identity', message: 'A product described as natural requires explicit natural-origin confirmation' });
   }
 
   // 3. Image requirement: Photograph must exist AND be explicitly verified by administrator
   if (!product.images || product.images.length === 0 || !product.images[0]) {
     issues.push({ type: 'image', message: 'Product photograph is missing and required before publishing' });
-  } else if (
-    product.specifications?.imageVerificationStatus === 'PENDING_UPLOAD' ||
-    product.specifications?.imageVerificationStatus === 'PENDING_VERIFICATION' ||
-    product.specifications?.imageVerificationStatus !== 'VERIFIED'
-  ) {
+  } else if (product.specifications?.imageVerificationStatus !== 'VERIFIED') {
     issues.push({ type: 'image', message: 'Product photograph is pending explicit administrator verification (Status: PENDING_VERIFICATION)' });
   }
 

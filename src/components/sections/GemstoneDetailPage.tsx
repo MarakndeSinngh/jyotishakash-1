@@ -114,7 +114,16 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
 
   const currentPrice = selectedVariant ? selectedVariant.price : product.price;
   const currentCompareAt = selectedVariant ? selectedVariant.compareAtPrice : product.compareAtPrice;
-  const currentInStock = selectedVariant ? selectedVariant.inStock && selectedVariant.stockQuantity > 0 : product.inStock && product.stockQuantity > 0;
+  const basePriceVerified = product.specifications?.pricingVerificationStatus === 'VERIFIED';
+  const isPriceVerified = basePriceVerified
+    && (!selectedVariant || selectedVariant.priceVerificationStatus === 'VERIFIED');
+  const identityVerified = product.specifications?.materialIdentityStatus === 'VERIFIED'
+    && product.certification?.naturalStatus === 'NATURAL_CONFIRMED'
+    && product.certification?.natural === true;
+  const verifiedOrigin = identityVerified && product.specifications?.origin && product.specifications.origin !== 'Pending Verification'
+    ? product.specifications.origin
+    : 'Pending verification';
+  const currentInStock = isPriceVerified && (selectedVariant ? selectedVariant.inStock && selectedVariant.stockQuantity > 0 : product.inStock && product.stockQuantity > 0);
   const currentStockQty = selectedVariant ? selectedVariant.stockQuantity : product.stockQuantity;
   const currentSku = selectedVariant ? selectedVariant.sku : product.sku;
 
@@ -125,7 +134,8 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
 
   const handleWhatsAppInquiry = () => {
     const variantText = selectedVariant ? `Variant: ${selectedVariant.name}` : `Standard Size`;
-    const message = `🙏 *Namaste LEO Family Occult School,*\n\nI am interested in acquiring the following Sacred Gemstone from your collection:\n\n💎 *${product.name} (${product.hindiName})*\n• ${variantText}\n• Price: ₹${currentPrice.toLocaleString('en-IN')}\n• SKU: ${currentSku}\n• Link: https://www.leofamily.online/gemstones/${product.slug}\n\nPlease advise on planetary energization (Pran Pratishtha) and consultation with Raajeev Singh Chauhann. Thank you!`;
+    const priceText = isPriceVerified ? `₹${currentPrice.toLocaleString('en-IN')}` : 'To be confirmed by LEO Family';
+    const message = `🙏 *Namaste LEO Family Occult School,*\n\nI am interested in this gemstone enquiry:\n\n💎 *${product.name} (${product.hindiName})*\n• ${variantText}\n• Price: ${priceText}\n• SKU: ${currentSku}\n• Link: https://www.leofamily.online/gemstones/${product.slug}\n\nPlease confirm current availability, product identity, certification, and final quotation. Thank you!`;
     const encoded = encodeURIComponent(message);
     window.open(`https://wa.me/919953713176?text=${encoded}`, '_blank', 'noopener,noreferrer');
   };
@@ -246,22 +256,22 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
             </div>
           )}
 
-          {/* Authentic Trust Badges Card */}
+          {/* Product-specific verification status */}
           <div className="p-4 rounded-2xl bg-stone-950/60 border border-stone-800/80 grid grid-cols-3 gap-3 text-center">
             <div className="flex flex-col items-center gap-1.5 p-2">
               <Award className="w-5 h-5 text-amber-400" />
-              <span className="text-[11px] font-semibold text-stone-200">100% Natural</span>
-              <span className="text-[10px] text-stone-500">Unheated & Pure</span>
+              <span className="text-[11px] font-semibold text-stone-200">{product.certification?.naturalStatus === 'NATURAL_CONFIRMED' ? 'Natural origin confirmed' : product.certification?.naturalStatus === 'SYNTHETIC_CONFIRMED' ? 'Synthetic / lab-grown' : 'Origin pending'}</span>
+              <span className="text-[10px] text-stone-500">{product.certification?.naturalStatus === 'NATURAL_CONFIRMED' ? 'Verified record' : product.certification?.naturalStatus === 'SYNTHETIC_CONFIRMED' ? 'Status recorded' : 'Not yet confirmed'}</span>
             </div>
             <div className="flex flex-col items-center gap-1.5 p-2 border-x border-stone-800">
-              <Sparkles className="w-5 h-5 text-amber-400" />
-              <span className="text-[11px] font-semibold text-stone-200">Pran Pratishtha</span>
-              <span className="text-[10px] text-stone-500">Mantra Energized</span>
+              <ShieldCheck className="w-5 h-5 text-amber-400" />
+              <span className="text-[11px] font-semibold text-stone-200">{product.certification?.certified ? 'Certificate recorded' : 'Certificate pending'}</span>
+              <span className="text-[10px] text-stone-500">{product.certification?.labName || 'No lab details supplied'}</span>
             </div>
             <div className="flex flex-col items-center gap-1.5 p-2">
               <Truck className="w-5 h-5 text-amber-400" />
-              <span className="text-[11px] font-semibold text-stone-200">Insured Delivery</span>
-              <span className="text-[10px] text-stone-500">Doorstep Pan-India</span>
+              <span className="text-[11px] font-semibold text-stone-200">Delivery details</span>
+              <span className="text-[10px] text-stone-500">Confirmed before payment</span>
             </div>
           </div>
         </div>
@@ -272,7 +282,7 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
           <div>
             <div className="flex items-center gap-2 mb-2">
               <span className="text-xs uppercase tracking-widest text-amber-400/90 font-cinzel font-semibold">
-                Sacred Vedic Gemstone
+                Gemstone Catalogue
               </span>
               <span className="text-stone-600">•</span>
               <span className="text-xs text-stone-400">SKU: {currentSku}</span>
@@ -291,21 +301,21 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
             <div>
               <div className="flex items-baseline gap-3">
                 <span className="text-3xl font-cinzel font-bold text-amber-300">
-                  ₹{currentPrice.toLocaleString('en-IN')}
+                  {isPriceVerified ? `₹${currentPrice.toLocaleString('en-IN')}` : 'Price on request'}
                 </span>
-                {currentCompareAt && currentCompareAt > currentPrice && (
+                {isPriceVerified && currentCompareAt && currentCompareAt > currentPrice && (
                   <span className="text-base text-stone-500 line-through">
                     ₹{currentCompareAt.toLocaleString('en-IN')}
                   </span>
                 )}
-                {currentCompareAt && currentCompareAt > currentPrice && (
+                {isPriceVerified && currentCompareAt && currentCompareAt > currentPrice && (
                   <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
                     Save {Math.round(((currentCompareAt - currentPrice) / currentCompareAt) * 100)}%
                   </span>
                 )}
               </div>
               <p className="text-[10px] text-stone-400 mt-1">
-                Inclusive of all taxes & Vedic consecration
+                {isPriceVerified ? 'Price reviewed by LEO Family. Confirm taxes and any optional service before payment.' : 'Selling price is under administrator review. Request a confirmed quotation.'}
               </p>
             </div>
 
@@ -317,7 +327,7 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
                 </span>
               ) : (
                 <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-rose-950/80 text-rose-300 border border-rose-500/30">
-                  <span>Rare / Made to Order</span>
+                  <span>{!isPriceVerified ? 'Price pending review' : 'Currently unavailable'}</span>
                 </span>
               )}
             </div>
@@ -325,7 +335,9 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
 
           {/* Short Benefit Quote */}
           <p className="text-sm text-stone-300/90 leading-relaxed italic border-l-2 border-amber-500 pl-4 py-1">
-            "{product.benefit || product.shortDescription}"
+            "{identityVerified
+              ? (product.benefit || product.shortDescription)
+              : 'Product material identity, origin and natural status are awaiting review. Contact LEO Family for confirmed specifications.'}"
           </p>
 
           {/* Variant Selection (Carat / Origin / Weight) */}
@@ -345,6 +357,7 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                 {product.variants.map(variant => {
                   const isSelected = selectedVariant?.id === variant.id;
+                  const variantPriceVerified = basePriceVerified && variant.priceVerificationStatus === 'VERIFIED';
                   return (
                     <button
                       key={variant.id}
@@ -365,12 +378,14 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
                       </div>
                       <div className="mt-2 pt-2 border-t border-stone-800/80 flex items-center justify-between">
                         <span className="text-xs font-bold text-amber-300 font-cinzel">
-                          ₹{variant.price.toLocaleString('en-IN')}
+                          {variantPriceVerified ? `₹${variant.price.toLocaleString('en-IN')}` : 'Price on request'}
                         </span>
-                        {variant.inStock && variant.stockQuantity > 0 ? (
+                        {!variantPriceVerified ? (
+                          <span className="text-[9px] text-rose-400">Price review pending</span>
+                        ) : variant.inStock && variant.stockQuantity > 0 ? (
                           <span className="text-[9px] text-emerald-400">In Stock</span>
                         ) : (
-                          <span className="text-[9px] text-rose-400">Waitlist</span>
+                          <span className="text-[9px] text-rose-400">Unavailable</span>
                         )}
                       </div>
                     </button>
@@ -496,16 +511,16 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
             <div className="pt-4 text-xs text-stone-300/90 leading-relaxed">
               {activeTab === 'benefits' && (
                 <div className="space-y-3">
-                  <p>{product.description}</p>
+                  <p>{identityVerified
+                    ? product.description
+                    : 'Detailed product information is being reviewed. Please contact LEO Family for confirmed material identity, natural or treated status, origin, dimensions, and certificate information.'}</p>
                   <div className="p-3 rounded-xl bg-stone-900 border border-stone-800 space-y-1.5">
                     <h5 className="font-bold text-amber-300 uppercase tracking-wider text-[11px]">
-                      Core Astrological Blessings:
+                      Product & tradition note
                     </h5>
-                    <ul className="list-disc pl-4 space-y-1 text-stone-300">
-                      <li>Strengthens the positive radiance of {product.planetaryRuler}.</li>
-                      <li>Balances energetic nadis and clears karmic obstacles in life purpose.</li>
-                      <li>Hand-energized with specific Vedic Mantras prior to dispatch.</li>
-                    </ul>
+                    <p className="text-stone-300">
+                      Gemstone benefits and planetary associations are traditional astrological interpretations, not guaranteed outcomes. Confirm the identity and suitability of the actual stone with a qualified adviser before purchase.
+                    </p>
                   </div>
                 </div>
               )}
@@ -515,23 +530,23 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
                   <div className="grid grid-cols-2 gap-2">
                     <div className="p-2.5 rounded-lg bg-stone-900 border border-stone-800">
                       <span className="text-[10px] text-stone-500 block uppercase">Primary Origin</span>
-                      <span className="font-semibold text-stone-200">{product.specifications?.origin || 'Natural Mined'}</span>
+                      <span className="font-semibold text-stone-200">{verifiedOrigin}</span>
                     </div>
                     <div className="p-2.5 rounded-lg bg-stone-900 border border-stone-800">
                       <span className="text-[10px] text-stone-500 block uppercase">Shape & Cut</span>
-                      <span className="font-semibold text-stone-200">{product.specifications?.shape || 'Mixed Cut'}</span>
+                      <span className="font-semibold text-stone-200">{product.specifications?.shape || 'Not provided'}</span>
                     </div>
                     <div className="p-2.5 rounded-lg bg-stone-900 border border-stone-800">
                       <span className="text-[10px] text-stone-500 block uppercase">Color Grade</span>
-                      <span className="font-semibold text-stone-200">{product.specifications?.color || 'Natural Hue'}</span>
+                      <span className="font-semibold text-stone-200">{product.specifications?.color || 'Not provided'}</span>
                     </div>
                     <div className="p-2.5 rounded-lg bg-stone-900 border border-stone-800">
                       <span className="text-[10px] text-stone-500 block uppercase">Certification</span>
-                      <span className="font-semibold text-stone-200">{product.certification?.labName || 'Govt. Approved Lab'}</span>
+                      <span className="font-semibold text-stone-200">{product.certification?.certified ? (product.certification.labName || 'Certificate details pending') : 'Not certified / pending'}</span>
                     </div>
                   </div>
                   <p className="text-[10px] text-stone-500 pt-1">
-                    *Every single stone is individually measured, photographed, and catalogued. No synthetic imitations.
+                    Product identity, weight, treatment, origin, and certification should be checked against the actual stone before purchase.
                   </p>
                 </div>
               )}
@@ -539,18 +554,15 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
               {activeTab === 'energization' && (
                 <div className="space-y-2.5">
                   <p>
-                    A gemstone functions as an astronomical cosmic antenna. Without authentic Pran Pratishtha (energization), a stone remains dormant.
+                    Vedic energisation is a separate service and is not assumed to be included with every gemstone.
                   </p>
                   <div className="p-3 rounded-xl bg-amber-950/20 border border-amber-500/20 space-y-1 text-stone-200">
                     <span className="font-bold text-amber-300 block text-[11px]">
-                      Our 4-Step Consecration Protocol:
+                      Confirm the service first:
                     </span>
-                    <ol className="list-decimal pl-4 space-y-1 text-stone-300">
-                      <li>Purification in Panchamrit and Gangajal at an auspicious Muhurat.</li>
-                      <li>108 chants of the planetary Beej Mantra by certified Vedic pandits.</li>
-                      <li>Attunement to the recipient's Gotra and birth chart vibrations.</li>
-                      <li>Sealed in energized silk pouch ready for auspicious wear.</li>
-                    </ol>
+                    <p className="text-stone-300">
+                      Contact LEO Family to confirm whether this specific stone is eligible, the process offered, schedule, and any additional charge. The service is confirmed only after the team agrees the details with you.
+                    </p>
                   </div>
                 </div>
               )}
@@ -560,15 +572,15 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     <div className="p-2.5 rounded-lg bg-stone-900 border border-stone-800">
                       <span className="text-[10px] text-stone-500 block uppercase">Recommended Metal</span>
-                      <span className="font-semibold text-stone-200">{product.specifications?.metalRecommendation || 'Gold / Silver / Panchdhatu'}</span>
+                      <span className="font-semibold text-stone-200">{product.specifications?.metalRecommendation || 'Confirm during consultation'}</span>
                     </div>
                     <div className="p-2.5 rounded-lg bg-stone-900 border border-stone-800">
                       <span className="text-[10px] text-stone-500 block uppercase">Wearing Finger</span>
-                      <span className="font-semibold text-stone-200">{product.specifications?.wearingFinger || 'Ring or Little Finger'}</span>
+                      <span className="font-semibold text-stone-200">{product.specifications?.wearingFinger || 'Confirm during consultation'}</span>
                     </div>
                     <div className="p-2.5 rounded-lg bg-stone-900 border border-stone-800 sm:col-span-2">
                       <span className="text-[10px] text-stone-500 block uppercase">Auspicious Day & Muhurat</span>
-                      <span className="font-semibold text-stone-200">{product.specifications?.wearingDayMuhurat || 'During Shukla Paksha Sunrise'}</span>
+                      <span className="font-semibold text-stone-200">{product.specifications?.wearingDayMuhurat || 'Confirm during consultation'}</span>
                     </div>
                   </div>
                 </div>

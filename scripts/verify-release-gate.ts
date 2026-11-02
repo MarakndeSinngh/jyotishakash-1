@@ -352,8 +352,8 @@ async function runTestSuite() {
   }
 
   // ---------------------------------------------------------------------------
-  // Test 7: Database/network failure fails closed
-  // ---------------------------------------------------------------------------
+  // Test 7: Database/network failure fails closed with an explicit unavailable error.
+  // The public page must distinguish a real empty catalogue from a database outage.
   console.log('\n--- Scenario 7: Fail-Closed Fault Tolerance ---');
   {
     const originalFrom = (supabase as any).from;
@@ -361,18 +361,23 @@ async function runTestSuite() {
       throw new Error('Connection refused / 503 Service Unavailable');
     };
 
-    const publicList = await gemstoneProductRepository.getAll(false);
+    let listFailedClosed = false;
+    try {
+      await gemstoneProductRepository.getAll(false);
+    } catch (err: any) {
+      listFailedClosed = String(err?.message || '').includes('Gemstone catalogue unavailable');
+    }
     assert(
-      Array.isArray(publicList) && publicList.length === 0,
-      'Storefront query fails closed on DB network error (returns empty array [])',
-      `publicList count = ${publicList.length}`
+      listFailedClosed,
+      'Public catalogue distinguishes database failure from a genuinely empty catalogue',
+      'getAll(false) throws an explicit fail-closed unavailable error and never falls back to local starter data'
     );
 
     const publicDetail = await gemstoneProductRepository.getBySlug('ruby-manik', false);
     assert(
       publicDetail === null,
-      'Storefront detail route fails closed on DB network error (returns null)',
-      `publicDetail = ${publicDetail}`
+      'Storefront detail route fails closed on DB network error',
+      'getBySlug returned null without exposing cached or starter products'
     );
 
     (supabase as any).from = originalFrom;

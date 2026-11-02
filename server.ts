@@ -159,8 +159,8 @@ async function setupApp() {
         ? `${slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())} | LEO Family Sacred Vedic Gemstones`
         : "Discover Your Sacred Gemstone | LEO Family Occult School";
       const desc = slug
-        ? `Authentic 100% natural, lab-certified ${slug.replace(/-/g, ' ')} energized with Vedic Pran Pratishtha rituals by LEO Family Occult School.`
-        : "Explore certified natural Vedic gemstones aligned with your planetary frequencies, energized under Raajeev Singh Chauhann & LEO Family masters.";
+        ? `Explore the ${slug.replace(/-/g, ' ')} gemstone listing from LEO Family. Confirm the individual product's identity, treatment, origin, certificate, price, and availability before ordering.`
+        : "Browse Vedic and popular gemstone varieties from LEO Family. Individual product photos, identity, prices, certification, and availability are shown after review.";
       const currentUrl = `https://www.leofamily.online${req.path}`;
       
       const gemImages: Record<string, string> = {
@@ -175,7 +175,7 @@ async function setupApp() {
         'cats-eye-lehsunia': 'cats-eye.jpg'
       };
 
-      const selectedImg = slug && gemImages[slug] ? gemImages[slug] : 'ruby.jpg';
+      const selectedImg = slug && gemImages[slug] ? gemImages[slug] : 'logo.jpg';
       const imageUrl = `https://www.leofamily.online/gemstone-assets/${selectedImg}`;
 
       html = injectMetaTags(html, {

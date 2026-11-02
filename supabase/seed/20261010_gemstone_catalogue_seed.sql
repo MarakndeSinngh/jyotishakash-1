@@ -3,8 +3,8 @@
 -- Migration / Seed: supabase/seed/20261010_gemstone_catalogue_seed.sql
 -- Target Table: public.gemstone_products
 --
--- AUDIT & COMPLIANCE REQUIREMENTS MET:
--- 1. Exact data from src/data/gemstoneCatalogueData.ts (9 Vedic gemstones + Opal).
+-- AUDIT & COMPLIANCE REQUIREMENTS:
+-- 1. Preserves 10 existing gemstone identifiers and adds 12 popular variety draft candidates.
 -- 2. Fully unpublished by default: is_published = false.
 -- 3. Inventory set to zero and unavailable: stock_quantity = 0, in_stock = false.
 --    Variant inventory is also set to 0 and inStock = false to prevent ordering.
@@ -19,7 +19,7 @@
 --    and keeps unpublished until administrator confirms material and corrects specifications.
 -- 7. Starter prices flagged as unverified draft reference values for admin review.
 -- 8. Safe & idempotent: ON CONFLICT (id) DO NOTHING (never overwrites admin edits).
--- 9. Zero destructive operations (no DROP, TRUNCATE, DELETE).
+-- 9. Zero destructive operations (no DROP, TRUNCATE, DELETE). New candidates are drafts only; no live product data is overwritten.
 -- ==============================================================================
 
 DO $$
@@ -75,9 +75,9 @@ VALUES (
   false,
   false,
   false,
-  '{"certified":false,"labName":"Uncertified - Pending Gemological Laboratory Testing","natural":false,"treatment":"Unverified - Laboratory evaluation required to determine natural origin and treatments","verificationStatus":"unverified"}'::jsonb,
-  '{"caratWeight":"4.25 Ratti / 3.89 Carat","origin":"Old Burma (Myanmar)","shape":"Oval Mixed Cut","color":"Pigeon Blood Red","transparency":"Transparent","energizationStatus":"Vedic Pran Pratishtha & Surya Beej Mantra Chanted","metalRecommendation":"Gold or Copper","wearingFinger":"Ring Finger of Right Hand","wearingDayMuhurat":"Sunday Sunrise during Shukla Paksha","pricingVerificationStatus":"UNVERIFIED_DRAFT_PRICE","certificationStatus":"PENDING_LAB_VERIFICATION","authenticityGuarantee":"UNVERIFIED_NO_LAB_CERTIFICATE","imageVerificationStatus":"VERIFIED_PRESET","adminReviewNotice":"DRAFT SEED: Starter reference price, weight, and specifications only. Gemological laboratory certificate, actual physical piece dimensions, and market pricing must be verified by administrator before publishing."}'::jsonb,
-  '[{"id":"var-rub-325","name":"3.25 Ratti (Burmese)","carat":2.97,"ratti":3.25,"origin":"Old Burma","shape":"Oval","price":12500,"compareAtPrice":14500,"sku":"LEO-RUB-325","inStock":false,"stockQuantity":0,"priceNote":"Draft starter price - Pending admin verification"},{"id":"var-rub-425","name":"4.25 Ratti (Burmese - Prime)","carat":3.89,"ratti":4.25,"origin":"Old Burma","shape":"Oval","price":15500,"compareAtPrice":18500,"sku":"LEO-RUB-425","inStock":false,"stockQuantity":0,"priceNote":"Draft starter price - Pending admin verification"},{"id":"var-rub-550","name":"5.50 Ratti (African Premium)","carat":5.03,"ratti":5.5,"origin":"Mozambique","shape":"Cushion","price":19800,"compareAtPrice":23000,"sku":"LEO-RUB-550","inStock":false,"stockQuantity":0,"priceNote":"Draft starter price - Pending admin verification"}]'::jsonb,
+  '{"certified":false,"labName":"Uncertified - Pending Gemological Laboratory Testing","natural":false,"naturalStatus":"UNKNOWN","treatment":"Unverified - Laboratory evaluation required to determine natural origin and treatments","verificationStatus":"unverified"}'::jsonb,
+  '{"caratWeight":"4.25 Ratti / 3.89 Carat","origin":"Old Burma (Myanmar)","shape":"Oval Mixed Cut","color":"Pigeon Blood Red","transparency":"Transparent","energizationStatus":"Vedic Pran Pratishtha & Surya Beej Mantra Chanted","metalRecommendation":"Gold or Copper","wearingFinger":"Ring Finger of Right Hand","wearingDayMuhurat":"Sunday Sunrise during Shukla Paksha","materialIdentityStatus":"PENDING_VERIFICATION","pricingVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"Starter price is a reference only; confirm a current LEO-approved selling price before publication.","certificationStatus":"PENDING_LAB_VERIFICATION","authenticityGuarantee":"UNVERIFIED_NO_LAB_CERTIFICATE","imageVerificationStatus":"PENDING_VERIFICATION","adminReviewNotice":"DRAFT SEED: Starter reference price, weight, and specifications only. Gemological laboratory certificate, actual physical piece dimensions, and market pricing must be verified by administrator before publishing."}'::jsonb,
+  '[{"id":"var-rub-325","name":"3.25 Ratti (Burmese)","carat":2.97,"ratti":3.25,"origin":"Old Burma","shape":"Oval","price":12500,"compareAtPrice":14500,"sku":"LEO-RUB-325","inStock":false,"stockQuantity":0,"priceVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"Draft starter price - Pending admin verification"},{"id":"var-rub-425","name":"4.25 Ratti (Burmese - Prime)","carat":3.89,"ratti":4.25,"origin":"Old Burma","shape":"Oval","price":15500,"compareAtPrice":18500,"sku":"LEO-RUB-425","inStock":false,"stockQuantity":0,"priceVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"Draft starter price - Pending admin verification"},{"id":"var-rub-550","name":"5.50 Ratti (African Premium)","carat":5.03,"ratti":5.5,"origin":"Mozambique","shape":"Cushion","price":19800,"compareAtPrice":23000,"sku":"LEO-RUB-550","inStock":false,"stockQuantity":0,"priceVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"Draft starter price - Pending admin verification"}]'::jsonb,
   1,
   NOW(),
   NOW()
@@ -132,9 +132,9 @@ VALUES (
   false,
   false,
   false,
-  '{"certified":false,"labName":"Uncertified - Pending Gemological Laboratory Testing","natural":false,"treatment":"Unverified - Laboratory evaluation required to determine natural origin and treatments","verificationStatus":"unverified"}'::jsonb,
-  '{"caratWeight":"5.50 Ratti / 5.03 Carat","origin":"South Sea / Basra Grade","shape":"Round Spherical","color":"Silvery Moonlit White","transparency":"Opaque with Silky Luster","energizationStatus":"Vedic Chandra Mantra Pran Pratishtha","metalRecommendation":"Pure Silver","wearingFinger":"Little Finger of Right Hand","wearingDayMuhurat":"Monday Evening during Shukla Paksha","pricingVerificationStatus":"UNVERIFIED_DRAFT_PRICE","certificationStatus":"PENDING_LAB_VERIFICATION","authenticityGuarantee":"UNVERIFIED_NO_LAB_CERTIFICATE","imageVerificationStatus":"VERIFIED_PRESET","adminReviewNotice":"DRAFT SEED: Starter reference price, weight, and specifications only. Gemological laboratory certificate, actual physical piece dimensions, and market pricing must be verified by administrator before publishing."}'::jsonb,
-  '[{"id":"var-prl-450","name":"4.50 Ratti (Pure White)","carat":4.12,"ratti":4.5,"origin":"South Sea","shape":"Round","price":7200,"compareAtPrice":8900,"sku":"LEO-PRL-450","inStock":false,"stockQuantity":0,"priceNote":"Draft starter price - Pending admin verification"},{"id":"var-prl-550","name":"5.50 Ratti (Basra Grade)","carat":5.03,"ratti":5.5,"origin":"South Sea","shape":"Round","price":8500,"compareAtPrice":10500,"sku":"LEO-PRL-550","inStock":false,"stockQuantity":0,"priceNote":"Draft starter price - Pending admin verification"},{"id":"var-prl-725","name":"7.25 Ratti (Royal Lustre)","carat":6.63,"ratti":7.25,"origin":"South Sea","shape":"Round","price":11900,"compareAtPrice":14000,"sku":"LEO-PRL-725","inStock":false,"stockQuantity":0,"priceNote":"Draft starter price - Pending admin verification"}]'::jsonb,
+  '{"certified":false,"labName":"Uncertified - Pending Gemological Laboratory Testing","natural":false,"naturalStatus":"UNKNOWN","treatment":"Unverified - Laboratory evaluation required to determine natural origin and treatments","verificationStatus":"unverified"}'::jsonb,
+  '{"caratWeight":"5.50 Ratti / 5.03 Carat","origin":"South Sea / Basra Grade","shape":"Round Spherical","color":"Silvery Moonlit White","transparency":"Opaque with Silky Luster","energizationStatus":"Vedic Chandra Mantra Pran Pratishtha","metalRecommendation":"Pure Silver","wearingFinger":"Little Finger of Right Hand","wearingDayMuhurat":"Monday Evening during Shukla Paksha","materialIdentityStatus":"PENDING_VERIFICATION","pricingVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"Starter price is a reference only; confirm a current LEO-approved selling price before publication.","certificationStatus":"PENDING_LAB_VERIFICATION","authenticityGuarantee":"UNVERIFIED_NO_LAB_CERTIFICATE","imageVerificationStatus":"PENDING_VERIFICATION","adminReviewNotice":"DRAFT SEED: Starter reference price, weight, and specifications only. Gemological laboratory certificate, actual physical piece dimensions, and market pricing must be verified by administrator before publishing."}'::jsonb,
+  '[{"id":"var-prl-450","name":"4.50 Ratti (Pure White)","carat":4.12,"ratti":4.5,"origin":"South Sea","shape":"Round","price":7200,"compareAtPrice":8900,"sku":"LEO-PRL-450","inStock":false,"stockQuantity":0,"priceVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"Draft starter price - Pending admin verification"},{"id":"var-prl-550","name":"5.50 Ratti (Basra Grade)","carat":5.03,"ratti":5.5,"origin":"South Sea","shape":"Round","price":8500,"compareAtPrice":10500,"sku":"LEO-PRL-550","inStock":false,"stockQuantity":0,"priceVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"Draft starter price - Pending admin verification"},{"id":"var-prl-725","name":"7.25 Ratti (Royal Lustre)","carat":6.63,"ratti":7.25,"origin":"South Sea","shape":"Round","price":11900,"compareAtPrice":14000,"sku":"LEO-PRL-725","inStock":false,"stockQuantity":0,"priceVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"Draft starter price - Pending admin verification"}]'::jsonb,
   2,
   NOW(),
   NOW()
@@ -189,9 +189,9 @@ VALUES (
   false,
   false,
   false,
-  '{"certified":false,"labName":"Uncertified - Pending Gemological Laboratory Testing","natural":false,"treatment":"Unverified - Laboratory evaluation required to determine natural origin and treatments","verificationStatus":"unverified"}'::jsonb,
-  '{"caratWeight":"6.25 Ratti / 5.72 Carat","origin":"Mediterranean (Italian)","shape":"Capsule / Triangular Cabochon","color":"Ox-Blood Red","transparency":"Opaque with Porcelain Finish","energizationStatus":"Mangal Beej Mantra & Hanuman Chalisa Abhimantrit","metalRecommendation":"Copper or Gold","wearingFinger":"Ring Finger of Right Hand","wearingDayMuhurat":"Tuesday Morning at Sunrise","pricingVerificationStatus":"UNVERIFIED_DRAFT_PRICE","certificationStatus":"PENDING_LAB_VERIFICATION","authenticityGuarantee":"UNVERIFIED_NO_LAB_CERTIFICATE","imageVerificationStatus":"VERIFIED_PRESET","adminReviewNotice":"DRAFT SEED: Starter reference price, weight, and specifications only. Gemological laboratory certificate, actual physical piece dimensions, and market pricing must be verified by administrator before publishing."}'::jsonb,
-  '[{"id":"var-crl-525","name":"5.25 Ratti (Italian Capsule)","carat":4.81,"ratti":5.25,"origin":"Italian","shape":"Capsule","price":8500,"compareAtPrice":10500,"sku":"LEO-CRL-525","inStock":false,"stockQuantity":0,"priceNote":"Draft starter price - Pending admin verification"},{"id":"var-crl-625","name":"6.25 Ratti (Italian Prime)","carat":5.72,"ratti":6.25,"origin":"Italian","shape":"Capsule","price":9800,"compareAtPrice":12000,"sku":"LEO-CRL-625","inStock":false,"stockQuantity":0,"priceNote":"Draft starter price - Pending admin verification"},{"id":"var-crl-750","name":"7.50 Ratti (Triangular Mars Cut)","carat":6.86,"ratti":7.5,"origin":"Italian","shape":"Triangular","price":12500,"compareAtPrice":15000,"sku":"LEO-CRL-750","inStock":false,"stockQuantity":0,"priceNote":"Draft starter price - Pending admin verification"}]'::jsonb,
+  '{"certified":false,"labName":"Uncertified - Pending Gemological Laboratory Testing","natural":false,"naturalStatus":"UNKNOWN","treatment":"Unverified - Laboratory evaluation required to determine natural origin and treatments","verificationStatus":"unverified"}'::jsonb,
+  '{"caratWeight":"6.25 Ratti / 5.72 Carat","origin":"Mediterranean (Italian)","shape":"Capsule / Triangular Cabochon","color":"Ox-Blood Red","transparency":"Opaque with Porcelain Finish","energizationStatus":"Mangal Beej Mantra & Hanuman Chalisa Abhimantrit","metalRecommendation":"Copper or Gold","wearingFinger":"Ring Finger of Right Hand","wearingDayMuhurat":"Tuesday Morning at Sunrise","materialIdentityStatus":"PENDING_VERIFICATION","pricingVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"Starter price is a reference only; confirm a current LEO-approved selling price before publication.","certificationStatus":"PENDING_LAB_VERIFICATION","authenticityGuarantee":"UNVERIFIED_NO_LAB_CERTIFICATE","imageVerificationStatus":"PENDING_VERIFICATION","adminReviewNotice":"DRAFT SEED: Starter reference price, weight, and specifications only. Gemological laboratory certificate, actual physical piece dimensions, and market pricing must be verified by administrator before publishing."}'::jsonb,
+  '[{"id":"var-crl-525","name":"5.25 Ratti (Italian Capsule)","carat":4.81,"ratti":5.25,"origin":"Italian","shape":"Capsule","price":8500,"compareAtPrice":10500,"sku":"LEO-CRL-525","inStock":false,"stockQuantity":0,"priceVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"Draft starter price - Pending admin verification"},{"id":"var-crl-625","name":"6.25 Ratti (Italian Prime)","carat":5.72,"ratti":6.25,"origin":"Italian","shape":"Capsule","price":9800,"compareAtPrice":12000,"sku":"LEO-CRL-625","inStock":false,"stockQuantity":0,"priceVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"Draft starter price - Pending admin verification"},{"id":"var-crl-750","name":"7.50 Ratti (Triangular Mars Cut)","carat":6.86,"ratti":7.5,"origin":"Italian","shape":"Triangular","price":12500,"compareAtPrice":15000,"sku":"LEO-CRL-750","inStock":false,"stockQuantity":0,"priceVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"Draft starter price - Pending admin verification"}]'::jsonb,
   3,
   NOW(),
   NOW()
@@ -246,9 +246,9 @@ VALUES (
   false,
   false,
   false,
-  '{"certified":false,"labName":"Uncertified - Pending Gemological Laboratory Testing","natural":false,"treatment":"Unverified - Laboratory evaluation required to determine natural origin and treatments","verificationStatus":"unverified"}'::jsonb,
-  '{"caratWeight":"4.50 Ratti / 4.12 Carat","origin":"Zambia (Kagem Mine)","shape":"Octagonal Emerald Cut","color":"Vivid Forest Green","transparency":"Transparent with Natural Jardins","energizationStatus":"Budh Gayatri Mantra Pran Pratishtha","metalRecommendation":"Gold, Silver or Panchdhatu","wearingFinger":"Little Finger of Right Hand","wearingDayMuhurat":"Wednesday Morning two hours after Sunrise","pricingVerificationStatus":"UNVERIFIED_DRAFT_PRICE","certificationStatus":"PENDING_LAB_VERIFICATION","authenticityGuarantee":"UNVERIFIED_NO_LAB_CERTIFICATE","imageVerificationStatus":"VERIFIED_PRESET","adminReviewNotice":"DRAFT SEED: Starter reference price, weight, and specifications only. Gemological laboratory certificate, actual physical piece dimensions, and market pricing must be verified by administrator before publishing."}'::jsonb,
-  '[{"id":"var-emr-350","name":"3.50 Ratti (Zambian Bright)","carat":3.2,"ratti":3.5,"origin":"Zambia","shape":"Emerald Cut","price":13500,"compareAtPrice":16500,"sku":"LEO-EMR-350","inStock":false,"stockQuantity":0,"priceNote":"Draft starter price - Pending admin verification"},{"id":"var-emr-450","name":"4.50 Ratti (Zambian Vivid)","carat":4.12,"ratti":4.5,"origin":"Zambia","shape":"Emerald Cut","price":16800,"compareAtPrice":20500,"sku":"LEO-EMR-450","inStock":false,"stockQuantity":0,"priceNote":"Draft starter price - Pending admin verification"},{"id":"var-emr-575","name":"5.75 Ratti (Colombian High Luster)","carat":5.26,"ratti":5.75,"origin":"Colombia","shape":"Oval","price":24500,"compareAtPrice":29000,"sku":"LEO-EMR-575","inStock":false,"stockQuantity":0,"priceNote":"Draft starter price - Pending admin verification"}]'::jsonb,
+  '{"certified":false,"labName":"Uncertified - Pending Gemological Laboratory Testing","natural":false,"naturalStatus":"UNKNOWN","treatment":"Unverified - Laboratory evaluation required to determine natural origin and treatments","verificationStatus":"unverified"}'::jsonb,
+  '{"caratWeight":"4.50 Ratti / 4.12 Carat","origin":"Zambia (Kagem Mine)","shape":"Octagonal Emerald Cut","color":"Vivid Forest Green","transparency":"Transparent with Natural Jardins","energizationStatus":"Budh Gayatri Mantra Pran Pratishtha","metalRecommendation":"Gold, Silver or Panchdhatu","wearingFinger":"Little Finger of Right Hand","wearingDayMuhurat":"Wednesday Morning two hours after Sunrise","materialIdentityStatus":"PENDING_VERIFICATION","pricingVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"Starter price is a reference only; confirm a current LEO-approved selling price before publication.","certificationStatus":"PENDING_LAB_VERIFICATION","authenticityGuarantee":"UNVERIFIED_NO_LAB_CERTIFICATE","imageVerificationStatus":"PENDING_VERIFICATION","adminReviewNotice":"DRAFT SEED: Starter reference price, weight, and specifications only. Gemological laboratory certificate, actual physical piece dimensions, and market pricing must be verified by administrator before publishing."}'::jsonb,
+  '[{"id":"var-emr-350","name":"3.50 Ratti (Zambian Bright)","carat":3.2,"ratti":3.5,"origin":"Zambia","shape":"Emerald Cut","price":13500,"compareAtPrice":16500,"sku":"LEO-EMR-350","inStock":false,"stockQuantity":0,"priceVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"Draft starter price - Pending admin verification"},{"id":"var-emr-450","name":"4.50 Ratti (Zambian Vivid)","carat":4.12,"ratti":4.5,"origin":"Zambia","shape":"Emerald Cut","price":16800,"compareAtPrice":20500,"sku":"LEO-EMR-450","inStock":false,"stockQuantity":0,"priceVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"Draft starter price - Pending admin verification"},{"id":"var-emr-575","name":"5.75 Ratti (Colombian High Luster)","carat":5.26,"ratti":5.75,"origin":"Colombia","shape":"Oval","price":24500,"compareAtPrice":29000,"sku":"LEO-EMR-575","inStock":false,"stockQuantity":0,"priceVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"Draft starter price - Pending admin verification"}]'::jsonb,
   4,
   NOW(),
   NOW()
@@ -303,9 +303,9 @@ VALUES (
   false,
   false,
   false,
-  '{"certified":false,"labName":"Uncertified - Pending Gemological Laboratory Testing","natural":false,"treatment":"Unverified - Laboratory evaluation required to determine natural origin and treatments","verificationStatus":"unverified"}'::jsonb,
-  '{"caratWeight":"5.25 Ratti / 4.81 Carat","origin":"Ceylon (Sri Lanka - Ratnapura)","shape":"Cushion Mixed Cut","color":"Canary Yellow / Golden Hue","transparency":"Brilliantly Transparent","energizationStatus":"Brihaspati Beej Mantra Consecrated","metalRecommendation":"Pure Yellow Gold or Panchdhatu","wearingFinger":"Index Finger of Right Hand","wearingDayMuhurat":"Thursday Morning at Sunrise","pricingVerificationStatus":"UNVERIFIED_DRAFT_PRICE","certificationStatus":"PENDING_LAB_VERIFICATION","authenticityGuarantee":"UNVERIFIED_NO_LAB_CERTIFICATE","imageVerificationStatus":"VERIFIED_PRESET","adminReviewNotice":"DRAFT SEED: Starter reference price, weight, and specifications only. Gemological laboratory certificate, actual physical piece dimensions, and market pricing must be verified by administrator before publishing."}'::jsonb,
-  '[{"id":"var-puk-375","name":"3.75 Ratti (Ceylon Bright)","carat":3.43,"ratti":3.75,"origin":"Ceylon","shape":"Cushion","price":16500,"compareAtPrice":19500,"sku":"LEO-PUK-375","inStock":false,"stockQuantity":0,"priceNote":"Draft starter price - Pending admin verification"},{"id":"var-puk-525","name":"5.25 Ratti (Ceylon Prime)","carat":4.81,"ratti":5.25,"origin":"Ceylon","shape":"Cushion","price":21000,"compareAtPrice":25000,"sku":"LEO-PUK-525","inStock":false,"stockQuantity":0,"priceNote":"Draft starter price - Pending admin verification"},{"id":"var-puk-710","name":"7.10 Ratti (Royal Golden Ceylon)","carat":6.5,"ratti":7.1,"origin":"Ceylon","shape":"Oval","price":29500,"compareAtPrice":35000,"sku":"LEO-PUK-710","inStock":false,"stockQuantity":0,"priceNote":"Draft starter price - Pending admin verification"}]'::jsonb,
+  '{"certified":false,"labName":"Uncertified - Pending Gemological Laboratory Testing","natural":false,"naturalStatus":"UNKNOWN","treatment":"Unverified - Laboratory evaluation required to determine natural origin and treatments","verificationStatus":"unverified"}'::jsonb,
+  '{"caratWeight":"5.25 Ratti / 4.81 Carat","origin":"Ceylon (Sri Lanka - Ratnapura)","shape":"Cushion Mixed Cut","color":"Canary Yellow / Golden Hue","transparency":"Brilliantly Transparent","energizationStatus":"Brihaspati Beej Mantra Consecrated","metalRecommendation":"Pure Yellow Gold or Panchdhatu","wearingFinger":"Index Finger of Right Hand","wearingDayMuhurat":"Thursday Morning at Sunrise","materialIdentityStatus":"PENDING_VERIFICATION","pricingVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"Starter price is a reference only; confirm a current LEO-approved selling price before publication.","certificationStatus":"PENDING_LAB_VERIFICATION","authenticityGuarantee":"UNVERIFIED_NO_LAB_CERTIFICATE","imageVerificationStatus":"PENDING_VERIFICATION","adminReviewNotice":"DRAFT SEED: Starter reference price, weight, and specifications only. Gemological laboratory certificate, actual physical piece dimensions, and market pricing must be verified by administrator before publishing."}'::jsonb,
+  '[{"id":"var-puk-375","name":"3.75 Ratti (Ceylon Bright)","carat":3.43,"ratti":3.75,"origin":"Ceylon","shape":"Cushion","price":16500,"compareAtPrice":19500,"sku":"LEO-PUK-375","inStock":false,"stockQuantity":0,"priceVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"Draft starter price - Pending admin verification"},{"id":"var-puk-525","name":"5.25 Ratti (Ceylon Prime)","carat":4.81,"ratti":5.25,"origin":"Ceylon","shape":"Cushion","price":21000,"compareAtPrice":25000,"sku":"LEO-PUK-525","inStock":false,"stockQuantity":0,"priceVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"Draft starter price - Pending admin verification"},{"id":"var-puk-710","name":"7.10 Ratti (Royal Golden Ceylon)","carat":6.5,"ratti":7.1,"origin":"Ceylon","shape":"Oval","price":29500,"compareAtPrice":35000,"sku":"LEO-PUK-710","inStock":false,"stockQuantity":0,"priceVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"Draft starter price - Pending admin verification"}]'::jsonb,
   5,
   NOW(),
   NOW()
@@ -360,9 +360,9 @@ VALUES (
   false,
   false,
   false,
-  '{"certified":false,"labName":"Uncertified - Pending Gemological Laboratory Testing","natural":false,"treatment":"Unverified - Laboratory evaluation required to determine natural origin and treatments","verificationStatus":"unverified"}'::jsonb,
-  '{"caratWeight":"1.15 Carat (VVS Clarity / E Color)","origin":"Natural Earth Mined","shape":"Round Brilliant Cut","color":"Colorless / D-F Grade","transparency":"Exceptional Brilliance","energizationStatus":"Shukra Gayatri & Mahalakshmi Mantra Abhimantrit","metalRecommendation":"Platinum, White Gold or Silver","wearingFinger":"Middle or Little Finger of Right Hand","wearingDayMuhurat":"Friday Morning at Sunrise","pricingVerificationStatus":"UNVERIFIED_DRAFT_PRICE","materialIdentityStatus":"AMBIGUOUS_UNVERIFIED","adminReviewNotice":"MATERIAL IDENTITY AMBIGUITY: Diamond (Heera) and White Zircon (Safed Jarkan) are distinct gemological materials with differing astrological and monetary values. Administrator must inspect physical stock to confirm whether this item is Natural Diamond or White Zircon. Product name, specifications, pricing, and certificate must be corrected prior to publishing.","certificationStatus":"PENDING_LAB_VERIFICATION","authenticityGuarantee":"UNVERIFIED_NO_LAB_CERTIFICATE","imageVerificationStatus":"VERIFIED_PRESET"}'::jsonb,
-  '[{"id":"var-hra-075","name":"0.75 Carat (VS1 / G-Color)","carat":0.75,"ratti":0.82,"origin":"Natural Earth Mined","shape":"Round","price":24000,"compareAtPrice":28000,"sku":"LEO-HRA-075","inStock":false,"stockQuantity":0,"priceNote":"Draft starter price - Pending admin verification"},{"id":"var-hra-115","name":"1.15 Carat (VVS / E-Color Prime)","carat":1.15,"ratti":1.25,"origin":"Natural Earth Mined","shape":"Round","price":32000,"compareAtPrice":38000,"sku":"LEO-HRA-115","inStock":false,"stockQuantity":0,"priceNote":"Draft starter price - Pending admin verification"}]'::jsonb,
+  '{"certified":false,"labName":"Uncertified - Pending Gemological Laboratory Testing","natural":false,"naturalStatus":"UNKNOWN","treatment":"Unverified - Laboratory evaluation required to determine natural origin and treatments","verificationStatus":"unverified"}'::jsonb,
+  '{"caratWeight":"1.15 Carat (VVS Clarity / E Color)","origin":"Natural Earth Mined","shape":"Round Brilliant Cut","color":"Colorless / D-F Grade","transparency":"Exceptional Brilliance","energizationStatus":"Shukra Gayatri & Mahalakshmi Mantra Abhimantrit","metalRecommendation":"Platinum, White Gold or Silver","wearingFinger":"Middle or Little Finger of Right Hand","wearingDayMuhurat":"Friday Morning at Sunrise","pricingVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"Starter price is a reference only; confirm a current LEO-approved selling price before publication.","materialIdentityStatus":"AMBIGUOUS_UNVERIFIED","adminReviewNotice":"MATERIAL IDENTITY AMBIGUITY: Diamond (Heera) and White Zircon (Safed Jarkan) are distinct gemological materials with differing astrological and monetary values. Administrator must inspect physical stock to confirm whether this item is Natural Diamond or White Zircon. Product name, specifications, pricing, and certificate must be corrected prior to publishing.","certificationStatus":"PENDING_LAB_VERIFICATION","authenticityGuarantee":"UNVERIFIED_NO_LAB_CERTIFICATE","imageVerificationStatus":"PENDING_VERIFICATION"}'::jsonb,
+  '[{"id":"var-hra-075","name":"0.75 Carat (VS1 / G-Color)","carat":0.75,"ratti":0.82,"origin":"Natural Earth Mined","shape":"Round","price":24000,"compareAtPrice":28000,"sku":"LEO-HRA-075","inStock":false,"stockQuantity":0,"priceVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"Draft starter price - Pending admin verification"},{"id":"var-hra-115","name":"1.15 Carat (VVS / E-Color Prime)","carat":1.15,"ratti":1.25,"origin":"Natural Earth Mined","shape":"Round","price":32000,"compareAtPrice":38000,"sku":"LEO-HRA-115","inStock":false,"stockQuantity":0,"priceVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"Draft starter price - Pending admin verification"}]'::jsonb,
   6,
   NOW(),
   NOW()
@@ -417,9 +417,9 @@ VALUES (
   false,
   false,
   false,
-  '{"certified":false,"labName":"Uncertified - Pending Gemological Laboratory Testing","natural":false,"treatment":"Unverified - Laboratory evaluation required to determine natural origin and treatments","verificationStatus":"unverified"}'::jsonb,
-  '{"caratWeight":"4.85 Ratti / 4.44 Carat","origin":"Ceylon (Sri Lanka)","shape":"Cushion Mixed Cut","color":"Royal Cornflower Blue","transparency":"Transparent with Velvety Luster","energizationStatus":"Shani Shanti & Vedic Shani Gayatri Abhimantrit","metalRecommendation":"Panchdhatu, Silver or White Gold","wearingFinger":"Middle Finger of Right Hand","wearingDayMuhurat":"Saturday Evening at Twilight","pricingVerificationStatus":"UNVERIFIED_DRAFT_PRICE","certificationStatus":"PENDING_LAB_VERIFICATION","authenticityGuarantee":"UNVERIFIED_NO_LAB_CERTIFICATE","imageVerificationStatus":"VERIFIED_PRESET","adminReviewNotice":"DRAFT SEED: Starter reference price, weight, and specifications only. Gemological laboratory certificate, actual physical piece dimensions, and market pricing must be verified by administrator before publishing."}'::jsonb,
-  '[{"id":"var-nlm-350","name":"3.50 Ratti (Ceylon Blue)","carat":3.2,"ratti":3.5,"origin":"Ceylon","shape":"Oval","price":18500,"compareAtPrice":22000,"sku":"LEO-NLM-350","inStock":false,"stockQuantity":0,"priceNote":"Draft starter price - Pending admin verification"},{"id":"var-nlm-485","name":"4.85 Ratti (Royal Ceylon Prime)","carat":4.44,"ratti":4.85,"origin":"Ceylon","shape":"Cushion","price":24500,"compareAtPrice":29000,"sku":"LEO-NLM-485","inStock":false,"stockQuantity":0,"priceNote":"Draft starter price - Pending admin verification"},{"id":"var-nlm-650","name":"6.50 Ratti (Deep Cornflower)","carat":5.95,"ratti":6.5,"origin":"Ceylon","shape":"Cushion","price":34000,"compareAtPrice":40000,"sku":"LEO-NLM-650","inStock":false,"stockQuantity":0,"priceNote":"Draft starter price - Pending admin verification"}]'::jsonb,
+  '{"certified":false,"labName":"Uncertified - Pending Gemological Laboratory Testing","natural":false,"naturalStatus":"UNKNOWN","treatment":"Unverified - Laboratory evaluation required to determine natural origin and treatments","verificationStatus":"unverified"}'::jsonb,
+  '{"caratWeight":"4.85 Ratti / 4.44 Carat","origin":"Ceylon (Sri Lanka)","shape":"Cushion Mixed Cut","color":"Royal Cornflower Blue","transparency":"Transparent with Velvety Luster","energizationStatus":"Shani Shanti & Vedic Shani Gayatri Abhimantrit","metalRecommendation":"Panchdhatu, Silver or White Gold","wearingFinger":"Middle Finger of Right Hand","wearingDayMuhurat":"Saturday Evening at Twilight","materialIdentityStatus":"PENDING_VERIFICATION","pricingVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"Starter price is a reference only; confirm a current LEO-approved selling price before publication.","certificationStatus":"PENDING_LAB_VERIFICATION","authenticityGuarantee":"UNVERIFIED_NO_LAB_CERTIFICATE","imageVerificationStatus":"PENDING_VERIFICATION","adminReviewNotice":"DRAFT SEED: Starter reference price, weight, and specifications only. Gemological laboratory certificate, actual physical piece dimensions, and market pricing must be verified by administrator before publishing."}'::jsonb,
+  '[{"id":"var-nlm-350","name":"3.50 Ratti (Ceylon Blue)","carat":3.2,"ratti":3.5,"origin":"Ceylon","shape":"Oval","price":18500,"compareAtPrice":22000,"sku":"LEO-NLM-350","inStock":false,"stockQuantity":0,"priceVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"Draft starter price - Pending admin verification"},{"id":"var-nlm-485","name":"4.85 Ratti (Royal Ceylon Prime)","carat":4.44,"ratti":4.85,"origin":"Ceylon","shape":"Cushion","price":24500,"compareAtPrice":29000,"sku":"LEO-NLM-485","inStock":false,"stockQuantity":0,"priceVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"Draft starter price - Pending admin verification"},{"id":"var-nlm-650","name":"6.50 Ratti (Deep Cornflower)","carat":5.95,"ratti":6.5,"origin":"Ceylon","shape":"Cushion","price":34000,"compareAtPrice":40000,"sku":"LEO-NLM-650","inStock":false,"stockQuantity":0,"priceVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"Draft starter price - Pending admin verification"}]'::jsonb,
   7,
   NOW(),
   NOW()
@@ -474,9 +474,9 @@ VALUES (
   false,
   false,
   false,
-  '{"certified":false,"labName":"Uncertified - Pending Gemological Laboratory Testing","natural":false,"treatment":"Unverified - Laboratory evaluation required to determine natural origin and treatments","verificationStatus":"unverified"}'::jsonb,
-  '{"caratWeight":"5.80 Ratti / 5.31 Carat","origin":"Ceylon (Sri Lanka)","shape":"Oval Mixed Cut","color":"Honey Brown / Deep Cinnamon","transparency":"Transparent with characteristic treacle swirl","energizationStatus":"Rahu Beej Mantra Sanctified","metalRecommendation":"Silver or Ashtadhatu","wearingFinger":"Middle Finger of Right Hand","wearingDayMuhurat":"Saturday Evening or Wednesday Evening","pricingVerificationStatus":"UNVERIFIED_DRAFT_PRICE","certificationStatus":"PENDING_LAB_VERIFICATION","authenticityGuarantee":"UNVERIFIED_NO_LAB_CERTIFICATE","imageVerificationStatus":"VERIFIED_PRESET","adminReviewNotice":"DRAFT SEED: Starter reference price, weight, and specifications only. Gemological laboratory certificate, actual physical piece dimensions, and market pricing must be verified by administrator before publishing."}'::jsonb,
-  '[{"id":"var-gom-450","name":"4.50 Ratti (Ceylon Honey)","carat":4.12,"ratti":4.5,"origin":"Ceylon","shape":"Oval","price":6500,"compareAtPrice":8000,"sku":"LEO-GOM-450","inStock":false,"stockQuantity":0,"priceNote":"Draft starter price - Pending admin verification"},{"id":"var-gom-580","name":"5.80 Ratti (Ceylon Prime)","carat":5.31,"ratti":5.8,"origin":"Ceylon","shape":"Oval","price":7800,"compareAtPrice":9500,"sku":"LEO-GOM-580","inStock":false,"stockQuantity":0,"priceNote":"Draft starter price - Pending admin verification"},{"id":"var-gom-750","name":"7.50 Ratti (Deep Cinnamon)","carat":6.86,"ratti":7.5,"origin":"Ceylon","shape":"Oval","price":10500,"compareAtPrice":13000,"sku":"LEO-GOM-750","inStock":false,"stockQuantity":0,"priceNote":"Draft starter price - Pending admin verification"}]'::jsonb,
+  '{"certified":false,"labName":"Uncertified - Pending Gemological Laboratory Testing","natural":false,"naturalStatus":"UNKNOWN","treatment":"Unverified - Laboratory evaluation required to determine natural origin and treatments","verificationStatus":"unverified"}'::jsonb,
+  '{"caratWeight":"5.80 Ratti / 5.31 Carat","origin":"Ceylon (Sri Lanka)","shape":"Oval Mixed Cut","color":"Honey Brown / Deep Cinnamon","transparency":"Transparent with characteristic treacle swirl","energizationStatus":"Rahu Beej Mantra Sanctified","metalRecommendation":"Silver or Ashtadhatu","wearingFinger":"Middle Finger of Right Hand","wearingDayMuhurat":"Saturday Evening or Wednesday Evening","materialIdentityStatus":"PENDING_VERIFICATION","pricingVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"Starter price is a reference only; confirm a current LEO-approved selling price before publication.","certificationStatus":"PENDING_LAB_VERIFICATION","authenticityGuarantee":"UNVERIFIED_NO_LAB_CERTIFICATE","imageVerificationStatus":"PENDING_VERIFICATION","adminReviewNotice":"DRAFT SEED: Starter reference price, weight, and specifications only. Gemological laboratory certificate, actual physical piece dimensions, and market pricing must be verified by administrator before publishing."}'::jsonb,
+  '[{"id":"var-gom-450","name":"4.50 Ratti (Ceylon Honey)","carat":4.12,"ratti":4.5,"origin":"Ceylon","shape":"Oval","price":6500,"compareAtPrice":8000,"sku":"LEO-GOM-450","inStock":false,"stockQuantity":0,"priceVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"Draft starter price - Pending admin verification"},{"id":"var-gom-580","name":"5.80 Ratti (Ceylon Prime)","carat":5.31,"ratti":5.8,"origin":"Ceylon","shape":"Oval","price":7800,"compareAtPrice":9500,"sku":"LEO-GOM-580","inStock":false,"stockQuantity":0,"priceVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"Draft starter price - Pending admin verification"},{"id":"var-gom-750","name":"7.50 Ratti (Deep Cinnamon)","carat":6.86,"ratti":7.5,"origin":"Ceylon","shape":"Oval","price":10500,"compareAtPrice":13000,"sku":"LEO-GOM-750","inStock":false,"stockQuantity":0,"priceVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"Draft starter price - Pending admin verification"}]'::jsonb,
   8,
   NOW(),
   NOW()
@@ -531,9 +531,9 @@ VALUES (
   false,
   false,
   false,
-  '{"certified":false,"labName":"Uncertified - Pending Gemological Laboratory Testing","natural":false,"treatment":"Unverified - Laboratory evaluation required to determine natural origin and treatments","verificationStatus":"unverified"}'::jsonb,
-  '{"caratWeight":"4.75 Ratti / 4.35 Carat","origin":"Orissa (India) / Ceylon","shape":"Oval Cabochon with Sharp Chatoyancy","color":"Greenish Yellow (Chrysoberyl)","transparency":"Translucent with Ray Effect","energizationStatus":"Ketu Beej Mantra & Ganesha Pratishtha","metalRecommendation":"Silver or Panchdhatu","wearingFinger":"Middle or Ring Finger of Right Hand","wearingDayMuhurat":"Tuesday or Thursday Midnight / Twilight","pricingVerificationStatus":"UNVERIFIED_DRAFT_PRICE","certificationStatus":"PENDING_LAB_VERIFICATION","authenticityGuarantee":"UNVERIFIED_NO_LAB_CERTIFICATE","imageVerificationStatus":"VERIFIED_PRESET","adminReviewNotice":"DRAFT SEED: Starter reference price, weight, and specifications only. Gemological laboratory certificate, actual physical piece dimensions, and market pricing must be verified by administrator before publishing."}'::jsonb,
-  '[{"id":"var-cat-375","name":"3.75 Ratti (Sharp Band)","carat":3.43,"ratti":3.75,"origin":"Ceylon","shape":"Cabochon","price":9200,"compareAtPrice":11000,"sku":"LEO-CAT-375","inStock":false,"stockQuantity":0,"priceNote":"Draft starter price - Pending admin verification"},{"id":"var-cat-475","name":"4.75 Ratti (Prime Chatoyant)","carat":4.35,"ratti":4.75,"origin":"Ceylon","shape":"Cabochon","price":11200,"compareAtPrice":13500,"sku":"LEO-CAT-475","inStock":false,"stockQuantity":0,"priceNote":"Draft starter price - Pending admin verification"},{"id":"var-cat-625","name":"6.25 Ratti (Golden Ray Chrysoberyl)","carat":5.72,"ratti":6.25,"origin":"Ceylon","shape":"Cabochon","price":15800,"compareAtPrice":19000,"sku":"LEO-CAT-625","inStock":false,"stockQuantity":0,"priceNote":"Draft starter price - Pending admin verification"}]'::jsonb,
+  '{"certified":false,"labName":"Uncertified - Pending Gemological Laboratory Testing","natural":false,"naturalStatus":"UNKNOWN","treatment":"Unverified - Laboratory evaluation required to determine natural origin and treatments","verificationStatus":"unverified"}'::jsonb,
+  '{"caratWeight":"4.75 Ratti / 4.35 Carat","origin":"Orissa (India) / Ceylon","shape":"Oval Cabochon with Sharp Chatoyancy","color":"Greenish Yellow (Chrysoberyl)","transparency":"Translucent with Ray Effect","energizationStatus":"Ketu Beej Mantra & Ganesha Pratishtha","metalRecommendation":"Silver or Panchdhatu","wearingFinger":"Middle or Ring Finger of Right Hand","wearingDayMuhurat":"Tuesday or Thursday Midnight / Twilight","materialIdentityStatus":"PENDING_VERIFICATION","pricingVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"Starter price is a reference only; confirm a current LEO-approved selling price before publication.","certificationStatus":"PENDING_LAB_VERIFICATION","authenticityGuarantee":"UNVERIFIED_NO_LAB_CERTIFICATE","imageVerificationStatus":"PENDING_VERIFICATION","adminReviewNotice":"DRAFT SEED: Starter reference price, weight, and specifications only. Gemological laboratory certificate, actual physical piece dimensions, and market pricing must be verified by administrator before publishing."}'::jsonb,
+  '[{"id":"var-cat-375","name":"3.75 Ratti (Sharp Band)","carat":3.43,"ratti":3.75,"origin":"Ceylon","shape":"Cabochon","price":9200,"compareAtPrice":11000,"sku":"LEO-CAT-375","inStock":false,"stockQuantity":0,"priceVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"Draft starter price - Pending admin verification"},{"id":"var-cat-475","name":"4.75 Ratti (Prime Chatoyant)","carat":4.35,"ratti":4.75,"origin":"Ceylon","shape":"Cabochon","price":11200,"compareAtPrice":13500,"sku":"LEO-CAT-475","inStock":false,"stockQuantity":0,"priceVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"Draft starter price - Pending admin verification"},{"id":"var-cat-625","name":"6.25 Ratti (Golden Ray Chrysoberyl)","carat":5.72,"ratti":6.25,"origin":"Ceylon","shape":"Cabochon","price":15800,"compareAtPrice":19000,"sku":"LEO-CAT-625","inStock":false,"stockQuantity":0,"priceVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"Draft starter price - Pending admin verification"}]'::jsonb,
   9,
   NOW(),
   NOW()
@@ -588,10 +588,461 @@ VALUES (
   false,
   false,
   false,
-  '{"certified":false,"labName":"Uncertified - Pending Gemological Laboratory Testing","natural":false,"treatment":"Unverified - Laboratory evaluation required to determine natural origin and treatments","verificationStatus":"unverified"}'::jsonb,
-  '{"caratWeight":"5.20 Ratti / 4.76 Carat","origin":"Coober Pedy (Australia)","shape":"Oval Cabochon","color":"Milky White with Multi-Color Fire","transparency":"Semi-Translucent with Full Play of Color","energizationStatus":"Shukra Vedic Consecration","metalRecommendation":"Pure Silver or White Gold","wearingFinger":"Middle or Little Finger of Right Hand","wearingDayMuhurat":"Friday Morning at Sunrise","pricingVerificationStatus":"UNVERIFIED_DRAFT_PRICE","imageVerificationStatus":"PENDING_UPLOAD","adminReviewNotice":"PENDING ASSET UPLOAD: No authentic Opal photograph exists in project assets (do not use diamond.jpg). Upload verified Australian Opal photographs via Admin Panel before publishing.","certificationStatus":"PENDING_LAB_VERIFICATION","authenticityGuarantee":"UNVERIFIED_NO_LAB_CERTIFICATE"}'::jsonb,
-  '[{"id":"var-opl-420","name":"4.20 Ratti (Vivid Play-of-Color)","carat":3.85,"ratti":4.2,"origin":"Australia","shape":"Oval Cabochon","price":5500,"compareAtPrice":6800,"sku":"LEO-OPL-420","inStock":false,"stockQuantity":0,"priceNote":"Draft starter price - Pending admin verification"},{"id":"var-opl-520","name":"5.20 Ratti (Prime Australian Fire)","carat":4.76,"ratti":5.2,"origin":"Australia","shape":"Oval Cabochon","price":6800,"compareAtPrice":8200,"sku":"LEO-OPL-520","inStock":false,"stockQuantity":0,"priceNote":"Draft starter price - Pending admin verification"},{"id":"var-opl-750","name":"7.50 Ratti (Rainbow Aurora Fire)","carat":6.86,"ratti":7.5,"origin":"Australia","shape":"Oval Cabochon","price":9800,"compareAtPrice":12000,"sku":"LEO-OPL-750","inStock":false,"stockQuantity":0,"priceNote":"Draft starter price - Pending admin verification"}]'::jsonb,
+  '{"certified":false,"labName":"Uncertified - Pending Gemological Laboratory Testing","natural":false,"naturalStatus":"UNKNOWN","treatment":"Unverified - Laboratory evaluation required to determine natural origin and treatments","verificationStatus":"unverified"}'::jsonb,
+  '{"caratWeight":"5.20 Ratti / 4.76 Carat","origin":"Coober Pedy (Australia)","shape":"Oval Cabochon","color":"Milky White with Multi-Color Fire","transparency":"Semi-Translucent with Full Play of Color","energizationStatus":"Shukra Vedic Consecration","metalRecommendation":"Pure Silver or White Gold","wearingFinger":"Middle or Little Finger of Right Hand","wearingDayMuhurat":"Friday Morning at Sunrise","materialIdentityStatus":"PENDING_VERIFICATION","pricingVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"Starter price is a reference only; confirm a current LEO-approved selling price before publication.","imageVerificationStatus":"PENDING_UPLOAD","adminReviewNotice":"PENDING ASSET UPLOAD: No authentic Opal photograph exists in project assets (do not use diamond.jpg). Upload verified Australian Opal photographs via Admin Panel before publishing.","certificationStatus":"PENDING_LAB_VERIFICATION","authenticityGuarantee":"UNVERIFIED_NO_LAB_CERTIFICATE"}'::jsonb,
+  '[{"id":"var-opl-420","name":"4.20 Ratti (Vivid Play-of-Color)","carat":3.85,"ratti":4.2,"origin":"Australia","shape":"Oval Cabochon","price":5500,"compareAtPrice":6800,"sku":"LEO-OPL-420","inStock":false,"stockQuantity":0,"priceVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"Draft starter price - Pending admin verification"},{"id":"var-opl-520","name":"5.20 Ratti (Prime Australian Fire)","carat":4.76,"ratti":5.2,"origin":"Australia","shape":"Oval Cabochon","price":6800,"compareAtPrice":8200,"sku":"LEO-OPL-520","inStock":false,"stockQuantity":0,"priceVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"Draft starter price - Pending admin verification"},{"id":"var-opl-750","name":"7.50 Ratti (Rainbow Aurora Fire)","carat":6.86,"ratti":7.5,"origin":"Australia","shape":"Oval Cabochon","price":9800,"compareAtPrice":12000,"sku":"LEO-OPL-750","inStock":false,"stockQuantity":0,"priceVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"Draft starter price - Pending admin verification"}]'::jsonb,
   10,
+  NOW(),
+  NOW()
+)
+ON CONFLICT (id) DO NOTHING;
+
+-- ------------------------------------------------------------------------------
+-- ADDITIONAL POPULAR GEMSTONE VARIETIES (12 DRAFTS)
+-- These are market-popular catalogue candidates, NOT verified LEO Family sales rankings.
+-- They use empty images, a numeric placeholder price of INR 1 (never displayed as a sale price),
+-- zero inventory, unpublished status, unknown natural status, and no pre-created variants.
+-- Every new record uses ON CONFLICT (id) DO NOTHING and cannot overwrite administrator changes.
+-- ------------------------------------------------------------------------------
+-- ------------------------------------------------------------------------------
+-- Product: Amethyst [ID: gem-amethyst, Slug: amethyst-jamunia] — popular catalogue draft, not LEO sales ranking
+-- ------------------------------------------------------------------------------
+INSERT INTO public.gemstone_products (
+  id, slug, name, hindi_name, category, planetary_ruler, primary_deity,
+  benefit, short_description, description, images, price, compare_at_price,
+  sku, stock_quantity, in_stock, is_published, is_featured,
+  certification, specifications, variants, display_order, created_at, updated_at
+)
+VALUES (
+  'gem-amethyst',
+  'amethyst-jamunia',
+  'Amethyst',
+  'Jamunia (जामुनिया)',
+  'Amethyst',
+  'Not assigned - Vedic assessment pending',
+  '',
+  'Popular in gemstone jewellery and collector catalogues; LEO Family has not assigned an astrological suitability claim to this draft record.',
+  'Popular purple quartz variety for jewellery, collections, and gifting.',
+  'Amethyst is a purple variety of quartz used in gemstone jewellery and collections. The identity, natural or treated status, origin, dimensions, cut, and grade of each physical piece must be checked and recorded individually.',
+  '{}'::text[],
+  1,
+  NULL,
+  'LEO-AME-01',
+  0,
+  false,
+  false,
+  false,
+  '{"certified":false,"labName":"","natural":false,"treatment":"Pending gemological verification","verificationStatus":"PENDING_VERIFICATION","naturalStatus":"UNKNOWN"}'::jsonb,
+  '{"origin":"Pending Verification","shape":"Pending Verification","color":"Pending Verification","pricingVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"NO_COMMERCIAL_PRICE_SET — numeric 1 is a database placeholder only; administrator must enter a LEO-approved price.","materialIdentityStatus":"PENDING_VERIFICATION","imageVerificationStatus":"PENDING_UPLOAD","catalogueResearchStatus":"POPULAR_VARIETY_CANDIDATE_NOT_LEO_SALES_RANKING","adminReviewNotice":"POPULAR CATALOGUE DRAFT: This is a market-popular variety candidate, not a verified LEO sales bestseller. Confirm the exact physical material/species, natural or treated status, origin, grade, dimensions, final price, genuine product photographs, certificates, and stock before publication."}'::jsonb,
+  '[]'::jsonb,
+  11,
+  NOW(),
+  NOW()
+)
+ON CONFLICT (id) DO NOTHING;
+
+-- ------------------------------------------------------------------------------
+-- Product: Moonstone [ID: gem-moonstone, Slug: moonstone-chandrakant] — popular catalogue draft, not LEO sales ranking
+-- ------------------------------------------------------------------------------
+INSERT INTO public.gemstone_products (
+  id, slug, name, hindi_name, category, planetary_ruler, primary_deity,
+  benefit, short_description, description, images, price, compare_at_price,
+  sku, stock_quantity, in_stock, is_published, is_featured,
+  certification, specifications, variants, display_order, created_at, updated_at
+)
+VALUES (
+  'gem-moonstone',
+  'moonstone-chandrakant',
+  'Moonstone',
+  'Chandrakant (चंद्रकांत)',
+  'Moonstone',
+  'Not assigned - Vedic assessment pending',
+  '',
+  'Popular in jewellery and gifting collections; individual product details and any Vedic suitability require review.',
+  'Popular feldspar gemstone known for its soft adularescent glow.',
+  'Moonstone is a feldspar gemstone valued for its soft adularescent sheen. The identity, natural or treated status, origin, dimensions, cut, and quality of each physical piece must be verified individually.',
+  '{}'::text[],
+  1,
+  NULL,
+  'LEO-MOO-01',
+  0,
+  false,
+  false,
+  false,
+  '{"certified":false,"labName":"","natural":false,"treatment":"Pending gemological verification","verificationStatus":"PENDING_VERIFICATION","naturalStatus":"UNKNOWN"}'::jsonb,
+  '{"origin":"Pending Verification","shape":"Pending Verification","color":"Pending Verification","pricingVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"NO_COMMERCIAL_PRICE_SET — numeric 1 is a database placeholder only; administrator must enter a LEO-approved price.","materialIdentityStatus":"PENDING_VERIFICATION","imageVerificationStatus":"PENDING_UPLOAD","catalogueResearchStatus":"POPULAR_VARIETY_CANDIDATE_NOT_LEO_SALES_RANKING","adminReviewNotice":"POPULAR CATALOGUE DRAFT: This is a market-popular variety candidate, not a verified LEO sales bestseller. Confirm the exact physical material/species, natural or treated status, origin, grade, dimensions, final price, genuine product photographs, certificates, and stock before publication."}'::jsonb,
+  '[]'::jsonb,
+  12,
+  NOW(),
+  NOW()
+)
+ON CONFLICT (id) DO NOTHING;
+
+-- ------------------------------------------------------------------------------
+-- Product: Labradorite [ID: gem-labradorite, Slug: labradorite] — popular catalogue draft, not LEO sales ranking
+-- ------------------------------------------------------------------------------
+INSERT INTO public.gemstone_products (
+  id, slug, name, hindi_name, category, planetary_ruler, primary_deity,
+  benefit, short_description, description, images, price, compare_at_price,
+  sku, stock_quantity, in_stock, is_published, is_featured,
+  certification, specifications, variants, display_order, created_at, updated_at
+)
+VALUES (
+  'gem-labradorite',
+  'labradorite',
+  'Labradorite',
+  'Labradorite (लैब्राडोराइट)',
+  'Labradorite',
+  'Not assigned - Vedic assessment pending',
+  '',
+  'Popular in decorative jewellery and collector ranges; no astrological suitability is assigned to this draft record.',
+  'Popular feldspar variety with blue, green, or golden labradorescence.',
+  'Labradorite is a feldspar gemstone known for flashes of colour called labradorescence. Each offered piece requires individual identity, treatment, origin, dimensions, and quality review.',
+  '{}'::text[],
+  1,
+  NULL,
+  'LEO-LAB-01',
+  0,
+  false,
+  false,
+  false,
+  '{"certified":false,"labName":"","natural":false,"treatment":"Pending gemological verification","verificationStatus":"PENDING_VERIFICATION","naturalStatus":"UNKNOWN"}'::jsonb,
+  '{"origin":"Pending Verification","shape":"Pending Verification","color":"Pending Verification","pricingVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"NO_COMMERCIAL_PRICE_SET — numeric 1 is a database placeholder only; administrator must enter a LEO-approved price.","materialIdentityStatus":"PENDING_VERIFICATION","imageVerificationStatus":"PENDING_UPLOAD","catalogueResearchStatus":"POPULAR_VARIETY_CANDIDATE_NOT_LEO_SALES_RANKING","adminReviewNotice":"POPULAR CATALOGUE DRAFT: This is a market-popular variety candidate, not a verified LEO sales bestseller. Confirm the exact physical material/species, natural or treated status, origin, grade, dimensions, final price, genuine product photographs, certificates, and stock before publication."}'::jsonb,
+  '[]'::jsonb,
+  13,
+  NOW(),
+  NOW()
+)
+ON CONFLICT (id) DO NOTHING;
+
+-- ------------------------------------------------------------------------------
+-- Product: Garnet [ID: gem-garnet, Slug: garnet-raktamani] — popular catalogue draft, not LEO sales ranking
+-- ------------------------------------------------------------------------------
+INSERT INTO public.gemstone_products (
+  id, slug, name, hindi_name, category, planetary_ruler, primary_deity,
+  benefit, short_description, description, images, price, compare_at_price,
+  sku, stock_quantity, in_stock, is_published, is_featured,
+  certification, specifications, variants, display_order, created_at, updated_at
+)
+VALUES (
+  'gem-garnet',
+  'garnet-raktamani',
+  'Garnet',
+  'Raktamani (रक्तमणि)',
+  'Garnet',
+  'Not assigned - Vedic assessment pending',
+  '',
+  'Popular across jewellery and faceted-stone collections; confirm the exact garnet species before any product claim or Jyotish recommendation.',
+  'A broad gemstone family available in several colours and varieties.',
+  'Garnet is a group of silicate minerals found in multiple colours and species. The specific garnet variety, natural or treated status, origin, dimensions, cut, and grade must be identified for each physical item.',
+  '{}'::text[],
+  1,
+  NULL,
+  'LEO-GAR-01',
+  0,
+  false,
+  false,
+  false,
+  '{"certified":false,"labName":"","natural":false,"treatment":"Pending gemological verification","verificationStatus":"PENDING_VERIFICATION","naturalStatus":"UNKNOWN"}'::jsonb,
+  '{"origin":"Pending Verification","shape":"Pending Verification","color":"Pending Verification","pricingVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"NO_COMMERCIAL_PRICE_SET — numeric 1 is a database placeholder only; administrator must enter a LEO-approved price.","materialIdentityStatus":"PENDING_VERIFICATION","imageVerificationStatus":"PENDING_UPLOAD","catalogueResearchStatus":"POPULAR_VARIETY_CANDIDATE_NOT_LEO_SALES_RANKING","adminReviewNotice":"POPULAR CATALOGUE DRAFT: This is a market-popular variety candidate, not a verified LEO sales bestseller. Confirm the exact physical material/species, natural or treated status, origin, grade, dimensions, final price, genuine product photographs, certificates, and stock before publication."}'::jsonb,
+  '[]'::jsonb,
+  14,
+  NOW(),
+  NOW()
+)
+ON CONFLICT (id) DO NOTHING;
+
+-- ------------------------------------------------------------------------------
+-- Product: Carnelian [ID: gem-carnelian, Slug: carnelian-aqeeq] — popular catalogue draft, not LEO sales ranking
+-- ------------------------------------------------------------------------------
+INSERT INTO public.gemstone_products (
+  id, slug, name, hindi_name, category, planetary_ruler, primary_deity,
+  benefit, short_description, description, images, price, compare_at_price,
+  sku, stock_quantity, in_stock, is_published, is_featured,
+  certification, specifications, variants, display_order, created_at, updated_at
+)
+VALUES (
+  'gem-carnelian',
+  'carnelian-aqeeq',
+  'Carnelian',
+  'Aqeeq (अकीक)',
+  'Carnelian',
+  'Not assigned - Vedic assessment pending',
+  '',
+  'Popular in beads, cabochons, and jewellery; no medical or guaranteed astrological outcome is claimed.',
+  'Warm orange to reddish chalcedony used in beads and jewellery.',
+  'Carnelian is an orange to reddish variety of chalcedony. Each physical piece requires verification of material identity, colour, treatment, origin, dimensions, and workmanship.',
+  '{}'::text[],
+  1,
+  NULL,
+  'LEO-CAR-01',
+  0,
+  false,
+  false,
+  false,
+  '{"certified":false,"labName":"","natural":false,"treatment":"Pending gemological verification","verificationStatus":"PENDING_VERIFICATION","naturalStatus":"UNKNOWN"}'::jsonb,
+  '{"origin":"Pending Verification","shape":"Pending Verification","color":"Pending Verification","pricingVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"NO_COMMERCIAL_PRICE_SET — numeric 1 is a database placeholder only; administrator must enter a LEO-approved price.","materialIdentityStatus":"PENDING_VERIFICATION","imageVerificationStatus":"PENDING_UPLOAD","catalogueResearchStatus":"POPULAR_VARIETY_CANDIDATE_NOT_LEO_SALES_RANKING","adminReviewNotice":"POPULAR CATALOGUE DRAFT: This is a market-popular variety candidate, not a verified LEO sales bestseller. Confirm the exact physical material/species, natural or treated status, origin, grade, dimensions, final price, genuine product photographs, certificates, and stock before publication."}'::jsonb,
+  '[]'::jsonb,
+  15,
+  NOW(),
+  NOW()
+)
+ON CONFLICT (id) DO NOTHING;
+
+-- ------------------------------------------------------------------------------
+-- Product: Turquoise [ID: gem-turquoise, Slug: turquoise-firoza] — popular catalogue draft, not LEO sales ranking
+-- ------------------------------------------------------------------------------
+INSERT INTO public.gemstone_products (
+  id, slug, name, hindi_name, category, planetary_ruler, primary_deity,
+  benefit, short_description, description, images, price, compare_at_price,
+  sku, stock_quantity, in_stock, is_published, is_featured,
+  certification, specifications, variants, display_order, created_at, updated_at
+)
+VALUES (
+  'gem-turquoise',
+  'turquoise-firoza',
+  'Turquoise',
+  'Firoza (फ़िरोज़ा)',
+  'Turquoise',
+  'Not assigned - Vedic assessment pending',
+  '',
+  'Popular in jewellery and traditional ornament; disclose stabilisation, treatment, and composite status for each physical piece.',
+  'Blue to green ornamental gemstone widely used in jewellery.',
+  'Turquoise is a blue-to-green phosphate gemstone that may be stabilised or treated in the trade. Each piece must be checked for identity, treatment or stabilisation, origin, and any backing or composite construction before sale.',
+  '{}'::text[],
+  1,
+  NULL,
+  'LEO-TUR-01',
+  0,
+  false,
+  false,
+  false,
+  '{"certified":false,"labName":"","natural":false,"treatment":"Pending gemological verification","verificationStatus":"PENDING_VERIFICATION","naturalStatus":"UNKNOWN"}'::jsonb,
+  '{"origin":"Pending Verification","shape":"Pending Verification","color":"Pending Verification","pricingVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"NO_COMMERCIAL_PRICE_SET — numeric 1 is a database placeholder only; administrator must enter a LEO-approved price.","materialIdentityStatus":"PENDING_VERIFICATION","imageVerificationStatus":"PENDING_UPLOAD","catalogueResearchStatus":"POPULAR_VARIETY_CANDIDATE_NOT_LEO_SALES_RANKING","adminReviewNotice":"POPULAR CATALOGUE DRAFT: This is a market-popular variety candidate, not a verified LEO sales bestseller. Confirm the exact physical material/species, natural or treated status, origin, grade, dimensions, final price, genuine product photographs, certificates, and stock before publication."}'::jsonb,
+  '[]'::jsonb,
+  16,
+  NOW(),
+  NOW()
+)
+ON CONFLICT (id) DO NOTHING;
+
+-- ------------------------------------------------------------------------------
+-- Product: Citrine [ID: gem-citrine, Slug: citrine-sunela] — popular catalogue draft, not LEO sales ranking
+-- ------------------------------------------------------------------------------
+INSERT INTO public.gemstone_products (
+  id, slug, name, hindi_name, category, planetary_ruler, primary_deity,
+  benefit, short_description, description, images, price, compare_at_price,
+  sku, stock_quantity, in_stock, is_published, is_featured,
+  certification, specifications, variants, display_order, created_at, updated_at
+)
+VALUES (
+  'gem-citrine',
+  'citrine-sunela',
+  'Citrine',
+  'Sunela (सुनेला)',
+  'Citrine',
+  'Not assigned - Vedic assessment pending',
+  '',
+  'Popular in jewellery and gifting ranges; no untreated or natural-origin claim is made for this draft record.',
+  'Yellow to golden quartz variety used in jewellery and decorative stones.',
+  'Citrine is a yellow-to-golden variety of quartz. As some commercial material may be heat-treated or described under trade names, the identity and treatment of each physical piece must be verified and disclosed.',
+  '{}'::text[],
+  1,
+  NULL,
+  'LEO-CIT-01',
+  0,
+  false,
+  false,
+  false,
+  '{"certified":false,"labName":"","natural":false,"treatment":"Pending gemological verification","verificationStatus":"PENDING_VERIFICATION","naturalStatus":"UNKNOWN"}'::jsonb,
+  '{"origin":"Pending Verification","shape":"Pending Verification","color":"Pending Verification","pricingVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"NO_COMMERCIAL_PRICE_SET — numeric 1 is a database placeholder only; administrator must enter a LEO-approved price.","materialIdentityStatus":"PENDING_VERIFICATION","imageVerificationStatus":"PENDING_UPLOAD","catalogueResearchStatus":"POPULAR_VARIETY_CANDIDATE_NOT_LEO_SALES_RANKING","adminReviewNotice":"POPULAR CATALOGUE DRAFT: This is a market-popular variety candidate, not a verified LEO sales bestseller. Confirm the exact physical material/species, natural or treated status, origin, grade, dimensions, final price, genuine product photographs, certificates, and stock before publication."}'::jsonb,
+  '[]'::jsonb,
+  17,
+  NOW(),
+  NOW()
+)
+ON CONFLICT (id) DO NOTHING;
+
+-- ------------------------------------------------------------------------------
+-- Product: Peridot [ID: gem-peridot, Slug: peridot] — popular catalogue draft, not LEO sales ranking
+-- ------------------------------------------------------------------------------
+INSERT INTO public.gemstone_products (
+  id, slug, name, hindi_name, category, planetary_ruler, primary_deity,
+  benefit, short_description, description, images, price, compare_at_price,
+  sku, stock_quantity, in_stock, is_published, is_featured,
+  certification, specifications, variants, display_order, created_at, updated_at
+)
+VALUES (
+  'gem-peridot',
+  'peridot',
+  'Peridot',
+  'Peridot (पेरिडॉट)',
+  'Peridot',
+  'Not assigned - Vedic assessment pending',
+  '',
+  'Popular in coloured-stone jewellery; individual material and grade details require administrator review.',
+  'Distinctive yellow-green gemstone variety of olivine.',
+  'Peridot is the gem variety of olivine and is commonly recognised by its yellow-green colour. The physical stone''s identity, origin, dimensions, cut, and quality must be verified individually.',
+  '{}'::text[],
+  1,
+  NULL,
+  'LEO-PER-01',
+  0,
+  false,
+  false,
+  false,
+  '{"certified":false,"labName":"","natural":false,"treatment":"Pending gemological verification","verificationStatus":"PENDING_VERIFICATION","naturalStatus":"UNKNOWN"}'::jsonb,
+  '{"origin":"Pending Verification","shape":"Pending Verification","color":"Pending Verification","pricingVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"NO_COMMERCIAL_PRICE_SET — numeric 1 is a database placeholder only; administrator must enter a LEO-approved price.","materialIdentityStatus":"PENDING_VERIFICATION","imageVerificationStatus":"PENDING_UPLOAD","catalogueResearchStatus":"POPULAR_VARIETY_CANDIDATE_NOT_LEO_SALES_RANKING","adminReviewNotice":"POPULAR CATALOGUE DRAFT: This is a market-popular variety candidate, not a verified LEO sales bestseller. Confirm the exact physical material/species, natural or treated status, origin, grade, dimensions, final price, genuine product photographs, certificates, and stock before publication."}'::jsonb,
+  '[]'::jsonb,
+  18,
+  NOW(),
+  NOW()
+)
+ON CONFLICT (id) DO NOTHING;
+
+-- ------------------------------------------------------------------------------
+-- Product: Lapis Lazuli [ID: gem-lapis-lazuli, Slug: lapis-lazuli-lajward] — popular catalogue draft, not LEO sales ranking
+-- ------------------------------------------------------------------------------
+INSERT INTO public.gemstone_products (
+  id, slug, name, hindi_name, category, planetary_ruler, primary_deity,
+  benefit, short_description, description, images, price, compare_at_price,
+  sku, stock_quantity, in_stock, is_published, is_featured,
+  certification, specifications, variants, display_order, created_at, updated_at
+)
+VALUES (
+  'gem-lapis-lazuli',
+  'lapis-lazuli-lajward',
+  'Lapis Lazuli',
+  'Lajward (लाजवर्द)',
+  'Lapis Lazuli',
+  'Not assigned - Vedic assessment pending',
+  '',
+  'Popular in beads, cabochons, and ornamental jewellery; disclose treatment and composite status after inspection.',
+  'Deep blue ornamental rock traditionally used in beads and cabochons.',
+  'Lapis lazuli is a blue rock composed mainly of lazurite with other mineral constituents. Each physical item must be checked for composition, dyes, stabilisation, inclusions, and any assembled or composite construction.',
+  '{}'::text[],
+  1,
+  NULL,
+  'LEO-LAP-01',
+  0,
+  false,
+  false,
+  false,
+  '{"certified":false,"labName":"","natural":false,"treatment":"Pending gemological verification","verificationStatus":"PENDING_VERIFICATION","naturalStatus":"UNKNOWN"}'::jsonb,
+  '{"origin":"Pending Verification","shape":"Pending Verification","color":"Pending Verification","pricingVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"NO_COMMERCIAL_PRICE_SET — numeric 1 is a database placeholder only; administrator must enter a LEO-approved price.","materialIdentityStatus":"PENDING_VERIFICATION","imageVerificationStatus":"PENDING_UPLOAD","catalogueResearchStatus":"POPULAR_VARIETY_CANDIDATE_NOT_LEO_SALES_RANKING","adminReviewNotice":"POPULAR CATALOGUE DRAFT: This is a market-popular variety candidate, not a verified LEO sales bestseller. Confirm the exact physical material/species, natural or treated status, origin, grade, dimensions, final price, genuine product photographs, certificates, and stock before publication."}'::jsonb,
+  '[]'::jsonb,
+  19,
+  NOW(),
+  NOW()
+)
+ON CONFLICT (id) DO NOTHING;
+
+-- ------------------------------------------------------------------------------
+-- Product: Tourmaline [ID: gem-tourmaline, Slug: tourmaline] — popular catalogue draft, not LEO sales ranking
+-- ------------------------------------------------------------------------------
+INSERT INTO public.gemstone_products (
+  id, slug, name, hindi_name, category, planetary_ruler, primary_deity,
+  benefit, short_description, description, images, price, compare_at_price,
+  sku, stock_quantity, in_stock, is_published, is_featured,
+  certification, specifications, variants, display_order, created_at, updated_at
+)
+VALUES (
+  'gem-tourmaline',
+  'tourmaline',
+  'Tourmaline',
+  'Tourmaline (टूरमलीन)',
+  'Tourmaline',
+  'Not assigned - Vedic assessment pending',
+  '',
+  'Popular for colourful gemstone jewellery; avoid assigning a single material or astrological claim without identification.',
+  'A diverse gemstone group available in a wide range of colours.',
+  'Tourmaline is a complex borosilicate gemstone group with many colour varieties. The specific species or trade variety, treatments, origin, dimensions, and grade must be identified for each physical piece.',
+  '{}'::text[],
+  1,
+  NULL,
+  'LEO-TOU-01',
+  0,
+  false,
+  false,
+  false,
+  '{"certified":false,"labName":"","natural":false,"treatment":"Pending gemological verification","verificationStatus":"PENDING_VERIFICATION","naturalStatus":"UNKNOWN"}'::jsonb,
+  '{"origin":"Pending Verification","shape":"Pending Verification","color":"Pending Verification","pricingVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"NO_COMMERCIAL_PRICE_SET — numeric 1 is a database placeholder only; administrator must enter a LEO-approved price.","materialIdentityStatus":"PENDING_VERIFICATION","imageVerificationStatus":"PENDING_UPLOAD","catalogueResearchStatus":"POPULAR_VARIETY_CANDIDATE_NOT_LEO_SALES_RANKING","adminReviewNotice":"POPULAR CATALOGUE DRAFT: This is a market-popular variety candidate, not a verified LEO sales bestseller. Confirm the exact physical material/species, natural or treated status, origin, grade, dimensions, final price, genuine product photographs, certificates, and stock before publication."}'::jsonb,
+  '[]'::jsonb,
+  20,
+  NOW(),
+  NOW()
+)
+ON CONFLICT (id) DO NOTHING;
+
+-- ------------------------------------------------------------------------------
+-- Product: Chalcedony [ID: gem-chalcedony, Slug: chalcedony] — popular catalogue draft, not LEO sales ranking
+-- ------------------------------------------------------------------------------
+INSERT INTO public.gemstone_products (
+  id, slug, name, hindi_name, category, planetary_ruler, primary_deity,
+  benefit, short_description, description, images, price, compare_at_price,
+  sku, stock_quantity, in_stock, is_published, is_featured,
+  certification, specifications, variants, display_order, created_at, updated_at
+)
+VALUES (
+  'gem-chalcedony',
+  'chalcedony',
+  'Chalcedony',
+  'Chalcedony (कैल्सेडोनी)',
+  'Chalcedony',
+  'Not assigned - Vedic assessment pending',
+  '',
+  'Popular in cabochons, beads, and ornamental jewellery; confirm the exact variety before using any trade or astrological name.',
+  'Translucent to opaque microcrystalline quartz used in many colours.',
+  'Chalcedony is a microcrystalline form of silica that occurs in several colours and trade varieties. Each physical piece must be checked for its specific variety, dyes or treatments, origin, and quality.',
+  '{}'::text[],
+  1,
+  NULL,
+  'LEO-CHA-01',
+  0,
+  false,
+  false,
+  false,
+  '{"certified":false,"labName":"","natural":false,"treatment":"Pending gemological verification","verificationStatus":"PENDING_VERIFICATION","naturalStatus":"UNKNOWN"}'::jsonb,
+  '{"origin":"Pending Verification","shape":"Pending Verification","color":"Pending Verification","pricingVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"NO_COMMERCIAL_PRICE_SET — numeric 1 is a database placeholder only; administrator must enter a LEO-approved price.","materialIdentityStatus":"PENDING_VERIFICATION","imageVerificationStatus":"PENDING_UPLOAD","catalogueResearchStatus":"POPULAR_VARIETY_CANDIDATE_NOT_LEO_SALES_RANKING","adminReviewNotice":"POPULAR CATALOGUE DRAFT: This is a market-popular variety candidate, not a verified LEO sales bestseller. Confirm the exact physical material/species, natural or treated status, origin, grade, dimensions, final price, genuine product photographs, certificates, and stock before publication."}'::jsonb,
+  '[]'::jsonb,
+  21,
+  NOW(),
+  NOW()
+)
+ON CONFLICT (id) DO NOTHING;
+
+-- ------------------------------------------------------------------------------
+-- Product: Amber [ID: gem-amber, Slug: amber-kahruba] — popular catalogue draft, not LEO sales ranking
+-- ------------------------------------------------------------------------------
+INSERT INTO public.gemstone_products (
+  id, slug, name, hindi_name, category, planetary_ruler, primary_deity,
+  benefit, short_description, description, images, price, compare_at_price,
+  sku, stock_quantity, in_stock, is_published, is_featured,
+  certification, specifications, variants, display_order, created_at, updated_at
+)
+VALUES (
+  'gem-amber',
+  'amber-kahruba',
+  'Amber',
+  'Kahruba (कहरूबा)',
+  'Amber',
+  'Not assigned - Vedic assessment pending',
+  '',
+  'Popular in beads and ornamental jewellery; distinguish natural amber from pressed, reconstructed, and imitation materials.',
+  'Fossilised tree resin used in beads, pendants, and ornaments.',
+  'Amber is fossilised tree resin rather than a mineral gemstone. Each piece should be checked for natural resin identity, pressed or reconstructed material, imitation plastic, treatments, and origin before it is described or sold.',
+  '{}'::text[],
+  1,
+  NULL,
+  'LEO-AMB-01',
+  0,
+  false,
+  false,
+  false,
+  '{"certified":false,"labName":"","natural":false,"treatment":"Pending gemological verification","verificationStatus":"PENDING_VERIFICATION","naturalStatus":"UNKNOWN"}'::jsonb,
+  '{"origin":"Pending Verification","shape":"Pending Verification","color":"Pending Verification","pricingVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"NO_COMMERCIAL_PRICE_SET — numeric 1 is a database placeholder only; administrator must enter a LEO-approved price.","materialIdentityStatus":"PENDING_VERIFICATION","imageVerificationStatus":"PENDING_UPLOAD","catalogueResearchStatus":"POPULAR_VARIETY_CANDIDATE_NOT_LEO_SALES_RANKING","adminReviewNotice":"POPULAR CATALOGUE DRAFT: This is a market-popular variety candidate, not a verified LEO sales bestseller. Confirm the exact physical material/species, natural or treated status, origin, grade, dimensions, final price, genuine product photographs, certificates, and stock before publication."}'::jsonb,
+  '[]'::jsonb,
+  22,
   NOW(),
   NOW()
 )

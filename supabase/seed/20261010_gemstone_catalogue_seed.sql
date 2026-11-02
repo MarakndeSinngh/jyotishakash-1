@@ -3,8 +3,8 @@
 -- Migration / Seed: supabase/seed/20261010_gemstone_catalogue_seed.sql
 -- Target Table: public.gemstone_products
 --
--- AUDIT & COMPLIANCE REQUIREMENTS MET:
--- 1. Exact data from src/data/gemstoneCatalogueData.ts (9 Vedic gemstones + Opal).
+-- AUDIT & COMPLIANCE REQUIREMENTS:
+-- 1. Preserves 10 existing gemstone identifiers and adds 12 popular variety draft candidates.
 -- 2. Fully unpublished by default: is_published = false.
 -- 3. Inventory set to zero and unavailable: stock_quantity = 0, in_stock = false.
 --    Variant inventory is also set to 0 and inStock = false to prevent ordering.
@@ -19,7 +19,7 @@
 --    and keeps unpublished until administrator confirms material and corrects specifications.
 -- 7. Starter prices flagged as unverified draft reference values for admin review.
 -- 8. Safe & idempotent: ON CONFLICT (id) DO NOTHING (never overwrites admin edits).
--- 9. Zero destructive operations (no DROP, TRUNCATE, DELETE).
+-- 9. Zero destructive operations (no DROP, TRUNCATE, DELETE). New candidates are drafts only; no live product data is overwritten.
 -- ==============================================================================
 
 DO $$
@@ -592,6 +592,457 @@ VALUES (
   '{"caratWeight":"5.20 Ratti / 4.76 Carat","origin":"Coober Pedy (Australia)","shape":"Oval Cabochon","color":"Milky White with Multi-Color Fire","transparency":"Semi-Translucent with Full Play of Color","energizationStatus":"Shukra Vedic Consecration","metalRecommendation":"Pure Silver or White Gold","wearingFinger":"Middle or Little Finger of Right Hand","wearingDayMuhurat":"Friday Morning at Sunrise","pricingVerificationStatus":"UNVERIFIED_DRAFT_PRICE","imageVerificationStatus":"PENDING_UPLOAD","adminReviewNotice":"PENDING ASSET UPLOAD: No authentic Opal photograph exists in project assets (do not use diamond.jpg). Upload verified Australian Opal photographs via Admin Panel before publishing.","certificationStatus":"PENDING_LAB_VERIFICATION","authenticityGuarantee":"UNVERIFIED_NO_LAB_CERTIFICATE"}'::jsonb,
   '[{"id":"var-opl-420","name":"4.20 Ratti (Vivid Play-of-Color)","carat":3.85,"ratti":4.2,"origin":"Australia","shape":"Oval Cabochon","price":5500,"compareAtPrice":6800,"sku":"LEO-OPL-420","inStock":false,"stockQuantity":0,"priceNote":"Draft starter price - Pending admin verification"},{"id":"var-opl-520","name":"5.20 Ratti (Prime Australian Fire)","carat":4.76,"ratti":5.2,"origin":"Australia","shape":"Oval Cabochon","price":6800,"compareAtPrice":8200,"sku":"LEO-OPL-520","inStock":false,"stockQuantity":0,"priceNote":"Draft starter price - Pending admin verification"},{"id":"var-opl-750","name":"7.50 Ratti (Rainbow Aurora Fire)","carat":6.86,"ratti":7.5,"origin":"Australia","shape":"Oval Cabochon","price":9800,"compareAtPrice":12000,"sku":"LEO-OPL-750","inStock":false,"stockQuantity":0,"priceNote":"Draft starter price - Pending admin verification"}]'::jsonb,
   10,
+  NOW(),
+  NOW()
+)
+ON CONFLICT (id) DO NOTHING;
+
+-- ------------------------------------------------------------------------------
+-- ADDITIONAL POPULAR GEMSTONE VARIETIES (12 DRAFTS)
+-- These are market-popular catalogue candidates, NOT verified LEO Family sales rankings.
+-- They use empty images, a numeric placeholder price of INR 1 (never displayed as a sale price),
+-- zero inventory, unpublished status, unknown natural status, and no pre-created variants.
+-- Every new record uses ON CONFLICT (id) DO NOTHING and cannot overwrite administrator changes.
+-- ------------------------------------------------------------------------------
+-- ------------------------------------------------------------------------------
+-- Product: Amethyst [ID: gem-amethyst, Slug: amethyst-jamunia] — popular catalogue draft, not LEO sales ranking
+-- ------------------------------------------------------------------------------
+INSERT INTO public.gemstone_products (
+  id, slug, name, hindi_name, category, planetary_ruler, primary_deity,
+  benefit, short_description, description, images, price, compare_at_price,
+  sku, stock_quantity, in_stock, is_published, is_featured,
+  certification, specifications, variants, display_order, created_at, updated_at
+)
+VALUES (
+  'gem-amethyst',
+  'amethyst-jamunia',
+  'Amethyst',
+  'Jamunia (जामुनिया)',
+  'Amethyst',
+  'Not assigned - Vedic assessment pending',
+  '',
+  'Popular in gemstone jewellery and collector catalogues; LEO Family has not assigned an astrological suitability claim to this draft record.',
+  'Popular purple quartz variety for jewellery, collections, and gifting.',
+  'Amethyst is a purple variety of quartz used in gemstone jewellery and collections. The identity, natural or treated status, origin, dimensions, cut, and grade of each physical piece must be checked and recorded individually.',
+  '{}'::text[],
+  1,
+  NULL,
+  'LEO-AME-01',
+  0,
+  false,
+  false,
+  false,
+  '{"certified":false,"labName":"","natural":false,"treatment":"Pending gemological verification","verificationStatus":"PENDING_VERIFICATION","naturalStatus":"UNKNOWN"}'::jsonb,
+  '{"origin":"Pending Verification","shape":"Pending Verification","color":"Pending Verification","pricingVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"NO_COMMERCIAL_PRICE_SET — numeric 1 is a database placeholder only; administrator must enter a LEO-approved price.","materialIdentityStatus":"PENDING_VERIFICATION","imageVerificationStatus":"PENDING_UPLOAD","catalogueResearchStatus":"POPULAR_VARIETY_CANDIDATE_NOT_LEO_SALES_RANKING","adminReviewNotice":"POPULAR CATALOGUE DRAFT: This is a market-popular variety candidate, not a verified LEO sales bestseller. Confirm the exact physical material/species, natural or treated status, origin, grade, dimensions, final price, genuine product photographs, certificates, and stock before publication."}'::jsonb,
+  '[]'::jsonb,
+  11,
+  NOW(),
+  NOW()
+)
+ON CONFLICT (id) DO NOTHING;
+
+-- ------------------------------------------------------------------------------
+-- Product: Moonstone [ID: gem-moonstone, Slug: moonstone-chandrakant] — popular catalogue draft, not LEO sales ranking
+-- ------------------------------------------------------------------------------
+INSERT INTO public.gemstone_products (
+  id, slug, name, hindi_name, category, planetary_ruler, primary_deity,
+  benefit, short_description, description, images, price, compare_at_price,
+  sku, stock_quantity, in_stock, is_published, is_featured,
+  certification, specifications, variants, display_order, created_at, updated_at
+)
+VALUES (
+  'gem-moonstone',
+  'moonstone-chandrakant',
+  'Moonstone',
+  'Chandrakant (चंद्रकांत)',
+  'Moonstone',
+  'Not assigned - Vedic assessment pending',
+  '',
+  'Popular in jewellery and gifting collections; individual product details and any Vedic suitability require review.',
+  'Popular feldspar gemstone known for its soft adularescent glow.',
+  'Moonstone is a feldspar gemstone valued for its soft adularescent sheen. The identity, natural or treated status, origin, dimensions, cut, and quality of each physical piece must be verified individually.',
+  '{}'::text[],
+  1,
+  NULL,
+  'LEO-MOO-01',
+  0,
+  false,
+  false,
+  false,
+  '{"certified":false,"labName":"","natural":false,"treatment":"Pending gemological verification","verificationStatus":"PENDING_VERIFICATION","naturalStatus":"UNKNOWN"}'::jsonb,
+  '{"origin":"Pending Verification","shape":"Pending Verification","color":"Pending Verification","pricingVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"NO_COMMERCIAL_PRICE_SET — numeric 1 is a database placeholder only; administrator must enter a LEO-approved price.","materialIdentityStatus":"PENDING_VERIFICATION","imageVerificationStatus":"PENDING_UPLOAD","catalogueResearchStatus":"POPULAR_VARIETY_CANDIDATE_NOT_LEO_SALES_RANKING","adminReviewNotice":"POPULAR CATALOGUE DRAFT: This is a market-popular variety candidate, not a verified LEO sales bestseller. Confirm the exact physical material/species, natural or treated status, origin, grade, dimensions, final price, genuine product photographs, certificates, and stock before publication."}'::jsonb,
+  '[]'::jsonb,
+  12,
+  NOW(),
+  NOW()
+)
+ON CONFLICT (id) DO NOTHING;
+
+-- ------------------------------------------------------------------------------
+-- Product: Labradorite [ID: gem-labradorite, Slug: labradorite] — popular catalogue draft, not LEO sales ranking
+-- ------------------------------------------------------------------------------
+INSERT INTO public.gemstone_products (
+  id, slug, name, hindi_name, category, planetary_ruler, primary_deity,
+  benefit, short_description, description, images, price, compare_at_price,
+  sku, stock_quantity, in_stock, is_published, is_featured,
+  certification, specifications, variants, display_order, created_at, updated_at
+)
+VALUES (
+  'gem-labradorite',
+  'labradorite',
+  'Labradorite',
+  'Labradorite (लैब्राडोराइट)',
+  'Labradorite',
+  'Not assigned - Vedic assessment pending',
+  '',
+  'Popular in decorative jewellery and collector ranges; no astrological suitability is assigned to this draft record.',
+  'Popular feldspar variety with blue, green, or golden labradorescence.',
+  'Labradorite is a feldspar gemstone known for flashes of colour called labradorescence. Each offered piece requires individual identity, treatment, origin, dimensions, and quality review.',
+  '{}'::text[],
+  1,
+  NULL,
+  'LEO-LAB-01',
+  0,
+  false,
+  false,
+  false,
+  '{"certified":false,"labName":"","natural":false,"treatment":"Pending gemological verification","verificationStatus":"PENDING_VERIFICATION","naturalStatus":"UNKNOWN"}'::jsonb,
+  '{"origin":"Pending Verification","shape":"Pending Verification","color":"Pending Verification","pricingVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"NO_COMMERCIAL_PRICE_SET — numeric 1 is a database placeholder only; administrator must enter a LEO-approved price.","materialIdentityStatus":"PENDING_VERIFICATION","imageVerificationStatus":"PENDING_UPLOAD","catalogueResearchStatus":"POPULAR_VARIETY_CANDIDATE_NOT_LEO_SALES_RANKING","adminReviewNotice":"POPULAR CATALOGUE DRAFT: This is a market-popular variety candidate, not a verified LEO sales bestseller. Confirm the exact physical material/species, natural or treated status, origin, grade, dimensions, final price, genuine product photographs, certificates, and stock before publication."}'::jsonb,
+  '[]'::jsonb,
+  13,
+  NOW(),
+  NOW()
+)
+ON CONFLICT (id) DO NOTHING;
+
+-- ------------------------------------------------------------------------------
+-- Product: Garnet [ID: gem-garnet, Slug: garnet-raktamani] — popular catalogue draft, not LEO sales ranking
+-- ------------------------------------------------------------------------------
+INSERT INTO public.gemstone_products (
+  id, slug, name, hindi_name, category, planetary_ruler, primary_deity,
+  benefit, short_description, description, images, price, compare_at_price,
+  sku, stock_quantity, in_stock, is_published, is_featured,
+  certification, specifications, variants, display_order, created_at, updated_at
+)
+VALUES (
+  'gem-garnet',
+  'garnet-raktamani',
+  'Garnet',
+  'Raktamani (रक्तमणि)',
+  'Garnet',
+  'Not assigned - Vedic assessment pending',
+  '',
+  'Popular across jewellery and faceted-stone collections; confirm the exact garnet species before any product claim or Jyotish recommendation.',
+  'A broad gemstone family available in several colours and varieties.',
+  'Garnet is a group of silicate minerals found in multiple colours and species. The specific garnet variety, natural or treated status, origin, dimensions, cut, and grade must be identified for each physical item.',
+  '{}'::text[],
+  1,
+  NULL,
+  'LEO-GAR-01',
+  0,
+  false,
+  false,
+  false,
+  '{"certified":false,"labName":"","natural":false,"treatment":"Pending gemological verification","verificationStatus":"PENDING_VERIFICATION","naturalStatus":"UNKNOWN"}'::jsonb,
+  '{"origin":"Pending Verification","shape":"Pending Verification","color":"Pending Verification","pricingVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"NO_COMMERCIAL_PRICE_SET — numeric 1 is a database placeholder only; administrator must enter a LEO-approved price.","materialIdentityStatus":"PENDING_VERIFICATION","imageVerificationStatus":"PENDING_UPLOAD","catalogueResearchStatus":"POPULAR_VARIETY_CANDIDATE_NOT_LEO_SALES_RANKING","adminReviewNotice":"POPULAR CATALOGUE DRAFT: This is a market-popular variety candidate, not a verified LEO sales bestseller. Confirm the exact physical material/species, natural or treated status, origin, grade, dimensions, final price, genuine product photographs, certificates, and stock before publication."}'::jsonb,
+  '[]'::jsonb,
+  14,
+  NOW(),
+  NOW()
+)
+ON CONFLICT (id) DO NOTHING;
+
+-- ------------------------------------------------------------------------------
+-- Product: Carnelian [ID: gem-carnelian, Slug: carnelian-aqeeq] — popular catalogue draft, not LEO sales ranking
+-- ------------------------------------------------------------------------------
+INSERT INTO public.gemstone_products (
+  id, slug, name, hindi_name, category, planetary_ruler, primary_deity,
+  benefit, short_description, description, images, price, compare_at_price,
+  sku, stock_quantity, in_stock, is_published, is_featured,
+  certification, specifications, variants, display_order, created_at, updated_at
+)
+VALUES (
+  'gem-carnelian',
+  'carnelian-aqeeq',
+  'Carnelian',
+  'Aqeeq (अकीक)',
+  'Carnelian',
+  'Not assigned - Vedic assessment pending',
+  '',
+  'Popular in beads, cabochons, and jewellery; no medical or guaranteed astrological outcome is claimed.',
+  'Warm orange to reddish chalcedony used in beads and jewellery.',
+  'Carnelian is an orange to reddish variety of chalcedony. Each physical piece requires verification of material identity, colour, treatment, origin, dimensions, and workmanship.',
+  '{}'::text[],
+  1,
+  NULL,
+  'LEO-CAR-01',
+  0,
+  false,
+  false,
+  false,
+  '{"certified":false,"labName":"","natural":false,"treatment":"Pending gemological verification","verificationStatus":"PENDING_VERIFICATION","naturalStatus":"UNKNOWN"}'::jsonb,
+  '{"origin":"Pending Verification","shape":"Pending Verification","color":"Pending Verification","pricingVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"NO_COMMERCIAL_PRICE_SET — numeric 1 is a database placeholder only; administrator must enter a LEO-approved price.","materialIdentityStatus":"PENDING_VERIFICATION","imageVerificationStatus":"PENDING_UPLOAD","catalogueResearchStatus":"POPULAR_VARIETY_CANDIDATE_NOT_LEO_SALES_RANKING","adminReviewNotice":"POPULAR CATALOGUE DRAFT: This is a market-popular variety candidate, not a verified LEO sales bestseller. Confirm the exact physical material/species, natural or treated status, origin, grade, dimensions, final price, genuine product photographs, certificates, and stock before publication."}'::jsonb,
+  '[]'::jsonb,
+  15,
+  NOW(),
+  NOW()
+)
+ON CONFLICT (id) DO NOTHING;
+
+-- ------------------------------------------------------------------------------
+-- Product: Turquoise [ID: gem-turquoise, Slug: turquoise-firoza] — popular catalogue draft, not LEO sales ranking
+-- ------------------------------------------------------------------------------
+INSERT INTO public.gemstone_products (
+  id, slug, name, hindi_name, category, planetary_ruler, primary_deity,
+  benefit, short_description, description, images, price, compare_at_price,
+  sku, stock_quantity, in_stock, is_published, is_featured,
+  certification, specifications, variants, display_order, created_at, updated_at
+)
+VALUES (
+  'gem-turquoise',
+  'turquoise-firoza',
+  'Turquoise',
+  'Firoza (फ़िरोज़ा)',
+  'Turquoise',
+  'Not assigned - Vedic assessment pending',
+  '',
+  'Popular in jewellery and traditional ornament; disclose stabilisation, treatment, and composite status for each physical piece.',
+  'Blue to green ornamental gemstone widely used in jewellery.',
+  'Turquoise is a blue-to-green phosphate gemstone that may be stabilised or treated in the trade. Each piece must be checked for identity, treatment or stabilisation, origin, and any backing or composite construction before sale.',
+  '{}'::text[],
+  1,
+  NULL,
+  'LEO-TUR-01',
+  0,
+  false,
+  false,
+  false,
+  '{"certified":false,"labName":"","natural":false,"treatment":"Pending gemological verification","verificationStatus":"PENDING_VERIFICATION","naturalStatus":"UNKNOWN"}'::jsonb,
+  '{"origin":"Pending Verification","shape":"Pending Verification","color":"Pending Verification","pricingVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"NO_COMMERCIAL_PRICE_SET — numeric 1 is a database placeholder only; administrator must enter a LEO-approved price.","materialIdentityStatus":"PENDING_VERIFICATION","imageVerificationStatus":"PENDING_UPLOAD","catalogueResearchStatus":"POPULAR_VARIETY_CANDIDATE_NOT_LEO_SALES_RANKING","adminReviewNotice":"POPULAR CATALOGUE DRAFT: This is a market-popular variety candidate, not a verified LEO sales bestseller. Confirm the exact physical material/species, natural or treated status, origin, grade, dimensions, final price, genuine product photographs, certificates, and stock before publication."}'::jsonb,
+  '[]'::jsonb,
+  16,
+  NOW(),
+  NOW()
+)
+ON CONFLICT (id) DO NOTHING;
+
+-- ------------------------------------------------------------------------------
+-- Product: Citrine [ID: gem-citrine, Slug: citrine-sunela] — popular catalogue draft, not LEO sales ranking
+-- ------------------------------------------------------------------------------
+INSERT INTO public.gemstone_products (
+  id, slug, name, hindi_name, category, planetary_ruler, primary_deity,
+  benefit, short_description, description, images, price, compare_at_price,
+  sku, stock_quantity, in_stock, is_published, is_featured,
+  certification, specifications, variants, display_order, created_at, updated_at
+)
+VALUES (
+  'gem-citrine',
+  'citrine-sunela',
+  'Citrine',
+  'Sunela (सुनेला)',
+  'Citrine',
+  'Not assigned - Vedic assessment pending',
+  '',
+  'Popular in jewellery and gifting ranges; no untreated or natural-origin claim is made for this draft record.',
+  'Yellow to golden quartz variety used in jewellery and decorative stones.',
+  'Citrine is a yellow-to-golden variety of quartz. As some commercial material may be heat-treated or described under trade names, the identity and treatment of each physical piece must be verified and disclosed.',
+  '{}'::text[],
+  1,
+  NULL,
+  'LEO-CIT-01',
+  0,
+  false,
+  false,
+  false,
+  '{"certified":false,"labName":"","natural":false,"treatment":"Pending gemological verification","verificationStatus":"PENDING_VERIFICATION","naturalStatus":"UNKNOWN"}'::jsonb,
+  '{"origin":"Pending Verification","shape":"Pending Verification","color":"Pending Verification","pricingVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"NO_COMMERCIAL_PRICE_SET — numeric 1 is a database placeholder only; administrator must enter a LEO-approved price.","materialIdentityStatus":"PENDING_VERIFICATION","imageVerificationStatus":"PENDING_UPLOAD","catalogueResearchStatus":"POPULAR_VARIETY_CANDIDATE_NOT_LEO_SALES_RANKING","adminReviewNotice":"POPULAR CATALOGUE DRAFT: This is a market-popular variety candidate, not a verified LEO sales bestseller. Confirm the exact physical material/species, natural or treated status, origin, grade, dimensions, final price, genuine product photographs, certificates, and stock before publication."}'::jsonb,
+  '[]'::jsonb,
+  17,
+  NOW(),
+  NOW()
+)
+ON CONFLICT (id) DO NOTHING;
+
+-- ------------------------------------------------------------------------------
+-- Product: Peridot [ID: gem-peridot, Slug: peridot] — popular catalogue draft, not LEO sales ranking
+-- ------------------------------------------------------------------------------
+INSERT INTO public.gemstone_products (
+  id, slug, name, hindi_name, category, planetary_ruler, primary_deity,
+  benefit, short_description, description, images, price, compare_at_price,
+  sku, stock_quantity, in_stock, is_published, is_featured,
+  certification, specifications, variants, display_order, created_at, updated_at
+)
+VALUES (
+  'gem-peridot',
+  'peridot',
+  'Peridot',
+  'Peridot (पेरिडॉट)',
+  'Peridot',
+  'Not assigned - Vedic assessment pending',
+  '',
+  'Popular in coloured-stone jewellery; individual material and grade details require administrator review.',
+  'Distinctive yellow-green gemstone variety of olivine.',
+  'Peridot is the gem variety of olivine and is commonly recognised by its yellow-green colour. The physical stone''s identity, origin, dimensions, cut, and quality must be verified individually.',
+  '{}'::text[],
+  1,
+  NULL,
+  'LEO-PER-01',
+  0,
+  false,
+  false,
+  false,
+  '{"certified":false,"labName":"","natural":false,"treatment":"Pending gemological verification","verificationStatus":"PENDING_VERIFICATION","naturalStatus":"UNKNOWN"}'::jsonb,
+  '{"origin":"Pending Verification","shape":"Pending Verification","color":"Pending Verification","pricingVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"NO_COMMERCIAL_PRICE_SET — numeric 1 is a database placeholder only; administrator must enter a LEO-approved price.","materialIdentityStatus":"PENDING_VERIFICATION","imageVerificationStatus":"PENDING_UPLOAD","catalogueResearchStatus":"POPULAR_VARIETY_CANDIDATE_NOT_LEO_SALES_RANKING","adminReviewNotice":"POPULAR CATALOGUE DRAFT: This is a market-popular variety candidate, not a verified LEO sales bestseller. Confirm the exact physical material/species, natural or treated status, origin, grade, dimensions, final price, genuine product photographs, certificates, and stock before publication."}'::jsonb,
+  '[]'::jsonb,
+  18,
+  NOW(),
+  NOW()
+)
+ON CONFLICT (id) DO NOTHING;
+
+-- ------------------------------------------------------------------------------
+-- Product: Lapis Lazuli [ID: gem-lapis-lazuli, Slug: lapis-lazuli-lajward] — popular catalogue draft, not LEO sales ranking
+-- ------------------------------------------------------------------------------
+INSERT INTO public.gemstone_products (
+  id, slug, name, hindi_name, category, planetary_ruler, primary_deity,
+  benefit, short_description, description, images, price, compare_at_price,
+  sku, stock_quantity, in_stock, is_published, is_featured,
+  certification, specifications, variants, display_order, created_at, updated_at
+)
+VALUES (
+  'gem-lapis-lazuli',
+  'lapis-lazuli-lajward',
+  'Lapis Lazuli',
+  'Lajward (लाजवर्द)',
+  'Lapis Lazuli',
+  'Not assigned - Vedic assessment pending',
+  '',
+  'Popular in beads, cabochons, and ornamental jewellery; disclose treatment and composite status after inspection.',
+  'Deep blue ornamental rock traditionally used in beads and cabochons.',
+  'Lapis lazuli is a blue rock composed mainly of lazurite with other mineral constituents. Each physical item must be checked for composition, dyes, stabilisation, inclusions, and any assembled or composite construction.',
+  '{}'::text[],
+  1,
+  NULL,
+  'LEO-LAP-01',
+  0,
+  false,
+  false,
+  false,
+  '{"certified":false,"labName":"","natural":false,"treatment":"Pending gemological verification","verificationStatus":"PENDING_VERIFICATION","naturalStatus":"UNKNOWN"}'::jsonb,
+  '{"origin":"Pending Verification","shape":"Pending Verification","color":"Pending Verification","pricingVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"NO_COMMERCIAL_PRICE_SET — numeric 1 is a database placeholder only; administrator must enter a LEO-approved price.","materialIdentityStatus":"PENDING_VERIFICATION","imageVerificationStatus":"PENDING_UPLOAD","catalogueResearchStatus":"POPULAR_VARIETY_CANDIDATE_NOT_LEO_SALES_RANKING","adminReviewNotice":"POPULAR CATALOGUE DRAFT: This is a market-popular variety candidate, not a verified LEO sales bestseller. Confirm the exact physical material/species, natural or treated status, origin, grade, dimensions, final price, genuine product photographs, certificates, and stock before publication."}'::jsonb,
+  '[]'::jsonb,
+  19,
+  NOW(),
+  NOW()
+)
+ON CONFLICT (id) DO NOTHING;
+
+-- ------------------------------------------------------------------------------
+-- Product: Tourmaline [ID: gem-tourmaline, Slug: tourmaline] — popular catalogue draft, not LEO sales ranking
+-- ------------------------------------------------------------------------------
+INSERT INTO public.gemstone_products (
+  id, slug, name, hindi_name, category, planetary_ruler, primary_deity,
+  benefit, short_description, description, images, price, compare_at_price,
+  sku, stock_quantity, in_stock, is_published, is_featured,
+  certification, specifications, variants, display_order, created_at, updated_at
+)
+VALUES (
+  'gem-tourmaline',
+  'tourmaline',
+  'Tourmaline',
+  'Tourmaline (टूरमलीन)',
+  'Tourmaline',
+  'Not assigned - Vedic assessment pending',
+  '',
+  'Popular for colourful gemstone jewellery; avoid assigning a single material or astrological claim without identification.',
+  'A diverse gemstone group available in a wide range of colours.',
+  'Tourmaline is a complex borosilicate gemstone group with many colour varieties. The specific species or trade variety, treatments, origin, dimensions, and grade must be identified for each physical piece.',
+  '{}'::text[],
+  1,
+  NULL,
+  'LEO-TOU-01',
+  0,
+  false,
+  false,
+  false,
+  '{"certified":false,"labName":"","natural":false,"treatment":"Pending gemological verification","verificationStatus":"PENDING_VERIFICATION","naturalStatus":"UNKNOWN"}'::jsonb,
+  '{"origin":"Pending Verification","shape":"Pending Verification","color":"Pending Verification","pricingVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"NO_COMMERCIAL_PRICE_SET — numeric 1 is a database placeholder only; administrator must enter a LEO-approved price.","materialIdentityStatus":"PENDING_VERIFICATION","imageVerificationStatus":"PENDING_UPLOAD","catalogueResearchStatus":"POPULAR_VARIETY_CANDIDATE_NOT_LEO_SALES_RANKING","adminReviewNotice":"POPULAR CATALOGUE DRAFT: This is a market-popular variety candidate, not a verified LEO sales bestseller. Confirm the exact physical material/species, natural or treated status, origin, grade, dimensions, final price, genuine product photographs, certificates, and stock before publication."}'::jsonb,
+  '[]'::jsonb,
+  20,
+  NOW(),
+  NOW()
+)
+ON CONFLICT (id) DO NOTHING;
+
+-- ------------------------------------------------------------------------------
+-- Product: Chalcedony [ID: gem-chalcedony, Slug: chalcedony] — popular catalogue draft, not LEO sales ranking
+-- ------------------------------------------------------------------------------
+INSERT INTO public.gemstone_products (
+  id, slug, name, hindi_name, category, planetary_ruler, primary_deity,
+  benefit, short_description, description, images, price, compare_at_price,
+  sku, stock_quantity, in_stock, is_published, is_featured,
+  certification, specifications, variants, display_order, created_at, updated_at
+)
+VALUES (
+  'gem-chalcedony',
+  'chalcedony',
+  'Chalcedony',
+  'Chalcedony (कैल्सेडोनी)',
+  'Chalcedony',
+  'Not assigned - Vedic assessment pending',
+  '',
+  'Popular in cabochons, beads, and ornamental jewellery; confirm the exact variety before using any trade or astrological name.',
+  'Translucent to opaque microcrystalline quartz used in many colours.',
+  'Chalcedony is a microcrystalline form of silica that occurs in several colours and trade varieties. Each physical piece must be checked for its specific variety, dyes or treatments, origin, and quality.',
+  '{}'::text[],
+  1,
+  NULL,
+  'LEO-CHA-01',
+  0,
+  false,
+  false,
+  false,
+  '{"certified":false,"labName":"","natural":false,"treatment":"Pending gemological verification","verificationStatus":"PENDING_VERIFICATION","naturalStatus":"UNKNOWN"}'::jsonb,
+  '{"origin":"Pending Verification","shape":"Pending Verification","color":"Pending Verification","pricingVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"NO_COMMERCIAL_PRICE_SET — numeric 1 is a database placeholder only; administrator must enter a LEO-approved price.","materialIdentityStatus":"PENDING_VERIFICATION","imageVerificationStatus":"PENDING_UPLOAD","catalogueResearchStatus":"POPULAR_VARIETY_CANDIDATE_NOT_LEO_SALES_RANKING","adminReviewNotice":"POPULAR CATALOGUE DRAFT: This is a market-popular variety candidate, not a verified LEO sales bestseller. Confirm the exact physical material/species, natural or treated status, origin, grade, dimensions, final price, genuine product photographs, certificates, and stock before publication."}'::jsonb,
+  '[]'::jsonb,
+  21,
+  NOW(),
+  NOW()
+)
+ON CONFLICT (id) DO NOTHING;
+
+-- ------------------------------------------------------------------------------
+-- Product: Amber [ID: gem-amber, Slug: amber-kahruba] — popular catalogue draft, not LEO sales ranking
+-- ------------------------------------------------------------------------------
+INSERT INTO public.gemstone_products (
+  id, slug, name, hindi_name, category, planetary_ruler, primary_deity,
+  benefit, short_description, description, images, price, compare_at_price,
+  sku, stock_quantity, in_stock, is_published, is_featured,
+  certification, specifications, variants, display_order, created_at, updated_at
+)
+VALUES (
+  'gem-amber',
+  'amber-kahruba',
+  'Amber',
+  'Kahruba (कहरूबा)',
+  'Amber',
+  'Not assigned - Vedic assessment pending',
+  '',
+  'Popular in beads and ornamental jewellery; distinguish natural amber from pressed, reconstructed, and imitation materials.',
+  'Fossilised tree resin used in beads, pendants, and ornaments.',
+  'Amber is fossilised tree resin rather than a mineral gemstone. Each piece should be checked for natural resin identity, pressed or reconstructed material, imitation plastic, treatments, and origin before it is described or sold.',
+  '{}'::text[],
+  1,
+  NULL,
+  'LEO-AMB-01',
+  0,
+  false,
+  false,
+  false,
+  '{"certified":false,"labName":"","natural":false,"treatment":"Pending gemological verification","verificationStatus":"PENDING_VERIFICATION","naturalStatus":"UNKNOWN"}'::jsonb,
+  '{"origin":"Pending Verification","shape":"Pending Verification","color":"Pending Verification","pricingVerificationStatus":"UNVERIFIED_DRAFT_PRICE","priceNote":"NO_COMMERCIAL_PRICE_SET — numeric 1 is a database placeholder only; administrator must enter a LEO-approved price.","materialIdentityStatus":"PENDING_VERIFICATION","imageVerificationStatus":"PENDING_UPLOAD","catalogueResearchStatus":"POPULAR_VARIETY_CANDIDATE_NOT_LEO_SALES_RANKING","adminReviewNotice":"POPULAR CATALOGUE DRAFT: This is a market-popular variety candidate, not a verified LEO sales bestseller. Confirm the exact physical material/species, natural or treated status, origin, grade, dimensions, final price, genuine product photographs, certificates, and stock before publication."}'::jsonb,
+  '[]'::jsonb,
+  22,
   NOW(),
   NOW()
 )

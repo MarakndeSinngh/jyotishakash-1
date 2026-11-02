@@ -470,9 +470,9 @@ export const INITIAL_GEMSTONES_CATALOGUE: GemstoneProduct[] = [
     },
     specifications: {
       pricingVerificationStatus: 'UNVERIFIED_DRAFT_PRICE',
-      materialIdentityStatus: 'PENDING_VERIFICATION',
+      materialIdentityStatus: 'AMBIGUOUS_UNVERIFIED',
       imageVerificationStatus: 'PENDING_VERIFICATION',
-      adminReviewNotice: 'STARTER DRAFT: Existing descriptions, origin, weight, and price values are reference-only. Verify the actual physical stone, exact variety, treatment, origin, current price, authentic image, certificate, and stock before publication.',
+      adminReviewNotice: 'MATERIAL IDENTITY AMBIGUITY: Diamond (Heera) and White Zircon (Safed Jarkan) are distinct materials. Inspect physical stock and confirm exactly one identity before changing the title, price, specifications, or publication status. All legacy grade/origin/weight values are reference-only until verified.',
       caratWeight: '1.15 Carat (VVS Clarity / E Color)',
       origin: 'Natural Earth Mined',
       shape: 'Round Brilliant Cut',
@@ -481,10 +481,7 @@ export const INITIAL_GEMSTONES_CATALOGUE: GemstoneProduct[] = [
       energizationStatus: 'Shukra Gayatri & Mahalakshmi Mantra Abhimantrit',
       metalRecommendation: 'Platinum, White Gold or Silver',
       wearingFinger: 'Middle or Little Finger of Right Hand',
-      wearingDayMuhurat: 'Friday Morning at Sunrise',
-      pricingVerificationStatus: 'UNVERIFIED_DRAFT_PRICE',
-      materialIdentityStatus: 'AMBIGUOUS_UNVERIFIED',
-      adminReviewNotice: 'MATERIAL IDENTITY AMBIGUITY: Diamond (Heera) and White Zircon (Safed Jarkan) are distinct gemological materials with differing astrological and monetary values. Administrator must inspect physical stock to confirm whether this item is Natural Diamond or White Zircon. Product name, specifications, pricing, and certificate must be corrected prior to publishing.'
+      wearingDayMuhurat: 'Friday Morning at Sunrise'
     },
     variants: [
       {
@@ -813,7 +810,7 @@ export const INITIAL_GEMSTONES_CATALOGUE: GemstoneProduct[] = [
       pricingVerificationStatus: 'UNVERIFIED_DRAFT_PRICE',
       materialIdentityStatus: 'PENDING_VERIFICATION',
       imageVerificationStatus: 'PENDING_UPLOAD',
-      adminReviewNotice: 'STARTER DRAFT: Existing descriptions, origin, weight, and price values are reference-only. Verify the actual physical stone, exact variety, treatment, origin, current price, authentic image, certificate, and stock before publication.',
+      adminReviewNotice: 'PENDING ASSET UPLOAD: No verified Opal photograph is present in project assets. Keep images empty; upload a genuine product photo and verify the physical stone, origin, treatment, weight, certificate, price, and stock before publication.',
       caratWeight: '5.20 Ratti / 4.76 Carat',
       origin: 'Coober Pedy (Australia)',
       shape: 'Oval Cabochon',
@@ -822,10 +819,7 @@ export const INITIAL_GEMSTONES_CATALOGUE: GemstoneProduct[] = [
       energizationStatus: 'Shukra Vedic Consecration',
       metalRecommendation: 'Pure Silver or White Gold',
       wearingFinger: 'Middle or Little Finger of Right Hand',
-      wearingDayMuhurat: 'Friday Morning at Sunrise',
-      pricingVerificationStatus: 'UNVERIFIED_DRAFT_PRICE',
-      imageVerificationStatus: 'PENDING_UPLOAD',
-      adminReviewNotice: 'PENDING ASSET UPLOAD: No authentic Opal photograph exists in project assets (do not use diamond.jpg). Upload verified Australian Opal photographs via Admin Panel before publishing.'
+      wearingDayMuhurat: 'Friday Morning at Sunrise'
     },
     variants: [
       {

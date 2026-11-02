@@ -1,4 +1,4 @@
-import { GemstoneProduct } from '../models/gemstoneProduct';
+import { GemstoneProduct, getProductReviewIssues } from '../models/gemstoneProduct';
 import { supabase } from '../lib/supabaseClient';
 
 const STORAGE_KEY = 'leo_gemstone_catalogue_v1';
@@ -157,9 +157,15 @@ export const gemstoneProductRepository = {
 
       if (!error && data !== null) {
         const mapped = data.map(mapRowToProduct);
-        // Sync local cache with authoritative DB response (even if empty [])
-        saveStoredCatalogue(mapped);
-        return mapped;
+        // The database publication flag is necessary but not sufficient: legacy rows
+        // may have been published before the explicit identity, price, and image review gates.
+        const visible = includeUnpublished
+          ? mapped
+          : mapped.filter(product => getProductReviewIssues(product).length === 0);
+        // Sync only the selected authoritative view. Public results never expose a
+        // previously published row whose verification metadata is missing or unresolved.
+        saveStoredCatalogue(visible);
+        return visible;
       }
 
       if (error) {
@@ -193,8 +199,10 @@ export const gemstoneProductRepository = {
       const { data, error } = await query.maybeSingle();
 
       if (!error) {
-        // Authoritative database result: null if no matching row exists
-        return data ? mapRowToProduct(data) : null;
+        // Public access requires both published status and all explicit review gates.
+        if (!data) return null;
+        const product = mapRowToProduct(data);
+        return !includeUnpublished && getProductReviewIssues(product).length > 0 ? null : product;
       }
       console.error('[GemstoneRepo] Supabase error in getBySlug:', error);
     } catch (err) {
@@ -219,8 +227,10 @@ export const gemstoneProductRepository = {
       const { data, error } = await query.maybeSingle();
 
       if (!error) {
-        // Authoritative database result: null if no matching row exists
-        return data ? mapRowToProduct(data) : null;
+        // Public lookups fail closed for products with unresolved verification issues.
+        if (!data) return null;
+        const product = mapRowToProduct(data);
+        return !includeUnpublished && getProductReviewIssues(product).length > 0 ? null : product;
       }
       console.error('[GemstoneRepo] Supabase error in getById:', error);
     } catch (err) {

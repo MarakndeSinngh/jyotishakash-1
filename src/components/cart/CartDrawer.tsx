@@ -50,6 +50,9 @@ export default function CartDrawer({ onNavigate }: CartDrawerProps) {
         if (item.variantId && !variant) {
           throw new Error(`The selected variant for ${item.name} is no longer available. Please revisit the product page.`);
         }
+        if (variant && variant.priceVerificationStatus !== 'VERIFIED') {
+          throw new Error(`The selected variant price for ${item.name} is awaiting administrator approval.`);
+        }
 
         const stock = variant ? variant.stockQuantity : product.stockQuantity;
         const inStock = variant ? variant.inStock : product.inStock;
@@ -306,25 +309,26 @@ export default function CartDrawer({ onNavigate }: CartDrawerProps) {
               <div className="p-5 border-t border-stone-800 bg-stone-950/90 space-y-3">
                 <div className="space-y-1.5 text-xs">
                   <div className="flex justify-between text-stone-400">
-                    <span>Subtotal</span>
+                    <span>Indicative subtotal (rechecked before enquiry)</span>
                     <span className="text-stone-200 font-semibold">₹{subtotal.toLocaleString('en-IN')}</span>
                   </div>
                   <div className="flex justify-between text-stone-400">
-                    <span>Vedic Pran Pratishtha</span>
-                    <span className="text-amber-400 font-medium">Complimentary</span>
+                    <span>Vedic energisation</span>
+                    <span className="text-stone-400 font-medium">Confirm separately</span>
                   </div>
                   <div className="flex justify-between text-stone-400">
-                    <span>Insured Shipping (India)</span>
-                    <span className="text-emerald-400 font-medium">Free</span>
+                    <span>Shipping & insurance</span>
+                    <span className="text-stone-400 font-medium">Confirm separately</span>
                   </div>
                   <div className="flex justify-between text-sm font-bold pt-2 border-t border-stone-800 text-stone-100">
-                    <span>Total Amount</span>
+                    <span>Indicative total</span>
                     <span className="text-amber-300 font-cinzel text-base">₹{subtotal.toLocaleString('en-IN')}</span>
                   </div>
                 </div>
 
                 <button
                   onClick={() => void handleWhatsAppCheckout()}
+                  disabled={isCheckingOut}
                   className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-emerald-950/50 hover:brightness-110 transition active:scale-[0.99]"
                 >
                   <MessageCircle className="w-4 h-4 fill-white text-emerald-600" />

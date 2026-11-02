@@ -118,6 +118,7 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
   const isPriceVerified = basePriceVerified
     && (!selectedVariant || selectedVariant.priceVerificationStatus === 'VERIFIED');
   const identityVerified = product.specifications?.materialIdentityStatus === 'VERIFIED'
+    && product.certification?.naturalStatus === 'NATURAL_CONFIRMED'
     && product.certification?.natural === true;
   const verifiedOrigin = identityVerified && product.specifications?.origin && product.specifications.origin !== 'Pending Verification'
     ? product.specifications.origin
@@ -259,8 +260,8 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
           <div className="p-4 rounded-2xl bg-stone-950/60 border border-stone-800/80 grid grid-cols-3 gap-3 text-center">
             <div className="flex flex-col items-center gap-1.5 p-2">
               <Award className="w-5 h-5 text-amber-400" />
-              <span className="text-[11px] font-semibold text-stone-200">{product.certification?.natural ? 'Natural origin recorded' : 'Origin pending'}</span>
-              <span className="text-[10px] text-stone-500">{product.certification?.natural ? 'Product record verified' : 'Not yet confirmed'}</span>
+              <span className="text-[11px] font-semibold text-stone-200">{product.certification?.naturalStatus === 'NATURAL_CONFIRMED' ? 'Natural origin confirmed' : product.certification?.naturalStatus === 'SYNTHETIC_CONFIRMED' ? 'Synthetic / lab-grown' : 'Origin pending'}</span>
+              <span className="text-[10px] text-stone-500">{product.certification?.naturalStatus === 'NATURAL_CONFIRMED' ? 'Verified record' : product.certification?.naturalStatus === 'SYNTHETIC_CONFIRMED' ? 'Status recorded' : 'Not yet confirmed'}</span>
             </div>
             <div className="flex flex-col items-center gap-1.5 p-2 border-x border-stone-800">
               <ShieldCheck className="w-5 h-5 text-amber-400" />

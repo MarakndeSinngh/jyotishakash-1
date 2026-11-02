@@ -12,7 +12,7 @@ interface ProgramsPageProps {
 
 // Centralized ID-based primary category mapping (No keyword matching)
 export const PROGRAM_CATEGORY_MAP: Record<string, string[]> = {
-  numerology: ['prog-1', 'prog-6', 'prog-navratri-numerology'],
+  numerology: ['prog-1', 'prog-6'],
   astrology: ['prog-2'],
   vastu: ['prog-3', 'prog-4'],
   name: ['prog-5'],
@@ -58,6 +58,7 @@ export default function ProgramsPage({ navigate }: ProgramsPageProps) {
   };
 
   const filteredPrograms = programs.filter(prog => {
+    if (prog.id === 'prog-navratri-numerology') return false;
     if (!prog.visible) return false;
     if (selectedCategory === 'all') return true;
 

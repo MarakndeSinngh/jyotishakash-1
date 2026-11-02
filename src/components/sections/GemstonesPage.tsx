@@ -653,6 +653,7 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredProducts.map(stone => {
                 const isPriceVerified = stone.specifications?.pricingVerificationStatus === 'VERIFIED';
+                const identityVerified = stone.specifications?.materialIdentityStatus === 'VERIFIED' && stone.certification?.natural === true;
                 const isOutOfStock = !stone.inStock || stone.stockQuantity <= 0 || !isPriceVerified;
                 return (
                   <div
@@ -725,7 +726,9 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
                         </h3>
 
                         <p className="text-xs text-stone-400 line-clamp-2 mt-1.5 leading-relaxed">
-                          {stone.shortDescription || stone.benefit}
+                          {identityVerified
+                            ? (stone.shortDescription || stone.benefit)
+                            : 'Product identity and specifications are pending review. Contact LEO Family for confirmed details.'}
                         </p>
                       </div>
 
@@ -784,6 +787,7 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
             <div className="space-y-4">
               {filteredProducts.map(stone => {
                 const isPriceVerified = stone.specifications?.pricingVerificationStatus === 'VERIFIED';
+                const identityVerified = stone.specifications?.materialIdentityStatus === 'VERIFIED' && stone.certification?.natural === true;
                 const isOutOfStock = !stone.inStock || stone.stockQuantity <= 0 || !isPriceVerified;
                 return (
                   <div

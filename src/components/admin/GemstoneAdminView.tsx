@@ -1669,7 +1669,11 @@ export default function GemstoneAdminView() {
                           checked={formData.certification?.natural ?? false}
                           onChange={e => setFormData(prev => ({
                             ...prev,
-                            certification: { ...(prev.certification || { labName: '', certified: false }), natural: e.target.checked }
+                            certification: {
+                              ...(prev.certification || { labName: '', certified: false }),
+                              natural: e.target.checked,
+                              naturalStatus: e.target.checked ? 'NATURAL_CONFIRMED' : 'UNKNOWN'
+                            }
                           }))}
                           className="w-3.5 h-3.5 accent-amber-600 rounded"
                         />
@@ -1683,6 +1687,29 @@ export default function GemstoneAdminView() {
                         Note: Unchecked indicates natural status is <strong>Pending Gemological Verification</strong>. It does not designate this stone as synthetic or lab-grown.
                       </p>
                     )}
+                    <div className="pt-2">
+                      <label className="text-[10px] text-stone-500 block mb-1">Material / Natural Status</label>
+                      <select
+                        value={formData.certification?.naturalStatus || 'UNKNOWN'}
+                        onChange={e => {
+                          const status = e.target.value as 'UNKNOWN' | 'NATURAL_CONFIRMED' | 'SYNTHETIC_CONFIRMED';
+                          setFormData(prev => ({
+                            ...prev,
+                            certification: {
+                              ...(prev.certification || { certified: false, labName: '', natural: false }),
+                              naturalStatus: status,
+                              natural: status === 'NATURAL_CONFIRMED'
+                            }
+                          }));
+                        }}
+                        className="w-full px-3 py-2 text-xs rounded-lg bg-white border border-stone-200 text-stone-800"
+                      >
+                        <option value="UNKNOWN">Unknown / Pending Verification</option>
+                        <option value="NATURAL_CONFIRMED">Natural Origin Confirmed</option>
+                        <option value="SYNTHETIC_CONFIRMED">Synthetic / Lab-grown Confirmed</option>
+                      </select>
+                      <p className="text-[10px] text-stone-500 mt-1">Unknown is not the same as synthetic. Select a confirmed status only after physical inspection or supporting documentation.</p>
+                    </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>

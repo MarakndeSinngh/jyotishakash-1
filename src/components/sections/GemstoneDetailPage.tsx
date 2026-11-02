@@ -114,7 +114,8 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
 
   const currentPrice = selectedVariant ? selectedVariant.price : product.price;
   const currentCompareAt = selectedVariant ? selectedVariant.compareAtPrice : product.compareAtPrice;
-  const isPriceVerified = product.specifications?.pricingVerificationStatus === 'VERIFIED'
+  const basePriceVerified = product.specifications?.pricingVerificationStatus === 'VERIFIED';
+  const isPriceVerified = basePriceVerified
     && (!selectedVariant || selectedVariant.priceVerificationStatus === 'VERIFIED');
   const identityVerified = product.specifications?.materialIdentityStatus === 'VERIFIED'
     && product.certification?.natural === true;
@@ -355,6 +356,7 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                 {product.variants.map(variant => {
                   const isSelected = selectedVariant?.id === variant.id;
+                  const variantPriceVerified = basePriceVerified && variant.priceVerificationStatus === 'VERIFIED';
                   return (
                     <button
                       key={variant.id}
@@ -375,12 +377,14 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
                       </div>
                       <div className="mt-2 pt-2 border-t border-stone-800/80 flex items-center justify-between">
                         <span className="text-xs font-bold text-amber-300 font-cinzel">
-                          ₹{variant.price.toLocaleString('en-IN')}
+                          {variantPriceVerified ? `₹${variant.price.toLocaleString('en-IN')}` : 'Price on request'}
                         </span>
-                        {variant.inStock && variant.stockQuantity > 0 ? (
+                        {!variantPriceVerified ? (
+                          <span className="text-[9px] text-rose-400">Price review pending</span>
+                        ) : variant.inStock && variant.stockQuantity > 0 ? (
                           <span className="text-[9px] text-emerald-400">In Stock</span>
                         ) : (
-                          <span className="text-[9px] text-rose-400">Waitlist</span>
+                          <span className="text-[9px] text-rose-400">Unavailable</span>
                         )}
                       </div>
                     </button>

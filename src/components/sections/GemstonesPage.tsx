@@ -869,13 +869,13 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
       <section className="mt-20 pt-14 border-t border-stone-800/80">
         <div className="text-center max-w-2xl mx-auto mb-10">
           <span className="text-xs uppercase tracking-widest text-amber-400 font-cinzel font-semibold">
-            Vedic Authenticity & Standards
+            Product Review & Transparency
           </span>
           <h2 className="text-2xl sm:text-3xl font-cinzel font-bold text-stone-100 mt-1">
-            The LEO Family Sacred Gemstone Guarantee
+            Our Gemstone Review Standards
           </h2>
           <p className="text-xs text-stone-400 mt-2">
-            Why seekers and celebrities across the globe trust LEO Family Occult School for life-altering gemstones.
+            Product identity, pricing, photographs, certificates, and availability are checked individually before an item is made available.
           </p>
         </div>
 

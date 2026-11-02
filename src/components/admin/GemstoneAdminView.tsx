@@ -206,7 +206,7 @@ export default function GemstoneAdminView() {
           imageVerificationStatus: product.images?.length ? 'PENDING_VERIFICATION' : 'PENDING_UPLOAD',
           adminReviewNotice: 'Duplicate draft: re-verify actual stone identity, price, product photos, origin/treatment, certification, stock, and all variants before publication.'
         },
-        variants: (product.variants || []).map(variant => ({ ...variant, inStock: false, stockQuantity: 0 }))
+        variants: (product.variants || []).map(variant => ({ ...variant, inStock: false, stockQuantity: 0, priceVerificationStatus: 'UNVERIFIED_DRAFT_PRICE' }))
       };
       await gemstoneProductService.saveProduct(copy);
       showNotification(`Duplicated "${product.name}" successfully as draft.`);
@@ -364,6 +364,9 @@ export default function GemstoneAdminView() {
         compareAtPrice: formData.compareAtPrice ? Number(formData.compareAtPrice) : null,
         stockQuantity: stockQty,
         inStock,
+        variants: priceChanged
+          ? (formData.variants || []).map(variant => ({ ...variant, priceVerificationStatus: 'UNVERIFIED_DRAFT_PRICE' as const }))
+          : formData.variants,
         isPublished: Boolean(formData.isPublished)
       };
 
@@ -396,19 +399,34 @@ export default function GemstoneAdminView() {
       compareAtPrice: undefined,
       sku: `${formData.sku || 'LEO'}-${Date.now().toString().slice(-3)}`,
       inStock: false,
-      stockQuantity: 0
+      stockQuantity: 0,
+      priceVerificationStatus: 'UNVERIFIED_DRAFT_PRICE'
     };
 
     setFormData(prev => ({
       ...prev,
-      variants: [...(prev.variants || []), newVariant]
+      variants: [...(prev.variants || []), newVariant],
+      specifications: {
+        ...(prev.specifications || {}),
+        pricingVerificationStatus: 'UNVERIFIED_DRAFT_PRICE'
+      }
     }));
   };
 
   const handleUpdateVariant = (index: number, updates: Partial<GemstoneVariant>) => {
     const updated = [...(formData.variants || [])];
-    updated[index] = { ...updated[index], ...updates };
-    setFormData(prev => ({ ...prev, variants: updated }));
+    updated[index] = {
+      ...updated[index],
+      ...updates,
+      ...(updates.price !== undefined ? { priceVerificationStatus: 'UNVERIFIED_DRAFT_PRICE' as const } : {})
+    };
+    setFormData(prev => ({
+      ...prev,
+      variants: updated,
+      ...(updates.price !== undefined ? {
+        specifications: { ...(prev.specifications || {}), pricingVerificationStatus: 'UNVERIFIED_DRAFT_PRICE' }
+      } : {})
+    }));
   };
 
   const handleRemoveVariant = (index: number) => {
@@ -1119,14 +1137,20 @@ export default function GemstoneAdminView() {
                           <button
                             type="button"
                             onClick={() => {
+                              const confirmed = window.confirm('Have you checked the base selling price and every variant price against LEO Family purchase/sales records? Only approve if all displayed prices are correct.');
+                              if (!confirmed) return;
                               setFormData(prev => ({
                                 ...prev,
                                 specifications: {
                                   ...(prev.specifications || {}),
                                   pricingVerificationStatus: 'VERIFIED'
-                                }
+                                },
+                                variants: (prev.variants || []).map(variant => ({
+                                  ...variant,
+                                  priceVerificationStatus: 'VERIFIED'
+                                }))
                               }));
-                              showNotification('Selling price verified and approved.');
+                              showNotification('Base and variant prices marked approved. Save the product to persist this review.');
                             }}
                             className="px-2.5 py-1 text-xs rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold transition"
                           >

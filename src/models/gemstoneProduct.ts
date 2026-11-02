@@ -113,29 +113,29 @@ export function getProductReviewIssues(product: Partial<GemstoneProduct>): Revie
   const price = Number(product.price);
   if (product.price === undefined || product.price === null || isNaN(price) || price <= 0) {
     issues.push({ type: 'pricing', message: 'Valid positive price must be explicitly entered' });
-  } else if (product.specifications?.pricingVerificationStatus === 'UNVERIFIED_DRAFT_PRICE') {
-    issues.push({ type: 'pricing', message: 'Starter draft price requires verification' });
+  } else if (product.specifications?.pricingVerificationStatus !== 'VERIFIED') {
+    issues.push({ type: 'pricing', message: 'Selling price must be explicitly reviewed and approved by an administrator' });
   }
 
-  // 2. Material Identity Ambiguity (e.g. Diamond vs White Zircon)
-  if (product.specifications?.materialIdentityStatus === 'AMBIGUOUS_UNVERIFIED') {
-    issues.push({ type: 'identity', message: 'Material identity ambiguity must be resolved (Diamond vs White Zircon)' });
+  // 2. Material identity must be explicitly reviewed; ambiguous dual-material names are blocked.
+  const materialStatus = product.specifications?.materialIdentityStatus;
+  if (materialStatus !== 'VERIFIED') {
+    issues.push({ type: 'identity', message: 'Gemstone material identity is pending administrator verification' });
   }
   const nameLower = (product.name || '').toLowerCase();
   if (nameLower.includes('pending material confirmation') || (nameLower.includes('diamond') && nameLower.includes('white zircon'))) {
-    if (product.specifications?.materialIdentityStatus !== 'VERIFIED') {
+    if (materialStatus !== 'VERIFIED') {
       issues.push({ type: 'identity', message: 'Product title contains ambiguous dual identity' });
     }
+  }
+  if (nameLower.includes('natural') && product.certification?.natural !== true) {
+    issues.push({ type: 'identity', message: 'A natural-origin claim requires confirmation from the physical stone or supporting documentation' });
   }
 
   // 3. Image requirement: Photograph must exist AND be explicitly verified by administrator
   if (!product.images || product.images.length === 0 || !product.images[0]) {
     issues.push({ type: 'image', message: 'Product photograph is missing and required before publishing' });
-  } else if (
-    product.specifications?.imageVerificationStatus === 'PENDING_UPLOAD' ||
-    product.specifications?.imageVerificationStatus === 'PENDING_VERIFICATION' ||
-    product.specifications?.imageVerificationStatus !== 'VERIFIED'
-  ) {
+  } else if (product.specifications?.imageVerificationStatus !== 'VERIFIED') {
     issues.push({ type: 'image', message: 'Product photograph is pending explicit administrator verification (Status: PENDING_VERIFICATION)' });
   }
 

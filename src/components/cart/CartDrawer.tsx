@@ -11,7 +11,7 @@ interface CartDrawerProps {
 }
 
 export default function CartDrawer({ onNavigate }: CartDrawerProps) {
-  const { items, isCartOpen, closeCart, updateQuantity, removeFromCart, clearCart, totalItems, subtotal } = useCart();
+  const { items, isCartOpen, closeCart, updateQuantity, removeFromCart, clearCart, totalItems } = useCart();
   const [customerName, setCustomerName] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
   const [customerCity, setCustomerCity] = useState('');
@@ -316,15 +316,15 @@ export default function CartDrawer({ onNavigate }: CartDrawerProps) {
 
                 <button
                   onClick={() => void handleWhatsAppCheckout()}
-                  disabled={isCheckingOut}
+                  disabled={isSubmittingOrder}
                   className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-emerald-950/50 hover:brightness-110 transition active:scale-[0.99]"
                 >
                   <MessageCircle className="w-4 h-4 fill-white text-emerald-600" />
-                  <span>Order via Official WhatsApp</span>
+                  <span>{isSubmittingOrder ? 'Checking prices & stock...' : 'Continue to WhatsApp Enquiry'}</span>
                 </button>
 
                 <p className="text-[10px] text-center text-stone-500">
-                  Direct connection with LEO Family Astrological Dispatch team. No hidden fees.
+                  This is an order enquiry. Final charges and delivery terms are confirmed by the LEO Family team before payment.
                 </p>
               </div>
             )}

@@ -63,9 +63,10 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [wishlist]);
 
   const addToCart = (product: GemstoneProduct, variant?: GemstoneVariant | null, quantity = 1): boolean => {
-    // Inventory and publication safeguard: out-of-stock or unpublished products cannot be ordered
+    // Inventory, publication, and explicit price-approval safeguards.
     const isOut = variant ? !variant.inStock || variant.stockQuantity <= 0 : !product.inStock || product.stockQuantity <= 0;
-    if (!product.isPublished || isOut || quantity <= 0) {
+    const priceVerified = product.specifications?.pricingVerificationStatus === 'VERIFIED';
+    if (!product.isPublished || !priceVerified || isOut || quantity <= 0) {
       return false;
     }
 

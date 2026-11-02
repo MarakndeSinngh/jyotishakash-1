@@ -652,7 +652,8 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
           ) : viewMode === 'grid' ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredProducts.map(stone => {
-                const isOutOfStock = !stone.inStock || stone.stockQuantity <= 0;
+                const isPriceVerified = stone.specifications?.pricingVerificationStatus === 'VERIFIED';
+                const isOutOfStock = !stone.inStock || stone.stockQuantity <= 0 || !isPriceVerified;
                 return (
                   <div
                     key={stone.id}
@@ -733,9 +734,9 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
                         <div className="flex items-baseline justify-between">
                           <div>
                             <span className="text-lg font-bold text-amber-300 font-cinzel">
-                              ₹{stone.price.toLocaleString('en-IN')}
+                              {isPriceVerified ? `₹${stone.price.toLocaleString('en-IN')}` : 'Price on request'}
                             </span>
-                            {stone.compareAtPrice && stone.compareAtPrice > stone.price && (
+                            {isPriceVerified && stone.compareAtPrice && stone.compareAtPrice > stone.price && (
                               <span className="text-xs text-stone-500 line-through ml-2">
                                 ₹{stone.compareAtPrice.toLocaleString('en-IN')}
                               </span>
@@ -743,7 +744,9 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
                           </div>
                           
                           {isOutOfStock ? (
-                            <span className="text-[10px] text-rose-400 font-semibold">Rare / Made to Order</span>
+                            <span className="text-[10px] text-rose-400 font-semibold">
+                              {isPriceVerified ? 'Currently unavailable' : 'Price pending review'}
+                            </span>
                           ) : (
                             <span className="text-[10px] text-emerald-400 font-semibold flex items-center gap-1">
                               <CheckCircle2 className="w-2.5 h-2.5" />
@@ -780,7 +783,8 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
             /* List View */
             <div className="space-y-4">
               {filteredProducts.map(stone => {
-                const isOutOfStock = !stone.inStock || stone.stockQuantity <= 0;
+                const isPriceVerified = stone.specifications?.pricingVerificationStatus === 'VERIFIED';
+                const isOutOfStock = !stone.inStock || stone.stockQuantity <= 0 || !isPriceVerified;
                 return (
                   <div
                     key={stone.id}
@@ -821,10 +825,10 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
                     <div className="flex items-center justify-between sm:justify-end gap-5 w-full sm:w-auto border-t sm:border-t-0 pt-3 sm:pt-0 border-stone-800">
                       <div className="text-right">
                         <div className="text-base font-bold text-amber-300 font-cinzel">
-                          ₹{stone.price.toLocaleString('en-IN')}
+                          {isPriceVerified ? `₹${stone.price.toLocaleString('en-IN')}` : 'Price on request'}
                         </div>
                         <span className="text-[10px] text-stone-400">
-                          {isOutOfStock ? 'Made to order' : 'In Stock'}
+                          {isOutOfStock ? (isPriceVerified ? 'Currently unavailable' : 'Price pending review') : 'In Stock'}
                         </span>
                       </div>
                       <div className="flex items-center gap-2">

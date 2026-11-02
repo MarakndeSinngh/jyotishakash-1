@@ -35,7 +35,9 @@ export default function FeaturedCoursesHomepage({ navigate }: FeaturedCoursesHom
   };
 
   const homepageData = data as any;
-  const rawPrograms = homepageData?.featuredPrograms || [];
+  const rawPrograms = (homepageData?.featuredPrograms || []).filter(
+    (program: any) => program.id !== 'prog-navratri-numerology'
+  );
   const founder = homepageData?.founder;
   const facultyMembers = homepageData?.facultyMembers || [];
 

@@ -185,8 +185,12 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
 
       return true;
     }).sort((a, b) => {
-      if (sortOption === 'price_asc') return a.price - b.price;
-      if (sortOption === 'price_desc') return b.price - a.price;
+      if (sortOption === 'price_asc' || sortOption === 'price_desc') {
+        const aVerified = a.specifications?.pricingVerificationStatus === 'VERIFIED';
+        const bVerified = b.specifications?.pricingVerificationStatus === 'VERIFIED';
+        if (aVerified !== bVerified) return aVerified ? -1 : 1;
+        return sortOption === 'price_asc' ? a.price - b.price : b.price - a.price;
+      }
       if (sortOption === 'name_asc') return a.name.localeCompare(b.name);
       if (sortOption === 'name_desc') return b.name.localeCompare(a.name);
       if (sortOption === 'newest') return (b.createdAt || '').localeCompare(a.createdAt || '');

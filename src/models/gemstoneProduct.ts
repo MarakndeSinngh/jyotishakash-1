@@ -143,6 +143,9 @@ export function getProductReviewIssues(product: Partial<GemstoneProduct>): Revie
   if (naturalStatus === 'SYNTHETIC_CONFIRMED' && product.certification?.natural !== false) {
     issues.push({ type: 'identity', message: 'Synthetic/lab-grown status conflicts with the natural-origin flag' });
   }
+  if (product.certification?.certified && !product.certification.labName?.trim()) {
+    issues.push({ type: 'identity', message: 'A lab-certified claim requires the actual testing laboratory name' });
+  }
   if (nameLower.includes('natural') && naturalStatus !== 'NATURAL_CONFIRMED') {
     issues.push({ type: 'identity', message: 'A product described as natural requires explicit natural-origin confirmation' });
   }

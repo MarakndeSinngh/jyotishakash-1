@@ -10,6 +10,7 @@ export interface GemstoneVariant {
   sku: string;
   inStock: boolean;
   stockQuantity: number;
+  priceVerificationStatus?: 'UNVERIFIED_DRAFT_PRICE' | 'VERIFIED';
 }
 
 export interface GemstoneCertification {
@@ -19,6 +20,7 @@ export interface GemstoneCertification {
   natural: boolean;
   treatment?: string;
   verificationStatus?: string;
+  naturalStatus?: 'UNKNOWN' | 'NATURAL_CONFIRMED' | 'SYNTHETIC_CONFIRMED';
 }
 
 export interface GemstoneSpecifications {
@@ -115,6 +117,9 @@ export function getProductReviewIssues(product: Partial<GemstoneProduct>): Revie
     issues.push({ type: 'pricing', message: 'Valid positive price must be explicitly entered' });
   } else if (product.specifications?.pricingVerificationStatus !== 'VERIFIED') {
     issues.push({ type: 'pricing', message: 'Selling price must be explicitly reviewed and approved by an administrator' });
+  }
+  if ((product.variants || []).some(variant => variant.priceVerificationStatus !== 'VERIFIED')) {
+    issues.push({ type: 'pricing', message: 'Every product variant price must also be reviewed and approved' });
   }
 
   // 2. Material identity must be explicitly reviewed; ambiguous dual-material names are blocked.

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { CartItem, GemstoneProduct, GemstoneVariant } from '../models/gemstoneProduct';
+import { CartItem, GemstoneProduct, GemstoneVariant, getProductReviewIssues } from '../models/gemstoneProduct';
 
 interface CartContextType {
   items: CartItem[];
@@ -67,7 +67,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const isOut = variant ? !variant.inStock || variant.stockQuantity <= 0 : !product.inStock || product.stockQuantity <= 0;
     const priceVerified = product.specifications?.pricingVerificationStatus === 'VERIFIED'
       && (!variant || variant.priceVerificationStatus === 'VERIFIED');
-    if (!product.isPublished || !priceVerified || isOut || quantity <= 0) {
+    const reviewReady = getProductReviewIssues(product).length === 0;
+    if (!product.isPublished || !reviewReady || !priceVerified || isOut || quantity <= 0) {
       return false;
     }
 

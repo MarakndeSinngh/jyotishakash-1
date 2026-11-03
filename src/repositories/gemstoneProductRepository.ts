@@ -1,4 +1,4 @@
-import { GemstoneProduct, getProductReviewIssues } from '../models/gemstoneProduct';
+import { GemstoneProduct } from '../models/gemstoneProduct';
 import { supabase } from '../lib/supabaseClient';
 
 const STORAGE_KEY = 'leo_gemstone_catalogue_v1';
@@ -157,15 +157,11 @@ export const gemstoneProductRepository = {
 
       if (!error && data !== null) {
         const mapped = data.map(mapRowToProduct);
-        // The database publication flag is necessary but not sufficient: legacy rows
-        // may have been published before the explicit identity, price, and image review gates.
-        const visible = includeUnpublished
-          ? mapped
-          : mapped.filter(product => getProductReviewIssues(product).length === 0);
-        // Sync only the selected authoritative view. Public results never expose a
-        // previously published row whose verification metadata is missing or unresolved.
-        saveStoredCatalogue(visible);
-        return visible;
+        // "is_published" controls catalogue visibility only. Products with pending
+        // identity, image, price, or stock checks may be listed as enquiry-only references.
+        // Sale readiness is enforced independently by getProductReviewIssues in the cart.
+        saveStoredCatalogue(mapped);
+        return mapped;
       }
 
       if (error) {
@@ -199,10 +195,10 @@ export const gemstoneProductRepository = {
       const { data, error } = await query.maybeSingle();
 
       if (!error) {
-        // Public access requires both published status and all explicit review gates.
+        // The query requires is_published for public reads. Verification readiness
+        // controls purchasing, not whether an enquiry-only catalogue page can be viewed.
         if (!data) return null;
-        const product = mapRowToProduct(data);
-        return !includeUnpublished && getProductReviewIssues(product).length > 0 ? null : product;
+        return mapRowToProduct(data);
       }
       console.error('[GemstoneRepo] Supabase error in getBySlug:', error);
     } catch (err) {
@@ -227,10 +223,10 @@ export const gemstoneProductRepository = {
       const { data, error } = await query.maybeSingle();
 
       if (!error) {
-        // Public lookups fail closed for products with unresolved verification issues.
+        // The query requires is_published for public reads. Cart checkout performs
+        // the separate sale-readiness check before an order enquiry can be submitted.
         if (!data) return null;
-        const product = mapRowToProduct(data);
-        return !includeUnpublished && getProductReviewIssues(product).length > 0 ? null : product;
+        return mapRowToProduct(data);
       }
       console.error('[GemstoneRepo] Supabase error in getById:', error);
     } catch (err) {

@@ -5,6 +5,7 @@ import { useCart } from '../../context/CartContext';
 import SmartImage from '../sections/SmartImage';
 import { resolveImagePath } from '../../utils/imageHelper';
 import { gemstoneProductService } from '../../services/gemstoneProductService';
+import { getProductReviewIssues } from '../../models/gemstoneProduct';
 
 interface CartDrawerProps {
   onNavigate?: (path: string) => void;
@@ -48,6 +49,9 @@ export default function CartDrawer({ onNavigate }: CartDrawerProps) {
         const product = currentProducts[index];
         if (!product || !product.isPublished) {
           throw new Error(`${item.name} is no longer publicly available. Remove it from your cart and refresh the catalogue.`);
+        }
+        if (getProductReviewIssues(product).length > 0) {
+          throw new Error(`Product verification is still pending for ${item.name}. Please contact LEO Family for an enquiry; this cart cannot place an order.`);
         }
         if (product.specifications?.pricingVerificationStatus !== 'VERIFIED') {
           throw new Error(`The price for ${item.name} is awaiting administrator confirmation. Please contact LEO Family.`);

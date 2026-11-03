@@ -16,7 +16,7 @@ import {
   Info,
   ChevronRight
 } from 'lucide-react';
-import { GemstoneProduct, GemstoneVariant } from '../../models/gemstoneProduct';
+import { GemstoneProduct, GemstoneVariant, getProductReviewIssues } from '../../models/gemstoneProduct';
 import { gemstoneProductService } from '../../services/gemstoneProductService';
 import { useCart } from '../../context/CartContext';
 import SmartImage from './SmartImage';
@@ -48,9 +48,10 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
         if (isMounted) {
           if (item) {
             setProduct(item);
-            setSelectedImage(item.images && item.images.length > 0 && item.images[0] ? item.images[0] : '');
-            if (item.variants && item.variants.length > 0) {
-              // select first in-stock variant or first variant
+            setSelectedImage(item.specifications?.imageVerificationStatus === 'VERIFIED'
+              && item.images && item.images.length > 0 && item.images[0] ? item.images[0] : '');
+            if (getProductReviewIssues(item).length === 0 && item.variants && item.variants.length > 0) {
+              // Only expose selectable weights/prices after the complete product review gate passes.
               const inStockVar = item.variants.find(v => v.inStock && v.stockQuantity > 0) || item.variants[0];
               setSelectedVariant(inStockVar);
             } else {
@@ -112,6 +113,7 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
     );
   }
 
+  const reviewReady = getProductReviewIssues(product).length === 0;
   const currentPrice = selectedVariant ? selectedVariant.price : product.price;
   const currentCompareAt = selectedVariant ? selectedVariant.compareAtPrice : product.compareAtPrice;
   const basePriceVerified = product.specifications?.pricingVerificationStatus === 'VERIFIED';
@@ -123,7 +125,7 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
   const verifiedOrigin = identityVerified && product.specifications?.origin && product.specifications.origin !== 'Pending Verification'
     ? product.specifications.origin
     : 'Pending verification';
-  const currentInStock = isPriceVerified && (selectedVariant ? selectedVariant.inStock && selectedVariant.stockQuantity > 0 : product.inStock && product.stockQuantity > 0);
+  const currentInStock = reviewReady && isPriceVerified && (selectedVariant ? selectedVariant.inStock && selectedVariant.stockQuantity > 0 : product.inStock && product.stockQuantity > 0);
   const currentStockQty = selectedVariant ? selectedVariant.stockQuantity : product.stockQuantity;
   const currentSku = selectedVariant ? selectedVariant.sku : product.sku;
 
@@ -133,9 +135,9 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
   };
 
   const handleWhatsAppInquiry = () => {
-    const variantText = selectedVariant ? `Variant: ${selectedVariant.name}` : `Standard Size`;
+    const variantText = selectedVariant ? `Variant: ${selectedVariant.name}` : `Product details to be confirmed`;
     const priceText = isPriceVerified ? `₹${currentPrice.toLocaleString('en-IN')}` : 'To be confirmed by LEO Family';
-    const message = `🙏 *Namaste LEO Family Occult School,*\n\nI am interested in this gemstone enquiry:\n\n💎 *${product.name} (${product.hindiName})*\n• ${variantText}\n• Price: ${priceText}\n• SKU: ${currentSku}\n• Link: https://www.leofamily.online/gemstones/${product.slug}\n\nPlease confirm current availability, product identity, certification, and final quotation. Thank you!`;
+    const message = `🙏 *Namaste LEO Family Occult School,*\n\nI am interested in this gemstone enquiry:\n\n💎 *${product.name} (${product.hindiName})*\n• ${variantText}\n• Price: ${priceText}\n• SKU: ${reviewReady ? currentSku : 'To be confirmed'}\n• Link: https://www.leofamily.online/gemstones/${product.slug}\n\nPlease confirm current availability, product identity, certification, and final quotation. Thank you!`;
     const encoded = encodeURIComponent(message);
     window.open(`https://wa.me/919953713176?text=${encoded}`, '_blank', 'noopener,noreferrer');
   };
@@ -207,7 +209,7 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
             {/* Badges Overlay */}
             <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
               <span className="px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-stone-950/80 text-amber-300 border border-amber-500/30 backdrop-blur-md">
-                {product.planetaryRuler}
+                {identityVerified ? product.planetaryRuler : 'Vedic assessment pending'}
               </span>
               {product.certification?.certified && (
                 <span className="px-3 py-1 rounded-full text-[10px] font-semibold bg-emerald-950/80 text-emerald-300 border border-emerald-500/30 backdrop-blur-md flex items-center gap-1">
@@ -234,7 +236,7 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
           </div>
 
           {/* Thumbnail Strip */}
-          {product.images && product.images.length > 1 && (
+          {product.specifications?.imageVerificationStatus === 'VERIFIED' && product.images && product.images.length > 1 && (
             <div className="flex items-center gap-3 overflow-x-auto pb-2">
               {product.images.map((img, idx) => (
                 <button
@@ -341,7 +343,7 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
           </p>
 
           {/* Variant Selection (Carat / Origin / Weight) */}
-          {product.variants && product.variants.length > 0 && (
+          {reviewReady && product.variants && product.variants.length > 0 && (
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <label className="text-xs font-bold text-stone-200 uppercase tracking-wider">
@@ -534,11 +536,11 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
                     </div>
                     <div className="p-2.5 rounded-lg bg-stone-900 border border-stone-800">
                       <span className="text-[10px] text-stone-500 block uppercase">Shape & Cut</span>
-                      <span className="font-semibold text-stone-200">{product.specifications?.shape || 'Not provided'}</span>
+                      <span className="font-semibold text-stone-200">{identityVerified ? (product.specifications?.shape || 'Pending verification') : 'Pending verification'}</span>
                     </div>
                     <div className="p-2.5 rounded-lg bg-stone-900 border border-stone-800">
                       <span className="text-[10px] text-stone-500 block uppercase">Color Grade</span>
-                      <span className="font-semibold text-stone-200">{product.specifications?.color || 'Not provided'}</span>
+                      <span className="font-semibold text-stone-200">{identityVerified ? (product.specifications?.color || 'Pending verification') : 'Pending verification'}</span>
                     </div>
                     <div className="p-2.5 rounded-lg bg-stone-900 border border-stone-800">
                       <span className="text-[10px] text-stone-500 block uppercase">Certification</span>
@@ -572,15 +574,15 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     <div className="p-2.5 rounded-lg bg-stone-900 border border-stone-800">
                       <span className="text-[10px] text-stone-500 block uppercase">Recommended Metal</span>
-                      <span className="font-semibold text-stone-200">{product.specifications?.metalRecommendation || 'Confirm during consultation'}</span>
+                      <span className="font-semibold text-stone-200">{identityVerified ? (product.specifications?.metalRecommendation || 'Confirm during consultation') : 'Pending Vedic assessment'}</span>
                     </div>
                     <div className="p-2.5 rounded-lg bg-stone-900 border border-stone-800">
                       <span className="text-[10px] text-stone-500 block uppercase">Wearing Finger</span>
-                      <span className="font-semibold text-stone-200">{product.specifications?.wearingFinger || 'Confirm during consultation'}</span>
+                      <span className="font-semibold text-stone-200">{identityVerified ? (product.specifications?.wearingFinger || 'Confirm during consultation') : 'Pending Vedic assessment'}</span>
                     </div>
                     <div className="p-2.5 rounded-lg bg-stone-900 border border-stone-800 sm:col-span-2">
                       <span className="text-[10px] text-stone-500 block uppercase">Auspicious Day & Muhurat</span>
-                      <span className="font-semibold text-stone-200">{product.specifications?.wearingDayMuhurat || 'Confirm during consultation'}</span>
+                      <span className="font-semibold text-stone-200">{identityVerified ? (product.specifications?.wearingDayMuhurat || 'Confirm during consultation') : 'Pending Vedic assessment'}</span>
                     </div>
                   </div>
                 </div>
@@ -610,7 +612,7 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
                 className="p-4 rounded-2xl bg-stone-900/60 border border-stone-800 hover:border-amber-500/40 transition cursor-pointer group flex flex-col justify-between"
               >
                 <div className="aspect-video w-full rounded-xl bg-stone-950 overflow-hidden mb-3 p-2 flex items-center justify-center">
-                  {rel.images && rel.images.length > 0 && rel.images[0] ? (
+                  {rel.specifications?.imageVerificationStatus === 'VERIFIED' && rel.images && rel.images.length > 0 && rel.images[0] ? (
                     <SmartImage
                       src={resolveImagePath(rel.images[0])}
                       alt={rel.name}
@@ -625,13 +627,19 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
                 </div>
                 <div>
                   <div className="text-[11px] text-amber-400 uppercase font-semibold">
-                    {rel.planetaryRuler}
+                    {rel.specifications?.materialIdentityStatus === 'VERIFIED'
+                      && rel.certification?.naturalStatus === 'NATURAL_CONFIRMED'
+                      && rel.certification?.natural === true
+                      ? rel.planetaryRuler : 'Vedic assessment pending'}
                   </div>
                   <h4 className="text-sm font-bold text-stone-200 font-cinzel mt-0.5">
                     {rel.name}
                   </h4>
                   <p className="text-xs text-stone-400 line-clamp-1 mt-1">
-                    {rel.shortDescription}
+                    {rel.specifications?.materialIdentityStatus === 'VERIFIED'
+                      && rel.certification?.naturalStatus === 'NATURAL_CONFIRMED'
+                      && rel.certification?.natural === true
+                      ? rel.shortDescription : 'Product specifications are pending review.'}
                   </p>
                 </div>
                 <div className="mt-3 pt-3 border-t border-stone-800 flex items-center justify-between">

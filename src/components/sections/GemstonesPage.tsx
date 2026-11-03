@@ -20,7 +20,7 @@ import {
   Filter,
   ShieldAlert
 } from 'lucide-react';
-import { GemstoneProduct, GemstoneFilterState, GemstoneSortOption } from '../../models/gemstoneProduct';
+import { GemstoneProduct, GemstoneFilterState, GemstoneSortOption, getProductReviewIssues } from '../../models/gemstoneProduct';
 import { gemstoneProductService } from '../../services/gemstoneProductService';
 import { useCart } from '../../context/CartContext';
 import SmartImage from './SmartImage';
@@ -92,7 +92,7 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
   const [sortOption, setSortOption] = useState<GemstoneSortOption>('featured');
   const [loadError, setLoadError] = useState<string | null>(null);
 
-  const { addToCart, isWishlisted, toggleWishlist, openCart, totalItems } = useCart();
+  const { isWishlisted, toggleWishlist, openCart, totalItems } = useCart();
 
   // Load products and listen for real-time admin updates
   useEffect(() => {
@@ -204,6 +204,9 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
 
   const availableOrigins = useMemo(
     () => Array.from(new Set(products
+      .filter(p => p.specifications?.materialIdentityStatus === 'VERIFIED'
+        && p.certification?.naturalStatus === 'NATURAL_CONFIRMED'
+        && p.certification?.natural === true)
       .map(p => p.specifications?.origin)
       .filter((value): value is string => Boolean(value) && value !== 'Pending Verification')
     )).sort(),
@@ -263,7 +266,7 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
         </h1>
 
         <p className="text-stone-300 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed mb-8">
-          Explore Vedic gemstones and popular gemstone varieties. Product photos, origin, laboratory documents, prices, and availability are shown only after individual product review.
+          Explore Vedic gemstones and popular gemstone varieties. Pending items are catalogue references for enquiries only. Product photos, origin, planetary guidance, laboratory documents, prices, and availability appear only after individual review. Online orders remain disabled until identity, pricing, images, and stock are verified.
         </p>
 
         <div className="flex flex-wrap items-center justify-center gap-4">
@@ -657,8 +660,11 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredProducts.map(stone => {
                 const isPriceVerified = stone.specifications?.pricingVerificationStatus === 'VERIFIED';
-                const identityVerified = stone.specifications?.materialIdentityStatus === 'VERIFIED' && stone.certification?.natural === true;
-                const isOutOfStock = !stone.inStock || stone.stockQuantity <= 0 || !isPriceVerified;
+                const identityVerified = stone.specifications?.materialIdentityStatus === 'VERIFIED'
+                  && stone.certification?.naturalStatus === 'NATURAL_CONFIRMED'
+                  && stone.certification?.natural === true;
+                const reviewReady = getProductReviewIssues(stone).length === 0;
+                const isOutOfStock = !reviewReady || !stone.inStock || stone.stockQuantity <= 0 || !isPriceVerified;
                 return (
                   <div
                     key={stone.id}
@@ -672,7 +678,7 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
                       {/* Floating Badges */}
                       <div className="absolute top-3 left-3 z-20 flex flex-col gap-1.5">
                         <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-stone-950/80 text-amber-300 border border-amber-500/30 backdrop-blur-md">
-                          {stone.planetaryRuler}
+                          {identityVerified ? stone.planetaryRuler : 'Vedic assessment pending'}
                         </span>
                         {stone.certification?.certified && (
                           <span className="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-emerald-950/80 text-emerald-300 border border-emerald-500/30 backdrop-blur-md flex items-center gap-1">
@@ -695,7 +701,7 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
                       </button>
 
                       {/* Gemstone Image (Clean, unclipped, object-contain) */}
-                      {stone.images && stone.images.length > 0 && stone.images[0] ? (
+                      {stone.specifications?.imageVerificationStatus === 'VERIFIED' && stone.images && stone.images.length > 0 && stone.images[0] ? (
                         <SmartImage
                           src={resolveImagePath(stone.images[0])}
                           alt={stone.name}
@@ -752,7 +758,7 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
                           
                           {isOutOfStock ? (
                             <span className="text-[10px] text-rose-400 font-semibold">
-                              {isPriceVerified ? 'Currently unavailable' : 'Price pending review'}
+                              {!reviewReady ? 'Enquiry only' : (isPriceVerified ? 'Currently unavailable' : 'Price pending review')}
                             </span>
                           ) : (
                             <span className="text-[10px] text-emerald-400 font-semibold flex items-center gap-1">
@@ -772,12 +778,11 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
                           </button>
 
                           <button
-                            onClick={() => addToCart(stone, null, 1)}
-                            disabled={isOutOfStock}
-                            className="py-2 px-3 rounded-xl bg-gradient-to-r from-amber-600 to-amber-500 text-stone-950 font-bold text-xs uppercase tracking-wider hover:brightness-110 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-1 transition shadow-md shadow-amber-950/40"
+                            onClick={() => navigate(`/gemstones/${stone.slug}`)}
+                            className="py-2 px-3 rounded-xl bg-gradient-to-r from-amber-600 to-amber-500 text-stone-950 font-bold text-xs uppercase tracking-wider hover:brightness-110 flex items-center justify-center gap-1 transition shadow-md shadow-amber-950/40"
                           >
-                            <ShoppingBag className="w-3.5 h-3.5" />
-                            <span>Add</span>
+                            <MessageCircle className="w-3.5 h-3.5" />
+                            <span>Enquire</span>
                           </button>
                         </div>
                       </div>
@@ -791,8 +796,11 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
             <div className="space-y-4">
               {filteredProducts.map(stone => {
                 const isPriceVerified = stone.specifications?.pricingVerificationStatus === 'VERIFIED';
-                const identityVerified = stone.specifications?.materialIdentityStatus === 'VERIFIED' && stone.certification?.natural === true;
-                const isOutOfStock = !stone.inStock || stone.stockQuantity <= 0 || !isPriceVerified;
+                const identityVerified = stone.specifications?.materialIdentityStatus === 'VERIFIED'
+                  && stone.certification?.naturalStatus === 'NATURAL_CONFIRMED'
+                  && stone.certification?.natural === true;
+                const reviewReady = getProductReviewIssues(stone).length === 0;
+                const isOutOfStock = !reviewReady || !stone.inStock || stone.stockQuantity <= 0 || !isPriceVerified;
                 return (
                   <div
                     key={stone.id}
@@ -800,7 +808,7 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
                   >
                     <div className="flex items-center gap-4 w-full sm:w-auto">
                       <div className="w-24 h-24 rounded-xl bg-stone-900 shrink-0 p-2 overflow-hidden flex items-center justify-center">
-                        {stone.images && stone.images.length > 0 && stone.images[0] ? (
+                        {stone.specifications?.imageVerificationStatus === 'VERIFIED' && stone.images && stone.images.length > 0 && stone.images[0] ? (
                           <SmartImage
                             src={resolveImagePath(stone.images[0])}
                             alt={stone.name}
@@ -816,7 +824,7 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
                       <div className="min-w-0">
                         <div className="flex items-center gap-2">
                           <span className="text-xs text-amber-400 font-cinzel font-bold">{stone.hindiName}</span>
-                          <span className="text-[10px] text-stone-500">• {stone.planetaryRuler}</span>
+                          <span className="text-[10px] text-stone-500">• {identityVerified ? stone.planetaryRuler : 'Vedic assessment pending'}</span>
                         </div>
                         <h4 
                           onClick={() => navigate(`/gemstones/${stone.slug}`)}
@@ -825,7 +833,9 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
                           {stone.name}
                         </h4>
                         <p className="text-xs text-stone-400 line-clamp-1 max-w-md mt-0.5">
-                          {stone.shortDescription || stone.benefit}
+                          {identityVerified
+                            ? (stone.shortDescription || stone.benefit)
+                            : 'Product specifications are pending review. Contact LEO Family for confirmed details.'}
                         </p>
                       </div>
                     </div>
@@ -836,7 +846,7 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
                           {isPriceVerified ? `₹${stone.price.toLocaleString('en-IN')}` : 'Price on request'}
                         </div>
                         <span className="text-[10px] text-stone-400">
-                          {isOutOfStock ? (isPriceVerified ? 'Currently unavailable' : 'Price pending review') : 'In Stock'}
+                          {!reviewReady ? 'Enquiry only' : (isOutOfStock ? (isPriceVerified ? 'Currently unavailable' : 'Price pending review') : 'In Stock')}
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
@@ -847,11 +857,10 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
                           View
                         </button>
                         <button
-                          onClick={() => addToCart(stone, null, 1)}
-                          disabled={isOutOfStock}
-                          className="px-3.5 py-2 rounded-xl bg-amber-500 text-stone-950 font-bold text-xs uppercase tracking-wider hover:brightness-110 disabled:opacity-40"
+                          onClick={() => navigate(`/gemstones/${stone.slug}`)}
+                          className="px-3.5 py-2 rounded-xl bg-amber-500 text-stone-950 font-bold text-xs uppercase tracking-wider hover:brightness-110"
                         >
-                          Add to Cart
+                          Enquire
                         </button>
                       </div>
                     </div>

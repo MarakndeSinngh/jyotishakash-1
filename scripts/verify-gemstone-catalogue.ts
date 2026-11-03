@@ -17,6 +17,7 @@ const detailPage = fs.readFileSync(path.join(root, 'src/components/sections/Gems
 const repository = fs.readFileSync(path.join(root, 'src/repositories/gemstoneProductRepository.ts'), 'utf8');
 const admin = fs.readFileSync(path.join(root, 'src/components/admin/GemstoneAdminView.tsx'), 'utf8');
 const cart = fs.readFileSync(path.join(root, 'src/components/cart/CartDrawer.tsx'), 'utf8');
+const cartContext = fs.readFileSync(path.join(root, 'src/context/CartContext.tsx'), 'utf8');
 const generator = fs.readFileSync(path.join(root, 'scripts/generate_gemstone_seed.ts'), 'utf8');
 
 let passed = 0;
@@ -168,9 +169,18 @@ check('Certified claim requires a laboratory name',
     certification: { ...validNaturalProduct.certification, labName: '' }
   }).some(issue => issue.type === 'identity'));
 
-check('Public repository filters unresolved review gates',
-  repository.includes('mapped.filter(product => getProductReviewIssues(product).length === 0') &&
-  repository.includes('getProductReviewIssues(product).length > 0'));
+check('Published products can be browsed as enquiry-only catalogue references',
+  repository.includes("query = query.eq('is_published', true)") &&
+  !repository.includes('mapped.filter(product => getProductReviewIssues(product).length === 0') &&
+  appPage.includes('Vedic assessment pending') &&
+  appPage.includes('Enquire'));
+check('Public catalogue hides unverified photographs and identity claims',
+  appPage.includes("imageVerificationStatus === 'VERIFIED'") &&
+  appPage.includes('Product specifications are pending review'));
+check('Cart add-to-cart remains blocked until the complete review gate passes',
+  cartContext.includes('getProductReviewIssues(product).length === 0') &&
+  cartContext.includes('!reviewReady'));
+
 check('Collection filters expose origin and unavailable options',
   appPage.includes('availableOrigins.map') &&
   appPage.includes("filters.availability === 'out_of_stock'"));
@@ -179,8 +189,9 @@ check('Product detail does not claim every item is natural or lab-certified',
   !detailPage.includes('Unheated & Pure'));
 check('Admin blocks temporary Blob URLs on upload failure',
   !admin.includes('URL.createObjectURL(file)'));
-check('Cart revalidates products, prices, and stock before WhatsApp enquiry',
+check('Cart revalidates products, prices, identity, images, and stock before WhatsApp enquiry',
   cart.includes('getProductById(item.productId, false)') &&
+  cart.includes('getProductReviewIssues(product).length > 0') &&
   cart.includes('variant.priceVerificationStatus !== \'VERIFIED\'') &&
   cart.includes('not a confirmed or paid order'));
 check('Seed generator preserves verification-first semantics',

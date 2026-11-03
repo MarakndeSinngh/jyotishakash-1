@@ -1,4 +1,4 @@
-import { GemstoneProduct, getProductReviewIssues } from '../models/gemstoneProduct';
+import { GemstoneProduct } from '../models/gemstoneProduct';
 import { gemstoneProductRepository } from '../repositories/gemstoneProductRepository';
 
 export const gemstoneProductService = {
@@ -26,20 +26,8 @@ export const gemstoneProductService = {
       throw new Error('Inventory safeguard: Cannot mark product as in stock when stock quantity is 0 or less.');
     }
 
-    // 3. Publication safeguards: Prevent publication if mandatory review items unresolved
-    if (product.isPublished) {
-      const issues = getProductReviewIssues({
-        ...product,
-        price: Number(product.price),
-        stockQuantity: stockQty,
-        inStock: stockQty > 0 ? Boolean(product.inStock) : false
-      });
-      if (issues.length > 0) {
-        throw new Error(
-          `Publication blocked: Cannot publish product while review items remain unresolved: ${issues.map(i => i.message).join('; ')}`
-        );
-      }
-    }
+    // isPublished makes a product visible in the public reference/enquiry catalogue.
+    // Sale readiness remains separate and is enforced by the cart using review issues.
 
     return gemstoneProductRepository.create({
       ...product,
@@ -80,19 +68,8 @@ export const gemstoneProductService = {
       }
     }
 
-    // 3. Publication safeguards
-    if (updates.isPublished === true) {
-      const merged: Partial<GemstoneProduct> = {
-        ...(existing || {}),
-        ...updates
-      };
-      const issues = getProductReviewIssues(merged);
-      if (issues.length > 0) {
-        throw new Error(
-          `Publication blocked: Cannot publish product while review items remain unresolved: ${issues.map(i => i.message).join('; ')}`
-        );
-      }
-    }
+    // isPublished controls public catalogue visibility; the separate cart review
+    // gate prevents orders until identity, imagery, pricing, and stock are verified.
 
     return gemstoneProductRepository.update(id, updates);
   },

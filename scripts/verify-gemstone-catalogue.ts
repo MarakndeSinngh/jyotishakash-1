@@ -197,6 +197,13 @@ check('Product detail does not claim every item is natural or lab-certified',
   !detailPage.includes('Unheated & Pure'));
 check('Admin blocks temporary Blob URLs on upload failure',
   !admin.includes('URL.createObjectURL(file)'));
+check('Admin cannot approve an AI illustration as a genuine product photo',
+  admin.includes("imageVerificationStatus !== 'AI_ILLUSTRATION'") &&
+  admin.includes('<option value="AI_ILLUSTRATION" disabled>') &&
+  admin.includes("const newImages = [asset.url,"));
+check('Admin allows published enquiry listings while sale review remains separate',
+  admin.includes('Public catalogue visibility is separate from sale readiness') &&
+  admin.includes('listed for enquiries only'));
 check('Cart revalidates products, prices, identity, images, and stock before WhatsApp enquiry',
   cart.includes('getProductById(item.productId, false)') &&
   cart.includes('getProductReviewIssues(product).length > 0') &&

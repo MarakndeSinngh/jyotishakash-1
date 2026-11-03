@@ -23,7 +23,19 @@ export interface GemstoneCertification {
   naturalStatus?: 'UNKNOWN' | 'NATURAL_CONFIRMED' | 'SYNTHETIC_CONFIRMED';
 }
 
+export interface GemstoneTraditionalGuide {
+  vedicGraha?: string;
+  traditionalIntent?: string;
+  whoMayConsider?: string;
+  cheiroNumbers?: string[];
+  numerologyNote?: string;
+  qualityChecks?: string[];
+}
+
 export interface GemstoneSpecifications {
+  traditionalGuide?: GemstoneTraditionalGuide;
+  imageAssetType?: 'AI_GENERATED_ILLUSTRATION' | 'ACTUAL_PRODUCT_PHOTO';
+  imageIllustrationNotice?: string;
   caratWeight?: string;
   origin?: string;
   shape?: string;

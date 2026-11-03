@@ -26,13 +26,14 @@ import { GemstoneProduct, GemstoneVariant, ReviewIssue, getProductReviewIssues }
 import { gemstoneProductService } from '../../services/gemstoneProductService';
 import { storageRepository } from '../../repositories/storageRepository';
 import SmartImage from '../sections/SmartImage';
+import GemstoneIllustration from '../sections/GemstoneIllustration';
 import { resolveImagePath } from '../../utils/imageHelper';
 
 export type { ReviewIssue };
 export { getProductReviewIssues };
 
 const AVAILABLE_CATEGORIES = [
-  'Ruby', 'Natural Pearl', 'Red Coral', 'Emerald', 'Yellow Sapphire',
+  'Ruby', 'Pearl', 'Red Coral', 'Emerald', 'Yellow Sapphire',
   'Diamond', 'Zircon', 'Blue Sapphire', 'Hessonite', 'Cat’s Eye', 'Opal',
   'Amethyst', 'Moonstone', 'Labradorite', 'Garnet', 'Carnelian', 'Turquoise',
   'Citrine', 'Peridot', 'Lapis Lazuli', 'Tourmaline', 'Chalcedony', 'Amber'
@@ -204,7 +205,9 @@ export default function GemstoneAdminView() {
           ...(product.specifications || {}),
           pricingVerificationStatus: 'UNVERIFIED_DRAFT_PRICE',
           materialIdentityStatus: 'PENDING_VERIFICATION',
-          imageVerificationStatus: product.images?.length ? 'PENDING_VERIFICATION' : 'PENDING_UPLOAD',
+          imageVerificationStatus: product.specifications?.imageVerificationStatus === 'AI_ILLUSTRATION'
+            ? 'AI_ILLUSTRATION'
+            : (product.images?.length ? 'PENDING_VERIFICATION' : 'PENDING_UPLOAD'),
           adminReviewNotice: 'Duplicate draft: re-verify actual stone identity, price, product photos, origin/treatment, certification, stock, and all variants before publication.'
         },
         variants: (product.variants || []).map(variant => ({ ...variant, inStock: false, stockQuantity: 0, priceVerificationStatus: 'UNVERIFIED_DRAFT_PRICE' }))
@@ -218,23 +221,18 @@ export default function GemstoneAdminView() {
   };
 
   const handleTogglePublish = async (product: GemstoneProduct) => {
-    // If attempting to publish, enforce publication review safeguards
-    if (!product.isPublished) {
-      const issues = getProductReviewIssues(product);
-      if (issues.length > 0) {
-        showNotification(
-          `Cannot publish "${product.name}": Please resolve review items first (${issues.map(i => i.message).join('; ')}).`,
-          'error'
-        );
-        return;
-      }
-    }
-
+    // Public listing means visible for product information and enquiries only.
+    // Sale readiness remains separate and is enforced by the product review gate.
     try {
       await gemstoneProductService.updateProduct(product.id, {
         isPublished: !product.isPublished
       });
-      showNotification(`${product.name} is now ${!product.isPublished ? 'Published' : 'Draft'}`);
+      const issues = getProductReviewIssues(product);
+      showNotification(
+        !product.isPublished && issues.length > 0
+          ? `"${product.name}" is listed for enquiries only. ${issues.length} purchase review checks remain open.`
+          : `${product.name} is now ${!product.isPublished ? 'Published' : 'Draft'}`
+      );
       loadData();
     } catch (err: any) {
       showNotification(err.message || 'Failed to update status', 'error');
@@ -288,7 +286,7 @@ export default function GemstoneAdminView() {
     setUploadingImage(true);
     try {
       const asset = await storageRepository.uploadImage(file);
-      const newImages = [...(formData.images || []), asset.url];
+      const newImages = [asset.url, ...(formData.images || []).filter(image => image !== asset.url)];
       setFormData(prev => ({
         ...prev,
         images: newImages,
@@ -321,13 +319,8 @@ export default function GemstoneAdminView() {
       && formData.price !== null
       && Number.isFinite(Number(formData.price))
       && Number(formData.price) > 0;
-    if (!hasEnteredPrice && formData.isPublished) {
-      showNotification('A published product requires an explicitly entered and approved positive price.', 'error');
-      return;
-    }
-
-    // The database column is NOT NULL. For an unpriced draft only, store INR 1 as a
-    // non-sale sentinel and always mark it UNVERIFIED so it is never shown or orderable.
+    // The database price column is NOT NULL. An enquiry-only catalogue entry may
+    // remain unpriced; INR 1 is stored only as a non-sale sentinel and stays unverified.
     const priceNum = hasEnteredPrice ? Number(formData.price) : 1;
     const stockQty = Math.max(0, Number(formData.stockQuantity) || 0);
     const inStock = stockQty > 0 ? Boolean(formData.inStock) : false;
@@ -336,27 +329,12 @@ export default function GemstoneAdminView() {
     if (!hasEnteredPrice || priceChanged) {
       specifications.pricingVerificationStatus = 'UNVERIFIED_DRAFT_PRICE';
       specifications.priceNote = hasEnteredPrice
-        ? 'Price changed. Administrator approval is required before publication.'
-        : 'NO_COMMERCIAL_PRICE_SET — numeric 1 is a database placeholder only; enter a LEO-approved selling price before publication.';
+        ? 'Price changed. Administrator approval is required before any sale.'
+        : 'NO_COMMERCIAL_PRICE_SET — numeric 1 is a database placeholder only; enter and approve a LEO-approved selling price before any sale.';
     }
 
-    // Check publication safeguards against the effective draft/approved values.
-    if (formData.isPublished) {
-      const issues = getProductReviewIssues({
-        ...formData,
-        specifications,
-        price: priceNum,
-        stockQuantity: stockQty,
-        inStock
-      });
-      if (issues.length > 0) {
-        showNotification(
-          `Cannot save as Published: ${issues.map(i => i.message).join('; ')}. Please resolve review items before publishing.`,
-          'error'
-        );
-        return;
-      }
-    }
+    // Public catalogue visibility is separate from sale readiness. The website
+    // labels unverified entries as enquiry-only; the cart blocks purchases.
 
     setSaving(true);
     try {
@@ -649,7 +627,14 @@ export default function GemstoneAdminView() {
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-3">
                         <div className="w-12 h-12 rounded-xl bg-stone-100 border border-stone-200 shrink-0 overflow-hidden p-1 flex items-center justify-center">
-                          {product.images && product.images.length > 0 && product.images[0] ? (
+                          {product.specifications?.imageVerificationStatus === 'AI_ILLUSTRATION' && product.images?.[0] ? (
+                            <GemstoneIllustration
+                              src={resolveImagePath(product.images[0])}
+                              panel={Number(product.specifications?.imagePanel ?? 0)}
+                              alt={product.name}
+                              className="w-full h-full"
+                            />
+                          ) : product.images && product.images.length > 0 && product.images[0] ? (
                             <SmartImage
                               src={resolveImagePath(product.images[0])}
                               alt={product.name}
@@ -1344,12 +1329,14 @@ export default function GemstoneAdminView() {
                         </span>
                         <span className="text-[11px] text-stone-500">
                           {formData.specifications?.imageVerificationStatus === 'VERIFIED'
-                            ? 'Images explicitly verified and approved by administrator.'
+                            ? 'Actual product images explicitly verified and approved by administrator.'
+                            : formData.specifications?.imageVerificationStatus === 'AI_ILLUSTRATION'
+                            ? 'AI-generated visual reference only. It is not a photograph of the available product and cannot be approved as product evidence.'
                             : formData.specifications?.imageVerificationStatus === 'VERIFIED_PRESET'
                             ? 'Legacy preset image is attached but not approved. Inspect it and explicitly approve it before publication.'
                             : formData.specifications?.imageVerificationStatus === 'PENDING_VERIFICATION'
-                            ? 'Image assigned but pending administrator inspection.'
-                            : 'Pending image upload: a genuine product photo is required before publication.'}
+                            ? 'Actual image assigned but pending administrator inspection.'
+                            : 'Pending image upload: a genuine photograph of the available product is required before publication.'}
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
@@ -1364,12 +1351,15 @@ export default function GemstoneAdminView() {
                           }))}
                           className="px-2.5 py-1 text-xs rounded-lg border border-stone-200 bg-white font-medium text-stone-800"
                         >
-                          <option value="VERIFIED">VERIFIED (Administrator Confirmed)</option>
+                          <option value="VERIFIED">VERIFIED (Actual Product Photo Confirmed)</option>
+                          <option value="AI_ILLUSTRATION" disabled>AI_ILLUSTRATION (Visual Only — Cannot Approve)</option>
                           <option value="PENDING_VERIFICATION">PENDING_VERIFICATION (Needs Admin Check)</option>
                           <option value="VERIFIED_PRESET" disabled>VERIFIED_PRESET (Legacy — approval required)</option>
                           <option value="PENDING_UPLOAD">PENDING_UPLOAD (No Photographs)</option>
                         </select>
-                        {formData.images && formData.images.length > 0 && formData.specifications?.imageVerificationStatus !== 'VERIFIED' && (
+                        {formData.images && formData.images.length > 0
+                          && formData.specifications?.imageVerificationStatus !== 'VERIFIED'
+                          && formData.specifications?.imageVerificationStatus !== 'AI_ILLUSTRATION' && (
                           <button
                             type="button"
                             onClick={() => {

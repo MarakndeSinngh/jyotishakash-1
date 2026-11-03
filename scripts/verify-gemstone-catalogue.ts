@@ -13,8 +13,10 @@ const root = process.cwd();
 const seedPath = path.join(root, 'supabase/seed/20261010_gemstone_catalogue_seed.sql');
 const seed = fs.readFileSync(seedPath, 'utf8');
 const appPage = fs.readFileSync(path.join(root, 'src/components/sections/GemstonesPage.tsx'), 'utf8');
+const illustration = fs.readFileSync(path.join(root, 'src/components/sections/GemstoneIllustration.tsx'), 'utf8');
 const detailPage = fs.readFileSync(path.join(root, 'src/components/sections/GemstoneDetailPage.tsx'), 'utf8');
 const repository = fs.readFileSync(path.join(root, 'src/repositories/gemstoneProductRepository.ts'), 'utf8');
+const model = fs.readFileSync(path.join(root, 'src/models/gemstoneProduct.ts'), 'utf8');
 const admin = fs.readFileSync(path.join(root, 'src/components/admin/GemstoneAdminView.tsx'), 'utf8');
 const cart = fs.readFileSync(path.join(root, 'src/components/cart/CartDrawer.tsx'), 'utf8');
 const cartContext = fs.readFileSync(path.join(root, 'src/context/CartContext.tsx'), 'utf8');
@@ -172,11 +174,17 @@ check('Certified claim requires a laboratory name',
 check('Published products can be browsed as enquiry-only catalogue references',
   repository.includes("query = query.eq('is_published', true)") &&
   !repository.includes('mapped.filter(product => getProductReviewIssues(product).length === 0') &&
-  appPage.includes('Vedic assessment pending') &&
+  appPage.includes('No standard Vedic planetary mapping') &&
   appPage.includes('Enquire'));
-check('Public catalogue hides unverified photographs and identity claims',
-  appPage.includes("imageVerificationStatus === 'VERIFIED'") &&
-  appPage.includes('Product specifications are pending review'));
+check('AI gemstone illustrations are labelled and never count as verification',
+  appPage.includes("imageVerificationStatus === 'AI_ILLUSTRATION'") &&
+  illustration.includes('AI illustration') &&
+  illustration.includes('must never count as product') &&
+  model.includes("imageVerificationStatus !== 'VERIFIED'"));
+check('Public detail pages show traditional astrology, numerology and quality guidance',
+  detailPage.includes('traditionalAstrology') &&
+  detailPage.includes('numerologyGuidance') &&
+  detailPage.includes('qualityGuide'));
 check('Cart add-to-cart remains blocked until the complete review gate passes',
   cartContext.includes('getProductReviewIssues(product).length === 0') &&
   cartContext.includes('!reviewReady'));
@@ -189,6 +197,13 @@ check('Product detail does not claim every item is natural or lab-certified',
   !detailPage.includes('Unheated & Pure'));
 check('Admin blocks temporary Blob URLs on upload failure',
   !admin.includes('URL.createObjectURL(file)'));
+check('Admin cannot approve an AI illustration as a genuine product photo',
+  admin.includes("imageVerificationStatus !== 'AI_ILLUSTRATION'") &&
+  admin.includes('<option value="AI_ILLUSTRATION" disabled>') &&
+  admin.includes("const newImages = [asset.url,"));
+check('Admin allows published enquiry listings while sale review remains separate',
+  admin.includes('Public catalogue visibility is separate from sale readiness') &&
+  admin.includes('listed for enquiries only'));
 check('Cart revalidates products, prices, identity, images, and stock before WhatsApp enquiry',
   cart.includes('getProductById(item.productId, false)') &&
   cart.includes('getProductReviewIssues(product).length > 0') &&

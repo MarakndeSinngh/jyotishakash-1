@@ -664,6 +664,14 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
                   && stone.certification?.naturalStatus === 'NATURAL_CONFIRMED'
                   && stone.certification?.natural === true;
                 const reviewReady = getProductReviewIssues(stone).length === 0;
+                const imageDisplayReady = (stone.specifications?.imageVerificationStatus === 'VERIFIED'
+                  || stone.specifications?.imageAssetType === 'AI_GENERATED_ILLUSTRATION')
+                  && Boolean(stone.images?.[0]);
+                const tradition = stone.specifications?.traditionalGuide;
+                const grahaBadge = tradition?.vedicGraha
+                  ? (tradition.vedicGraha.startsWith('No ') ? 'No fixed Navagraha gem' : tradition.vedicGraha.split(' — ')[0])
+                  : 'Vedic assessment pending';
+                const isIllustrativeImage = stone.specifications?.imageAssetType === 'AI_GENERATED_ILLUSTRATION';
                 const isOutOfStock = !reviewReady || !stone.inStock || stone.stockQuantity <= 0 || !isPriceVerified;
                 return (
                   <div
@@ -678,7 +686,7 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
                       {/* Floating Badges */}
                       <div className="absolute top-3 left-3 z-20 flex flex-col gap-1.5">
                         <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-stone-950/80 text-amber-300 border border-amber-500/30 backdrop-blur-md">
-                          {identityVerified ? stone.planetaryRuler : 'Vedic assessment pending'}
+                          {grahaBadge}
                         </span>
                         {stone.certification?.certified && (
                           <span className="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-emerald-950/80 text-emerald-300 border border-emerald-500/30 backdrop-blur-md flex items-center gap-1">
@@ -687,6 +695,12 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
                           </span>
                         )}
                       </div>
+
+                      {isIllustrativeImage && (
+                        <span className="absolute bottom-3 left-3 z-20 rounded-full bg-stone-950/80 border border-amber-500/30 px-2.5 py-1 text-[9px] font-semibold text-amber-200 backdrop-blur">
+                          Representative image
+                        </span>
+                      )}
 
                       {/* Wishlist Heart */}
                       <button
@@ -701,7 +715,7 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
                       </button>
 
                       {/* Gemstone Image (Clean, unclipped, object-contain) */}
-                      {stone.specifications?.imageVerificationStatus === 'VERIFIED' && stone.images && stone.images.length > 0 && stone.images[0] ? (
+                      {imageDisplayReady ? (
                         <SmartImage
                           src={resolveImagePath(stone.images[0])}
                           alt={stone.name}
@@ -736,9 +750,7 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
                         </h3>
 
                         <p className="text-xs text-stone-400 line-clamp-2 mt-1.5 leading-relaxed">
-                          {identityVerified
-                            ? (stone.shortDescription || stone.benefit)
-                            : 'Product identity and specifications are pending review. Contact LEO Family for confirmed details.'}
+                          {stone.shortDescription || 'Gemstone reference information is being prepared.'}
                         </p>
                       </div>
 
@@ -800,6 +812,14 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
                   && stone.certification?.naturalStatus === 'NATURAL_CONFIRMED'
                   && stone.certification?.natural === true;
                 const reviewReady = getProductReviewIssues(stone).length === 0;
+                const imageDisplayReady = (stone.specifications?.imageVerificationStatus === 'VERIFIED'
+                  || stone.specifications?.imageAssetType === 'AI_GENERATED_ILLUSTRATION')
+                  && Boolean(stone.images?.[0]);
+                const tradition = stone.specifications?.traditionalGuide;
+                const grahaBadge = tradition?.vedicGraha
+                  ? (tradition.vedicGraha.startsWith('No ') ? 'No fixed Navagraha gem' : tradition.vedicGraha.split(' — ')[0])
+                  : 'Vedic assessment pending';
+                const isIllustrativeImage = stone.specifications?.imageAssetType === 'AI_GENERATED_ILLUSTRATION';
                 const isOutOfStock = !reviewReady || !stone.inStock || stone.stockQuantity <= 0 || !isPriceVerified;
                 return (
                   <div
@@ -808,7 +828,7 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
                   >
                     <div className="flex items-center gap-4 w-full sm:w-auto">
                       <div className="w-24 h-24 rounded-xl bg-stone-900 shrink-0 p-2 overflow-hidden flex items-center justify-center">
-                        {stone.specifications?.imageVerificationStatus === 'VERIFIED' && stone.images && stone.images.length > 0 && stone.images[0] ? (
+                        {imageDisplayReady ? (
                           <SmartImage
                             src={resolveImagePath(stone.images[0])}
                             alt={stone.name}
@@ -824,7 +844,7 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
                       <div className="min-w-0">
                         <div className="flex items-center gap-2">
                           <span className="text-xs text-amber-400 font-cinzel font-bold">{stone.hindiName}</span>
-                          <span className="text-[10px] text-stone-500">• {identityVerified ? stone.planetaryRuler : 'Vedic assessment pending'}</span>
+                          <span className="text-[10px] text-stone-500">• {grahaBadge}</span>
                         </div>
                         <h4 
                           onClick={() => navigate(`/gemstones/${stone.slug}`)}
@@ -833,9 +853,7 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
                           {stone.name}
                         </h4>
                         <p className="text-xs text-stone-400 line-clamp-1 max-w-md mt-0.5">
-                          {identityVerified
-                            ? (stone.shortDescription || stone.benefit)
-                            : 'Product specifications are pending review. Contact LEO Family for confirmed details.'}
+                          {stone.shortDescription || 'Gemstone reference information is being prepared.'}
                         </p>
                       </div>
                     </div>

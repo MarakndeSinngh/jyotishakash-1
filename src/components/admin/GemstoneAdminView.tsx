@@ -489,7 +489,7 @@ export default function GemstoneAdminView() {
             Gemstone Products & Inventory
           </h2>
           <p className="text-xs text-stone-500 mt-1">
-            Manage catalogue, prices, stock availability, photos, and variants synced live with the public website.
+            Manage catalogue, prices, stock availability, photos, and variants synced live with the public website. Published means listed for public viewing; unverified items remain enquiry-only and cannot be purchased until all review checks pass.
           </p>
         </div>
 

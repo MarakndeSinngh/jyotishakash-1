@@ -221,23 +221,18 @@ export default function GemstoneAdminView() {
   };
 
   const handleTogglePublish = async (product: GemstoneProduct) => {
-    // If attempting to publish, enforce publication review safeguards
-    if (!product.isPublished) {
-      const issues = getProductReviewIssues(product);
-      if (issues.length > 0) {
-        showNotification(
-          `Cannot publish "${product.name}": Please resolve review items first (${issues.map(i => i.message).join('; ')}).`,
-          'error'
-        );
-        return;
-      }
-    }
-
+    // Public listing means visible for product information and enquiries only.
+    // Sale readiness remains separate and is enforced by the product review gate.
     try {
       await gemstoneProductService.updateProduct(product.id, {
         isPublished: !product.isPublished
       });
-      showNotification(`${product.name} is now ${!product.isPublished ? 'Published' : 'Draft'}`);
+      const issues = getProductReviewIssues(product);
+      showNotification(
+        !product.isPublished && issues.length > 0
+          ? `"${product.name}" is listed for enquiries only. ${issues.length} purchase review checks remain open.`
+          : `${product.name} is now ${!product.isPublished ? 'Published' : 'Draft'}`
+      );
       loadData();
     } catch (err: any) {
       showNotification(err.message || 'Failed to update status', 'error');
@@ -324,13 +319,8 @@ export default function GemstoneAdminView() {
       && formData.price !== null
       && Number.isFinite(Number(formData.price))
       && Number(formData.price) > 0;
-    if (!hasEnteredPrice && formData.isPublished) {
-      showNotification('A published product requires an explicitly entered and approved positive price.', 'error');
-      return;
-    }
-
-    // The database column is NOT NULL. For an unpriced draft only, store INR 1 as a
-    // non-sale sentinel and always mark it UNVERIFIED so it is never shown or orderable.
+    // The database price column is NOT NULL. An enquiry-only catalogue entry may
+    // remain unpriced; INR 1 is stored only as a non-sale sentinel and stays unverified.
     const priceNum = hasEnteredPrice ? Number(formData.price) : 1;
     const stockQty = Math.max(0, Number(formData.stockQuantity) || 0);
     const inStock = stockQty > 0 ? Boolean(formData.inStock) : false;
@@ -339,27 +329,12 @@ export default function GemstoneAdminView() {
     if (!hasEnteredPrice || priceChanged) {
       specifications.pricingVerificationStatus = 'UNVERIFIED_DRAFT_PRICE';
       specifications.priceNote = hasEnteredPrice
-        ? 'Price changed. Administrator approval is required before publication.'
-        : 'NO_COMMERCIAL_PRICE_SET — numeric 1 is a database placeholder only; enter a LEO-approved selling price before publication.';
+        ? 'Price changed. Administrator approval is required before any sale.'
+        : 'NO_COMMERCIAL_PRICE_SET — numeric 1 is a database placeholder only; enter and approve a LEO-approved selling price before any sale.';
     }
 
-    // Check publication safeguards against the effective draft/approved values.
-    if (formData.isPublished) {
-      const issues = getProductReviewIssues({
-        ...formData,
-        specifications,
-        price: priceNum,
-        stockQuantity: stockQty,
-        inStock
-      });
-      if (issues.length > 0) {
-        showNotification(
-          `Cannot save as Published: ${issues.map(i => i.message).join('; ')}. Please resolve review items before publishing.`,
-          'error'
-        );
-        return;
-      }
-    }
+    // Public catalogue visibility is separate from sale readiness. The website
+    // labels unverified entries as enquiry-only; the cart blocks purchases.
 
     setSaving(true);
     try {

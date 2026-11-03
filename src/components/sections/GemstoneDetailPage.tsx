@@ -34,7 +34,7 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
   const [selectedVariant, setSelectedVariant] = useState<GemstoneVariant | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [relatedProducts, setRelatedProducts] = useState<GemstoneProduct[]>([]);
-  const [activeTab, setActiveTab] = useState<'benefits' | 'specs' | 'energization' | 'wearing'>('benefits');
+  const [activeTab, setActiveTab] = useState<'benefits' | 'guidance' | 'specs' | 'energization' | 'wearing'>('benefits');
   const [copiedLink, setCopiedLink] = useState(false);
 
   const { addToCart, isWishlisted, toggleWishlist } = useCart();
@@ -48,7 +48,7 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
         if (isMounted) {
           if (item) {
             setProduct(item);
-            setSelectedImage(item.specifications?.imageVerificationStatus === 'VERIFIED'
+            setSelectedImage(['VERIFIED', 'AI_ILLUSTRATIVE'].includes(item.specifications?.imageVerificationStatus || '')
               && item.images && item.images.length > 0 && item.images[0] ? item.images[0] : '');
             if (getProductReviewIssues(item).length === 0 && item.variants && item.variants.length > 0) {
               // Only expose selectable weights/prices after the complete product review gate passes.
@@ -209,7 +209,7 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
             {/* Badges Overlay */}
             <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
               <span className="px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-stone-950/80 text-amber-300 border border-amber-500/30 backdrop-blur-md">
-                {identityVerified ? product.planetaryRuler : 'Vedic assessment pending'}
+                {product.specifications?.educationalGuidance?.traditionLabel || 'Traditional association varies'}
               </span>
               {product.certification?.certified && (
                 <span className="px-3 py-1 rounded-full text-[10px] font-semibold bg-emerald-950/80 text-emerald-300 border border-emerald-500/30 backdrop-blur-md flex items-center gap-1">
@@ -235,8 +235,14 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
             )}
           </div>
 
+          {product.specifications?.imageVerificationStatus === 'AI_ILLUSTRATIVE' && (
+            <p className="mt-2 text-[10px] text-amber-200/80">
+              AI-generated representative illustration. It is not a photograph of the exact item available for sale.
+            </p>
+          )}
+
           {/* Thumbnail Strip */}
-          {product.specifications?.imageVerificationStatus === 'VERIFIED' && product.images && product.images.length > 1 && (
+          {['VERIFIED', 'AI_ILLUSTRATIVE'].includes(product.specifications?.imageVerificationStatus || '') && product.images && product.images.length > 1 && (
             <div className="flex items-center gap-3 overflow-x-auto pb-2">
               {product.images.map((img, idx) => (
                 <button
@@ -478,7 +484,17 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
                 Vedic Benefits
               </button>
               <button
-                onClick={() => setActiveTab('specs')}
+                onClick={() => setActiveTab('guidance')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition whitespace-nowrap ${
+                  activeTab === 'guidance'
+                    ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
+                    : 'text-stone-400 hover:text-stone-200'
+                }`}
+              >
+                Astrology & Numerology
+              </button>
+              <button
+                onClick={() => setActiveTab('specs')
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold transition whitespace-nowrap ${
                   activeTab === 'specs'
                     ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
@@ -513,9 +529,7 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
             <div className="pt-4 text-xs text-stone-300/90 leading-relaxed">
               {activeTab === 'benefits' && (
                 <div className="space-y-3">
-                  <p>{identityVerified
-                    ? product.description
-                    : 'Detailed product information is being reviewed. Please contact LEO Family for confirmed material identity, natural or treated status, origin, dimensions, and certificate information.'}</p>
+                  <p>{product.description || product.shortDescription || 'General gemstone education and traditional associations are shown separately from verification of the physical item.'}</p>
                   <div className="p-3 rounded-xl bg-stone-900 border border-stone-800 space-y-1.5">
                     <h5 className="font-bold text-amber-300 uppercase tracking-wider text-[11px]">
                       Product & tradition note
@@ -524,6 +538,30 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
                       Gemstone benefits and planetary associations are traditional astrological interpretations, not guaranteed outcomes. Confirm the identity and suitability of the actual stone with a qualified adviser before purchase.
                     </p>
                   </div>
+                </div>
+              )}
+
+              {activeTab === 'guidance' && (
+                <div className="space-y-4">
+                  <section className="rounded-xl border border-amber-500/20 bg-amber-950/15 p-4 space-y-2">
+                    <h5 className="text-xs font-bold uppercase tracking-wider text-amber-300">Traditional Jyotish reference</h5>
+                    <p className="text-stone-200">{product.specifications?.educationalGuidance?.traditionalGuidance || 'No standardized classical planetary recommendation is assigned to this supporting gemstone.'}</p>
+                  </section>
+                  <section className="rounded-xl border border-stone-800 bg-stone-900/70 p-4 space-y-2">
+                    <h5 className="text-xs font-bold uppercase tracking-wider text-amber-300">Numerology reference</h5>
+                    <p className="text-stone-200">{product.specifications?.educationalGuidance?.numerologyGuidance || 'No fixed one-to-one Mulank/Bhagyank gemstone mapping is assigned in this reference.'}</p>
+                  </section>
+                  <section className="rounded-xl border border-stone-800 bg-stone-900/70 p-4 space-y-2">
+                    <h5 className="text-xs font-bold uppercase tracking-wider text-amber-300">Who may consider it?</h5>
+                    <p className="text-stone-200">{product.specifications?.educationalGuidance?.suitabilityNotes || 'Consider only after an individual chart review; a birth number or life concern alone is not enough to select a gemstone.'}</p>
+                  </section>
+                  <section className="rounded-xl border border-stone-800 bg-stone-900/70 p-4 space-y-2">
+                    <h5 className="text-xs font-bold uppercase tracking-wider text-amber-300">Gemological quality checklist</h5>
+                    <p className="text-stone-200">{product.specifications?.educationalGuidance?.qualityGuide || 'Ask for material identification, treatment disclosure, measurements, and an independent gem-lab report when appropriate.'}</p>
+                  </section>
+                  <p className="text-[10px] text-stone-500">
+                    Astrology and numerology statements describe traditional beliefs, not scientifically established effects or medical treatment. Gemstone suitability varies by chart, tradition, and practitioner. AI imagery is illustrative only.
+                  </p>
                 </div>
               )}
 
@@ -612,7 +650,7 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
                 className="p-4 rounded-2xl bg-stone-900/60 border border-stone-800 hover:border-amber-500/40 transition cursor-pointer group flex flex-col justify-between"
               >
                 <div className="aspect-video w-full rounded-xl bg-stone-950 overflow-hidden mb-3 p-2 flex items-center justify-center">
-                  {rel.specifications?.imageVerificationStatus === 'VERIFIED' && rel.images && rel.images.length > 0 && rel.images[0] ? (
+                  {['VERIFIED', 'AI_ILLUSTRATIVE'].includes(rel.specifications?.imageVerificationStatus || '') && rel.images && rel.images.length > 0 && rel.images[0] ? (
                     <SmartImage
                       src={resolveImagePath(rel.images[0])}
                       alt={rel.name}

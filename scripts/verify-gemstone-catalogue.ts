@@ -174,9 +174,18 @@ check('Published products can be browsed as enquiry-only catalogue references',
   !repository.includes('mapped.filter(product => getProductReviewIssues(product).length === 0') &&
   appPage.includes('Vedic assessment pending') &&
   appPage.includes('Enquire'));
-check('Public catalogue hides unverified photographs and identity claims',
-  appPage.includes("imageVerificationStatus === 'VERIFIED'") &&
-  appPage.includes('Product specifications are pending review'));
+check('AI-generated representative images can display without being treated as verified product photos',
+  appPage.includes("'AI_ILLUSTRATIVE'") &&
+  detailPage.includes('AI-generated representative illustration') &&
+  detailPage.includes("imageVerificationStatus === 'VERIFIED'") === false);
+check('Gemstone detail exposes separate astrology, numerology, and quality guidance',
+  detailPage.includes("setActiveTab('guidance')") &&
+  detailPage.includes('numerologyGuidance') &&
+  detailPage.includes('qualityGuide'));
+check('Image bundle is materialized before development and production builds',
+  fs.existsSync(path.join(root, 'assets/gemstone-catalogue-images.tar.gz')) &&
+  fs.existsSync(path.join(root, 'scripts/materialize-gemstone-assets.mjs')) &&
+  generator.length > 0);
 check('Cart add-to-cart remains blocked until the complete review gate passes',
   cartContext.includes('getProductReviewIssues(product).length === 0') &&
   cartContext.includes('!reviewReady'));

@@ -678,7 +678,7 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
                       {/* Floating Badges */}
                       <div className="absolute top-3 left-3 z-20 flex flex-col gap-1.5">
                         <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-stone-950/80 text-amber-300 border border-amber-500/30 backdrop-blur-md">
-                          {identityVerified ? stone.planetaryRuler : 'Vedic assessment pending'}
+                          {stone.specifications?.educationalGuidance?.traditionLabel || 'Traditional association varies'}
                         </span>
                         {stone.certification?.certified && (
                           <span className="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-emerald-950/80 text-emerald-300 border border-emerald-500/30 backdrop-blur-md flex items-center gap-1">
@@ -701,7 +701,7 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
                       </button>
 
                       {/* Gemstone Image (Clean, unclipped, object-contain) */}
-                      {stone.specifications?.imageVerificationStatus === 'VERIFIED' && stone.images && stone.images.length > 0 && stone.images[0] ? (
+                      {['VERIFIED', 'AI_ILLUSTRATIVE'].includes(stone.specifications?.imageVerificationStatus || '') && stone.images && stone.images.length > 0 && stone.images[0] ? (
                         <SmartImage
                           src={resolveImagePath(stone.images[0])}
                           alt={stone.name}
@@ -713,6 +713,11 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
                           <span className="text-[10px] font-cinzel text-stone-400">Photo Pending</span>
                           <span className="text-[8px] text-stone-600">Verification</span>
                         </div>
+                      )}
+                      {stone.specifications?.imageVerificationStatus === 'AI_ILLUSTRATIVE' && (
+                        <span className="absolute bottom-2 left-2 z-20 rounded-full bg-stone-950/80 px-2 py-1 text-[9px] font-semibold text-amber-200 border border-amber-500/30">
+                          AI illustrative image
+                        </span>
                       )}
                     </div>
 
@@ -736,9 +741,7 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
                         </h3>
 
                         <p className="text-xs text-stone-400 line-clamp-2 mt-1.5 leading-relaxed">
-                          {identityVerified
-                            ? (stone.shortDescription || stone.benefit)
-                            : 'Product identity and specifications are pending review. Contact LEO Family for confirmed details.'}
+                          {stone.shortDescription || stone.benefit || 'Explore traditional gemstone associations and selection guidance.'}
                         </p>
                       </div>
 
@@ -808,7 +811,7 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
                   >
                     <div className="flex items-center gap-4 w-full sm:w-auto">
                       <div className="w-24 h-24 rounded-xl bg-stone-900 shrink-0 p-2 overflow-hidden flex items-center justify-center">
-                        {stone.specifications?.imageVerificationStatus === 'VERIFIED' && stone.images && stone.images.length > 0 && stone.images[0] ? (
+                        {['VERIFIED', 'AI_ILLUSTRATIVE'].includes(stone.specifications?.imageVerificationStatus || '') && stone.images && stone.images.length > 0 && stone.images[0] ? (
                           <SmartImage
                             src={resolveImagePath(stone.images[0])}
                             alt={stone.name}
@@ -820,11 +823,16 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
                             <span className="text-[8px] text-stone-500">Pending</span>
                           </div>
                         )}
+                        {stone.specifications?.imageVerificationStatus === 'AI_ILLUSTRATIVE' && (
+                          <span className="absolute bottom-1 left-1 rounded-full bg-stone-950/80 px-1.5 py-0.5 text-[8px] text-amber-200">
+                            AI illustration
+                          </span>
+                        )}
                       </div>
                       <div className="min-w-0">
                         <div className="flex items-center gap-2">
                           <span className="text-xs text-amber-400 font-cinzel font-bold">{stone.hindiName}</span>
-                          <span className="text-[10px] text-stone-500">• {identityVerified ? stone.planetaryRuler : 'Vedic assessment pending'}</span>
+                          <span className="text-[10px] text-stone-500">• {stone.specifications?.educationalGuidance?.traditionLabel || 'Traditional association varies'}</span>
                         </div>
                         <h4 
                           onClick={() => navigate(`/gemstones/${stone.slug}`)}
@@ -833,9 +841,7 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
                           {stone.name}
                         </h4>
                         <p className="text-xs text-stone-400 line-clamp-1 max-w-md mt-0.5">
-                          {identityVerified
-                            ? (stone.shortDescription || stone.benefit)
-                            : 'Product specifications are pending review. Contact LEO Family for confirmed details.'}
+                          {stone.shortDescription || stone.benefit || 'Explore traditional gemstone associations and selection guidance.'}
                         </p>
                       </div>
                     </div>

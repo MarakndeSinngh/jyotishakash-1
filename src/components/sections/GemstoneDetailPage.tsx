@@ -231,7 +231,7 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
                   src={resolveImagePath(selectedImage)}
                   panel={Number(product.specifications?.imagePanel ?? 0)}
                   alt={product.name}
-                  className="w-full h-full relative z-[5] transition-transform duration-500 group-hover:scale-105"
+                  className="w-full h-full relative z-[5]"
                 />
               ) : (
                 <SmartImage
@@ -643,7 +643,7 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
                       src={resolveImagePath(rel.images[0])}
                       panel={Number(rel.specifications?.imagePanel ?? 0)}
                       alt={rel.name}
-                      className="w-full h-full group-hover:scale-105 transition-transform"
+                      className="w-full h-full"
                     />
                   ) : rel.specifications?.imageVerificationStatus === 'VERIFIED' && rel.images && rel.images.length > 0 && rel.images[0] ? (
                     <SmartImage

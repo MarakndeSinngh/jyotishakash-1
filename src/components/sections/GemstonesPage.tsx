@@ -707,7 +707,7 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
                           src={resolveImagePath(stone.images[0])}
                           panel={Number(stone.specifications?.imagePanel ?? 0)}
                           alt={stone.name}
-                          className="w-full h-full relative z-10 transition-transform duration-500 group-hover:scale-110"
+                          className="w-full h-full relative z-10"
                         />
                       ) : stone.specifications?.imageVerificationStatus === 'VERIFIED' && stone.images && stone.images.length > 0 && stone.images[0] ? (
                         <SmartImage
@@ -821,7 +821,7 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
                           src={resolveImagePath(stone.images[0])}
                           panel={Number(stone.specifications?.imagePanel ?? 0)}
                           alt={stone.name}
-                          className="w-full h-full relative z-10 transition-transform duration-500 group-hover:scale-110"
+                          className="w-full h-full relative z-10"
                         />
                       ) : stone.specifications?.imageVerificationStatus === 'VERIFIED' && stone.images && stone.images.length > 0 && stone.images[0] ? (
                           <SmartImage

@@ -26,6 +26,7 @@ import { GemstoneProduct, GemstoneVariant, ReviewIssue, getProductReviewIssues }
 import { gemstoneProductService } from '../../services/gemstoneProductService';
 import { storageRepository } from '../../repositories/storageRepository';
 import SmartImage from '../sections/SmartImage';
+import GemstoneIllustration from '../sections/GemstoneIllustration';
 import { resolveImagePath } from '../../utils/imageHelper';
 
 export type { ReviewIssue };
@@ -204,7 +205,9 @@ export default function GemstoneAdminView() {
           ...(product.specifications || {}),
           pricingVerificationStatus: 'UNVERIFIED_DRAFT_PRICE',
           materialIdentityStatus: 'PENDING_VERIFICATION',
-          imageVerificationStatus: product.images?.length ? 'PENDING_VERIFICATION' : 'PENDING_UPLOAD',
+          imageVerificationStatus: product.specifications?.imageVerificationStatus === 'AI_ILLUSTRATION'
+            ? 'AI_ILLUSTRATION'
+            : (product.images?.length ? 'PENDING_VERIFICATION' : 'PENDING_UPLOAD'),
           adminReviewNotice: 'Duplicate draft: re-verify actual stone identity, price, product photos, origin/treatment, certification, stock, and all variants before publication.'
         },
         variants: (product.variants || []).map(variant => ({ ...variant, inStock: false, stockQuantity: 0, priceVerificationStatus: 'UNVERIFIED_DRAFT_PRICE' }))
@@ -288,7 +291,7 @@ export default function GemstoneAdminView() {
     setUploadingImage(true);
     try {
       const asset = await storageRepository.uploadImage(file);
-      const newImages = [...(formData.images || []), asset.url];
+      const newImages = [asset.url, ...(formData.images || []).filter(image => image !== asset.url)];
       setFormData(prev => ({
         ...prev,
         images: newImages,
@@ -649,7 +652,14 @@ export default function GemstoneAdminView() {
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-3">
                         <div className="w-12 h-12 rounded-xl bg-stone-100 border border-stone-200 shrink-0 overflow-hidden p-1 flex items-center justify-center">
-                          {product.images && product.images.length > 0 && product.images[0] ? (
+                          {product.specifications?.imageVerificationStatus === 'AI_ILLUSTRATION' && product.images?.[0] ? (
+                            <GemstoneIllustration
+                              src={resolveImagePath(product.images[0])}
+                              panel={Number(product.specifications?.imagePanel ?? 0)}
+                              alt={product.name}
+                              className="w-full h-full"
+                            />
+                          ) : product.images && product.images.length > 0 && product.images[0] ? (
                             <SmartImage
                               src={resolveImagePath(product.images[0])}
                               alt={product.name}
@@ -1344,12 +1354,14 @@ export default function GemstoneAdminView() {
                         </span>
                         <span className="text-[11px] text-stone-500">
                           {formData.specifications?.imageVerificationStatus === 'VERIFIED'
-                            ? 'Images explicitly verified and approved by administrator.'
+                            ? 'Actual product images explicitly verified and approved by administrator.'
+                            : formData.specifications?.imageVerificationStatus === 'AI_ILLUSTRATION'
+                            ? 'AI-generated visual reference only. It is not a photograph of the available product and cannot be approved as product evidence.'
                             : formData.specifications?.imageVerificationStatus === 'VERIFIED_PRESET'
                             ? 'Legacy preset image is attached but not approved. Inspect it and explicitly approve it before publication.'
                             : formData.specifications?.imageVerificationStatus === 'PENDING_VERIFICATION'
-                            ? 'Image assigned but pending administrator inspection.'
-                            : 'Pending image upload: a genuine product photo is required before publication.'}
+                            ? 'Actual image assigned but pending administrator inspection.'
+                            : 'Pending image upload: a genuine photograph of the available product is required before publication.'}
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
@@ -1364,12 +1376,15 @@ export default function GemstoneAdminView() {
                           }))}
                           className="px-2.5 py-1 text-xs rounded-lg border border-stone-200 bg-white font-medium text-stone-800"
                         >
-                          <option value="VERIFIED">VERIFIED (Administrator Confirmed)</option>
+                          <option value="VERIFIED">VERIFIED (Actual Product Photo Confirmed)</option>
+                          <option value="AI_ILLUSTRATION" disabled>AI_ILLUSTRATION (Visual Only — Cannot Approve)</option>
                           <option value="PENDING_VERIFICATION">PENDING_VERIFICATION (Needs Admin Check)</option>
                           <option value="VERIFIED_PRESET" disabled>VERIFIED_PRESET (Legacy — approval required)</option>
                           <option value="PENDING_UPLOAD">PENDING_UPLOAD (No Photographs)</option>
                         </select>
-                        {formData.images && formData.images.length > 0 && formData.specifications?.imageVerificationStatus !== 'VERIFIED' && (
+                        {formData.images && formData.images.length > 0
+                          && formData.specifications?.imageVerificationStatus !== 'VERIFIED'
+                          && formData.specifications?.imageVerificationStatus !== 'AI_ILLUSTRATION' && (
                           <button
                             type="button"
                             onClick={() => {

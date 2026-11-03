@@ -267,7 +267,7 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
         </h1>
 
         <p className="text-stone-300 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed mb-8">
-          Explore Vedic gemstones and popular gemstone varieties. Pending items are catalogue references for enquiries only. Product photos, origin, planetary guidance, laboratory documents, prices, and availability appear only after individual review. Online orders remain disabled until identity, pricing, images, and stock are verified.
+          Explore the Navaratna and popular gemstone varieties. AI-generated images are visual illustrations, not photographs of current stock. Traditional astrology and numerology guidance is school-dependent; physical identity, treatment, certificates, prices and stock must be verified before an item can be sold.
         </p>
 
         <div className="flex flex-wrap items-center justify-center gap-4">

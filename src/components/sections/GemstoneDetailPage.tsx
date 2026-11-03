@@ -48,7 +48,8 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
         if (isMounted) {
           if (item) {
             setProduct(item);
-            setSelectedImage(item.specifications?.imageVerificationStatus === 'VERIFIED'
+            setSelectedImage((item.specifications?.imageVerificationStatus === 'VERIFIED'
+              || item.specifications?.imageAssetType === 'AI_GENERATED_ILLUSTRATION')
               && item.images && item.images.length > 0 && item.images[0] ? item.images[0] : '');
             if (getProductReviewIssues(item).length === 0 && item.variants && item.variants.length > 0) {
               // Only expose selectable weights/prices after the complete product review gate passes.
@@ -114,6 +115,11 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
   }
 
   const reviewReady = getProductReviewIssues(product).length === 0;
+  const traditionalGuide = product.specifications?.traditionalGuide;
+  const grahaDisplay = traditionalGuide?.vedicGraha
+    ? (traditionalGuide.vedicGraha.startsWith('No ') ? 'No fixed Navagraha mapping' : traditionalGuide.vedicGraha.split(' — ')[0])
+    : 'Vedic assessment pending';
+  const illustrativeImage = product.specifications?.imageAssetType === 'AI_GENERATED_ILLUSTRATION';
   const currentPrice = selectedVariant ? selectedVariant.price : product.price;
   const currentCompareAt = selectedVariant ? selectedVariant.compareAtPrice : product.compareAtPrice;
   const basePriceVerified = product.specifications?.pricingVerificationStatus === 'VERIFIED';
@@ -209,7 +215,7 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
             {/* Badges Overlay */}
             <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
               <span className="px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-stone-950/80 text-amber-300 border border-amber-500/30 backdrop-blur-md">
-                {identityVerified ? product.planetaryRuler : 'Vedic assessment pending'}
+                {grahaDisplay}
               </span>
               {product.certification?.certified && (
                 <span className="px-3 py-1 rounded-full text-[10px] font-semibold bg-emerald-950/80 text-emerald-300 border border-emerald-500/30 backdrop-blur-md flex items-center gap-1">
@@ -220,6 +226,11 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
             </div>
 
             {/* Main Product Image */}
+            {illustrativeImage && selectedImage && (
+              <span className="absolute bottom-4 left-4 z-20 rounded-full bg-stone-950/85 border border-amber-500/30 px-3 py-1.5 text-[10px] font-semibold text-amber-200 backdrop-blur">
+                Representative AI image — actual stone may differ
+              </span>
+            )}
             {selectedImage ? (
               <SmartImage
                 src={resolveImagePath(selectedImage)}
@@ -230,13 +241,14 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
               <div className="flex flex-col items-center justify-center text-center p-6 relative z-[5] text-stone-500">
                 <Sparkles className="w-16 h-16 text-stone-600 mb-3 animate-pulse" />
                 <span className="text-sm font-cinzel text-stone-300 font-semibold">Image Pending Verification</span>
-                <span className="text-xs text-stone-500 mt-1">Authentic photograph pending laboratory archival upload</span>
+                <span className="text-xs text-stone-500 mt-1">Representative image awaiting upload; actual stone must be checked separately.</span>
               </div>
             )}
           </div>
 
           {/* Thumbnail Strip */}
-          {product.specifications?.imageVerificationStatus === 'VERIFIED' && product.images && product.images.length > 1 && (
+          {(product.specifications?.imageVerificationStatus === 'VERIFIED'
+            || product.specifications?.imageAssetType === 'AI_GENERATED_ILLUSTRATION') && product.images && product.images.length > 1 && (
             <div className="flex items-center gap-3 overflow-x-auto pb-2">
               {product.images.map((img, idx) => (
                 <button
@@ -337,9 +349,7 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
 
           {/* Short Benefit Quote */}
           <p className="text-sm text-stone-300/90 leading-relaxed italic border-l-2 border-amber-500 pl-4 py-1">
-            "{identityVerified
-              ? (product.benefit || product.shortDescription)
-              : 'Product material identity, origin and natural status are awaiting review. Contact LEO Family for confirmed specifications.'}"
+            "{product.benefit || product.shortDescription}"
           </p>
 
           {/* Variant Selection (Carat / Origin / Weight) */}
@@ -513,9 +523,7 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
             <div className="pt-4 text-xs text-stone-300/90 leading-relaxed">
               {activeTab === 'benefits' && (
                 <div className="space-y-3">
-                  <p>{identityVerified
-                    ? product.description
-                    : 'Detailed product information is being reviewed. Please contact LEO Family for confirmed material identity, natural or treated status, origin, dimensions, and certificate information.'}</p>
+                  <p>{product.description}</p>
                   <div className="p-3 rounded-xl bg-stone-900 border border-stone-800 space-y-1.5">
                     <h5 className="font-bold text-amber-300 uppercase tracking-wider text-[11px]">
                       Product & tradition note
@@ -524,6 +532,50 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
                       Gemstone benefits and planetary associations are traditional astrological interpretations, not guaranteed outcomes. Confirm the identity and suitability of the actual stone with a qualified adviser before purchase.
                     </p>
                   </div>
+                </div>
+              )}
+
+              {activeTab === 'benefits' && traditionalGuide && (
+                <div className="mt-4 p-4 rounded-xl bg-amber-950/20 border border-amber-500/20 space-y-3">
+                  <div>
+                    <h5 className="font-bold text-amber-300 uppercase tracking-wider text-[11px]">
+                      Traditional Jyotish & Numerology Reference
+                    </h5>
+                    <p className="text-[10px] text-stone-400 mt-1">
+                      Cultural correspondences only. Systems differ; this is not an individual prescription.
+                    </p>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="p-3 rounded-lg bg-stone-900/80 border border-stone-800">
+                      <span className="text-[10px] uppercase text-stone-500 block">Jyotish association</span>
+                      <span className="text-sm font-semibold text-stone-200">{traditionalGuide.vedicGraha || 'No fixed classical association'}</span>
+                      {traditionalGuide.traditionalIntent && <p className="text-xs text-stone-400 mt-1">{traditionalGuide.traditionalIntent}</p>}
+                    </div>
+                    <div className="p-3 rounded-lg bg-stone-900/80 border border-stone-800">
+                      <span className="text-[10px] uppercase text-stone-500 block">Cheiro-style number reference</span>
+                      <span className="text-sm font-semibold text-stone-200">
+                        {traditionalGuide.cheiroNumbers?.length ? traditionalGuide.cheiroNumbers.join(', ') : 'No direct match in this reference'}
+                      </span>
+                      {traditionalGuide.numerologyNote && <p className="text-xs text-stone-400 mt-1">{traditionalGuide.numerologyNote}</p>}
+                    </div>
+                  </div>
+                  {traditionalGuide.whoMayConsider && (
+                    <div>
+                      <h5 className="font-bold text-stone-200 text-[11px] uppercase tracking-wider">Who may consider it?</h5>
+                      <p className="text-xs text-stone-300 mt-1">{traditionalGuide.whoMayConsider}</p>
+                    </div>
+                  )}
+                  {traditionalGuide.qualityChecks?.length > 0 && (
+                    <div>
+                      <h5 className="font-bold text-stone-200 text-[11px] uppercase tracking-wider">Gem quality checklist</h5>
+                      <ul className="mt-1 space-y-1 list-disc pl-4 text-xs text-stone-300">
+                        {traditionalGuide.qualityChecks.map((item, index) => <li key={index}>{item}</li>)}
+                      </ul>
+                    </div>
+                  )}
+                  <p className="text-[10px] text-amber-200/80">
+                    Traditional beliefs are not scientifically established treatments or guaranteed outcomes. This is not medical advice. Gem suitability requires an individual chart review; material identity, treatment, origin, certificate and actual-item quality require independent verification.
+                  </p>
                 </div>
               )}
 
@@ -612,7 +664,8 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
                 className="p-4 rounded-2xl bg-stone-900/60 border border-stone-800 hover:border-amber-500/40 transition cursor-pointer group flex flex-col justify-between"
               >
                 <div className="aspect-video w-full rounded-xl bg-stone-950 overflow-hidden mb-3 p-2 flex items-center justify-center">
-                  {rel.specifications?.imageVerificationStatus === 'VERIFIED' && rel.images && rel.images.length > 0 && rel.images[0] ? (
+                  {(rel.specifications?.imageVerificationStatus === 'VERIFIED'
+                    || rel.specifications?.imageAssetType === 'AI_GENERATED_ILLUSTRATION') && rel.images && rel.images.length > 0 && rel.images[0] ? (
                     <SmartImage
                       src={resolveImagePath(rel.images[0])}
                       alt={rel.name}

@@ -16,6 +16,7 @@ const appPage = fs.readFileSync(path.join(root, 'src/components/sections/Gemston
 const illustration = fs.readFileSync(path.join(root, 'src/components/sections/GemstoneIllustration.tsx'), 'utf8');
 const detailPage = fs.readFileSync(path.join(root, 'src/components/sections/GemstoneDetailPage.tsx'), 'utf8');
 const repository = fs.readFileSync(path.join(root, 'src/repositories/gemstoneProductRepository.ts'), 'utf8');
+const model = fs.readFileSync(path.join(root, 'src/models/gemstoneProduct.ts'), 'utf8');
 const admin = fs.readFileSync(path.join(root, 'src/components/admin/GemstoneAdminView.tsx'), 'utf8');
 const cart = fs.readFileSync(path.join(root, 'src/components/cart/CartDrawer.tsx'), 'utf8');
 const cartContext = fs.readFileSync(path.join(root, 'src/context/CartContext.tsx'), 'utf8');

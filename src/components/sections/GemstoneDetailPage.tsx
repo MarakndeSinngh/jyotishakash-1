@@ -20,6 +20,7 @@ import { GemstoneProduct, GemstoneVariant, getProductReviewIssues } from '../../
 import { gemstoneProductService } from '../../services/gemstoneProductService';
 import { useCart } from '../../context/CartContext';
 import SmartImage from './SmartImage';
+import GemstoneIllustration from './GemstoneIllustration';
 import { resolveImagePath } from '../../utils/imageHelper';
 
 interface GemstoneDetailPageProps {
@@ -48,8 +49,12 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
         if (isMounted) {
           if (item) {
             setProduct(item);
-            setSelectedImage(item.specifications?.imageVerificationStatus === 'VERIFIED'
-              && item.images && item.images.length > 0 && item.images[0] ? item.images[0] : '');
+            setSelectedImage(
+              ['VERIFIED', 'AI_ILLUSTRATION'].includes(item.specifications?.imageVerificationStatus || '')
+                && item.images && item.images.length > 0 && item.images[0]
+                ? item.images[0]
+                : ''
+            );
             if (getProductReviewIssues(item).length === 0 && item.variants && item.variants.length > 0) {
               // Only expose selectable weights/prices after the complete product review gate passes.
               const inStockVar = item.variants.find(v => v.inStock && v.stockQuantity > 0) || item.variants[0];
@@ -209,7 +214,7 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
             {/* Badges Overlay */}
             <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
               <span className="px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-stone-950/80 text-amber-300 border border-amber-500/30 backdrop-blur-md">
-                {identityVerified ? product.planetaryRuler : 'Vedic assessment pending'}
+                {product.specifications?.traditionalPlanetLabel || 'No standard Vedic planetary mapping'}
               </span>
               {product.certification?.certified && (
                 <span className="px-3 py-1 rounded-full text-[10px] font-semibold bg-emerald-950/80 text-emerald-300 border border-emerald-500/30 backdrop-blur-md flex items-center gap-1">
@@ -221,16 +226,25 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
 
             {/* Main Product Image */}
             {selectedImage ? (
-              <SmartImage
-                src={resolveImagePath(selectedImage)}
-                alt={product.name}
-                className="w-full h-full object-contain relative z-[5] transition-transform duration-500 group-hover:scale-105"
-              />
+              product.specifications?.imageVerificationStatus === 'AI_ILLUSTRATION' ? (
+                <GemstoneIllustration
+                  src={resolveImagePath(selectedImage)}
+                  panel={Number(product.specifications?.imagePanel ?? 0)}
+                  alt={product.name}
+                  className="w-full h-full relative z-[5] transition-transform duration-500 group-hover:scale-105"
+                />
+              ) : (
+                <SmartImage
+                  src={resolveImagePath(selectedImage)}
+                  alt={product.name}
+                  className="w-full h-full object-contain relative z-[5] transition-transform duration-500 group-hover:scale-105"
+                />
+              )
             ) : (
               <div className="flex flex-col items-center justify-center text-center p-6 relative z-[5] text-stone-500">
                 <Sparkles className="w-16 h-16 text-stone-600 mb-3 animate-pulse" />
                 <span className="text-sm font-cinzel text-stone-300 font-semibold">Image Pending Verification</span>
-                <span className="text-xs text-stone-500 mt-1">Authentic photograph pending laboratory archival upload</span>
+                <span className="text-xs text-stone-500 mt-1">Actual product photograph pending review</span>
               </div>
             )}
           </div>
@@ -439,7 +453,7 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
                 className="w-full py-3.5 px-6 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-cinzel font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2.5 shadow-xl shadow-emerald-950/40 hover:brightness-110 active:scale-[0.99] transition"
               >
                 <MessageCircle className="w-4 h-4 fill-white text-emerald-600" />
-                <span>Order via WhatsApp</span>
+                <span>Enquire via WhatsApp</span>
               </button>
             </div>
 
@@ -475,7 +489,7 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
                     : 'text-stone-400 hover:text-stone-200'
                 }`}
               >
-                Vedic Benefits
+                Astrology & Numerology
               </button>
               <button
                 onClick={() => setActiveTab('specs')}
@@ -513,17 +527,25 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
             <div className="pt-4 text-xs text-stone-300/90 leading-relaxed">
               {activeTab === 'benefits' && (
                 <div className="space-y-3">
-                  <p>{identityVerified
-                    ? product.description
-                    : 'Detailed product information is being reviewed. Please contact LEO Family for confirmed material identity, natural or treated status, origin, dimensions, and certificate information.'}</p>
+                  <div className="space-y-3">
                   <div className="p-3 rounded-xl bg-stone-900 border border-stone-800 space-y-1.5">
-                    <h5 className="font-bold text-amber-300 uppercase tracking-wider text-[11px]">
-                      Product & tradition note
-                    </h5>
-                    <p className="text-stone-300">
-                      Gemstone benefits and planetary associations are traditional astrological interpretations, not guaranteed outcomes. Confirm the identity and suitability of the actual stone with a qualified adviser before purchase.
-                    </p>
+                    <h5 className="font-bold text-amber-300 uppercase tracking-wider text-[11px]">Traditional Jyotish association</h5>
+                    <p className="text-stone-300">{product.specifications?.traditionalAstrology || 'No standard classical Jyotish association is assigned to this variety. Practices differ; consult a qualified astrologer.'}</p>
                   </div>
+                  <div className="p-3 rounded-xl bg-stone-900 border border-stone-800 space-y-1.5">
+                    <h5 className="font-bold text-amber-300 uppercase tracking-wider text-[11px]">Traditional remedial theme</h5>
+                    <p className="text-stone-300">{product.specifications?.traditionalRemedyTheme || 'No standard gemstone-remedy assignment is recorded for this variety.'}</p>
+                  </div>
+                  <div className="p-3 rounded-xl bg-stone-900 border border-stone-800 space-y-1.5">
+                    <h5 className="font-bold text-amber-300 uppercase tracking-wider text-[11px]">Numerology connection</h5>
+                    <p className="text-stone-300">{product.specifications?.numerologyGuidance || 'No consistent Chaldean number-to-gemstone mapping is assigned in this catalogue.'}</p>
+                  </div>
+                  <div className="p-3 rounded-xl bg-amber-950/20 border border-amber-500/20 space-y-1.5">
+                    <h5 className="font-bold text-amber-300 uppercase tracking-wider text-[11px]">Who should consider it?</h5>
+                    <p className="text-stone-300">{product.specifications?.suitabilityNote || 'Do not select a gemstone from a birth number alone. Suitability requires a complete birth-chart assessment and personal consultation.'}</p>
+                  </div>
+                  <p className="text-[10px] text-stone-500">Astrological and numerological associations are traditional beliefs, not scientifically established remedies or guaranteed outcomes. They are not medical advice and do not replace professional care.</p>
+                </div>
                 </div>
               )}
 
@@ -547,8 +569,12 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
                       <span className="font-semibold text-stone-200">{product.certification?.certified ? (product.certification.labName || 'Certificate details pending') : 'Not certified / pending'}</span>
                     </div>
                   </div>
+                  <div className="p-3 rounded-xl bg-stone-900 border border-stone-800 space-y-1.5">
+                    <h5 className="font-bold text-amber-300 uppercase tracking-wider text-[11px]">Quality checklist — not a grade of this item</h5>
+                    <p className="text-stone-300">{product.specifications?.qualityGuide || 'Ask for material identification, treatment disclosure, weight, dimensions, and an independent report where appropriate.'}</p>
+                  </div>
                   <p className="text-[10px] text-stone-500 pt-1">
-                    Product identity, weight, treatment, origin, and certification should be checked against the actual stone before purchase.
+                    This page's AI image is an illustration only. It is not a photograph of the available item and does not verify quality, treatment, origin, or authenticity.
                   </p>
                 </div>
               )}
@@ -612,7 +638,14 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
                 className="p-4 rounded-2xl bg-stone-900/60 border border-stone-800 hover:border-amber-500/40 transition cursor-pointer group flex flex-col justify-between"
               >
                 <div className="aspect-video w-full rounded-xl bg-stone-950 overflow-hidden mb-3 p-2 flex items-center justify-center">
-                  {rel.specifications?.imageVerificationStatus === 'VERIFIED' && rel.images && rel.images.length > 0 && rel.images[0] ? (
+                  {rel.specifications?.imageVerificationStatus === 'AI_ILLUSTRATION' && rel.images?.[0] ? (
+                    <GemstoneIllustration
+                      src={resolveImagePath(rel.images[0])}
+                      panel={Number(rel.specifications?.imagePanel ?? 0)}
+                      alt={rel.name}
+                      className="w-full h-full group-hover:scale-105 transition-transform"
+                    />
+                  ) : rel.specifications?.imageVerificationStatus === 'VERIFIED' && rel.images && rel.images.length > 0 && rel.images[0] ? (
                     <SmartImage
                       src={resolveImagePath(rel.images[0])}
                       alt={rel.name}
@@ -627,24 +660,18 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
                 </div>
                 <div>
                   <div className="text-[11px] text-amber-400 uppercase font-semibold">
-                    {rel.specifications?.materialIdentityStatus === 'VERIFIED'
-                      && rel.certification?.naturalStatus === 'NATURAL_CONFIRMED'
-                      && rel.certification?.natural === true
-                      ? rel.planetaryRuler : 'Vedic assessment pending'}
+                    {rel.specifications?.traditionalPlanetLabel || 'No standard Vedic planetary mapping'}
                   </div>
                   <h4 className="text-sm font-bold text-stone-200 font-cinzel mt-0.5">
                     {rel.name}
                   </h4>
                   <p className="text-xs text-stone-400 line-clamp-1 mt-1">
-                    {rel.specifications?.materialIdentityStatus === 'VERIFIED'
-                      && rel.certification?.naturalStatus === 'NATURAL_CONFIRMED'
-                      && rel.certification?.natural === true
-                      ? rel.shortDescription : 'Product specifications are pending review.'}
+                    {rel.specifications?.traditionalSummary || 'Traditional associations and physical specifications are being reviewed.'}
                   </p>
                 </div>
                 <div className="mt-3 pt-3 border-t border-stone-800 flex items-center justify-between">
                   <span className="text-xs font-bold text-amber-300 font-cinzel">
-                    ₹{rel.price.toLocaleString('en-IN')}
+                    {rel.specifications?.pricingVerificationStatus === 'VERIFIED' ? `₹${rel.price.toLocaleString('en-IN')}` : 'Price on request'}
                   </span>
                   <span className="text-[10px] text-amber-400 group-hover:underline">
                     View Details →

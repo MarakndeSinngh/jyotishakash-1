@@ -33,7 +33,7 @@ export type { ReviewIssue };
 export { getProductReviewIssues };
 
 const AVAILABLE_CATEGORIES = [
-  'Ruby', 'Natural Pearl', 'Red Coral', 'Emerald', 'Yellow Sapphire',
+  'Ruby', 'Pearl', 'Red Coral', 'Emerald', 'Yellow Sapphire',
   'Diamond', 'Zircon', 'Blue Sapphire', 'Hessonite', 'Cat’s Eye', 'Opal',
   'Amethyst', 'Moonstone', 'Labradorite', 'Garnet', 'Carnelian', 'Turquoise',
   'Citrine', 'Peridot', 'Lapis Lazuli', 'Tourmaline', 'Chalcedony', 'Amber'

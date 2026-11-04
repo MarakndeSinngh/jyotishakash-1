@@ -249,7 +249,7 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
   }
 
   return (
-    <div className="min-h-screen py-20 px-4 sm:px-6 lg:px-8 relative z-10 max-w-7xl mx-auto">
+    <div className="gemstone-page min-h-screen py-20 px-4 sm:px-6 lg:px-8 relative z-10 max-w-7xl mx-auto">
       {/* ------------------------------------------------------------- */}
       {/* SECTION A: HERO SECTION                                      */}
       {/* ------------------------------------------------------------- */}
@@ -257,16 +257,16 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
         {/* Subtle decorative celestial glow */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
 
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-semibold uppercase tracking-widest mb-4">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-100 border border-amber-300 text-amber-900 text-xs dark:bg-stone-900 dark:border-stone-700 dark:text-amber-300 font-semibold uppercase tracking-widest mb-4">
           <Sparkles className="w-3.5 h-3.5 text-amber-400" />
           <span>Vedic Planetary Gemology</span>
         </div>
 
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-cinzel font-bold text-amber-200 tracking-wider mb-4 drop-shadow-md">
+        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-cinzel font-bold text-amber-900 dark:text-amber-300 tracking-wider mb-4 drop-shadow-md">
           Discover Your Sacred Gemstone
         </h1>
 
-        <p className="text-stone-300 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed mb-8">
+        <p className="text-text-secondary text-sm sm:text-base max-w-2xl mx-auto leading-relaxed mb-8">
           Explore the Navaratna and popular gemstone varieties. AI-generated images are visual illustrations, not photographs of current stock. Traditional astrology and numerology guidance is school-dependent; physical identity, treatment, certificates, prices and stock must be verified before an item can be sold.
         </p>
 
@@ -707,7 +707,7 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
                           src={resolveImagePath(stone.images[0])}
                           panel={Number(stone.specifications?.imagePanel ?? 0)}
                           alt={stone.name}
-                          className="w-full h-full relative z-10 transition-transform duration-500 group-hover:scale-110"
+                          className="w-full h-full relative z-10"
                         />
                       ) : stone.specifications?.imageVerificationStatus === 'VERIFIED' && stone.images && stone.images.length > 0 && stone.images[0] ? (
                         <SmartImage
@@ -728,22 +728,22 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
                     <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
                       <div>
                         <div className="flex items-center justify-between text-xs mb-1">
-                          <span className="font-cinzel text-amber-400 font-bold">
+                          <span className="font-cinzel text-amber-800 dark:text-amber-300 font-bold">
                             {stone.hindiName}
                           </span>
-                          <span className="text-[11px] text-stone-500">
+                          <span className="text-[11px] text-text-secondary">
                             {stone.category}
                           </span>
                         </div>
 
                         <h3 
                           onClick={() => navigate(`/gemstones/${stone.slug}`)}
-                          className="text-base font-bold text-stone-100 font-cinzel hover:text-amber-300 cursor-pointer transition truncate"
+                          className="text-base font-bold text-text-primary font-cinzel hover:text-amber-800 dark:hover:text-amber-300 cursor-pointer transition truncate"
                         >
                           {stone.name}
                         </h3>
 
-                        <p className="text-xs text-stone-400 line-clamp-2 mt-1.5 leading-relaxed">
+                        <p className="text-xs text-text-secondary line-clamp-2 mt-1.5 leading-relaxed">
                           {identityVerified
                             ? (stone.shortDescription || stone.benefit)
                             : stone.specifications?.traditionalSummary || 'Traditional association and material details are being reviewed. Personal suitability requires a complete chart assessment.'}
@@ -751,14 +751,14 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
                       </div>
 
                       {/* Pricing and Action row */}
-                      <div className="pt-3 border-t border-stone-800/80 space-y-3">
+                      <div className="pt-3 border-t border-border space-y-3">
                         <div className="flex items-baseline justify-between">
                           <div>
-                            <span className="text-lg font-bold text-amber-300 font-cinzel">
+                            <span className="text-lg font-bold text-amber-800 dark:text-amber-300 font-cinzel">
                               {isPriceVerified ? `₹${stone.price.toLocaleString('en-IN')}` : 'Price on request'}
                             </span>
                             {isPriceVerified && stone.compareAtPrice && stone.compareAtPrice > stone.price && (
-                              <span className="text-xs text-stone-500 line-through ml-2">
+                              <span className="text-xs text-text-secondary line-through ml-2">
                                 ₹{stone.compareAtPrice.toLocaleString('en-IN')}
                               </span>
                             )}
@@ -821,7 +821,7 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
                           src={resolveImagePath(stone.images[0])}
                           panel={Number(stone.specifications?.imagePanel ?? 0)}
                           alt={stone.name}
-                          className="w-full h-full relative z-10 transition-transform duration-500 group-hover:scale-110"
+                          className="w-full h-full relative z-10"
                         />
                       ) : stone.specifications?.imageVerificationStatus === 'VERIFIED' && stone.images && stone.images.length > 0 && stone.images[0] ? (
                           <SmartImage
@@ -838,16 +838,16 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
                       </div>
                       <div className="min-w-0">
                         <div className="flex items-center gap-2">
-                          <span className="text-xs text-amber-400 font-cinzel font-bold">{stone.hindiName}</span>
-                          <span className="text-[10px] text-stone-500">• {stone.specifications?.traditionalPlanetLabel || 'No standard Vedic planetary mapping'}</span>
+                          <span className="text-xs text-amber-800 dark:text-amber-300 font-cinzel font-bold">{stone.hindiName}</span>
+                          <span className="text-[10px] text-text-secondary">• {stone.specifications?.traditionalPlanetLabel || 'No standard Vedic planetary mapping'}</span>
                         </div>
                         <h4 
                           onClick={() => navigate(`/gemstones/${stone.slug}`)}
-                          className="text-base font-bold text-stone-100 font-cinzel hover:text-amber-300 cursor-pointer"
+                          className="text-base font-bold text-text-primary font-cinzel hover:text-amber-800 dark:hover:text-amber-300 cursor-pointer"
                         >
                           {stone.name}
                         </h4>
-                        <p className="text-xs text-stone-400 line-clamp-1 max-w-md mt-0.5">
+                        <p className="text-xs text-text-secondary line-clamp-1 max-w-md mt-0.5">
                           {identityVerified
                             ? (stone.shortDescription || stone.benefit)
                             : stone.specifications?.traditionalSummary || 'Traditional association and material details are being reviewed. Personal suitability requires a complete chart assessment.'}
@@ -857,10 +857,10 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
 
                     <div className="flex items-center justify-between sm:justify-end gap-5 w-full sm:w-auto border-t sm:border-t-0 pt-3 sm:pt-0 border-stone-800">
                       <div className="text-right">
-                        <div className="text-base font-bold text-amber-300 font-cinzel">
+                        <div className="text-base font-bold text-amber-800 dark:text-amber-300 font-cinzel">
                           {isPriceVerified ? `₹${stone.price.toLocaleString('en-IN')}` : 'Price on request'}
                         </div>
-                        <span className="text-[10px] text-stone-400">
+                        <span className="text-[10px] text-text-secondary">
                           {!reviewReady ? 'Enquiry only' : (isOutOfStock ? (isPriceVerified ? 'Currently unavailable' : 'Price pending review') : 'In Stock')}
                         </span>
                       </div>
@@ -895,34 +895,34 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
           <span className="text-xs uppercase tracking-widest text-amber-400 font-cinzel font-semibold">
             Product Review & Transparency
           </span>
-          <h2 className="text-2xl sm:text-3xl font-cinzel font-bold text-stone-100 mt-1">
+          <h2 className="text-2xl sm:text-3xl font-cinzel font-bold text-text-primary mt-1">
             Our Gemstone Review Standards
           </h2>
-          <p className="text-xs text-stone-400 mt-2">
+          <p className="text-xs text-text-secondary mt-2">
             Product identity, pricing, photographs, certificates, and availability are checked individually before an item is made available.
           </p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="p-5 rounded-2xl bg-stone-950/60 border border-stone-800/80 space-y-2.5">
+          <div className="p-5 rounded-2xl bg-stone-950/90 border border-stone-800/80 space-y-2.5">
             <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400"><Award className="w-5 h-5" /></div>
             <h4 className="font-cinzel font-bold text-sm text-stone-200">Product Identity Review</h4>
-            <p className="text-xs text-stone-400 leading-relaxed">Material and natural-origin details appear only after the individual product record has been reviewed.</p>
+            <p className="text-xs text-stone-300 leading-relaxed">Material and natural-origin details appear only after the individual product record has been reviewed.</p>
           </div>
-          <div className="p-5 rounded-2xl bg-stone-950/60 border border-stone-800/80 space-y-2.5">
+          <div className="p-5 rounded-2xl bg-stone-950/90 border border-stone-800/80 space-y-2.5">
             <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400"><ShieldCheck className="w-5 h-5" /></div>
             <h4 className="font-cinzel font-bold text-sm text-stone-200">Certificate Transparency</h4>
-            <p className="text-xs text-stone-400 leading-relaxed">Laboratory and certificate details appear only when supporting documentation has been checked and recorded.</p>
+            <p className="text-xs text-stone-300 leading-relaxed">Laboratory and certificate details appear only when supporting documentation has been checked and recorded.</p>
           </div>
-          <div className="p-5 rounded-2xl bg-stone-950/60 border border-stone-800/80 space-y-2.5">
+          <div className="p-5 rounded-2xl bg-stone-950/90 border border-stone-800/80 space-y-2.5">
             <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400"><Sparkles className="w-5 h-5" /></div>
             <h4 className="font-cinzel font-bold text-sm text-stone-200">Vedic Guidance</h4>
-            <p className="text-xs text-stone-400 leading-relaxed">Personalised suitability and any energisation service are discussed with our team before an order is confirmed.</p>
+            <p className="text-xs text-stone-300 leading-relaxed">Personalised suitability and any energisation service are discussed with our team before an order is confirmed.</p>
           </div>
-          <div className="p-5 rounded-2xl bg-stone-950/60 border border-stone-800/80 space-y-2.5">
+          <div className="p-5 rounded-2xl bg-stone-950/90 border border-stone-800/80 space-y-2.5">
             <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400"><CheckCircle2 className="w-5 h-5" /></div>
             <h4 className="font-cinzel font-bold text-sm text-stone-200">Order Confirmation</h4>
-            <p className="text-xs text-stone-400 leading-relaxed">Final price, stock, delivery terms, and optional services are confirmed with the customer before payment.</p>
+            <p className="text-xs text-stone-300 leading-relaxed">Final price, stock, delivery terms, and optional services are confirmed with the customer before payment.</p>
           </div>
         </div>
       </section>

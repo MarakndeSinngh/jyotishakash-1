@@ -156,23 +156,23 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
   };
 
   return (
-    <div className="min-h-screen py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+    <div className="gemstone-page min-h-screen py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
       {/* Breadcrumb & Navigation */}
       <div className="flex items-center justify-between gap-4 mb-8 pt-6 border-b border-stone-800/80 pb-4">
         <button
           onClick={() => navigate('/gemstones')}
-          className="flex items-center gap-2 text-xs font-semibold text-stone-400 hover:text-amber-400 transition"
+          className="flex items-center gap-2 text-xs font-semibold text-text-secondary hover:text-amber-800 dark:hover:text-amber-300 transition"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back to Collection</span>
         </button>
 
-        <div className="hidden sm:flex items-center gap-2 text-xs text-stone-500">
-          <span className="hover:text-stone-300 cursor-pointer" onClick={() => navigate('/')}>Home</span>
+        <div className="hidden sm:flex items-center gap-2 text-xs text-text-secondary">
+          <span className="hover:text-stone-900 dark:hover:text-amber-300 cursor-pointer" onClick={() => navigate('/')}>Home</span>
           <ChevronRight className="w-3 h-3" />
-          <span className="hover:text-stone-300 cursor-pointer" onClick={() => navigate('/gemstones')}>Gemstones</span>
+          <span className="hover:text-stone-900 dark:hover:text-amber-300 cursor-pointer" onClick={() => navigate('/gemstones')}>Gemstones</span>
           <ChevronRight className="w-3 h-3" />
-          <span className="text-amber-400 font-medium truncate max-w-xs">{product.name}</span>
+          <span className="text-amber-800 dark:text-amber-300 font-medium truncate max-w-xs">{product.name}</span>
         </div>
 
         <div className="flex items-center gap-2">
@@ -277,17 +277,17 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
             <div className="flex flex-col items-center gap-1.5 p-2">
               <Award className="w-5 h-5 text-amber-400" />
               <span className="text-[11px] font-semibold text-stone-200">{product.certification?.naturalStatus === 'NATURAL_CONFIRMED' ? 'Natural origin confirmed' : product.certification?.naturalStatus === 'SYNTHETIC_CONFIRMED' ? 'Synthetic / lab-grown' : 'Origin pending'}</span>
-              <span className="text-[10px] text-stone-500">{product.certification?.naturalStatus === 'NATURAL_CONFIRMED' ? 'Verified record' : product.certification?.naturalStatus === 'SYNTHETIC_CONFIRMED' ? 'Status recorded' : 'Not yet confirmed'}</span>
+              <span className="text-[10px] text-stone-400">{product.certification?.naturalStatus === 'NATURAL_CONFIRMED' ? 'Verified record' : product.certification?.naturalStatus === 'SYNTHETIC_CONFIRMED' ? 'Status recorded' : 'Not yet confirmed'}</span>
             </div>
             <div className="flex flex-col items-center gap-1.5 p-2 border-x border-stone-800">
               <ShieldCheck className="w-5 h-5 text-amber-400" />
               <span className="text-[11px] font-semibold text-stone-200">{product.certification?.certified ? 'Certificate recorded' : 'Certificate pending'}</span>
-              <span className="text-[10px] text-stone-500">{product.certification?.labName || 'No lab details supplied'}</span>
+              <span className="text-[10px] text-stone-400">{product.certification?.labName || 'No lab details supplied'}</span>
             </div>
             <div className="flex flex-col items-center gap-1.5 p-2">
               <Truck className="w-5 h-5 text-amber-400" />
               <span className="text-[11px] font-semibold text-stone-200">Delivery details</span>
-              <span className="text-[10px] text-stone-500">Confirmed before payment</span>
+              <span className="text-[10px] text-stone-400">Confirmed before payment</span>
             </div>
           </div>
         </div>
@@ -297,17 +297,17 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
           {/* Header titles */}
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <span className="text-xs uppercase tracking-widest text-amber-800 font-cinzel font-semibold">
+              <span className="text-xs uppercase tracking-widest text-amber-800 dark:text-amber-300 font-cinzel font-semibold">
                 Gemstone Catalogue
               </span>
               <span className="text-stone-600">•</span>
-              <span className="text-xs text-stone-600">SKU: {currentSku}</span>
+              <span className="text-xs text-text-secondary">SKU: {currentSku}</span>
             </div>
 
-            <h1 className="text-3xl sm:text-4xl font-cinzel font-bold text-stone-900 tracking-wide mb-1">
+            <h1 className="text-3xl sm:text-4xl font-cinzel font-bold text-text-primary tracking-wide mb-1">
               {product.name}
             </h1>
-            <p className="text-lg font-cinzel text-amber-800">
+            <p className="text-lg font-cinzel text-amber-800 dark:text-amber-300">
               {product.hindiName}
             </p>
           </div>
@@ -350,7 +350,7 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
           </div>
 
           {/* Short Benefit Quote */}
-          <p className="text-sm text-stone-700 leading-relaxed italic border-l-2 border-amber-500 pl-4 py-1">
+          <p className="text-sm text-text-secondary leading-relaxed italic border-l-2 border-amber-500 pl-4 py-1">
             "{identityVerified
               ? (product.benefit || product.shortDescription)
               : 'Product material identity, origin and natural status are awaiting review. Contact LEO Family for confirmed specifications.'}"
@@ -360,7 +360,7 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
           {reviewReady && product.variants && product.variants.length > 0 && (
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-bold text-stone-200 uppercase tracking-wider">
+                <label className="text-xs font-bold text-text-primary uppercase tracking-wider">
                   Select Weight / Carat Variant:
                 </label>
                 {selectedVariant && (
@@ -380,28 +380,28 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
                       onClick={() => setSelectedVariant(variant)}
                       className={`p-3 rounded-xl border text-left transition relative flex flex-col justify-between ${
                         isSelected
-                          ? 'bg-amber-950/30 border-amber-400 ring-1 ring-amber-400 shadow-md shadow-amber-950/50'
-                          : 'bg-stone-900/80 border-stone-800 hover:border-stone-700'
+                          ? 'bg-amber-100 border-amber-500 ring-1 ring-amber-500 shadow-md shadow-amber-950/10 dark:bg-amber-950/50 dark:border-amber-400 dark:ring-amber-400 dark:shadow-amber-950/50'
+                          : 'bg-surface border-border hover:border-amber-500/50'
                       }`}
                     >
                       <div>
-                        <div className="text-xs font-bold text-stone-200">
+                        <div className="text-xs font-bold text-text-primary">
                           {variant.name}
                         </div>
-                        <div className="text-[10px] text-stone-400 mt-0.5">
+                        <div className="text-[10px] text-text-secondary mt-0.5">
                           {variant.origin} • {variant.shape || 'Mixed Cut'}
                         </div>
                       </div>
                       <div className="mt-2 pt-2 border-t border-stone-800/80 flex items-center justify-between">
-                        <span className="text-xs font-bold text-amber-300 font-cinzel">
+                        <span className="text-xs font-bold text-amber-800 dark:text-amber-300 font-cinzel">
                           {variantPriceVerified ? `₹${variant.price.toLocaleString('en-IN')}` : 'Price on request'}
                         </span>
                         {!variantPriceVerified ? (
-                          <span className="text-[9px] text-rose-400">Price review pending</span>
+                          <span className="text-[9px] text-rose-700 dark:text-rose-400">Price review pending</span>
                         ) : variant.inStock && variant.stockQuantity > 0 ? (
-                          <span className="text-[9px] text-emerald-400">In Stock</span>
+                          <span className="text-[9px] text-emerald-700 dark:text-emerald-400">In Stock</span>
                         ) : (
-                          <span className="text-[9px] text-rose-400">Unavailable</span>
+                          <span className="text-[9px] text-rose-700 dark:text-rose-400">Unavailable</span>
                         )}
                       </div>
                     </button>
@@ -414,7 +414,7 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
           {/* Quantity Selector & Primary Call to Actions */}
           <div className="space-y-4 pt-2">
             <div className="flex items-center gap-4">
-              <span className="text-xs font-bold text-stone-700 uppercase tracking-wider">
+              <span className="text-xs font-bold text-text-primary uppercase tracking-wider">
                 Quantity:
               </span>
               <div className="flex items-center gap-2 bg-stone-900 border border-stone-800 rounded-xl p-1">
@@ -478,15 +478,15 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
           </div>
 
           {/* Deep Information Accordion/Tabs */}
-          <div className="pt-4 border-t border-stone-300">
+          <div className="pt-4 border-t border-border">
             {/* Tab buttons */}
-            <div className="flex items-center gap-2 overflow-x-auto border-b border-stone-300 pb-2">
+            <div className="flex items-center gap-2 overflow-x-auto border-b border-border pb-2">
               <button
                 onClick={() => setActiveTab('benefits')}
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold transition whitespace-nowrap ${
                   activeTab === 'benefits'
-                    ? 'bg-amber-100 text-amber-900 border border-amber-400'
-                    : 'text-stone-600 hover:text-stone-900'
+                    ? 'bg-amber-100 text-amber-900 border border-amber-400 dark:bg-amber-950/60 dark:text-amber-200 dark:border-amber-500/60'
+                    : 'text-text-secondary hover:text-text-primary dark:text-stone-300 dark:hover:text-white'
                 }`}
               >
                 Astrology & Numerology
@@ -495,8 +495,8 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
                 onClick={() => setActiveTab('specs')}
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold transition whitespace-nowrap ${
                   activeTab === 'specs'
-                    ? 'bg-amber-100 text-amber-900 border border-amber-400'
-                    : 'text-stone-600 hover:text-stone-900'
+                    ? 'bg-amber-100 text-amber-900 border border-amber-400 dark:bg-amber-950/60 dark:text-amber-200 dark:border-amber-500/60'
+                    : 'text-text-secondary hover:text-text-primary dark:text-stone-300 dark:hover:text-white'
                 }`}
               >
                 Specifications & Origin
@@ -505,8 +505,8 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
                 onClick={() => setActiveTab('energization')}
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold transition whitespace-nowrap ${
                   activeTab === 'energization'
-                    ? 'bg-amber-100 text-amber-900 border border-amber-400'
-                    : 'text-stone-600 hover:text-stone-900'
+                    ? 'bg-amber-100 text-amber-900 border border-amber-400 dark:bg-amber-950/60 dark:text-amber-200 dark:border-amber-500/60'
+                    : 'text-text-secondary hover:text-text-primary dark:text-stone-300 dark:hover:text-white'
                 }`}
               >
                 Pran Pratishtha Ritual
@@ -515,8 +515,8 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
                 onClick={() => setActiveTab('wearing')}
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold transition whitespace-nowrap ${
                   activeTab === 'wearing'
-                    ? 'bg-amber-100 text-amber-900 border border-amber-400'
-                    : 'text-stone-600 hover:text-stone-900'
+                    ? 'bg-amber-100 text-amber-900 border border-amber-400 dark:bg-amber-950/60 dark:text-amber-200 dark:border-amber-500/60'
+                    : 'text-text-secondary hover:text-text-primary dark:text-stone-300 dark:hover:text-white'
                 }`}
               >
                 How to Wear
@@ -524,7 +524,7 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
             </div>
 
             {/* Tab content */}
-            <div className="pt-4 text-xs text-stone-700 leading-relaxed">
+            <div className="pt-4 text-xs text-text-secondary leading-relaxed">
               {activeTab === 'benefits' && (
                 <div className="space-y-3">
                   <div className="space-y-3">
@@ -544,7 +544,7 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
                     <h5 className="font-bold text-amber-300 uppercase tracking-wider text-[11px]">Who should consider it?</h5>
                     <p className="text-stone-200">{product.specifications?.suitabilityNote || 'Do not select a gemstone from a birth number alone. Suitability requires a complete birth-chart assessment and personal consultation.'}</p>
                   </div>
-                  <p className="text-[10px] text-stone-600">Astrological and numerological associations are traditional beliefs, not scientifically established remedies or guaranteed outcomes. They are not medical advice and do not replace professional care.</p>
+                  <p className="text-[10px] text-text-secondary">Astrological and numerological associations are traditional beliefs, not scientifically established remedies or guaranteed outcomes. They are not medical advice and do not replace professional care.</p>
                 </div>
                 </div>
               )}
@@ -553,19 +553,19 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
                 <div className="space-y-2">
                   <div className="grid grid-cols-2 gap-2">
                     <div className="p-2.5 rounded-lg bg-stone-900 border border-stone-800">
-                      <span className="text-[10px] text-stone-500 block uppercase">Primary Origin</span>
+                      <span className="text-[10px] text-stone-400 block uppercase">Primary Origin</span>
                       <span className="font-semibold text-stone-200">{verifiedOrigin}</span>
                     </div>
                     <div className="p-2.5 rounded-lg bg-stone-900 border border-stone-800">
-                      <span className="text-[10px] text-stone-500 block uppercase">Shape & Cut</span>
+                      <span className="text-[10px] text-stone-400 block uppercase">Shape & Cut</span>
                       <span className="font-semibold text-stone-200">{identityVerified ? (product.specifications?.shape || 'Pending verification') : 'Pending verification'}</span>
                     </div>
                     <div className="p-2.5 rounded-lg bg-stone-900 border border-stone-800">
-                      <span className="text-[10px] text-stone-500 block uppercase">Color Grade</span>
+                      <span className="text-[10px] text-stone-400 block uppercase">Color Grade</span>
                       <span className="font-semibold text-stone-200">{identityVerified ? (product.specifications?.color || 'Pending verification') : 'Pending verification'}</span>
                     </div>
                     <div className="p-2.5 rounded-lg bg-stone-900 border border-stone-800">
-                      <span className="text-[10px] text-stone-500 block uppercase">Certification</span>
+                      <span className="text-[10px] text-stone-400 block uppercase">Certification</span>
                       <span className="font-semibold text-stone-200">{product.certification?.certified ? (product.certification.labName || 'Certificate details pending') : 'Not certified / pending'}</span>
                     </div>
                   </div>
@@ -573,7 +573,7 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
                     <h5 className="font-bold text-amber-300 uppercase tracking-wider text-[11px]">Quality checklist — not a grade of this item</h5>
                     <p className="text-stone-300">{product.specifications?.qualityGuide || 'Ask for material identification, treatment disclosure, weight, dimensions, and an independent report where appropriate.'}</p>
                   </div>
-                  <p className="text-[10px] text-stone-500 pt-1">
+                  <p className="text-[10px] text-text-secondary pt-1">
                     This page's AI image is an illustration only. It is not a photograph of the available item and does not verify quality, treatment, origin, or authenticity.
                   </p>
                 </div>
@@ -599,15 +599,15 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
                 <div className="space-y-2.5">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     <div className="p-2.5 rounded-lg bg-stone-900 border border-stone-800">
-                      <span className="text-[10px] text-stone-500 block uppercase">Recommended Metal</span>
+                      <span className="text-[10px] text-stone-400 block uppercase">Recommended Metal</span>
                       <span className="font-semibold text-stone-200">{identityVerified ? (product.specifications?.metalRecommendation || 'Confirm during consultation') : 'Pending Vedic assessment'}</span>
                     </div>
                     <div className="p-2.5 rounded-lg bg-stone-900 border border-stone-800">
-                      <span className="text-[10px] text-stone-500 block uppercase">Wearing Finger</span>
+                      <span className="text-[10px] text-stone-400 block uppercase">Wearing Finger</span>
                       <span className="font-semibold text-stone-200">{identityVerified ? (product.specifications?.wearingFinger || 'Confirm during consultation') : 'Pending Vedic assessment'}</span>
                     </div>
                     <div className="p-2.5 rounded-lg bg-stone-900 border border-stone-800 sm:col-span-2">
-                      <span className="text-[10px] text-stone-500 block uppercase">Auspicious Day & Muhurat</span>
+                      <span className="text-[10px] text-stone-400 block uppercase">Auspicious Day & Muhurat</span>
                       <span className="font-semibold text-stone-200">{identityVerified ? (product.specifications?.wearingDayMuhurat || 'Confirm during consultation') : 'Pending Vedic assessment'}</span>
                     </div>
                   </div>
@@ -620,12 +620,12 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
 
       {/* Related Gemstones Section */}
       {relatedProducts.length > 0 && (
-        <div className="mt-20 pt-12 border-t border-stone-300">
+        <div className="mt-20 pt-12 border-t border-border">
           <div className="text-center mb-8">
-            <h3 className="text-2xl font-cinzel font-bold text-stone-900">
+            <h3 className="text-2xl font-cinzel font-bold text-text-primary">
               Related Sacred Vedic Gemstones
             </h3>
-            <p className="text-xs text-stone-600 mt-1">
+            <p className="text-xs text-text-secondary mt-1">
               Explore complementary gemstones aligned with classical Jyotish planetary pairs
             </p>
           </div>
@@ -635,7 +635,7 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
               <div
                 key={rel.id}
                 onClick={() => navigate(`/gemstones/${rel.slug}`)}
-                className="p-4 rounded-2xl bg-stone-900/60 border border-stone-800 hover:border-amber-500/40 transition cursor-pointer group flex flex-col justify-between"
+                className="p-4 rounded-2xl bg-stone-900 border border-stone-800 hover:border-amber-500/40 transition cursor-pointer group flex flex-col justify-between"
               >
                 <div className="aspect-video w-full rounded-xl bg-stone-950 overflow-hidden mb-3 p-2 flex items-center justify-center">
                   {rel.specifications?.imageVerificationStatus === 'AI_ILLUSTRATION' && rel.images?.[0] ? (
@@ -654,7 +654,7 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
                   ) : (
                     <div className="flex flex-col items-center justify-center text-stone-500">
                       <Sparkles className="w-6 h-6 text-stone-600 mb-1" />
-                      <span className="text-[10px] text-stone-500">Photo Pending</span>
+                      <span className="text-[10px] text-stone-400">Photo Pending</span>
                     </div>
                   )}
                 </div>
@@ -665,7 +665,7 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
                   <h4 className="text-sm font-bold text-stone-200 font-cinzel mt-0.5">
                     {rel.name}
                   </h4>
-                  <p className="text-xs text-stone-400 line-clamp-1 mt-1">
+                  <p className="text-xs text-stone-300 line-clamp-1 mt-1">
                     {rel.specifications?.traditionalSummary || 'Traditional associations and physical specifications are being reviewed.'}
                   </p>
                 </div>

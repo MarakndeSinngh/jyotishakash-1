@@ -297,17 +297,17 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
           {/* Header titles */}
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <span className="text-xs uppercase tracking-widest text-amber-400/90 font-cinzel font-semibold">
+              <span className="text-xs uppercase tracking-widest text-amber-800 font-cinzel font-semibold">
                 Gemstone Catalogue
               </span>
               <span className="text-stone-600">•</span>
-              <span className="text-xs text-stone-400">SKU: {currentSku}</span>
+              <span className="text-xs text-stone-600">SKU: {currentSku}</span>
             </div>
 
-            <h1 className="text-3xl sm:text-4xl font-cinzel font-bold text-stone-100 tracking-wide mb-1">
+            <h1 className="text-3xl sm:text-4xl font-cinzel font-bold text-stone-900 tracking-wide mb-1">
               {product.name}
             </h1>
-            <p className="text-lg font-cinzel text-amber-400">
+            <p className="text-lg font-cinzel text-amber-800">
               {product.hindiName}
             </p>
           </div>
@@ -350,7 +350,7 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
           </div>
 
           {/* Short Benefit Quote */}
-          <p className="text-sm text-stone-300/90 leading-relaxed italic border-l-2 border-amber-500 pl-4 py-1">
+          <p className="text-sm text-stone-700 leading-relaxed italic border-l-2 border-amber-500 pl-4 py-1">
             "{identityVerified
               ? (product.benefit || product.shortDescription)
               : 'Product material identity, origin and natural status are awaiting review. Contact LEO Family for confirmed specifications.'}"
@@ -414,14 +414,14 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
           {/* Quantity Selector & Primary Call to Actions */}
           <div className="space-y-4 pt-2">
             <div className="flex items-center gap-4">
-              <span className="text-xs font-bold text-stone-300 uppercase tracking-wider">
+              <span className="text-xs font-bold text-stone-700 uppercase tracking-wider">
                 Quantity:
               </span>
               <div className="flex items-center gap-2 bg-stone-900 border border-stone-800 rounded-xl p-1">
                 <button
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
                   className="w-8 h-8 rounded-lg hover:bg-stone-800 flex items-center justify-center text-stone-300 disabled:opacity-30"
-                  disabled={quantity <= 1}
+                  disabled={!currentInStock || quantity <= 1}
                 >
                   -
                 </button>
@@ -429,9 +429,9 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
                   {quantity}
                 </span>
                 <button
-                  onClick={() => setQuantity(Math.min(currentStockQty || 10, quantity + 1))}
+                  onClick={() => setQuantity(Math.min(currentStockQty, quantity + 1))}
                   className="w-8 h-8 rounded-lg hover:bg-stone-800 flex items-center justify-center text-stone-300 disabled:opacity-30"
-                  disabled={quantity >= (currentStockQty || 10)}
+                  disabled={!currentInStock || quantity >= currentStockQty}
                 >
                   +
                 </button>
@@ -458,10 +458,10 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
             </div>
 
             {/* Astrological Consultation Hook */}
-            <div className="p-3.5 rounded-xl bg-amber-950/20 border border-amber-500/20 flex items-center justify-between gap-3">
+            <div className="p-3.5 rounded-xl bg-amber-100 border border-amber-300 flex items-center justify-between gap-3">
               <div className="flex items-center gap-2.5">
                 <Sparkles className="w-4 h-4 text-amber-400 shrink-0" />
-                <span className="text-xs text-stone-300">
+                <span className="text-xs text-stone-800">
                   Unsure if this stone suits your Kundali?
                 </span>
               </div>
@@ -470,7 +470,7 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
                   const query = encodeURIComponent(`Namaste, I want to verify if ${product.name} (${product.hindiName}) is astrologically suitable for my date of birth and birth chart.`);
                   window.open(`https://wa.me/919953713176?text=${query}`, '_blank');
                 }}
-                className="text-xs font-bold text-amber-400 hover:underline shrink-0"
+                className="text-xs font-bold text-amber-900 hover:underline shrink-0"
               >
                 Get Kundali Verification →
               </button>
@@ -478,15 +478,15 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
           </div>
 
           {/* Deep Information Accordion/Tabs */}
-          <div className="pt-4 border-t border-stone-800/80">
+          <div className="pt-4 border-t border-stone-300">
             {/* Tab buttons */}
-            <div className="flex items-center gap-2 overflow-x-auto border-b border-stone-800 pb-2">
+            <div className="flex items-center gap-2 overflow-x-auto border-b border-stone-300 pb-2">
               <button
                 onClick={() => setActiveTab('benefits')}
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold transition whitespace-nowrap ${
                   activeTab === 'benefits'
-                    ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
-                    : 'text-stone-400 hover:text-stone-200'
+                    ? 'bg-amber-100 text-amber-900 border border-amber-400'
+                    : 'text-stone-600 hover:text-stone-900'
                 }`}
               >
                 Astrology & Numerology
@@ -495,8 +495,8 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
                 onClick={() => setActiveTab('specs')}
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold transition whitespace-nowrap ${
                   activeTab === 'specs'
-                    ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
-                    : 'text-stone-400 hover:text-stone-200'
+                    ? 'bg-amber-100 text-amber-900 border border-amber-400'
+                    : 'text-stone-600 hover:text-stone-900'
                 }`}
               >
                 Specifications & Origin
@@ -505,8 +505,8 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
                 onClick={() => setActiveTab('energization')}
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold transition whitespace-nowrap ${
                   activeTab === 'energization'
-                    ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
-                    : 'text-stone-400 hover:text-stone-200'
+                    ? 'bg-amber-100 text-amber-900 border border-amber-400'
+                    : 'text-stone-600 hover:text-stone-900'
                 }`}
               >
                 Pran Pratishtha Ritual
@@ -515,8 +515,8 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
                 onClick={() => setActiveTab('wearing')}
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold transition whitespace-nowrap ${
                   activeTab === 'wearing'
-                    ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
-                    : 'text-stone-400 hover:text-stone-200'
+                    ? 'bg-amber-100 text-amber-900 border border-amber-400'
+                    : 'text-stone-600 hover:text-stone-900'
                 }`}
               >
                 How to Wear
@@ -524,7 +524,7 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
             </div>
 
             {/* Tab content */}
-            <div className="pt-4 text-xs text-stone-300/90 leading-relaxed">
+            <div className="pt-4 text-xs text-stone-700 leading-relaxed">
               {activeTab === 'benefits' && (
                 <div className="space-y-3">
                   <div className="space-y-3">
@@ -540,11 +540,11 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
                     <h5 className="font-bold text-amber-300 uppercase tracking-wider text-[11px]">Numerology connection</h5>
                     <p className="text-stone-300">{product.specifications?.numerologyGuidance || 'No consistent Chaldean number-to-gemstone mapping is assigned in this catalogue.'}</p>
                   </div>
-                  <div className="p-3 rounded-xl bg-amber-950/20 border border-amber-500/20 space-y-1.5">
+                  <div className="p-3 rounded-xl bg-stone-900 border border-stone-800 space-y-1.5">
                     <h5 className="font-bold text-amber-300 uppercase tracking-wider text-[11px]">Who should consider it?</h5>
-                    <p className="text-stone-300">{product.specifications?.suitabilityNote || 'Do not select a gemstone from a birth number alone. Suitability requires a complete birth-chart assessment and personal consultation.'}</p>
+                    <p className="text-stone-200">{product.specifications?.suitabilityNote || 'Do not select a gemstone from a birth number alone. Suitability requires a complete birth-chart assessment and personal consultation.'}</p>
                   </div>
-                  <p className="text-[10px] text-stone-500">Astrological and numerological associations are traditional beliefs, not scientifically established remedies or guaranteed outcomes. They are not medical advice and do not replace professional care.</p>
+                  <p className="text-[10px] text-stone-600">Astrological and numerological associations are traditional beliefs, not scientifically established remedies or guaranteed outcomes. They are not medical advice and do not replace professional care.</p>
                 </div>
                 </div>
               )}
@@ -584,7 +584,7 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
                   <p>
                     Vedic energisation is a separate service and is not assumed to be included with every gemstone.
                   </p>
-                  <div className="p-3 rounded-xl bg-amber-950/20 border border-amber-500/20 space-y-1 text-stone-200">
+                  <div className="p-3 rounded-xl bg-stone-900 border border-stone-800 space-y-1 text-stone-200">
                     <span className="font-bold text-amber-300 block text-[11px]">
                       Confirm the service first:
                     </span>
@@ -620,12 +620,12 @@ export default function GemstoneDetailPage({ slug, navigate }: GemstoneDetailPag
 
       {/* Related Gemstones Section */}
       {relatedProducts.length > 0 && (
-        <div className="mt-20 pt-12 border-t border-stone-800">
+        <div className="mt-20 pt-12 border-t border-stone-300">
           <div className="text-center mb-8">
-            <h3 className="text-2xl font-cinzel font-bold text-stone-100">
+            <h3 className="text-2xl font-cinzel font-bold text-stone-900">
               Related Sacred Vedic Gemstones
             </h3>
-            <p className="text-xs text-stone-400 mt-1">
+            <p className="text-xs text-stone-600 mt-1">
               Explore complementary gemstones aligned with classical Jyotish planetary pairs
             </p>
           </div>

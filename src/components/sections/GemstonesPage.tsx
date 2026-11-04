@@ -257,16 +257,16 @@ export default function GemstonesPage({ navigate: externalNavigate, currentPath 
         {/* Subtle decorative celestial glow */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
 
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-semibold uppercase tracking-widest mb-4">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-100 border border-amber-300 text-amber-900 text-xs font-semibold uppercase tracking-widest mb-4">
           <Sparkles className="w-3.5 h-3.5 text-amber-400" />
           <span>Vedic Planetary Gemology</span>
         </div>
 
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-cinzel font-bold text-amber-200 tracking-wider mb-4 drop-shadow-md">
+        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-cinzel font-bold text-amber-900 tracking-wider mb-4 drop-shadow-md">
           Discover Your Sacred Gemstone
         </h1>
 
-        <p className="text-stone-300 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed mb-8">
+        <p className="text-stone-700 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed mb-8">
           Explore the Navaratna and popular gemstone varieties. AI-generated images are visual illustrations, not photographs of current stock. Traditional astrology and numerology guidance is school-dependent; physical identity, treatment, certificates, prices and stock must be verified before an item can be sold.
         </p>
 

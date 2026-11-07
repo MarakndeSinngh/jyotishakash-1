@@ -37,6 +37,7 @@ const MediaCenterPage = React.lazy(() => import('./components/sections/MediaCent
 const MeditationPage = React.lazy(() => import('./components/sections/MeditationPage'));
 const ShortsPage = React.lazy(() => import('./components/sections/ShortsPage'));
 const GemstonesPage = React.lazy(() => import('./components/sections/GemstonesPage'));
+const DivineBusinessBrandWebinarPage = React.lazy(() => import('./components/sections/DivineBusinessBrandWebinarPage'));
 const AboutSection = React.lazy(() => import('./components/sections/AboutSection'));
 const NumerologyCalculator = React.lazy(() => import('./components/sections/NumerologyCalculator'));
 const AcademySection = React.lazy(() => import('./components/sections/AcademySection'));
@@ -57,6 +58,7 @@ const STANDALONE_NON_CMS_ROUTES = new Set([
   '/media',
   '/shorts',
   '/meditation',
+  '/webinars/divine-business-brand-name-logo-design',
 ]);
 
 function normalizePathname(rawPath: string): string {
@@ -217,6 +219,14 @@ function AppContent() {
   }
 
   const renderMainContent = () => {
+    if (normalizedPath === '/webinars/divine-business-brand-name-logo-design') {
+      return (
+        <Suspense fallback={<BrandedRouteLoadingFallback label="Loading Divine Business Brand Webinar..." />}>
+          <DivineBusinessBrandWebinarPage navigate={navigate} />
+        </Suspense>
+      );
+    }
+
     if (isAcademySubRoute) {
       return (
         <Suspense fallback={<BrandedRouteLoadingFallback label="Loading Academy Portal..." />}>

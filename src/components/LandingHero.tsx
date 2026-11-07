@@ -5,6 +5,7 @@ import { useAcademy } from '../context/AcademyContext';
 import { useLanguage } from '../context/LanguageContext';
 import { WHATSAPP_LINK } from '../constants/contacts';
 import SmartImage from './sections/SmartImage';
+import { DIVINE_BUSINESS_WEBINAR_GROUP_URL } from '../constants/divineBusinessWebinar';
 
 const WhatsAppIcon = () => (
   <svg 
@@ -33,7 +34,7 @@ export default function LandingHero({
 
   const isRaajeev = activeAcademy?.slug?.toLowerCase() === 'raajeev' || activeAcademy?.id === 'raajeev';
   const whatsappUrl = isRaajeev
-    ? 'https://chat.whatsapp.com/JSJ1cD0uUS2AYNabbH8IC3'
+    ? DIVINE_BUSINESS_WEBINAR_GROUP_URL
     : (activeAcademy?.contactDetails?.whatsapp || WHATSAPP_LINK);
 
   const getNextBatchDate = (): Date => {
@@ -87,17 +88,27 @@ export default function LandingHero({
   const isHindi = language === 'hi';
 
   const copy = {
-    limitedSeats: isGujarati 
+    limitedSeats: isRaajeev
+      ? 'EXCLUSIVE 3-DAY FREE LIVE WEBINAR'
+      : isGujarati
       ? "⚠️ મર્યાદિત ફ્રી સીટ્સ • રજીસ્ટ્રેશન ટૂંક સમયમાં બંધ થશે"
       : isHindi
       ? "⚠️ सीमित फ्री सीटें • रजिस्ट्रेशन जल्द ही बंद होगा"
       : "⚠️ Limited Free Seats • Registration Closing Soon",
-    mainHeadline: activeAcademy.name || (isGujarati 
-      ? "તમારા નામ અને અંકોની છુપી શક્તિથી મેળવો ૧૦૦% પ્રગતિ"
-      : "Unlock 100% Growth with Name & Number Vibrations"),
-    subHeadline: activeAcademy.description || activeAcademy.tagline,
-    ctaJoin: isGujarati ? "🟢 મારી ફ્રી સીટ અત્યારે જ બુક કરો" : isHindi ? "🟢 मेरी फ्री सीट अभी बुक करें" : "🟢 Reserve My Free Seat Now",
-    ctaSubText: "Reminders • Exclusive PDFs • Bonus Materials on WhatsApp Group",
+    mainHeadline: isRaajeev
+      ? 'Build a Divine Business Brand Identity'
+      : (activeAcademy.name || (isGujarati
+        ? "તમારા નામ અને અંકોની છુપી શક્તિથી મેળવો ૧૦૦% પ્રગતિ"
+        : "Unlock 100% Growth with Name & Number Vibrations")),
+    subHeadline: isRaajeev
+      ? 'Join Raajeev Sir’s exclusive 3-day free live webinar on Divine Business Brand Name & Logo Design through Astrology, Numerology and Pronology.'
+      : (activeAcademy.description || activeAcademy.tagline),
+    ctaJoin: isRaajeev
+      ? 'Join the Free Webinar WhatsApp Group'
+      : (isGujarati ? "🟢 મારી ફ્રી સીટ અત્યારે જ બુક કરો" : isHindi ? "🟢 मेरी फ्री सीट अभी बुक करें" : "🟢 Reserve My Free Seat Now"),
+    ctaSubText: isRaajeev
+      ? 'Get webinar schedule announcements and joining updates in the official WhatsApp group.'
+      : 'Reminders • Exclusive PDFs • Bonus Materials on WhatsApp Group',
     ratingText: "★★★★★ 4.9/5 Rating (5,000+ Alumni)",
     batchPrefix: isGujarati ? "આગામી લાઈવ બેચ શરૂ થાય છે: " : isHindi ? "अगला लाइव बैच शुरू होता है: " : "Next Live Batch Starts: ",
     timeText: (activeAcademy?.id === 'raajeev' || activeAcademy?.id === 'sannjoy')
@@ -163,18 +174,23 @@ export default function LandingHero({
             </span>
           </div>
 
-          {/* Dynamic Real Next Batch Date Box */}
+          {/* Schedule / batch information */}
           <div className="p-4 rounded-2xl bg-card border border-border/20 w-full max-w-lg mx-auto lg:mx-0 flex items-center gap-3.5 shadow-lg">
             <div className="w-11 h-11 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0">
               <Calendar className="w-5.5 h-5.5" />
             </div>
             <div className="text-left">
-              <span className="text-[10px] uppercase tracking-wider text-text-secondary font-mono font-bold block">
-                {copy.batchPrefix}
-              </span>
-              <span className="text-sm sm:text-base font-extrabold text-text-primary block mt-0.5 font-cinzel">
-                {getFormattedDate()} {copy.timeText}
-              </span>
+              {isRaajeev ? (
+                <>
+                  <span className="text-[10px] uppercase tracking-wider text-text-secondary font-mono font-bold block">3-Day Free Live Webinar</span>
+                  <span className="text-sm sm:text-base font-extrabold text-text-primary block mt-0.5 font-cinzel">Dates & Timing: To Be Announced</span>
+                </>
+              ) : (
+                <>
+                  <span className="text-[10px] uppercase tracking-wider text-text-secondary font-mono font-bold block">{copy.batchPrefix}</span>
+                  <span className="text-sm sm:text-base font-extrabold text-text-primary block mt-0.5 font-cinzel">{getFormattedDate()} {copy.timeText}</span>
+                </>
+              )}
             </div>
           </div>
 

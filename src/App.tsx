@@ -21,6 +21,7 @@ import TrustCredibilitySection from './components/sections/TrustCredibilitySecti
 import SuccessMetricsSection from './components/sections/SuccessMetricsSection';
 import MeetOurMentorsSection from './components/sections/MeetOurMentorsSection';
 import FeaturedCoursesHomepage from './components/sections/FeaturedCoursesHomepage';
+import DivineBusinessWebinarPromoCard from './components/sections/DivineBusinessWebinarPromoCard';
 import AcademyComparisonMatrix from './components/sections/AcademyComparisonMatrix';
 import HomepageMediaAndWebinarSection from './components/sections/HomepageMediaAndWebinarSection';
 import DynamicTestimonialsHomepage from './components/sections/DynamicTestimonialsHomepage';
@@ -320,6 +321,7 @@ function AppContent() {
                 return (
                   <React.Fragment key={section.id || index}>
                           <HeroSection section={section} navigate={navigate} />
+                          <DivineBusinessWebinarPromoCard variant="home" navigate={navigate} />
                           <TrustCredibilitySection />
                           <SuccessMetricsSection />
                           <MeetOurMentorsSection />

@@ -147,12 +147,12 @@ export default function AcademyLandingPage({ navigate }: AcademyLandingPageProps
     return <AcademyNotFound />;
   }
 
-  const whatsappUrl = isRaajeev ? DIVINE_BUSINESS_WEBINAR_GROUP_URL : (activeAcademy.contactDetails?.whatsapp || WHATSAPP_LINK);
+  const whatsappUrl = activeAcademy.contactDetails?.whatsapp || WHATSAPP_LINK;
   const academyLogo = activeAcademy.branding?.logo || activeAcademy.assets?.profileImage;
 
   // Set default opened FAQ
-  if (openFaqId === null && activeAcademy.faqs?.[0]?.id) {
-    setOpenFaqId(activeAcademy.faqs[0].id);
+  if (openFaqId === null && faqItems?.[0]?.id) {
+    setOpenFaqId(faqItems[0].id);
   }
 
   // Filter courses by selected difficulty
@@ -1023,7 +1023,7 @@ export default function AcademyLandingPage({ navigate }: AcademyLandingPageProps
                 {activeAcademy.instructorName}
               </span>
               <p className="text-xs font-bold font-cinzel text-text-primary truncate">
-                Enroll or Book Personal Consultation
+                {isRaajeev ? 'Join the Free Webinar WhatsApp Group' : 'Enroll or Book Personal Consultation'}
               </p>
             </div>
           </div>

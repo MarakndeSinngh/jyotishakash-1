@@ -1,4 +1,5 @@
 import { AcademyConfig } from './types';
+import { DIVINE_BUSINESS_WEBINAR_GROUP_URL } from '../../constants/divineBusinessWebinar';
 
 export const raajeevAcademy: AcademyConfig = {
   id: 'raajeev',
@@ -192,7 +193,7 @@ export const raajeevAcademy: AcademyConfig = {
   ],
   contactDetails: {
     phone: '+91 99537 13176',
-    whatsapp: 'https://chat.whatsapp.com/JSJ1cD0uUS2AYNabbH8IC3',
+    whatsapp: DIVINE_BUSINESS_WEBINAR_GROUP_URL,
     email: 'contact@raajeevsingh.com',
     address: 'New Delhi & Mumbai, India',
   },

@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, ArrowRight, Clock, Users, ShieldCheck, MessageCircle } from 'lucide-react';
 import { useAcademy } from '../context/AcademyContext';
 import { useLanguage } from '../context/LanguageContext';
+import { DIVINE_BUSINESS_WEBINAR_GROUP_URL } from '../constants/divineBusinessWebinar';
 
 interface StickyFloatingCTAProps {
   currentPath: string;
@@ -53,7 +54,7 @@ export default function StickyFloatingCTA({ currentPath }: StickyFloatingCTAProp
   const registrationUrl = isMeditation
     ? 'https://chat.whatsapp.com/E1CeluFqVlIGWzMYVSQ2F9'
     : isRaajeev
-    ? 'https://chat.whatsapp.com/JSJ1cD0uUS2AYNabbH8IC3'
+    ? DIVINE_BUSINESS_WEBINAR_GROUP_URL
     : (activeAcademy?.contactDetails?.whatsapp ||
       (activeAcademy?.contactDetails?.phone
         ? `https://wa.me/${activeAcademy.contactDetails.phone.replace(/[^0-9]/g, '')}`

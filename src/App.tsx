@@ -455,7 +455,7 @@ function AppContent() {
           <CartDrawer onNavigate={navigate} />
         </Suspense>
       )}
-      {normalizedPath !== '/' && (
+      {normalizedPath !== '/' && normalizedPath !== '/webinars/divine-business-brand-name-logo-design' && (
         <Suspense fallback={null}>
           <FloatingConsultationCard currentPath={normalizedPath} />
         </Suspense>

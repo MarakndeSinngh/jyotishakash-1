@@ -134,6 +134,17 @@ export default function DivineBusinessBrandWebinarPage({ navigate }: DivineBusin
           name="description"
           content="Join LEO Family's exclusive 3-day free live webinar on Divine Business Brand Name & Logo Design through Astrology, Numerology and Pronology."
         />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Divine Business Brand Name & Logo Design | Free 3-Day Live Webinar" />
+        <meta property="og:description" content="Explore business brand identity through Astrology, Numerology and Pronology. Join the free 3-day live webinar by LEO Family Occult School." />
+        <meta property="og:url" content="https://www.leofamily.online/webinars/divine-business-brand-name-logo-design" />
+        <meta property="og:image" content="https://www.leofamily.online/gemstone-assets/logo.jpg" />
+        <meta property="og:image:alt" content="LEO Family Occult School" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Divine Business Brand Name & Logo Design | LEO Family" />
+        <meta name="twitter:description" content="Exclusive 3-day free live webinar through Astrology, Numerology and Pronology." />
+        <meta name="twitter:image" content="https://www.leofamily.online/gemstone-assets/logo.jpg" />
+        <link rel="canonical" href="https://www.leofamily.online/webinars/divine-business-brand-name-logo-design" />
         <meta name="keywords" content="business brand name, logo design webinar, astrology, numerology, pronology, LEO Family" />
       </Helmet>
 

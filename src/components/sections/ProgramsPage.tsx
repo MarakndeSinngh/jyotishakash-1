@@ -5,6 +5,7 @@ import { programService } from '../../services/programService';
 import { Program } from '../../models/program';
 import { WHATSAPP_LINK } from '../../constants/contacts';
 import SmartImage from './SmartImage';
+import DivineBusinessWebinarPromoCard from './DivineBusinessWebinarPromoCard';
 
 interface ProgramsPageProps {
   navigate?: (path: string) => void;
@@ -161,6 +162,11 @@ export default function ProgramsPage({ navigate }: ProgramsPageProps) {
               </button>
             );
           })}
+        </div>
+
+        {/* Featured free webinar pinned above the database-driven course catalogue. */}
+        <div className="mb-10 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+          <DivineBusinessWebinarPromoCard variant="programs" navigate={navigate} />
         </div>
 
         {/* Programs Grid */}

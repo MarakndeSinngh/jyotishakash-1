@@ -14,6 +14,7 @@ import { useAcademy } from '../../context/AcademyContext';
 import { WHATSAPP_LINK } from '../../constants/contacts';
 import { useContentEngine } from '../../hooks/useContentEngine';
 import SmartImage from './SmartImage';
+import { DIVINE_BUSINESS_WEBINAR_PATH } from '../../constants/divineBusinessWebinar';
 
 interface FeaturedCoursesHomepageProps {
   navigate?: (path: string) => void;
@@ -131,6 +132,47 @@ export default function FeaturedCoursesHomepage({ navigate }: FeaturedCoursesHom
             Explore flagship certifications offered across LEO Family via ContentEngine. Select an expert tab to filter programs.
           </motion.p>
         </div>
+
+        {/* New free webinar feature card: always visible regardless of faculty filter */}
+        <motion.button
+          type="button"
+          onClick={() => handleNavigate(DIVINE_BUSINESS_WEBINAR_PATH)}
+          whileHover={{ y: -3 }}
+          whileTap={{ scale: 0.995 }}
+          aria-label="Open Divine Business Brand Name and Logo Design free webinar details"
+          className="mb-12 w-full overflow-hidden rounded-[2rem] border border-[#C29B47]/60 bg-gradient-to-r from-[#FAF6F0] via-[#F2E9DC] to-[#FAF6F0] p-6 text-left text-[#2B1704] shadow-xl transition hover:shadow-2xl sm:p-8"
+        >
+          <div className="grid items-center gap-6 lg:grid-cols-[1fr_auto]">
+            <div>
+              <div className="inline-flex items-center gap-2 rounded-full bg-[#1C0F02] px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-[0.18em] text-[#E9C269]">
+                <Sparkles className="h-3.5 w-3.5" />
+                EXCLUSIVE 3-DAY FREE LIVE WEBINAR
+              </div>
+              <h3 className="mt-4 font-cinzel text-2xl font-extrabold leading-tight text-[#2B1704] sm:text-3xl">
+                DIVINE BUSINESS BRAND NAME & LOGO DESIGN
+              </h3>
+              <p className="mt-2 text-sm leading-relaxed text-[#5A4027]">
+                Explore brand creation through Astrology, Numerology and Pronology with LEO Family Occult School.
+              </p>
+              <div className="mt-4 flex flex-wrap gap-2">
+                {['ASTROLOGY', 'NUMEROLOGY', 'PRONOLOGY'].map((item) => (
+                  <span key={item} className="rounded-full border border-[#C29B47]/50 bg-white/70 px-3 py-1 text-[9px] font-extrabold tracking-wider text-[#6D451A]">{item}</span>
+                ))}
+                <span className="rounded-full bg-[#A86E25] px-3 py-1 text-[9px] font-extrabold tracking-wider text-white">FREE • LIVE • 3 DAYS</span>
+              </div>
+            </div>
+            <div className="flex items-center justify-between gap-4 rounded-2xl border border-[#C29B47]/40 bg-white/70 p-4 lg:min-w-[230px] lg:flex-col lg:items-start">
+              <div>
+                <span className="block text-[10px] font-extrabold uppercase tracking-wider text-[#A86E25]">Schedule</span>
+                <strong className="mt-1 block text-sm text-[#2B1704]">Dates & Timing TBA</strong>
+              </div>
+              <span className="inline-flex items-center gap-2 rounded-xl bg-[#1C0F02] px-4 py-3 text-[10px] font-extrabold uppercase tracking-wide text-[#FAF6F0]">
+                Explore Webinar
+                <ArrowUpRight className="h-4 w-4" />
+              </span>
+            </div>
+          </div>
+        </motion.button>
 
         {/* Filter Tabs */}
         <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mb-16 max-w-3xl mx-auto">

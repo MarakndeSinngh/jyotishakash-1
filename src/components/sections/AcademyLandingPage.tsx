@@ -42,6 +42,10 @@ import AcademyNotFound from './AcademyNotFound';
 import LandingHero from '../LandingHero';
 import WorkshopTimeline from '../WorkshopTimeline';
 import StudentTransformations from '../StudentTransformations';
+import {
+  DIVINE_BUSINESS_WEBINAR_GROUP_URL,
+  DIVINE_BUSINESS_WEBINAR_PATH
+} from '../../constants/divineBusinessWebinar';
 
 interface AcademyLandingPageProps {
   navigate?: (path: string) => void;
@@ -101,6 +105,14 @@ function LiveCountdown({ targetDate }: { targetDate: string }) {
 export default function AcademyLandingPage({ navigate }: AcademyLandingPageProps) {
   const { activeAcademy, isNotFound, isLoading, switchAcademy } = useAcademy();
   const { t } = useLanguage();
+  const isRaajeev = activeAcademy?.slug?.toLowerCase() === 'raajeev' || activeAcademy?.id === 'raajeev';
+  const webinarFaqs = [
+    { id: 'brand-webinar-faq-1', question: 'Is the Divine Business Brand Name & Logo Design webinar free?', answer: 'Yes. This is an exclusive 3-day free live webinar organised by LEO Family Occult School.' },
+    { id: 'brand-webinar-faq-2', question: 'What will be covered?', answer: 'The sessions introduce Astrology, Numerology and Pronology as traditional approaches to brand-name selection and logo concept development.' },
+    { id: 'brand-webinar-faq-3', question: 'When are the dates and timings?', answer: 'The dates and session timings will be announced. Join the official WhatsApp group to receive schedule and joining updates.' },
+    { id: 'brand-webinar-faq-4', question: 'Who can join?', answer: 'Business owners, entrepreneurs, startup founders, shop owners, astrologers, numerologists and people interested in brand creation are welcome.' },
+  ];
+  const faqItems = isRaajeev ? webinarFaqs : activeAcademy.faqs;
 
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('All');
   const [openFaqId, setOpenFaqId] = useState<string | null>(null);
@@ -135,7 +147,7 @@ export default function AcademyLandingPage({ navigate }: AcademyLandingPageProps
     return <AcademyNotFound />;
   }
 
-  const whatsappUrl = activeAcademy.contactDetails?.whatsapp || WHATSAPP_LINK;
+  const whatsappUrl = isRaajeev ? DIVINE_BUSINESS_WEBINAR_GROUP_URL : (activeAcademy.contactDetails?.whatsapp || WHATSAPP_LINK);
   const academyLogo = activeAcademy.branding?.logo || activeAcademy.assets?.profileImage;
 
   // Set default opened FAQ
@@ -228,360 +240,72 @@ export default function AcademyLandingPage({ navigate }: AcademyLandingPageProps
           ================================================== */}
       <LandingHero />
 
-      {/* ==================================================
-          5 DAYS MEGA LIVE PREDICTION NUMEROLOGY MASTERCLASS
-          ================================================== */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        className="max-w-5xl mx-auto my-16 px-6 relative z-10 space-y-12"
-      >
-        {/* HERO MASTERCLASS BANNER */}
-        <div className="bg-gradient-to-br from-card via-card/95 to-surface border-2 border-primary/40 rounded-[2.5rem] p-8 md:p-14 shadow-2xl relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute bottom-0 left-0 w-96 h-96 bg-amber-500/5 rounded-full blur-3xl pointer-events-none" />
-
-          <div className="relative z-10 space-y-8 text-center max-w-4xl mx-auto">
-            
-            {/* Badges */}
-            <div className="flex flex-wrap items-center justify-center gap-3">
-              <span className="px-4 py-1.5 rounded-full bg-primary text-background text-xs font-bold uppercase tracking-[0.2em] shadow-lg flex items-center gap-2">
-                <Sparkles className="w-4 h-4" />
-                <span>100% FREE • LIVE • 5 DAYS</span>
-              </span>
-              <span className="px-4 py-1.5 rounded-full bg-primary/15 border border-primary/30 text-primary text-xs font-bold uppercase tracking-[0.2em]">
-                LIMITED SEATS ONLY
-              </span>
-            </div>
-
-            {/* Titles */}
-            <div className="space-y-4">
-              <div className="text-xl sm:text-2xl font-bold font-cinzel text-primary tracking-wide">
-                Numerology Sab Sikhate Hain… Prediction Kaun Sikhata Hai?
+      {/* Raajeev Sir's current campaign: Divine Business Brand Name & Logo Design */}
+      {isRaajeev && (
+        <section id="courses" className="relative z-10 mx-auto my-14 max-w-7xl px-5 sm:px-8">
+          <div className="relative overflow-hidden rounded-[2rem] border border-[#C29B47]/45 bg-gradient-to-br from-[#FAF6F0] via-[#F2E9DC] to-[#FAF6F0] p-6 text-[#2B1704] shadow-2xl sm:p-10">
+            <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-[#C29B47]/20 blur-3xl" />
+            <div className="relative z-10 grid items-center gap-8 lg:grid-cols-[1.2fr_0.8fr]">
+              <div>
+                <span className="inline-flex items-center gap-2 rounded-full bg-[#1C0F02] px-4 py-2 text-[10px] font-extrabold uppercase tracking-[0.18em] text-[#E9C269]">
+                  <Sparkles className="h-4 w-4" />
+                  EXCLUSIVE 3-DAY FREE LIVE WEBINAR
+                </span>
+                <h2 className="mt-5 font-cinzel text-3xl font-extrabold leading-tight text-[#2B1704] sm:text-4xl">
+                  DIVINE BUSINESS BRAND NAME & LOGO DESIGN
+                </h2>
+                <p className="mt-4 max-w-2xl text-sm leading-relaxed text-[#5A4027]">
+                  Learn a distinctive brand-creation approach through traditional Astrology, Numerology and Pronology principles.
+                </p>
+                <div className="mt-6 flex flex-wrap gap-2">
+                  {['ASTROLOGY', 'NUMEROLOGY', 'PRONOLOGY'].map((item) => (
+                    <span key={item} className="rounded-full border border-[#C29B47]/50 bg-white/70 px-3 py-1.5 text-[10px] font-extrabold tracking-wider text-[#6D451A]">{item}</span>
+                  ))}
+                </div>
+                <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+                  <button
+                    type="button"
+                    onClick={() => handleNav(DIVINE_BUSINESS_WEBINAR_PATH)}
+                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#1C0F02] px-6 py-3.5 text-xs font-extrabold uppercase tracking-wide text-[#FAF6F0] shadow-lg transition hover:bg-[#2B1704]"
+                  >
+                    View Webinar Details
+                    <ArrowRight className="h-4 w-4" />
+                  </button>
+                  <a
+                    href={DIVINE_BUSINESS_WEBINAR_GROUP_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#25D366] px-6 py-3.5 text-xs font-extrabold uppercase tracking-wide text-white shadow-lg transition hover:bg-[#1EBD5B]"
+                  >
+                    <MessageCircle className="h-4 w-4" />
+                    Join WhatsApp Group
+                    <ExternalLink className="h-3.5 w-3.5" />
+                  </a>
+                </div>
+                <p className="mt-4 text-[11px] font-semibold text-[#6D451A]">Duration: 3 Days • Free Entry • Dates & Timing: To Be Announced</p>
               </div>
-              <h3 className="text-3xl sm:text-4xl md:text-5xl font-extrabold font-cinzel tracking-tight text-text-primary leading-tight">
-                5 DAYS MEGA LIVE PREDICTION NUMEROLOGY MASTERCLASS
-              </h3>
-              <p className="text-lg sm:text-xl font-bold text-amber-400 font-cinzel">
-                🔮 EXPERIENCE THE MAGIC OF PREDICTION — LIVE!
-              </p>
-              <p className="text-sm sm:text-base text-text-secondary font-medium tracking-wide">
-                For Those Who Know the Basics of Numerology & Want to Master Prediction
-              </p>
-            </div>
-
-            {/* HERO PROBLEM SECTION */}
-            <div className="bg-background/70 border border-border/25 rounded-2xl p-6 sm:p-8 text-left space-y-4 shadow-inner">
-              <h4 className="text-base sm:text-lg font-bold font-cinzel text-primary text-center">
-                क्या आपने Numerology सीखी है… लेकिन फिर भी Prediction में Confidence नहीं आता?
-              </h4>
-              <p className="text-xs sm:text-sm text-text-secondary font-light leading-relaxed text-center">
-                आपने शायद Numbers, Names, Dates, Charts, Rules और अलग-अलग Numerology Systems के बारे में सीखा होगा।
-              </p>
-              <p className="text-xs sm:text-sm text-text-primary font-medium text-center pt-2">
-                लेकिन जब कोई सामने बैठकर पूछता है—
-              </p>
-              
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 lg:grid-cols-1">
                 {[
-                  "“मेरे Career में क्या होनेवाला है?”",
-                  "“मेरी शादी कब होगी?”",
-                  "“Business में क्या होगा?”",
-                  "“मेरी Problem का actual कारण क्या है?”",
-                  "“आगे आनेवाले समय में क्या बदलाव होंगे?”"
-                ].map((q, idx) => (
-                  <div key={idx} className="bg-card/80 border border-border/20 p-3.5 rounded-xl flex items-center gap-2.5 shadow-xs">
-                    <span className="w-2 h-2 rounded-full bg-primary shrink-0" />
-                    <span className="text-xs font-semibold text-text-primary italic">{q}</span>
+                  { title: 'Astrology', copy: 'Planetary considerations for brand identity, colours and symbols.' },
+                  { title: 'Numerology', copy: 'Business name numbers, Mulank, Bhagyank and name combinations.' },
+                  { title: 'Pronology', copy: 'Name sounds, pronunciation and alphabet patterns.' },
+                ].map((item, index) => (
+                  <div key={item.title} className="rounded-2xl border border-[#D7C4A9] bg-white/80 p-4 shadow-sm">
+                    <span className="text-[10px] font-extrabold tracking-[0.18em] text-[#A86E25]">0{index + 1}</span>
+                    <h3 className="mt-1 font-cinzel text-base font-extrabold text-[#2B1704]">{item.title}</h3>
+                    <p className="mt-1 text-xs leading-relaxed text-[#5A4027]">{item.copy}</p>
                   </div>
                 ))}
               </div>
-
-              <div className="pt-4 text-center space-y-2 border-t border-border/20">
-                <p className="text-xs sm:text-sm text-text-secondary">
-                  तब क्या आप सिर्फ numbers explain करते हैं… या confidently prediction कर पाते हैं?
-                </p>
-                <p className="text-sm sm:text-base font-bold font-cinzel text-primary">
-                  यही फर्क है— Numerology जानने और Numerology से Prediction करने में।
-                </p>
-              </div>
-            </div>
-
-            {/* CORE MESSAGE */}
-            <div className="bg-gradient-to-r from-primary/10 via-card to-primary/10 border border-primary/30 rounded-2xl p-6 sm:p-8 text-center space-y-3">
-              <h4 className="text-sm sm:text-base font-extrabold font-cinzel tracking-wider text-text-primary">
-                NUMEROLOGY KNOWLEDGE IS NOT ENOUGH. PREDICTION IS THE NEXT LEVEL.
-              </h4>
-              <p className="text-xs sm:text-sm text-text-secondary font-light max-w-2xl mx-auto">
-                Numerology की basic knowledge आपको Numerologist बना सकती है। लेकिन practical prediction की understanding आपकी reading, consultation और professional practice को एक अलग level पर ले जा सकती है।
-              </p>
-            </div>
-
-          </div>
-        </div>
-
-        {/* MASTERCLASS DIFFERENCE & FEATURE CARDS */}
-        <div className="bg-card border border-primary/30 rounded-[2.5rem] p-8 md:p-12 shadow-xl space-y-8">
-          <div className="text-center space-y-2">
-            <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-primary block">
-              5 DAYS MEGA LIVE PREDICTION NUMEROLOGY MASTERCLASS
-            </span>
-            <h3 className="text-2xl sm:text-3xl font-extrabold font-cinzel text-text-primary">
-              इस Masterclass में क्या अलग होगा?
-            </h3>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[
-              { title: "PREDICTION", desc: "Moving beyond static numbers into dynamic future forecasting." },
-              { title: "PRACTICAL APPLICATION", desc: "Real-world consulting frameworks applied instantly." },
-              { title: "REAL CASE ANALYSIS", desc: "Deep study of authentic life cases and career patterns." },
-              { title: "LIVE OBSERVATION", desc: "Watch how master predictions unfold in live sessions." },
-              { title: "THINKING BEYOND BASIC RULES", desc: "Mastering intuitive synthesis over rigid textbook memorization." }
-            ].map((card, i) => (
-              <div key={i} className="bg-background/80 border border-border/20 p-6 rounded-2xl text-left space-y-2 hover:border-primary/40 transition-all shadow-md">
-                <div className="w-8 h-8 rounded-xl bg-primary/20 border border-primary/40 flex items-center justify-center text-primary font-bold text-xs mb-3">
-                  0{i + 1}
-                </div>
-                <h4 className="text-sm font-bold font-cinzel text-primary">{card.title}</h4>
-                <p className="text-xs text-text-secondary font-light leading-relaxed">{card.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* EXPERIENCE PREDICTION LIVE */}
-        <div className="bg-gradient-to-br from-card via-background to-card border border-border/20 rounded-[2.5rem] p-8 md:p-12 shadow-xl text-center space-y-6">
-          <h3 className="text-2xl sm:text-3xl font-extrabold font-cinzel text-text-primary">
-            EXPERIENCE PREDICTION LIVE
-          </h3>
-          <p className="text-sm text-text-secondary max-w-2xl mx-auto font-light">
-            आप केवल theory नहीं पढ़ेंगे। आप LIVE class में prediction होते हुए देखेंगे। Real-life cases को analyse करते हुए आप observe करेंगे कि एक experienced Numerologist:
-          </p>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 text-left max-w-3xl mx-auto">
-            {[
-              "क्या देखता है",
-              "कैसे जोड़ता है",
-              "किस pattern को पकड़ता है",
-              "किस information को महत्व देता है",
-              "prediction तक कैसे पहुँचता है"
-            ].map((item, idx) => (
-              <div key={idx} className="bg-card border border-border/20 p-4 rounded-xl flex items-center gap-3">
-                <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
-                <span className="text-xs sm:text-sm font-semibold text-text-primary">{item}</span>
-              </div>
-            ))}
-          </div>
-
-          <p className="text-xs text-text-secondary italic pt-2">
-            The section should communicate EXPERIENCE and OBSERVATION rather than just theory.
-          </p>
-        </div>
-
-        {/* MENTOR SECTION */}
-        <div className="bg-card border border-primary/30 rounded-[2.5rem] p-8 md:p-12 shadow-xl grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
-          <div className="md:col-span-5 text-center">
-            <div className="aspect-[4/5] rounded-2xl overflow-hidden border-2 border-primary/40 shadow-2xl max-w-xs mx-auto">
-              <img
-                src={activeAcademy.assets.profileImage || "/assets/teachers/Raajeev.webp"}
-                alt="Raajeev Singh Chauhann"
-                className="w-full h-full object-cover"
-              />
             </div>
           </div>
-
-          <div className="md:col-span-7 space-y-6 text-left">
-            <div>
-              <span className="text-[10px] uppercase font-bold tracking-[0.25em] text-primary block mb-1">
-                LEARN DIRECTLY FROM
-              </span>
-              <h3 className="text-3xl sm:text-4xl font-extrabold font-cinzel text-text-primary">
-                RAAJEEV SINGH CHAUHANN
-              </h3>
-              <p className="text-xs font-bold text-primary tracking-wider uppercase mt-1">
-                Founder of Practical Numerology • Bollywood Actor & Director • King of Prediction in Numerology
-              </p>
-            </div>
-
-            <p className="text-xs sm:text-sm text-text-secondary font-light leading-relaxed">
-              Practical Numerology के अपने unique approach के साथ, Raajeev Singh Chauhann आपको Numerology को केवल जानने के बजाय उसे practical perspective से देखने और prediction की दिशा में apply करने का LIVE experience देंगे.
-            </p>
-
-            <div className="inline-flex items-center gap-2 bg-primary/15 border border-primary/30 px-5 py-3 rounded-xl text-xs font-bold text-primary">
-              <Award className="w-5 h-5 text-primary shrink-0" />
-              <span>🏆 10,000+ Families Transformed Through Practical Numerology</span>
-            </div>
-          </div>
-        </div>
-
-        {/* WHO SHOULD JOIN? */}
-        <div className="bg-card border border-border/20 rounded-[2.5rem] p-8 md:p-12 shadow-xl space-y-6 text-left">
-          <div className="text-center space-y-2">
-            <h3 className="text-2xl sm:text-3xl font-extrabold font-cinzel text-text-primary">
-              WHO SHOULD JOIN?
-            </h3>
-            <p className="text-xs sm:text-sm text-text-secondary font-light max-w-2xl mx-auto">
-              यह Masterclass Basic Numerology सीखने वालों के लिए नहीं, बल्कि उन लोगों के लिए है जो basics के आगे जाना चाहते हैं।
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {[
-              "आपने Numerology के basics सीखे हैं",
-              "आप Numerology को career के रूप में pursue करना चाहते हैं",
-              "आप Numerology consultation करना चाहते हैं",
-              "Prediction में confidence develop करना चाहते हैं",
-              "आपको लगता है कि आपकी Numerology knowledge है, लेकिन practical application अभी बाकी है",
-              "आप Astrology / Numerology / Occult field में हैं और Prediction skill को explore करना चाहते हैं"
-            ].map((point, idx) => (
-              <div key={idx} className="bg-background/80 border border-border/20 p-4 rounded-xl flex items-start gap-3 shadow-xs">
-                <CheckCircle2 className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-                <span className="text-xs sm:text-sm font-medium text-text-primary leading-tight">{point}</span>
-              </div>
-            ))}
-          </div>
-
-          <div className="text-center pt-4 border-t border-border/10">
-            <span className="text-sm font-bold font-cinzel text-primary">
-              If You Know the Basics — You’re Ready for the Next Level.
-            </span>
-          </div>
-        </div>
-
-        {/* WHY PREDICTION? & HONEST POSITIONING */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="bg-card border border-border/20 rounded-[2.5rem] p-8 shadow-xl text-left space-y-4 flex flex-col justify-between">
-            <div className="space-y-3">
-              <h3 className="text-xl sm:text-2xl font-extrabold font-cinzel text-primary">
-                WHY PREDICTION?
-              </h3>
-              <p className="text-xs sm:text-sm text-text-secondary font-light leading-relaxed">
-                क्योंकि client को सिर्फ यह जानना नहीं होता कि— <strong className="text-text-primary">“आपका number 5 है.”</strong>
-              </p>
-              <p className="text-xs sm:text-sm text-text-secondary font-light leading-relaxed">
-                वह जानना चाहता है— <strong className="text-text-primary">“अब मेरे साथ क्या होगा?”</strong>
-              </p>
-              <p className="text-xs sm:text-sm text-text-secondary font-light leading-relaxed">
-                यहीं से एक ordinary reading और powerful predictive consultation के बीच का difference शुरू होता है।
-              </p>
-            </div>
-            <div className="pt-4 border-t border-border/10">
-              <span className="text-xs font-extrabold uppercase tracking-wider text-primary block text-center">
-                FROM AVERAGE NUMEROLOGIST TO EXTRAORDINARY NUMEROLOGIST
-              </span>
-            </div>
-          </div>
-
-          <div className="bg-card border border-border/20 rounded-[2.5rem] p-8 shadow-xl text-left space-y-4 flex flex-col justify-between">
-            <div className="space-y-3">
-              <h3 className="text-xl sm:text-2xl font-extrabold font-cinzel text-text-primary">
-                HONEST POSITIONING
-              </h3>
-              <p className="text-xs sm:text-sm text-text-secondary font-light leading-relaxed">
-                यह Masterclass आपको overnight expert बनाने का दावा नहीं करता।
-              </p>
-              <p className="text-xs sm:text-sm text-text-secondary font-light leading-relaxed">
-                लेकिन यह आपको Prediction को एक अलग perspective से LIVE देखने, समझने और सीखने का opportunity जरूर देता है।
-              </p>
-            </div>
-            <div className="pt-4 border-t border-border/10 text-center">
-              <span className="text-[10px] uppercase font-bold tracking-wider text-text-secondary">
-                Transparent & Authentic Learning Commitment
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* EXPERIENCE IT LIVE */}
-        <div className="bg-gradient-to-r from-card via-background to-card border border-primary/30 rounded-[2.5rem] p-8 md:p-12 shadow-xl text-center space-y-6">
-          <h3 className="text-2xl sm:text-3xl font-extrabold font-cinzel text-text-primary">
-            YOU DON’T HAVE TO BELIEVE US. EXPERIENCE IT LIVE.
-          </h3>
-          <p className="text-xs sm:text-sm text-text-secondary max-w-2xl mx-auto font-light">
-            आपको हमारी बात सिर्फ इसलिए मानने की जरूरत नहीं है कि हम कहते हैं कि Prediction powerful है। LIVE class में खुद देखिए।
-          </p>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-left max-w-3xl mx-auto">
-            <div className="bg-card p-4 rounded-xl border border-border/20 text-xs text-text-secondary">
-              • देखिए कैसे real cases approach किए जाते हैं।
-            </div>
-            <div className="bg-card p-4 rounded-xl border border-border/20 text-xs text-text-secondary">
-              • देखिए कैसे patterns को connect किया जाता है।
-            </div>
-            <div className="bg-card p-4 rounded-xl border border-border/20 text-xs text-text-secondary">
-              • देखिए कैसे prediction की thinking develop की जाती है।
-            </div>
-          </div>
-          <p className="text-xs text-primary font-bold">
-            और फिर खुद decide कीजिए कि यह आपके लिए है या नहीं।
-          </p>
-        </div>
-
-        {/* MASTERCLASS DETAILS & FINAL PHILOSOPHY */}
-        <div className="bg-card border border-primary/40 rounded-[2.5rem] p-8 md:p-12 shadow-2xl space-y-8 text-center">
-          <div className="space-y-2">
-            <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary block">
-              MASTERCLASS DETAILS
-            </span>
-            <h3 className="text-2xl sm:text-3xl font-extrabold font-cinzel text-text-primary">
-              YOUR NEXT LEVEL IN NUMEROLOGY MAY NOT BE ANOTHER SYSTEM. IT MAY BE PREDICTION.
-            </h3>
-            <p className="text-sm font-bold text-primary font-cinzel">
-              Numerology Sab Sikhate Hain… Prediction Kaun Sikhata Hai?
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-left max-w-4xl mx-auto bg-background/80 p-6 rounded-2xl border border-border/20">
-            <div>
-              <span className="text-[10px] uppercase font-bold text-text-secondary block">Mentor</span>
-              <span className="text-xs sm:text-sm font-bold text-text-primary font-cinzel">Raajeev Singh Chauhann</span>
-            </div>
-            <div>
-              <span className="text-[10px] uppercase font-bold text-text-secondary block">Date</span>
-              <span className="text-xs sm:text-sm font-bold text-text-primary font-cinzel">Mid-September 2026</span>
-            </div>
-            <div>
-              <span className="text-[10px] uppercase font-bold text-text-secondary block">Time</span>
-              <span className="text-xs sm:text-sm font-bold text-text-primary font-cinzel">11:00 AM – 1:00 PM</span>
-            </div>
-            <div>
-              <span className="text-[10px] uppercase font-bold text-text-secondary block">Fee & Seats</span>
-              <span className="text-xs sm:text-sm font-bold text-emerald-400 font-cinzel">100% FREE (Limited)</span>
-            </div>
-          </div>
-
-          {/* FINAL CTA BOX */}
-          <div className="bg-gradient-to-r from-emerald-950/40 via-card to-emerald-950/40 border border-emerald-500/30 rounded-2xl p-8 shadow-xl space-y-4 max-w-3xl mx-auto">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 text-xs font-bold uppercase tracking-widest">
-              <Users className="w-4 h-4" />
-              <span>JOIN THE OFFICIAL WHATSAPP GROUP</span>
-            </div>
-
-            <p className="text-xs sm:text-sm text-text-secondary max-w-xl mx-auto font-light">
-              Click below to join the Official WhatsApp Group and receive the complete Masterclass schedule, joining details and important updates.
-            </p>
-
-            <div className="pt-2">
-              <a
-                href={whatsappUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-3 px-8 py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold uppercase tracking-wider text-xs sm:text-sm rounded-xl shadow-lg hover:shadow-emerald-600/30 transition-all duration-300 transform hover:-translate-y-0.5 cursor-pointer"
-              >
-                <Users className="w-5 h-5" />
-                <span>JOIN THE OFFICIAL WHATSAPP GROUP</span>
-                <ArrowRight className="w-4 h-4" />
-              </a>
-            </div>
-          </div>
-
-        </div>
-      </motion.div>
+        </section>
+      )}
 
       {/* ==================================================
           FLOW 2: FEATURED PROGRAMS (Courses & Masterclasses)
           ================================================== */}
+{!isRaajeev && (
       <section id="courses" className="relative z-10 py-20 px-6 max-w-7xl mx-auto border-t border-border/10">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12 pb-4 border-b border-border/10">
           <div>
@@ -706,14 +430,17 @@ export default function AcademyLandingPage({ navigate }: AcademyLandingPageProps
         </div>
       </section>
 
+      )}
+
       {/* ==================================================
           FLOW 3: WORKSHOP TIMELINE (Learning Roadmap)
           ================================================== */}
-      <WorkshopTimeline />
+      {!isRaajeev && <WorkshopTimeline />}
 
       {/* ==================================================
           FLOW 4: INTERACTIVE LEARNING TOOLS
           ================================================== */}
+{!isRaajeev && (
       <section className="relative z-10 py-20 px-6 max-w-5xl mx-auto border-t border-border/10">
         <div className="text-center max-w-3xl mx-auto mb-12">
           <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-[0.2em] mb-3">
@@ -884,6 +611,8 @@ export default function AcademyLandingPage({ navigate }: AcademyLandingPageProps
         </div>
       </section>
 
+      )}
+
       {/* ==================================================
           FLOW 5: STUDENT TRANSFORMATIONS (Testimonials)
           ================================================== */}
@@ -1028,7 +757,7 @@ export default function AcademyLandingPage({ navigate }: AcademyLandingPageProps
       {/* ==================================================
           FLOW 7: UPCOMING WEBINAR & LIVE COUNTDOWN
           ================================================== */}
-      {activeAcademy.events && activeAcademy.events.length > 0 && (
+      {!isRaajeev && activeAcademy.events && activeAcademy.events.length > 0 && (
         <section className="relative z-10 py-20 px-6 max-w-5xl mx-auto border-t border-border/10">
           <div className="bg-gradient-to-br from-card via-background to-card border border-primary/30 rounded-[2.5rem] p-8 sm:p-12 text-center relative overflow-hidden shadow-2xl">
             <div className="max-w-3xl mx-auto space-y-6">
@@ -1072,6 +801,7 @@ export default function AcademyLandingPage({ navigate }: AcademyLandingPageProps
       {/* ==================================================
           FLOW 8: COURSE DASHBOARD PREVIEW
           ================================================== */}
+{!isRaajeev && (
       <section className="relative z-10 py-20 px-6 max-w-6xl mx-auto border-t border-border/10">
         <div className="text-center max-w-3xl mx-auto mb-12">
           <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-[0.2em] mb-2">
@@ -1148,23 +878,25 @@ export default function AcademyLandingPage({ navigate }: AcademyLandingPageProps
         </div>
       </section>
 
+      )}
+
       {/* ==================================================
           FLOW 9: FREQUENTLY ASKED QUESTIONS
           ================================================== */}
-      {activeAcademy.faqs && activeAcademy.faqs.length > 0 && (
+      {faqItems && faqItems.length > 0 && (
         <section className="relative z-10 py-20 px-6 max-w-4xl mx-auto border-t border-border/10">
           <div className="text-center mb-16">
             <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary block mb-2">
               FREQUENTLY ASKED QUESTIONS
             </span>
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold font-cinzel text-text-primary">
-              Questions About {activeAcademy.shortName}
+              {isRaajeev ? 'About the Free Business Branding Webinar' : `Questions About ${activeAcademy.shortName}`}
             </h2>
             <div className="w-20 h-[2px] bg-gradient-to-r from-transparent via-primary to-transparent mx-auto mt-4" />
           </div>
 
           <div className="space-y-4 text-left">
-            {activeAcademy.faqs.map((faq) => {
+            {faqItems.map((faq) => {
               const isOpen = openFaqId === faq.id;
               return (
                 <div
@@ -1270,7 +1002,7 @@ export default function AcademyLandingPage({ navigate }: AcademyLandingPageProps
                 href="#courses"
                 className="px-8 py-4 bg-card hover:bg-surface border border-border/20 text-text-primary font-bold uppercase tracking-wider text-xs rounded-xl transition-all hover:-translate-y-0.5 text-center cursor-pointer"
               >
-                View Masterclass Catalog
+                {isRaajeev ? 'View Free Webinar Details' : 'View Masterclass Catalog'}
               </a>
             </div>
           </div>
@@ -1297,13 +1029,13 @@ export default function AcademyLandingPage({ navigate }: AcademyLandingPageProps
           </div>
 
           <a
-            href={whatsappUrl}
+            href={isRaajeev ? DIVINE_BUSINESS_WEBINAR_GROUP_URL : whatsappUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="px-5 py-2.5 bg-primary text-background font-extrabold uppercase tracking-wider text-[10px] sm:text-xs rounded-xl shadow-lg hover:opacity-90 transition-all cursor-pointer whitespace-nowrap shrink-0 flex items-center gap-1.5"
           >
             <MessageCircle className="w-3.5 h-3.5" />
-            <span>Connect on WhatsApp</span>
+            <span>{isRaajeev ? 'Join Webinar Group' : 'Connect on WhatsApp'}</span>
           </a>
         </div>
       </div>
@@ -1360,7 +1092,7 @@ export default function AcademyLandingPage({ navigate }: AcademyLandingPageProps
           <div className="md:col-span-3 space-y-3">
             <h4 className="text-xs font-bold uppercase tracking-widest text-text-primary font-cinzel">Navigation</h4>
             <ul className="space-y-2 text-xs text-text-secondary">
-              <li><a href="#courses" className="hover:text-primary transition-colors">Courses & Masterclasses</a></li>
+              <li><a href="#courses" className="hover:text-primary transition-colors">{isRaajeev ? "Free Business Branding Webinar" : "Courses & Masterclasses"}</a></li>
               <li><button onClick={() => handleNav('/academy')} className="hover:text-primary transition-colors cursor-pointer">Multi-Academy Directory</button></li>
               <li><button onClick={() => handleNav('/')} className="hover:text-primary transition-colors cursor-pointer">LEO Family Home</button></li>
               <li><a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">Book Consultation</a></li>

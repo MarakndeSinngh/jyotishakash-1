@@ -152,14 +152,46 @@ export default function DivineBusinessBrandWebinarPage({ navigate }: DivineBusin
         <div className="pointer-events-none absolute -top-28 right-[-5rem] h-80 w-80 rounded-full bg-[#C29B47]/15 blur-3xl" />
         <div className="pointer-events-none absolute bottom-[-8rem] left-[-4rem] h-80 w-80 rounded-full bg-[#A86E25]/20 blur-3xl" />
         <div className="relative mx-auto max-w-7xl px-5 pb-16 pt-12 sm:px-8 sm:pb-20 sm:pt-16">
-          <button
-            type="button"
-            onClick={goHome}
-            className="mb-8 inline-flex items-center gap-2 text-xs font-semibold text-[#E9C269] transition hover:text-white"
-          >
-            <ArrowRight className="h-4 w-4 rotate-180" />
-            Back to LEO Family
-          </button>
+          <div className="mb-8 flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
+            <button
+              type="button"
+              onClick={goHome}
+              className="inline-flex items-center gap-2 self-start text-xs font-semibold text-[#E9C269] transition hover:text-white"
+            >
+              <ArrowRight className="h-4 w-4 rotate-180" />
+              Back to LEO Family
+            </button>
+
+            <aside
+              aria-label="Webinar mentor: Raajeev Singh Chauhann"
+              className="flex w-full max-w-[290px] items-center gap-3 self-end rounded-2xl border border-[#C29B47]/50 bg-[#FAF6F0]/10 p-3 text-left shadow-lg backdrop-blur-sm sm:w-auto sm:self-start"
+            >
+              <div className="shrink-0 rounded-full bg-gradient-to-br from-[#F2D797] via-[#C29B47] to-[#A86E25] p-[2px] shadow-md">
+                <img
+                  src="/assets/teachers/Raajeev.webp"
+                  alt="Raajeev Singh Chauhann"
+                  width={64}
+                  height={64}
+                  loading="eager"
+                  className="h-14 w-14 rounded-full border border-[#1C0F02] object-cover object-center sm:h-16 sm:w-16"
+                />
+              </div>
+              <div className="min-w-0">
+                <span className="mb-1 inline-flex rounded-full border border-[#C29B47]/50 bg-[#C29B47]/15 px-2 py-0.5 text-[8px] font-extrabold uppercase tracking-[0.16em] text-[#F2D797]">
+                  Webinar Mentor
+                </span>
+                <h2 className="font-cinzel text-sm font-extrabold leading-snug text-[#FAF6F0] sm:text-base">
+                  Raajeev Singh Chauhann
+                </h2>
+                <p className="mt-1 text-[10px] font-medium leading-snug text-[#E6D8C4] sm:text-[11px]">
+                  Founder, LEO Family Occult School
+                </p>
+                <p className="text-[9px] leading-snug text-[#CDBB9F] sm:text-[10px]">
+                  Astrologer • Numerologist • Vastu Expert
+                </p>
+              </div>
+            </aside>
+          </div>
 
           <div className="mx-auto max-w-5xl text-center">
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#C29B47]/60 bg-[#C29B47]/15 px-4 py-2 text-[11px] font-extrabold uppercase tracking-[0.18em] text-[#F2D797] shadow-lg">

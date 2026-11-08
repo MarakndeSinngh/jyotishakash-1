@@ -152,102 +152,110 @@ export default function DivineBusinessBrandWebinarPage({ navigate }: DivineBusin
         <div className="pointer-events-none absolute -top-28 right-[-5rem] h-80 w-80 rounded-full bg-[#C29B47]/15 blur-3xl" />
         <div className="pointer-events-none absolute bottom-[-8rem] left-[-4rem] h-80 w-80 rounded-full bg-[#A86E25]/20 blur-3xl" />
         <div className="relative mx-auto max-w-7xl px-5 pb-16 pt-12 sm:px-8 sm:pb-20 sm:pt-16">
-          <div className="mb-8 flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
-            <button
-              type="button"
-              onClick={goHome}
-              className="inline-flex items-center gap-2 self-start text-xs font-semibold text-[#E9C269] transition hover:text-white"
-            >
-              <ArrowRight className="h-4 w-4 rotate-180" />
-              Back to LEO Family
-            </button>
+          <button
+            type="button"
+            onClick={goHome}
+            className="mb-8 inline-flex items-center gap-2 text-xs font-semibold text-[#E9C269] transition hover:text-white"
+          >
+            <ArrowRight className="h-4 w-4 rotate-180" />
+            Back to LEO Family
+          </button>
+
+          <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_380px] lg:gap-12">
+            <div className="min-w-0 text-center lg:pt-5 lg:text-left">
+              <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#C29B47]/60 bg-[#C29B47]/15 px-4 py-2 text-[10px] font-extrabold uppercase tracking-[0.16em] text-[#F2D797] shadow-lg sm:text-[11px]">
+                <Sparkles className="h-4 w-4 shrink-0" />
+                {DIVINE_BUSINESS_WEBINAR_BADGE}
+              </div>
+
+              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-[#E9C269] sm:text-sm sm:tracking-[0.25em]">
+                LEO FAMILY OCCULT SCHOOL PRESENTS
+              </p>
+
+              <h1 className="font-cinzel text-3xl font-extrabold leading-tight text-[#FAF6F0] sm:text-4xl lg:text-5xl xl:text-[3.35rem]">
+                {DIVINE_BUSINESS_WEBINAR_TITLE}
+              </h1>
+              <p className="mx-auto mt-5 max-w-3xl text-sm leading-relaxed text-[#E6D8C4] sm:text-base lg:mx-0 lg:text-lg">
+                Explore a distinctive approach to brand creation by bringing together traditional Astrology,
+                Numerology and Pronology principles.
+              </p>
+
+              <div className="mt-8 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center lg:justify-start">
+                <a
+                  href={DIVINE_BUSINESS_WEBINAR_GROUP_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#25D366] px-6 py-4 text-xs font-extrabold uppercase tracking-wide text-white shadow-xl transition hover:-translate-y-0.5 hover:bg-[#1EBD5B] sm:w-auto sm:text-sm"
+                >
+                  <MessageCircle className="h-5 w-5" />
+                  Join WhatsApp Group
+                  <ArrowUpRight className="h-4 w-4" />
+                </a>
+                <a
+                  href="#webinar-curriculum"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-[#C29B47]/70 bg-[#FAF6F0]/5 px-6 py-4 text-xs font-bold uppercase tracking-wide text-[#F2D797] transition hover:bg-[#FAF6F0]/10 sm:w-auto sm:text-sm"
+                >
+                  Explore 3-Day Curriculum
+                  <ArrowRight className="h-4 w-4" />
+                </a>
+              </div>
+
+              <div className="mx-auto mt-9 grid max-w-2xl grid-cols-1 gap-3 sm:grid-cols-3 lg:mx-0">
+                <div className="rounded-xl border border-[#C29B47]/35 bg-black/20 px-3 py-4 sm:px-4">
+                  <CalendarDays className="mx-auto mb-2 h-5 w-5 text-[#E9C269]" />
+                  <span className="block text-[10px] font-bold uppercase tracking-wider text-[#E9C269] sm:text-xs">Duration</span>
+                  <span className="mt-1 block text-sm font-semibold">3 Days</span>
+                </div>
+                <div className="rounded-xl border border-[#C29B47]/35 bg-black/20 px-3 py-4 sm:px-4">
+                  <Sparkles className="mx-auto mb-2 h-5 w-5 text-[#E9C269]" />
+                  <span className="block text-[10px] font-bold uppercase tracking-wider text-[#E9C269] sm:text-xs">Entry</span>
+                  <span className="mt-1 block text-sm font-semibold">Completely Free</span>
+                </div>
+                <div className="rounded-xl border border-[#C29B47]/35 bg-black/20 px-3 py-4 sm:px-4">
+                  <Clock3 className="mx-auto mb-2 h-5 w-5 text-[#E9C269]" />
+                  <span className="block text-[10px] font-bold uppercase tracking-wider text-[#E9C269] sm:text-xs">Schedule</span>
+                  <span className="mt-1 block text-sm font-semibold">To Be Announced</span>
+                </div>
+              </div>
+            </div>
 
             <aside
               aria-label="Webinar mentor: Raajeev Singh Chauhann"
-              className="flex w-full max-w-[290px] items-center gap-3 self-end rounded-2xl border border-[#C29B47]/50 bg-[#FAF6F0]/10 p-3 text-left shadow-lg backdrop-blur-sm sm:w-auto sm:self-start"
+              className="relative mx-auto flex w-full max-w-[360px] flex-col items-center rounded-[32px] border border-[#C29B47]/45 bg-[#FAF6F0]/[0.06] p-4 text-center shadow-2xl backdrop-blur-sm sm:p-5 lg:mx-0 lg:justify-self-end"
             >
-              <div className="shrink-0 rounded-full bg-gradient-to-br from-[#F2D797] via-[#C29B47] to-[#A86E25] p-[2px] shadow-md">
+              <div className="pointer-events-none absolute -inset-4 -z-10 rounded-full bg-[#C29B47]/10 blur-3xl" />
+              <div className="group relative mb-5 aspect-square w-full overflow-hidden rounded-[24px] border border-[#C29B47]/35 bg-[#2B1704] shadow-xl">
                 <img
                   src="/assets/teachers/Raajeev.webp"
-                  alt="Raajeev Singh Chauhann"
-                  width={64}
-                  height={64}
+                  alt="Raajeev Singh Chauhann, Founder and Visionary of LEO Family Occult School"
+                  width={720}
+                  height={720}
                   loading="eager"
-                  className="h-14 w-14 rounded-full border border-[#1C0F02] object-cover object-center sm:h-16 sm:w-16"
+                  decoding="async"
+                  className="h-full w-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-[1.03]"
                 />
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#1C0F02]/35 to-transparent" />
               </div>
-              <div className="min-w-0">
-                <span className="mb-1 inline-flex rounded-full border border-[#C29B47]/50 bg-[#C29B47]/15 px-2 py-0.5 text-[8px] font-extrabold uppercase tracking-[0.16em] text-[#F2D797]">
+
+              <div className="w-full space-y-2">
+                <span className="inline-flex items-center rounded-full border border-[#C29B47]/50 bg-[#C29B47]/15 px-3 py-1 text-[9px] font-extrabold uppercase tracking-[0.18em] text-[#F2D797]">
                   Webinar Mentor
                 </span>
-                <h2 className="font-cinzel text-sm font-extrabold leading-snug text-[#FAF6F0] sm:text-base">
+                <h2 className="font-cinzel text-xl font-extrabold leading-tight text-[#FAF6F0] sm:text-2xl">
                   Raajeev Singh Chauhann
                 </h2>
-                <p className="mt-1 text-[10px] font-medium leading-snug text-[#E6D8C4] sm:text-[11px]">
-                  Founder, LEO Family Occult School
+                <p className="text-xs font-bold uppercase tracking-[0.15em] text-[#E9C269] sm:text-sm">
+                  Founder & Visionary
                 </p>
-                <p className="text-[9px] leading-snug text-[#CDBB9F] sm:text-[10px]">
+                <p className="text-[11px] font-medium leading-relaxed text-[#E6D8C4] sm:text-xs">
+                  LEO Family Occult School
+                </p>
+                <div className="mx-auto h-px w-16 bg-gradient-to-r from-transparent via-[#C29B47] to-transparent" />
+                <p className="text-[10px] leading-relaxed text-[#CDBB9F] sm:text-[11px]">
                   Astrologer • Numerologist • Vastu Expert
                 </p>
               </div>
             </aside>
-          </div>
-
-          <div className="mx-auto max-w-5xl text-center">
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#C29B47]/60 bg-[#C29B47]/15 px-4 py-2 text-[11px] font-extrabold uppercase tracking-[0.18em] text-[#F2D797] shadow-lg">
-              <Sparkles className="h-4 w-4" />
-              {DIVINE_BUSINESS_WEBINAR_BADGE}
-            </div>
-
-            <p className="mb-3 text-sm font-semibold uppercase tracking-[0.25em] text-[#E9C269]">
-              LEO FAMILY OCCULT SCHOOL PRESENTS
-            </p>
-
-            <h1 className="font-cinzel text-3xl font-extrabold leading-tight text-[#FAF6F0] sm:text-5xl lg:text-6xl">
-              {DIVINE_BUSINESS_WEBINAR_TITLE}
-            </h1>
-            <p className="mx-auto mt-5 max-w-3xl text-base leading-relaxed text-[#E6D8C4] sm:text-lg">
-              Explore a distinctive approach to brand creation by bringing together traditional Astrology,
-              Numerology and Pronology principles.
-            </p>
-
-            <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <a
-                href={DIVINE_BUSINESS_WEBINAR_GROUP_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#25D366] px-7 py-4 text-sm font-extrabold uppercase tracking-wide text-white shadow-xl transition hover:-translate-y-0.5 hover:bg-[#1EBD5B] sm:w-auto"
-              >
-                <MessageCircle className="h-5 w-5" />
-                Join WhatsApp Group
-                <ArrowUpRight className="h-4 w-4" />
-              </a>
-              <a
-                href="#webinar-curriculum"
-                className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-[#C29B47]/70 bg-[#FAF6F0]/5 px-7 py-4 text-sm font-bold uppercase tracking-wide text-[#F2D797] transition hover:bg-[#FAF6F0]/10 sm:w-auto"
-              >
-                Explore 3-Day Curriculum
-                <ArrowRight className="h-4 w-4" />
-              </a>
-            </div>
-
-            <div className="mx-auto mt-9 grid max-w-2xl grid-cols-1 gap-3 sm:grid-cols-3">
-              <div className="rounded-xl border border-[#C29B47]/35 bg-black/20 px-4 py-4">
-                <CalendarDays className="mx-auto mb-2 h-5 w-5 text-[#E9C269]" />
-                <span className="block text-xs font-bold uppercase tracking-wider text-[#E9C269]">Duration</span>
-                <span className="mt-1 block text-sm font-semibold">3 Days</span>
-              </div>
-              <div className="rounded-xl border border-[#C29B47]/35 bg-black/20 px-4 py-4">
-                <Sparkles className="mx-auto mb-2 h-5 w-5 text-[#E9C269]" />
-                <span className="block text-xs font-bold uppercase tracking-wider text-[#E9C269]">Entry</span>
-                <span className="mt-1 block text-sm font-semibold">Completely Free</span>
-              </div>
-              <div className="rounded-xl border border-[#C29B47]/35 bg-black/20 px-4 py-4">
-                <Clock3 className="mx-auto mb-2 h-5 w-5 text-[#E9C269]" />
-                <span className="block text-xs font-bold uppercase tracking-wider text-[#E9C269]">Schedule</span>
-                <span className="mt-1 block text-sm font-semibold">To Be Announced</span>
-              </div>
-            </div>
           </div>
         </div>
       </section>

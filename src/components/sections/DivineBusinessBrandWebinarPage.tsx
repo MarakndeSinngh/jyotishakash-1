@@ -161,7 +161,7 @@ export default function DivineBusinessBrandWebinarPage({ navigate }: DivineBusin
             Back to LEO Family
           </button>
 
-          <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_380px] lg:gap-12">
+          <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_420px] lg:gap-14">
             <div className="min-w-0 text-center lg:pt-5 lg:text-left">
               <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#C29B47]/60 bg-[#C29B47]/15 px-4 py-2 text-[10px] font-extrabold uppercase tracking-[0.16em] text-[#F2D797] shadow-lg sm:text-[11px]">
                 <Sparkles className="h-4 w-4 shrink-0" />
@@ -221,36 +221,38 @@ export default function DivineBusinessBrandWebinarPage({ navigate }: DivineBusin
 
             <aside
               aria-label="Webinar mentor: Raajeev Singh Chauhann"
-              className="relative mx-auto flex w-full max-w-[360px] flex-col items-center rounded-[32px] border border-[#C29B47]/45 bg-[#FAF6F0]/[0.06] p-4 text-center shadow-2xl backdrop-blur-sm sm:p-5 lg:mx-0 lg:justify-self-end"
+              className="relative mx-auto flex w-full max-w-[420px] flex-col items-center lg:mx-0 lg:justify-self-end lg:self-center"
             >
-              <div className="pointer-events-none absolute -inset-4 -z-10 rounded-full bg-[#C29B47]/10 blur-3xl" />
-              <div className="group relative mb-5 aspect-square w-full overflow-hidden rounded-[24px] border border-[#C29B47]/35 bg-[#2B1704] shadow-xl">
-                <img
-                  src="/assets/teachers/Raajeev.webp"
-                  alt="Raajeev Singh Chauhann, Founder and Visionary of LEO Family Occult School"
-                  width={720}
-                  height={720}
-                  loading="eager"
-                  decoding="async"
-                  className="h-full w-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-[1.03]"
-                />
-                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#1C0F02]/35 to-transparent" />
+              <div className="pointer-events-none absolute -inset-8 -z-10 rounded-full bg-[#C29B47]/15 blur-3xl" />
+              <div className="group relative w-full overflow-hidden rounded-[30px] border-2 border-[#C29B47]/55 bg-[#2B1704] p-2 shadow-[0_24px_70px_rgba(0,0,0,0.45)]">
+                <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[22px] bg-[#1C0F02]">
+                  <img
+                    src="/assets/teachers/Raajeev.webp"
+                    alt="Raajeev Singh Chauhann, Founder and Visionary of LEO Family Occult School"
+                    width={840}
+                    height={1050}
+                    loading="eager"
+                    decoding="async"
+                    className="h-full w-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-[1.02]"
+                  />
+                  <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#1C0F02]/25 to-transparent" />
+                </div>
               </div>
 
-              <div className="w-full space-y-2">
+              <div className="mt-5 w-full rounded-2xl border border-[#C29B47]/40 bg-[#FAF6F0]/[0.07] px-5 py-5 text-center shadow-lg backdrop-blur-sm sm:px-6">
                 <span className="inline-flex items-center rounded-full border border-[#C29B47]/50 bg-[#C29B47]/15 px-3 py-1 text-[9px] font-extrabold uppercase tracking-[0.18em] text-[#F2D797]">
                   Webinar Mentor
                 </span>
-                <h2 className="font-cinzel text-xl font-extrabold leading-tight text-[#FAF6F0] sm:text-2xl">
+                <h2 className="mt-3 font-cinzel text-xl font-extrabold leading-tight text-[#FAF6F0] sm:text-2xl">
                   Raajeev Singh Chauhann
                 </h2>
-                <p className="text-xs font-bold uppercase tracking-[0.15em] text-[#E9C269] sm:text-sm">
+                <p className="mt-2 text-xs font-extrabold uppercase tracking-[0.16em] text-[#E9C269] sm:text-sm">
                   Founder & Visionary
                 </p>
-                <p className="text-[11px] font-medium leading-relaxed text-[#E6D8C4] sm:text-xs">
+                <p className="mt-1 text-[11px] font-semibold leading-relaxed text-[#E6D8C4] sm:text-xs">
                   LEO Family Occult School
                 </p>
-                <div className="mx-auto h-px w-16 bg-gradient-to-r from-transparent via-[#C29B47] to-transparent" />
+                <div className="mx-auto my-3 h-px w-20 bg-gradient-to-r from-transparent via-[#C29B47] to-transparent" />
                 <p className="text-[10px] leading-relaxed text-[#CDBB9F] sm:text-[11px]">
                   Astrologer • Numerologist • Vastu Expert
                 </p>
